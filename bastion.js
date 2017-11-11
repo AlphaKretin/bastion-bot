@@ -1,11 +1,21 @@
 let fs = require('fs');
 
-let config = JSON.parse(fs.readFileSync('config.json', 'utf8')); //open config file from local directory. Expected contents are as follows
+let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8')); //open config file from local directory. Expected contents are as follows
 /*
 	{
 	"token": "", //Discord bot token for log-in
 	"longStr": "", //The string to be appended to the end of a too-long message, telling the user to type ".long"
-	"shortcuts": [ //an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
+	"randFilterAttempts": 1000, //the number of tries to find a random card meeting criteria before bastion gives up. Infinite loop without this!
+	"maxSearches": 3, //the number of searches a user is allowed per post
+	"imageUrl": "", //this will be the start of the URL from which official card images are downloaded. Bastion will appened the card ID, and then .png.
+	"imageUrl": "", //this will be the start of the URL from which anime card images are downloaded. Bastion will appened the card ID, and then .png.
+	"imageUrlCustom": "", //this will be the start of the URL from which custom card images are downloaded. Bastion will appened the card ID, and then .png.
+	"imageSize": 100, //the height and width for card images to be resized to, in px.
+	"dbs" [ "", "" ] //a list of databases to read cards from, in a folder in the local directory called "dbs"
+}
+*/
+let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
+/*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
 		[
 			"mst",
 			"Mystical Space Typhoon"
@@ -15,17 +25,9 @@ let config = JSON.parse(fs.readFileSync('config.json', 'utf8')); //open config f
 			"...", //the arrays can have multiple shortcuts, only the last will be considered the full name
 			"..."
 		]
-	],
-	"randFilterAttempts": 1000, //the number of tries to find a random card meeting criteria before bastion gives up. Infinite loop without this!
-	"maxSearches": 3, //the number of searches a user is allowed per post
-	"imageUrl": "", //this will be the start of the URL from which official card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageUrl": "", //this will be the start of the URL from which anime card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageUrlCustom": "", //this will be the start of the URL from which custom card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageSize": 100, //the height and width for card images to be resized to, in px.
-	"dbs" [ "", "" ] //a list of databases to read cards from, in the local directory
-}
+	]
+if you don't care to include shortcuts, just make the contents of the JSON file a blank array, "[]"
 */
-
 //discord setup
 let Discord = require('discord.io');
 
@@ -44,13 +46,13 @@ bot.on('disconnect', function() {
 
 //sql setup
 let SQL = require('sql.js');
-let filebuffer = fs.readFileSync(config.dbs[0]);
+let filebuffer = fs.readFileSync("dbs/" + config.dbs[0]);
 let db = new SQL.Database(filebuffer);
 let contents = db.exec("SELECT * FROM datas");
 let names = db.exec("SELECT * FROM texts");
 if (config.dbs.length > 1) {
 	for (let i = 1; i < config.dbs.length; i++) {
-		let newbuffer = fs.readFileSync(config.dbs[i]);
+		let newbuffer = fs.readFileSync("dbs/" + config.dbs[i]);
 		let newDB = new SQL.Database(newbuffer);
 		let newContents = newDB.exec("SELECT * FROM datas");
 		let newNames = newDB.exec("SELECT * FROM texts");
@@ -724,32 +726,47 @@ function nameCheck(line) {
             return i;
         }
     }
-    let lineArr = line.split(" ");
-    for (let i = 0; i < lineArr.length; i++) {
-        for (let cut of config.shortcuts) {
-            for (let j = 0; j < cut.length - 1; j++) {
-                if (lineArr[i].toLowerCase() === cut[j].toLowerCase()) {
-                    lineArr[i] = cut[cut.length - 1];
+    if (shortcuts.length > 0) {
+        let lineArr = line.split(" ");
+        for (let i = 0; i < lineArr.length; i++) {
+            for (let cut of shortcuts) {
+                for (let j = 0; j < cut.length - 1; j++) {
+                    if (lineArr[i].toLowerCase() === cut[j].toLowerCase()) {
+                        lineArr[i] = cut[cut.length - 1];
+                    }
                 }
             }
         }
-    }
-    let newLine = lineArr.toString().replace(/,/g, " ");
-    for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
-        if (names[0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
-            return i;
-        }
-    }
-    let result = fuse.search(newLine);
-    if (result.length < 1) {
-        return -1;
-    } else {
-        let index = -1;
-        for (let i = 0; i < names[0].values.length; i++) {
-            if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
-                index = i;
+        let newLine = lineArr.toString().replace(/,/g, " ");
+        for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
+            if (names[0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
+                return i;
             }
         }
-        return index;
+        let result = fuse.search(newLine);
+        if (result.length < 1) {
+            return -1;
+        } else {
+            let index = -1;
+            for (let i = 0; i < names[0].values.length; i++) {
+                if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+                    index = i;
+                }
+            }
+            return index;
+        }
+    } else {
+        let result = fuse.search(line);
+        if (result.length < 1) {
+            return -1;
+        } else {
+            let index = -1;
+            for (let i = 0; i < names[0].values.length; i++) {
+                if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+                    index = i;
+                }
+            }
+            return index;
+        }
     }
 }
