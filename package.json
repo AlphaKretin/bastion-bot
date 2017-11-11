@@ -1,0 +1,24 @@
+{
+  "name": "bastion",
+  "version": "1.0.0",
+  "description": "A Discord bot for Yu-Gi-Oh! card information.",
+  "main": "bastion.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yugioh",
+    "discord"
+  ],
+  "author": "AlphaKretin",
+  "license": "ISC",
+  "dependencies": {
+    "discord.io": "github:izy521/discord.io",
+    "fuse.js": "^3.2.0",
+    "http": "0.0.0",
+    "request": "^2.83.0",
+    "resize-img": "^1.1.2",
+    "sql.js": "^0.4.0",
+    "url": "^0.11.0"
+  }
+}
