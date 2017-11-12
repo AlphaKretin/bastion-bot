@@ -280,10 +280,12 @@ function getCardInfo(code, user, userID, channelID, message, event) {
         console.log("Invalid card ID, please try again.");
         return "Invalid card ID, please try again.";
     }
+	let card = contents[0].values[index];
+	let name = names[0].values[index];
     return new Promise(function(resolve, reject) {
-        let out = "__**" + names[0].values[index][1] + "**__\n";
+        let out = "__**" + name[1] + "**__\n";
         out += "**ID**: " + code + "\n\n";
-        request('https://yugiohprices.com/api/get_card_prices/' + names[0].values[index][1], function(error, response, body) {
+        request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
             let data = JSON.parse(body);
             if (data.status === "success") {
                 let low = 9999999999;
@@ -319,9 +321,9 @@ function getCardInfo(code, user, userID, channelID, message, event) {
                     def = false;
                 }
                 out += "**" + lvName + "**: " + lv[0] + " ";
-                out += "**ATK**: " + convertStat(contents[0].values[index][5]) + " ";
+                out += "**ATK**: " + convertStat(card[5]) + " ";
                 if (def) {
-                    out += "**DEF**: " + convertStat(contents[0].values[index][6]);
+                    out += "**DEF**: " + convertStat(card[6]);
                 } else {
                     out += "**Link Markers**: " + getMarkers(index);
                 }
@@ -346,13 +348,13 @@ function getCardInfo(code, user, userID, channelID, message, event) {
                 if (lv > 0) { //is trap monster
                     let typesStr = getRace(index) + "/" + types.toString().replace(/,/g, "/");
                     out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index) + "\n";
-                    out += "**Level**: " + lv + " **ATK**: " + convertStat(contents[0].values[index][5]) + " **DEF**: " + convertStat(contents[0].values[index][6]) + "\n";
+                    out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
                 } else {
                     out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
                 }
-                out += "**Effect**: " + names[0].values[index][2].replace(/\n/g, "\n");
+                out += "**Effect**: " + name[2].replace(/\n/g, "\n");
             } else {
-                out += "**Card Text**: " + names[0].values[index][2].replace(/\n/g, "\n");
+                out += "**Card Text**: " + name[2].replace(/\n/g, "\n");
             }
             resolve(out);
         });
