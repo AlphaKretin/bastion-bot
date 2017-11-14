@@ -222,11 +222,11 @@ async function randomCard(user, userID, channelID, message, event) {
 }
 
 async function script(user, userID, channelID, message, event) {
-	let input = message.slice((pre + "script ".length);
+	let input = message.slice((pre + "script ").length);
     let inInt = parseInt(input);
     if (ids.indexOf(inInt) > -1) {
         try {
-            let out = getCardScript(index, user, userID, channelID, message, event);
+            let out = await getCardScript(index, user, userID, channelID, message, event);
             if (out.length > 2000) {
                 let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
                 longMsg = outArr[1];
@@ -249,7 +249,7 @@ async function script(user, userID, channelID, message, event) {
         try {
             let index = nameCheck(input);
             if (index > -1 && index in ids) {
-                let out = getCardScript(index, user, userID, channelID, message, event);
+                let out = await getCardScript(index, user, userID, channelID, message, event);
                 if (out.length > 2000) {
                     let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
                     longMsg = outArr[1];
@@ -465,14 +465,30 @@ function postImage(code, out, user, userID, channelID, message, event) {
 }
 
 function getCardScript(index, user, userID, channelID, message, event) {
-	let scriptUrl = config.scriptUrl;
-	if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
-		scriptUrl = config.scriptUrlAnime;
-	}
-	if (getOT(ids.indexOf(code)) === "Custom") {
-		scriptUrl = config.scriptUrlCustom;
-	}
-    return scriptUrl + "c" + ids[index] + ".lua";
+	return new Promise(function (resolve, reject) {
+		let scriptUrl = config.scriptUrl;
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index)) > -1) {
+			scriptUrl = config.scriptUrlAnime;
+		}
+		if (getOT(index) === "Custom") {
+			scriptUrl = config.scriptUrlCustom;
+		}
+		let fullUrl = scriptUrl + "c" + ids[index] + ".lua";
+		https.get(url.parse(fullUrl), function(response) {
+			let data = [];
+			response.on('data', function(chunk) {
+				data.push(chunk);
+			}).on('end', function() {
+				let buffer = Buffer.concat(data);
+				let script = buffer.toString();
+				if (script.length + 11 + fullUrl.length > 2000) {
+					resolve(fullUrl);
+				} else {
+					resolve("```lua\n" + script + "```\n" + fullUrl);
+				}
+			});
+		});
+	});
 }
 
 function randFilterCheck(code, args) {
