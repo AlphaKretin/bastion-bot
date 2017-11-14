@@ -1,6 +1,7 @@
 let fs = require('fs');
 
 let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8')); //open config file from local directory. Expected contents are as follows
+let pre = config.prefix;
 /*
 	{
 	"token": "", //Discord bot token for log-in
@@ -110,7 +111,6 @@ bot.on('message', function(user, userID, channelID, message, event) {
     if (userID === bot.id) {
         return;
     }
-	let pre = config.prefix;
     if (message.toLowerCase().indexOf(pre + "randcard") === 0) {
         randomCard(user, userID, channelID, message, event);
         return;
