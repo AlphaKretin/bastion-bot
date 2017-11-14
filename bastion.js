@@ -4,12 +4,16 @@ let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8')); //open c
 /*
 	{
 	"token": "", //Discord bot token for log-in
+	"prefix" "!", //character at the start of commands
 	"longStr": "", //The string to be appended to the end of a too-long message, telling the user to type ".long"
 	"randFilterAttempts": 1000, //the number of tries to find a random card meeting criteria before bastion gives up. Infinite loop without this!
 	"maxSearches": 3, //the number of searches a user is allowed per post
 	"imageUrl": "", //this will be the start of the URL from which official card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageUrl": "", //this will be the start of the URL from which anime card images are downloaded. Bastion will appened the card ID, and then .png.
+	"imageUrlAnime": "", //this will be the start of the URL from which anime card images are downloaded. Bastion will appened the card ID, and then .png.
 	"imageUrlCustom": "", //this will be the start of the URL from which custom card images are downloaded. Bastion will appened the card ID, and then .png.
+	"scriptUrl": "",
+	"scriptUrlAnime": "",
+	"scriptUrlCustom": "",
 	"imageSize": 100, //the height and width for card images to be resized to, in px.
 	"dbs" [ "", "" ] //a list of databases to read cards from, in a folder in the local directory called "dbs"
 }
@@ -106,8 +110,13 @@ bot.on('message', function(user, userID, channelID, message, event) {
     if (userID === bot.id) {
         return;
     }
-    if (message.toLowerCase().indexOf(".randcard") === 0) {
+	let pre = config.prefix;
+    if (message.toLowerCase().indexOf(pre + "randcard") === 0) {
         randomCard(user, userID, channelID, message, event);
+        return;
+    }
+	if (message.toLowerCase().indexOf(pre + "script") === 0) {
+        script(user, userID, channelID, message, event);
         return;
     }
     if (message.indexOf("<@" + bot.id + ">") > -1) {
@@ -209,6 +218,60 @@ async function randomCard(user, userID, channelID, message, event) {
         }
     } catch (e) {
         console.log(e);
+    }
+}
+
+async function script(user, userID, channelID, message, event) {
+	let input = message.slice((pre + "script ".length);
+    let inInt = parseInt(input);
+    if (ids.indexOf(inInt) > -1) {
+        try {
+            let out = getCardScript(index, user, userID, channelID, message, event);
+            if (out.length > 2000) {
+                let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                longMsg = outArr[1];
+                longUser = userID;
+                bot.sendMessage({
+                    to: channelID,
+                    message: outArr[0]
+                 });
+            } else {
+                bot.sendMessage({
+                    to: channelID,
+                    message: out
+                });
+			}
+        } catch (e) {
+            console.log("Error with search by ID:");
+            console.log(e);
+        }
+    } else {
+        try {
+            let index = nameCheck(input);
+            if (index > -1 && index in ids) {
+                let out = getCardScript(index, user, userID, channelID, message, event);
+                if (out.length > 2000) {
+                    let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                    longMsg = outArr[1];
+                    longUser = userID;
+                    bot.sendMessage({
+                        to: channelID,
+                        message: outArr[0]
+                    });
+                } else {
+                    bot.sendMessage({
+                        to: channelID,
+                        message: out
+                    });
+                }
+            } else {
+                console.log("Invalid card ID or name, please try again.");
+                return;
+            }
+        } catch (e) {
+            console.log("Error with search by name:");
+            console.log(e);
+        }
     }
 }
 
@@ -399,6 +462,17 @@ function postImage(code, out, user, userID, channelID, message, event) {
 			});
         });
     });
+}
+
+function getCardScript(index, user, userID, channelID, message, event) {
+	let scriptUrl = config.scriptUrl;
+	if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
+		scriptUrl = config.scriptUrlAnime;
+	}
+	if (getOT(ids.indexOf(code)) === "Custom") {
+		scriptUrl = config.scriptUrlCustom;
+	}
+    return scriptUrl + "c" + ids[index] + ".lua";
 }
 
 function randFilterCheck(code, args) {
