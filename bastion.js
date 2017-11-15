@@ -70,9 +70,11 @@ if (config.dbs.length > 1) {
 	}
 }
 let ids = [];
+let aliases = [];
 let nameList = [];
 for (let card of contents[0].values) { //populate ID list for easy checking of card validity
     ids.push(card[0]);
+	aliases.push(card[2]);
 }
 for (let card of names[0].values) { //populatre array of objects containing names for the sake of fuse
     nameList.push({
@@ -103,7 +105,6 @@ let url = require('url');
 let resizeImg = require('resize-img');
 
 let longMsg = "";
-let longUser = "";
 
 
 //real shit
@@ -122,16 +123,12 @@ bot.on('message', function(user, userID, channelID, message, event) {
     if (message.indexOf("<@" + bot.id + ">") > -1) {
         help(user, userID, channelID, message, event);
     }
-    if (longMsg.length > 0 && longUser.length > 0 && message.toLowerCase().indexOf(".long") === 0) {
-        if (userID === longUser) {
-            bot.sendMessage({
-                to: longUser,
-                message: longMsg
-            });
-            longMsg = "";
-            longUser = "";
-            return;
-        }
+    if (longMsg.length > 0 && message.toLowerCase().indexOf(".long") === 0) {
+        bot.sendMessage({
+            to: userID,
+            message: longMsg
+        });
+        return;
     }
     let re = /{([\S\s]*?)}/g;
     let results = [];
@@ -199,12 +196,11 @@ async function randomCard(user, userID, channelID, message, event) {
         }
         let out = await getCardInfo(code, user, userID, channelID, message, event);
         if (args.indexOf("image") > -1) {
-            postImage(code, out, user, userID, channelID, message, event);
+            postImage(out[1], out[0], user, userID, channelID, message, event);
         } else {
             if (out.length > 2000) {
-                let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                 longMsg = outArr[1];
-                longUser = userID;
                 bot.sendMessage({
                     to: channelID,
                     message: outArr[0]
@@ -212,7 +208,7 @@ async function randomCard(user, userID, channelID, message, event) {
             } else {
                 bot.sendMessage({
                     to: channelID,
-                    message: out
+                    message: out[0]
                 });
             }
         }
@@ -230,7 +226,6 @@ async function script(user, userID, channelID, message, event) {
             if (out.length > 2000) {
                 let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
                 longMsg = outArr[1];
-                longUser = userID;
                 bot.sendMessage({
                     to: channelID,
                     message: outArr[0]
@@ -253,7 +248,6 @@ async function script(user, userID, channelID, message, event) {
                 if (out.length > 2000) {
                     let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
                     longMsg = outArr[1];
-                    longUser = userID;
                     bot.sendMessage({
                         to: channelID,
                         message: outArr[0]
@@ -280,13 +274,12 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
     if (ids.indexOf(inInt) > -1) {
         try {
             let out = await getCardInfo(inInt, user, userID, channelID, message, event);
-            if (hasImage) {
-                postImage(inInt, out, user, userID, channelID, message, event);
+            if (hasImage) { 
+                postImage(out[1], out[0], user, userID, channelID, message, event);
             } else {
                 if (out.length > 2000) {
-                    let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                    let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                     longMsg = outArr[1];
-                    longUser = userID;
                     bot.sendMessage({
                         to: channelID,
                         message: outArr[0]
@@ -294,7 +287,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
                 } else {
                     bot.sendMessage({
                         to: channelID,
-                        message: out
+                        message: out[0]
                     });
                 }
             }
@@ -309,12 +302,11 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
             if (index > -1 && index in ids) {
                 let out = await getCardInfo(ids[index], user, userID, channelID, message, event);
                 if (hasImage) {
-                    postImage(ids[index], out, user, userID, channelID, message, event);
+                    postImage(out[1], out[0], user, userID, channelID, message, event);
                 } else {
                     if (out.length > 2000) {
-                        let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                        let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                         longMsg = outArr[1];
-                        longUser = userID;
                         bot.sendMessage({
                             to: channelID,
                             message: outArr[0]
@@ -322,7 +314,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
                     } else {
                         bot.sendMessage({
                             to: channelID,
-                            message: out
+                            message: out[0]
                         });
                     };
                 }
@@ -347,7 +339,16 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 	let name = names[0].values[index];
     return new Promise(function(resolve, reject) {
         let out = "__**" + name[1] + "**__\n";
-        out += "**ID**: " + code + "\n\n";
+		if (aliases[ids.indexOf(code)] > 0) {
+			code = aliases[ids.indexOf(code)];
+		}
+		let alIDs = [code];
+		for (let i = 0; i < aliases.length; i++) {
+			if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+				alIDs.push(ids[i]);
+			}
+		}
+        out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n\n";
         request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
             let data = JSON.parse(body);
             if (data.status === "success") {
@@ -419,49 +420,61 @@ function getCardInfo(code, user, userID, channelID, message, event) {
             } else {
                 out += "**Card Text**: " + name[2].replace(/\n/g, "\n");
             }
-            resolve(out);
+            resolve([out,alIDs]);
         });
     });
 }
 
-function postImage(code, out, user, userID, channelID, message, event) {
-	let imageUrl = config.imageUrl;
-	if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
-		imageUrl = config.imageUrlAnime;
+async function postImage(code, out, user, userID, channelID, message, event) {
+	try {
+		let imageUrl = config.imageUrl;
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code[0]))) > -1) {
+			imageUrl = config.imageUrlAnime;
+		}
+		if (getOT(ids.indexOf(code[0])) === "Custom") {
+			imageUrl = config.imageUrlCustom;
+		}
+		let buffer = await downloadImage(imageUrl + code[0] + ".png");
+		bot.uploadFile({
+			to: channelID,
+			file: buffer,
+			filename: code + ".png"
+		}, function(err, res) {
+			if (out.length > 2000) {
+				let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+				longMsg = outArr[1];
+				bot.sendMessage({
+					to: channelID,
+					message: outArr[0]
+				});
+			} else {
+				bot.sendMessage({
+					to: channelID,
+					message: out
+				});
+			}
+		});
+	} catch(e) {
+		console.log(e);
 	}
-	if (getOT(ids.indexOf(code)) === "Custom") {
-		imageUrl = config.imageUrlCustom;
-	}
-    https.get(url.parse(imageUrl + code + ".png"), function(response) {
+	
+}
+
+function downloadImage(imageUrl, user, userID, channelID, message, event) {
+	return new Promise(function(resolve, reject) {
+		https.get(url.parse(imageUrl), function(response) {
         let data = [];
         response.on('data', function(chunk) {
             data.push(chunk);
         }).on('end', function() {
             let buffer = Buffer.concat(data);
 			resizeImg(buffer, {width: config.imageSize, height: config.imageSize}).then(buf => {
-				bot.uploadFile({
-					to: channelID,
-					file: buf,
-					filename: code + ".png"
-				}, function(err, res) {
-					if (out.length > 2000) {
-						let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
-						longMsg = outArr[1];
-						longUser = userID;
-						bot.sendMessage({
-							to: channelID,
-							message: outArr[0]
-						});
-					} else {
-						bot.sendMessage({
-							to: channelID,
-							message: out
-						});
-					}
-				});
+				resolve(buf);
 			});
-        });
-    });
+		});
+		});
+	});
+	
 }
 
 function getCardScript(index, user, userID, channelID, message, event) {
