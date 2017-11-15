@@ -434,7 +434,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 		if (getOT(ids.indexOf(code[0])) === "Custom") {
 			imageUrl = config.imageUrlCustom;
 		}
-		let buffer = await downloadImage(imageUrl + code[0] + ".png");
+		let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
 		bot.uploadFile({
 			to: channelID,
 			file: buffer,
@@ -460,15 +460,22 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 	
 }
 
-function downloadImage(imageUrl, user, userID, channelID, message, event) {
+function downloadImage(imageUrl, pendulum, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
+		let imgWidth;
+		if (pendulum) {
+			imgWidth = Math.floor(config.imageSize * 1.36864406779661);
+		} else {
+			imgWidth = config.imageSize;
+		}
+		console.log(imgWidth)
 		https.get(url.parse(imageUrl), function(response) {
         let data = [];
         response.on('data', function(chunk) {
             data.push(chunk);
         }).on('end', function() {
             let buffer = Buffer.concat(data);
-			resizeImg(buffer, {width: config.imageSize, height: config.imageSize}).then(buf => {
+			resizeImg(buffer, {width: imgWidth, height: config.imageSize}).then(buf => {
 				resolve(buf);
 			});
 		});
