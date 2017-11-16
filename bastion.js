@@ -56,25 +56,25 @@ let db = new SQL.Database(filebuffer);
 let contents = db.exec("SELECT * FROM datas");
 let names = db.exec("SELECT * FROM texts");
 if (config.dbs.length > 1) {
-	for (let i = 1; i < config.dbs.length; i++) {
-		let newbuffer = fs.readFileSync("dbs/" + config.dbs[i]);
-		let newDB = new SQL.Database(newbuffer);
-		let newContents = newDB.exec("SELECT * FROM datas");
-		let newNames = newDB.exec("SELECT * FROM texts");
-		for (let card of newContents[0].values) {
-			contents[0].values.push(card);
-		}
-		for (let card of newNames[0].values) {
-			names[0].values.push(card);
-		}
-	}
+    for (let i = 1; i < config.dbs.length; i++) {
+        let newbuffer = fs.readFileSync("dbs/" + config.dbs[i]);
+        let newDB = new SQL.Database(newbuffer);
+        let newContents = newDB.exec("SELECT * FROM datas");
+        let newNames = newDB.exec("SELECT * FROM texts");
+        for (let card of newContents[0].values) {
+            contents[0].values.push(card);
+        }
+        for (let card of newNames[0].values) {
+            names[0].values.push(card);
+        }
+    }
 }
 let ids = [];
 let aliases = [];
 let nameList = [];
 for (let card of contents[0].values) { //populate ID list for easy checking of card validity
     ids.push(card[0]);
-	aliases.push(card[2]);
+    aliases.push(card[2]);
 }
 for (let card of names[0].values) { //populatre array of objects containing names for the sake of fuse
     nameList.push({
@@ -116,7 +116,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
         randomCard(user, userID, channelID, message, event);
         return;
     }
-	if (message.toLowerCase().indexOf(pre + "script") === 0) {
+    if (message.toLowerCase().indexOf(pre + "script") === 0) {
         script(user, userID, channelID, message, event);
         return;
     }
@@ -218,7 +218,7 @@ async function randomCard(user, userID, channelID, message, event) {
 }
 
 async function script(user, userID, channelID, message, event) {
-	let input = message.slice((pre + "script ").length);
+    let input = message.slice((pre + "script ").length);
     let inInt = parseInt(input);
     if (ids.indexOf(inInt) > -1) {
         try {
@@ -229,13 +229,13 @@ async function script(user, userID, channelID, message, event) {
                 bot.sendMessage({
                     to: channelID,
                     message: outArr[0]
-                 });
+                });
             } else {
                 bot.sendMessage({
                     to: channelID,
                     message: out
                 });
-			}
+            }
         } catch (e) {
             console.log("Error with search by ID:");
             console.log(e);
@@ -274,7 +274,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
     if (ids.indexOf(inInt) > -1) {
         try {
             let out = await getCardInfo(inInt, user, userID, channelID, message, event);
-            if (hasImage) { 
+            if (hasImage) {
                 postImage(out[1], out[0], user, userID, channelID, message, event);
             } else {
                 if (out.length > 2000) {
@@ -335,19 +335,19 @@ function getCardInfo(code, user, userID, channelID, message, event) {
         console.log("Invalid card ID, please try again.");
         return "Invalid card ID, please try again.";
     }
-	let card = contents[0].values[index];
-	let name = names[0].values[index];
+    let card = contents[0].values[index];
+    let name = names[0].values[index];
     return new Promise(function(resolve, reject) {
         let out = "__**" + name[1] + "**__\n";
-		if (aliases[ids.indexOf(code)] > 0) {
-			code = aliases[ids.indexOf(code)];
-		}
-		let alIDs = [code];
-		for (let i = 0; i < aliases.length; i++) {
-			if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-				alIDs.push(ids[i]);
-			}
-		}
+        if (aliases[ids.indexOf(code)] > 0) {
+            code = aliases[ids.indexOf(code)];
+        }
+        let alIDs = [code];
+        for (let i = 0; i < aliases.length; i++) {
+            if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+                alIDs.push(ids[i]);
+            }
+        }
         out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n\n";
         request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
             let data = JSON.parse(body);
@@ -420,95 +420,98 @@ function getCardInfo(code, user, userID, channelID, message, event) {
             } else {
                 out += "**Card Text**: " + name[2].replace(/\n/g, "\n");
             }
-            resolve([out,alIDs]);
+            resolve([out, alIDs]);
         });
     });
 }
 
 async function postImage(code, out, user, userID, channelID, message, event) {
-	try {
-		let imageUrl = config.imageUrl;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code[0]))) > -1) {
-			imageUrl = config.imageUrlAnime;
-		}
-		if (getOT(ids.indexOf(code[0])) === "Custom") {
-			imageUrl = config.imageUrlCustom;
-		}
-		let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
-		bot.uploadFile({
-			to: channelID,
-			file: buffer,
-			filename: code + ".png"
-		}, function(err, res) {
-			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
-				longMsg = outArr[1];
-				bot.sendMessage({
-					to: channelID,
-					message: outArr[0]
-				});
-			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: out
-				});
-			}
-		});
-	} catch(e) {
-		console.log(e);
-	}
-	
+    try {
+        let imageUrl = config.imageUrl;
+        if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code[0]))) > -1) {
+            imageUrl = config.imageUrlAnime;
+        }
+        if (getOT(ids.indexOf(code[0])) === "Custom") {
+            imageUrl = config.imageUrlCustom;
+        }
+        let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
+        bot.uploadFile({
+            to: channelID,
+            file: buffer,
+            filename: code + ".png"
+        }, function(err, res) {
+            if (out.length > 2000) {
+                let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+                longMsg = outArr[1];
+                bot.sendMessage({
+                    to: channelID,
+                    message: outArr[0]
+                });
+            } else {
+                bot.sendMessage({
+                    to: channelID,
+                    message: out
+                });
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
+
 }
 
 function downloadImage(imageUrl, pendulum, user, userID, channelID, message, event) {
-	return new Promise(function(resolve, reject) {
-		let imgWidth;
-		if (pendulum) {
-			imgWidth = Math.floor(config.imageSize * 1.36864406779661);
-		} else {
-			imgWidth = config.imageSize;
-		}
-		console.log(imgWidth)
-		https.get(url.parse(imageUrl), function(response) {
-        let data = [];
-        response.on('data', function(chunk) {
-            data.push(chunk);
-        }).on('end', function() {
-            let buffer = Buffer.concat(data);
-			resizeImg(buffer, {width: imgWidth, height: config.imageSize}).then(buf => {
-				resolve(buf);
-			});
-		});
-		});
-	});
-	
+    return new Promise(function(resolve, reject) {
+        let imgWidth;
+        if (pendulum) {
+            imgWidth = Math.floor(config.imageSize * 1.36864406779661);
+        } else {
+            imgWidth = config.imageSize;
+        }
+        console.log(imgWidth)
+        https.get(url.parse(imageUrl), function(response) {
+            let data = [];
+            response.on('data', function(chunk) {
+                data.push(chunk);
+            }).on('end', function() {
+                let buffer = Buffer.concat(data);
+                resizeImg(buffer, {
+                    width: imgWidth,
+                    height: config.imageSize
+                }).then(buf => {
+                    resolve(buf);
+                });
+            });
+        });
+    });
+
 }
 
 function getCardScript(index, user, userID, channelID, message, event) {
-	return new Promise(function (resolve, reject) {
-		let scriptUrl = config.scriptUrl;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index)) > -1) {
-			scriptUrl = config.scriptUrlAnime;
-		}
-		if (getOT(index) === "Custom") {
-			scriptUrl = config.scriptUrlCustom;
-		}
-		let fullUrl = scriptUrl + "c" + ids[index] + ".lua";
-		https.get(url.parse(fullUrl), function(response) {
-			let data = [];
-			response.on('data', function(chunk) {
-				data.push(chunk);
-			}).on('end', function() {
-				let buffer = Buffer.concat(data);
-				let script = buffer.toString();
-				if (script.length + 11 + fullUrl.length > 2000) {
-					resolve(fullUrl);
-				} else {
-					resolve("```lua\n" + script + "```\n" + fullUrl);
-				}
-			});
-		});
-	});
+    return new Promise(function(resolve, reject) {
+        let scriptUrl = config.scriptUrl;
+        if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index)) > -1) {
+            scriptUrl = config.scriptUrlAnime;
+        }
+        if (getOT(index) === "Custom") {
+            scriptUrl = config.scriptUrlCustom;
+        }
+        let fullUrl = scriptUrl + "c" + ids[index] + ".lua";
+        https.get(url.parse(fullUrl), function(response) {
+            let data = [];
+            response.on('data', function(chunk) {
+                data.push(chunk);
+            }).on('end', function() {
+                let buffer = Buffer.concat(data);
+                let script = buffer.toString();
+                if (script.length + 11 + fullUrl.length > 2000) {
+                    resolve(fullUrl);
+                } else {
+                    resolve("```lua\n" + script + "```\n" + fullUrl);
+                }
+            });
+        });
+    });
 }
 
 function randFilterCheck(code, args) {
