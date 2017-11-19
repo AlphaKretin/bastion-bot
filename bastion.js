@@ -105,6 +105,11 @@ let url = require('url');
 let resizeImg = require('resize-img');
 
 let longMsg = "";
+let gameData = {
+    "active": false
+};
+let gameTO1;
+let gameTO2;
 
 
 //real shit
@@ -112,23 +117,40 @@ bot.on('message', function(user, userID, channelID, message, event) {
     if (userID === bot.id) {
         return;
     }
-    if (message.toLowerCase().indexOf(pre + "randcard") === 0) {
+	let lowMessage = message.toLowerCase();
+    if (lowMessage.indexOf(pre + "randcard") === 0) {
         randomCard(user, userID, channelID, message, event);
         return;
     }
-    if (message.toLowerCase().indexOf(pre + "script") === 0) {
+    if (lowMessage.indexOf(pre + "script") === 0) {
         script(user, userID, channelID, message, event);
         return;
+    }
+	if (lowMessage.indexOf(pre + "trivia") === 0) {
+        trivia(user, userID, channelID, message, event);
+		return;
     }
     if (message.indexOf("<@" + bot.id + ">") > -1) {
         help(user, userID, channelID, message, event);
     }
-    if (longMsg.length > 0 && message.toLowerCase().indexOf(".long") === 0) {
+    if (longMsg.length > 0 && lowMessage.indexOf(".long") === 0) {
         bot.sendMessage({
             to: userID,
             message: longMsg
         });
         return;
+    }
+	if (gameData.active) {
+        switch (gameData.game) {
+            case "trivia":
+                answerTrivia(user, userID, channelID, message, event);
+                break;
+            default:
+                break;
+        }
+		if (gameData.channel === channelID) {
+			return;
+		}
     }
     let re = /{([\S\s]*?)}/g;
     let results = [];
@@ -478,7 +500,6 @@ function downloadImage(imageUrl, pendulum, user, userID, channelID, message, eve
         } else {
             imgWidth = config.imageSize;
         }
-        console.log(imgWidth)
         https.get(url.parse(imageUrl), function(response) {
             let data = [];
             response.on('data', function(chunk) {
@@ -893,5 +914,133 @@ function nameCheck(line) {
             }
             return index;
         }
+    }
+}
+
+function getIncInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+//games
+function trivia(user, userID, channelID, message, event) {
+    let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+    if (gameData.active) {
+        return;
+    } else {
+		let ot = [ "TCG", "OCG", "TCG/OCG" ];
+		let args = message.toLowerCase().split(" ");
+		if (args.indexOf("tcg") > -1) {
+			ot = [ "TCG" ];
+		} else if (args.indexOf("ocg") > -1) {
+			ot = [ "OCG" ];
+		} else if (args.indexOf("anime") > -1) {
+			ot = [ "Anime", "Video Game", "Illegal" ];
+		} else if (args.indexOf("custom") > -1) {
+			ot = [ "Custom" ];
+		}
+        //pick a random card
+        let index;
+        let code;
+		do {
+			index = Math.floor(Math.random() * ids.length);
+			code = ids[index];
+		} while (ot.indexOf(getOT(index)) === -1);
+        let name = names[0].values[index][1];
+        let hint = "";
+        for (let letter of name) {
+            if (getIncInt(0, 3) !== 0 && letter !== " ") {
+                letter = "-";
+            }
+            hint += letter;
+        }
+        //start game
+        gameData = {
+            "active": true,
+            "game": "trivia",
+            "server": serverID,
+            "channel": channelID,
+            "name": name,
+            "hint": hint,
+            "guesses": 0
+        }
+        let imageUrl = config.imageUrl;
+        if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
+            imageUrl = config.imageUrlAnime;
+        }
+        if (getOT(ids.indexOf(code)) === "Custom") {
+            imageUrl = config.imageUrlCustom;
+        }
+        https.get(url.parse(imageUrl + code + ".png"), function(response) {
+            let data = [];
+            response.on('data', function(chunk) {
+                data.push(chunk);
+            }).on('end', function() {
+                let buffer = Buffer.concat(data);
+                bot.uploadFile({
+                    to: channelID,
+                    file: buffer,
+                    filename: code + ".png"
+                }, function(err, res) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        bot.sendMessage({
+                            to: channelID,
+                            message: "You have 30 seconds to name this card!"
+                        });
+                        gameTO1 = setTimeout(function() {
+                            bot.sendMessage({
+                                to: channelID,
+                                message: "Have a hint: `" + gameData.hint + "`"
+                            });
+                        }, 10000);
+                        gameTO2 = setTimeout(function() {
+                            bot.sendMessage({
+                                to: channelID,
+                                message: "Time's up! The card was **" + gameData.name + "**! Try again next time!"
+                            });
+                            gameData = {
+                                "active": false
+                            };
+                        }, 30000);
+                    }
+                });
+            });
+        });
+    }
+}
+
+function answerTrivia(user, userID, channelID, message, event) {
+    let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+    if (gameData.active === false || serverID !== gameData.server || channelID !== gameData.channel || gameData.game !== "trivia") {
+        return;
+    }
+	if (message.toLowerCase().indexOf(pre + "tq") === 0) {
+		clearTimeout(gameTO1);
+        clearTimeout(gameTO2);
+		bot.sendMessage({
+			to: channelID,
+			message: "<@" + userID + "> quit the game. The answer was **" + gameData.name + "**!"
+		});
+        gameData = {
+            "active": false
+        };
+	} else if (message.toLowerCase() === gameData.name.toLowerCase()) {
+        clearTimeout(gameTO1);
+        clearTimeout(gameTO2);
+        bot.addReaction({
+            channelID: channelID,
+            messageID: event.d.id,
+            reaction: "👍"
+        });
+        bot.sendMessage({
+			to: channelID,
+			message: "<@" + userID + "> got it! The answer was **" + gameData.name + "**!"
+		});
+        gameData = {
+            "active": false
+        };
     }
 }
