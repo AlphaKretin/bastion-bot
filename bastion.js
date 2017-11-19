@@ -198,7 +198,7 @@ async function randomCard(user, userID, channelID, message, event) {
         if (args.indexOf("image") > -1) {
             postImage(out[1], out[0], user, userID, channelID, message, event);
         } else {
-            if (out.length > 2000) {
+            if (out[0].length > 2000) {
                 let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                 longMsg = outArr[1];
                 bot.sendMessage({
@@ -220,7 +220,8 @@ async function randomCard(user, userID, channelID, message, event) {
 async function script(user, userID, channelID, message, event) {
     let input = message.slice((pre + "script ").length);
     let inInt = parseInt(input);
-    if (ids.indexOf(inInt) > -1) {
+	let index = ids.indexOf(inInt)
+    if (index > -1) {
         try {
             let out = await getCardScript(index, user, userID, channelID, message, event);
             if (out.length > 2000) {
@@ -277,7 +278,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
             if (hasImage) {
                 postImage(out[1], out[0], user, userID, channelID, message, event);
             } else {
-                if (out.length > 2000) {
+                if (out[0].length > 2000) {
                     let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                     longMsg = outArr[1];
                     bot.sendMessage({
@@ -304,7 +305,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
                 if (hasImage) {
                     postImage(out[1], out[0], user, userID, channelID, message, event);
                 } else {
-                    if (out.length > 2000) {
+                    if (out[0].length > 2000) {
                         let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
                         longMsg = outArr[1];
                         bot.sendMessage({
@@ -339,15 +340,24 @@ function getCardInfo(code, user, userID, channelID, message, event) {
     let name = names[0].values[index];
     return new Promise(function(resolve, reject) {
         let out = "__**" + name[1] + "**__\n";
-        if (aliases[ids.indexOf(code)] > 0) {
-            code = aliases[ids.indexOf(code)];
-        }
         let alIDs = [code];
-        for (let i = 0; i < aliases.length; i++) {
-            if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-                alIDs.push(ids[i]);
-            }
-        }
+		if (aliases[ids.indexOf(code)] > 0) {
+			if (getOT(ids.indexOf(code)) === getOT(ids.indexOf(aliases[ids.indexOf(code)]))) {
+				code = aliases[ids.indexOf(code)];
+				alIDs = [code];
+				for (let i = 0; i < aliases.length; i++) {
+					if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+						alIDs.push(ids[i]);
+					}
+				}
+			}
+        } else if (aliases.indexOf(code) > 0) {
+			for (let i = 0; i < aliases.length; i++) {
+				if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+					alIDs.push(ids[i]);
+				}
+			}
+		}
         out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n\n";
         request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
             let data = JSON.parse(body);
