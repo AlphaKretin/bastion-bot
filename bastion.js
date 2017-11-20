@@ -151,7 +151,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	let re = /{([\S\s]*?)}/g;
+	let re = /{([^:@]*?)}/g;
 	let results = [];
 	let regx;
 	do {
@@ -160,7 +160,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			results.push(regx[1]);
 		}
 	} while (regx !== null);
-	let re2 = /<([\S\s]*?)>/g;
+	let re2 = /<([^:@]*?)>/g;
 	let results2 = [];
 	let regx2;
 	do {
