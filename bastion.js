@@ -191,7 +191,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 function help(user, userID, channelID, message, event) {
 	bot.sendMessage({
 		to: channelID,
-		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the https://yugiohprices.com API.\nYou can find my help file and source here: https://github.com/AlphaKretin/bastion-bot/"
+		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>""
 	});
 }
 
