@@ -78,7 +78,8 @@ for (let card of contents[0].values) { //populate ID list for easy checking of c
 }
 for (let card of names[0].values) { //populatre array of objects containing names for the sake of fuse
     nameList.push({
-        name: card[1]
+        name: card[1],
+		id: card[0]
     });
 }
 
@@ -126,6 +127,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
         trivia(user, userID, channelID, message, event);
 		return;
     }
+	if (lowMessage.indexOf(pre + "matches") === 0) {
+		matches(user, userID, channelID, message, event);
+		return;
+	}
     if (message.indexOf("<@" + bot.id + ">") > -1) {
         help(user, userID, channelID, message, event);
     }
@@ -144,9 +149,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
             default:
                 break;
         }
-		if (channelID in gameData) {
-			return;
-		}
+		return;
     }
     let re = /{([\S\s]*?)}/g;
     let results = [];
@@ -911,6 +914,45 @@ function nameCheck(line) {
             return index;
         }
     }
+}
+
+function matches(user, userID, channelID, message, event) {
+	let arg = message.slice((pre + "matches ").length);
+	let results = fuse.search(arg);
+    if (results.length < 1) {
+        bot.sendMessage({
+			to: channelID,
+			message: "No matches found!"
+		});
+    } else {
+		let out = "Top 10 card name matches for `" + arg + "`:";
+		let i = 0;
+		let outs = [];
+		let ot = getOT(ids.indexOf(results[0].item.id));
+		while (results[i] && outs.length < 10) {
+			let index = ids.indexOf(results[i].item.id)
+			if (ot === getOT(index) && aliasCheck(index)) {
+				outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
+			}
+			i++;
+		}
+		for (let o of outs) {
+			out += o;
+		}
+		bot.sendMessage({
+			to: channelID,
+			message: out
+		});
+    }
+}
+
+function aliasCheck(index) {
+	let alias = aliases[index];
+	if (alias === 0) {
+		return true;
+	}
+	let alIndex = ids.indexOf(alias);
+	return getOT(index) !== getOT(alIndex);
 }
 
 function getIncInt(min, max) {
