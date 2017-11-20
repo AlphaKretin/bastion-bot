@@ -105,12 +105,7 @@ let url = require('url');
 let resizeImg = require('resize-img');
 
 let longMsg = "";
-let gameData = {
-    "active": false
-};
-let gameTO1;
-let gameTO2;
-let gameIN;
+let gameData = {};
 
 
 //real shit
@@ -141,15 +136,15 @@ bot.on('message', function(user, userID, channelID, message, event) {
         });
         return;
     }
-	if (gameData.active) {
-        switch (gameData.game) {
+	if (channelID in gameData) {
+        switch (gameData[channelID].game) {
             case "trivia":
                 answerTrivia(user, userID, channelID, message, event);
                 break;
             default:
                 break;
         }
-		if (gameData.channel === channelID) {
+		if (channelID in gameData) {
 			return;
 		}
     }
@@ -926,8 +921,7 @@ function getIncInt(min, max) {
 
 //games
 function trivia(user, userID, channelID, message, event) {
-    let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
-    if (gameData.active) {
+    if (channelID in gameData) {
         return;
     } else {
 		let ot = [ "TCG", "OCG", "TCG/OCG" ];
@@ -957,11 +951,8 @@ function trivia(user, userID, channelID, message, event) {
             hint += letter;
         }
         //start game
-        gameData = {
-            "active": true,
+        gameData[channelID] = {
             "game": "trivia",
-            "server": serverID,
-            "channel": channelID,
             "name": name,
             "hint": hint,
             "guesses": 0,
@@ -997,7 +988,7 @@ function trivia(user, userID, channelID, message, event) {
 							} else {
 								let messageID = res.id;
 								let i = 29
-								gameIN = setInterval(function(){
+								gameData[channelID].IN = setInterval(function(){
 									bot.editMessage({
 										channelID: channelID,
 										messageID: messageID,
@@ -1007,21 +998,19 @@ function trivia(user, userID, channelID, message, event) {
 								}, 1000);
 							}
 						});
-                        gameTO1 = setTimeout(function() {
+                        gameData[channelID].TO1 = setTimeout(function() {
                             bot.sendMessage({
                                 to: channelID,
-                                message: "Have a hint: `" + gameData.hint + "`"
+                                message: "Have a hint: `" + gameData[channelID].hint + "`"
                             });
                         }, 10000);
-                        gameTO2 = setTimeout(function() {
+                        gameData[channelID].TO2 = setTimeout(function() {
                             bot.sendMessage({
                                 to: channelID,
-                                message: "Time's up! The card was **" + gameData.name + "**! Try again next time!"
+                                message: "Time's up! The card was **" + gameData[channelID].name + "**! Try again next time!"
                             });
-                            gameData = {
-                                "active": false
-                            };
-							clearInterval(gameIN);
+                            delete gamedata[channelID];
+							clearInterval(gameData[channelID].IN);
                         }, 30000);
                     }
                 });
@@ -1031,25 +1020,22 @@ function trivia(user, userID, channelID, message, event) {
 }
 
 function answerTrivia(user, userID, channelID, message, event) {
-    let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
-    if (gameData.active === false || serverID !== gameData.server || channelID !== gameData.channel || gameData.game !== "trivia") {
+    if (!(channelID in gameData) || gameData[channelID].game !== "trivia") {
         return;
     }
 	if (message.toLowerCase().indexOf(pre + "tq") === 0) {
-		clearTimeout(gameTO1);
-        clearTimeout(gameTO2);
-		clearInterval(gameIN);
+		clearTimeout(gamData[channelID].eTO1);
+        clearTimeout(gameData[channelID].TO2);
+		clearInterval(gameData[channelID].IN);
 		bot.sendMessage({
 			to: channelID,
-			message: "<@" + userID + "> quit the game. The answer was **" + gameData.name + "**!"
+			message: "<@" + userID + "> quit the game. The answer was **" + gameData[channelID].name + "**!"
 		});
-        gameData = {
-            "active": false
-        };
-	} else if (message.toLowerCase() === gameData.name.toLowerCase()) {
-        clearTimeout(gameTO1);
-        clearTimeout(gameTO2);
-		clearInterval(gameIN);
+        delete gameData[channelID];
+	} else if (message.toLowerCase() === gameData[channelID].name.toLowerCase()) {
+        clearTimeout(gameData[channelID].TO1);
+        clearTimeout(gameData[channelID].TO2);
+		clearInterval(gameData[channelID].IN);
         bot.addReaction({
             channelID: channelID,
             messageID: event.d.id,
@@ -1057,10 +1043,8 @@ function answerTrivia(user, userID, channelID, message, event) {
         });
         bot.sendMessage({
 			to: channelID,
-			message: "<@" + userID + "> got it! The answer was **" + gameData.name + "**!"
+			message: "<@" + userID + "> got it! The answer was **" + gameData[channelID].name + "**!"
 		});
-        gameData = {
-            "active": false
-        };
+        delete gameData[channelID];
     }
 }
