@@ -110,6 +110,7 @@ let gameData = {
 };
 let gameTO1;
 let gameTO2;
+let gameIN;
 
 
 //real shit
@@ -963,7 +964,8 @@ function trivia(user, userID, channelID, message, event) {
             "channel": channelID,
             "name": name,
             "hint": hint,
-            "guesses": 0
+            "guesses": 0,
+			"time": 30
         }
         let imageUrl = config.imageUrl;
         if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
@@ -988,8 +990,23 @@ function trivia(user, userID, channelID, message, event) {
                     } else {
                         bot.sendMessage({
                             to: channelID,
-                            message: "You have 30 seconds to name this card!"
-                        });
+                            message: "Can you name this card? Time remaining: `30`"
+                        }, function (err, res) {
+							if (err) {
+								console.log(err);
+							} else {
+								let messageID = res.id;
+								let i = 29
+								gameIN = setInterval(function(){
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										message: "Can you name this card? Time remaining: `" + i + "`"
+									});
+									i--;
+								}, 1000);
+							}
+						});
                         gameTO1 = setTimeout(function() {
                             bot.sendMessage({
                                 to: channelID,
@@ -1004,6 +1021,7 @@ function trivia(user, userID, channelID, message, event) {
                             gameData = {
                                 "active": false
                             };
+							clearInterval(gameIN);
                         }, 30000);
                     }
                 });
@@ -1020,6 +1038,7 @@ function answerTrivia(user, userID, channelID, message, event) {
 	if (message.toLowerCase().indexOf(pre + "tq") === 0) {
 		clearTimeout(gameTO1);
         clearTimeout(gameTO2);
+		clearInterval(gameIN);
 		bot.sendMessage({
 			to: channelID,
 			message: "<@" + userID + "> quit the game. The answer was **" + gameData.name + "**!"
@@ -1030,6 +1049,7 @@ function answerTrivia(user, userID, channelID, message, event) {
 	} else if (message.toLowerCase() === gameData.name.toLowerCase()) {
         clearTimeout(gameTO1);
         clearTimeout(gameTO2);
+		clearInterval(gameIN);
         bot.addReaction({
             channelID: channelID,
             messageID: event.d.id,
