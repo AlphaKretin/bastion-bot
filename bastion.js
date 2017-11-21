@@ -546,6 +546,19 @@ function getCardScript(index, user, userID, channelID, message, event) {
 
 function matches(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "matches ").length);
+	if (shortcuts.length > 0) {
+		let lineArr = arg.split(" ");
+		for (let i = 0; i < lineArr.length; i++) {
+			for (let cut of shortcuts) {
+				for (let j = 0; j < cut.length - 1; j++) {
+					if (lineArr[i].toLowerCase() === cut[j].toLowerCase()) {
+						lineArr[i] = cut[cut.length - 1];
+					}
+				}
+			}
+		}
+		arg = lineArr.toString().replace(/,/g, " ");
+	}
 	let results = fuse.search(arg);
 	if (results.length < 1) {
 		bot.sendMessage({
@@ -575,6 +588,57 @@ function matches(user, userID, channelID, message, event) {
 }
 
 //utility functions
+function nameCheck(line) {
+	for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
+		if (names[0].values[i][1].toLowerCase() === line.toLowerCase()) {
+			return i;
+		}
+	}
+	if (shortcuts.length > 0) {
+		let lineArr = line.split(" ");
+		for (let i = 0; i < lineArr.length; i++) {
+			for (let cut of shortcuts) {
+				for (let j = 0; j < cut.length - 1; j++) {
+					if (lineArr[i].toLowerCase() === cut[j].toLowerCase()) {
+						lineArr[i] = cut[cut.length - 1];
+					}
+				}
+			}
+		}
+		let newLine = lineArr.toString().replace(/,/g, " ");
+		for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
+			if (names[0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
+				return i;
+			}
+		}
+		let result = fuse.search(newLine);
+		if (result.length < 1) {
+			return -1;
+		} else {
+			let index = -1;
+			for (let i = 0; i < names[0].values.length; i++) {
+				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+					index = i;
+				}
+			}
+			return index;
+		}
+	} else {
+		let result = fuse.search(line);
+		if (result.length < 1) {
+			return -1;
+		} else {
+			let index = -1;
+			for (let i = 0; i < names[0].values.length; i++) {
+				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+					index = i;
+				}
+			}
+			return index;
+		}
+	}
+}
+
 function convertStat(stat) {
 	if (stat === -2) {
 		return "?";
@@ -837,58 +901,6 @@ function getCardText(index) {
 		return outArr;
 	}
 }
-
-function nameCheck(line) {
-	for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
-		if (names[0].values[i][1].toLowerCase() === line.toLowerCase()) {
-			return i;
-		}
-	}
-	if (shortcuts.length > 0) {
-		let lineArr = line.split(" ");
-		for (let i = 0; i < lineArr.length; i++) {
-			for (let cut of shortcuts) {
-				for (let j = 0; j < cut.length - 1; j++) {
-					if (lineArr[i].toLowerCase() === cut[j].toLowerCase()) {
-						lineArr[i] = cut[cut.length - 1];
-					}
-				}
-			}
-		}
-		let newLine = lineArr.toString().replace(/,/g, " ");
-		for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
-			if (names[0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
-				return i;
-			}
-		}
-		let result = fuse.search(newLine);
-		if (result.length < 1) {
-			return -1;
-		} else {
-			let index = -1;
-			for (let i = 0; i < names[0].values.length; i++) {
-				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
-					index = i;
-				}
-			}
-			return index;
-		}
-	} else {
-		let result = fuse.search(line);
-		if (result.length < 1) {
-			return -1;
-		} else {
-			let index = -1;
-			for (let i = 0; i < names[0].values.length; i++) {
-				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
-					index = i;
-				}
-			}
-			return index;
-		}
-	}
-}
-
 
 function randFilterCheck(code, args) {
 	let otFilters = [];
