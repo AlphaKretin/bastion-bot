@@ -1000,8 +1000,8 @@ function trivia(user, userID, channelID, message, event) {
 		let name = names[0].values[index][1];
 		let hint = "";
 		for (let letter of name) {
-			if (getIncInt(0, 3) !== 0 && letter !== " ") {
-				letter = "-";
+			if (getIncInt(0, 2) !== 0 && letter !== " ") {
+				letter = "?";
 			}
 			hint += letter;
 		}
@@ -1064,8 +1064,8 @@ function trivia(user, userID, channelID, message, event) {
 								to: channelID,
 								message: "Time's up! The card was **" + gameData[channelID].name + "**! Try again next time!"
 							});
-							delete gamedata[channelID];
 							clearInterval(gameData[channelID].IN);
+							delete gameData[channelID];
 						}, 30000);
 					}
 				});
@@ -1079,7 +1079,7 @@ function answerTrivia(user, userID, channelID, message, event) {
 		return;
 	}
 	if (message.toLowerCase().indexOf(pre + "tq") === 0) {
-		clearTimeout(gamData[channelID].eTO1);
+		clearTimeout(gameData[channelID].eTO1);
 		clearTimeout(gameData[channelID].TO2);
 		clearInterval(gameData[channelID].IN);
 		bot.sendMessage({
