@@ -1036,13 +1036,13 @@ function trivia(user, userID, channelID, message, event) {
 					} else {
 						bot.sendMessage({
 							to: channelID,
-							message: "Can you name this card? Time remaining: `" + config.triviaTimeLimit/1000 + "`"
+							message: "Can you name this card? Time remaining: `" + config.triviaTimeLimit / 1000 + "`"
 						}, function(err, res) {
 							if (err) {
 								console.log(err);
 							} else {
 								let messageID = res.id;
-								let i = config.triviaTimeLimit/1000 - 1;
+								let i = config.triviaTimeLimit / 1000 - 1;
 								gameData[channelID].IN = setInterval(function() {
 									bot.editMessage({
 										channelID: channelID,
