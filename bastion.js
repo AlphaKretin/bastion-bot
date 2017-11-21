@@ -1036,13 +1036,13 @@ function trivia(user, userID, channelID, message, event) {
 					} else {
 						bot.sendMessage({
 							to: channelID,
-							message: "Can you name this card? Time remaining: `30`"
+							message: "Can you name this card? Time remaining: `" + config.triviaTimeLimit/1000 + "`"
 						}, function(err, res) {
 							if (err) {
 								console.log(err);
 							} else {
 								let messageID = res.id;
-								let i = 29
+								let i = config.triviaTimeLimit/1000 - 1;
 								gameData[channelID].IN = setInterval(function() {
 									bot.editMessage({
 										channelID: channelID,
@@ -1058,7 +1058,7 @@ function trivia(user, userID, channelID, message, event) {
 								to: channelID,
 								message: "Have a hint: `" + gameData[channelID].hint + "`"
 							});
-						}, 10000);
+						}, config.triviaHintTime);
 						gameData[channelID].TO2 = setTimeout(function() {
 							bot.sendMessage({
 								to: channelID,
@@ -1066,7 +1066,7 @@ function trivia(user, userID, channelID, message, event) {
 							});
 							clearInterval(gameData[channelID].IN);
 							delete gameData[channelID];
-						}, 30000);
+						}, config.triviaTimeLimit);
 					}
 				});
 			});
