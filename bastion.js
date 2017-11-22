@@ -1158,13 +1158,18 @@ function startTriviaRound(ot, round, user, userID, channelID, message, event) {
 					if (gameData[channelID].round === 1) {
 						out += "The game is over! ";
 						if (Object.keys(gameData[channelID].score).length > 0) {
-							let winnerID;
+							let winners = [];
 							Object.keys(gameData[channelID].score).forEach(function(key, index) {
-								if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winnerID]) {
-									winnerID = key;
+								if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
+									winners = [key];
+								} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
+									winners.push(key)
 								}
 							});
-							out += "The winner is <@" + winnerID + ">!";
+							if (winners.length > 1) {
+								out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+							}
+							out += "The winner is <@" + winners + ">!";
 						}
 						gameData[channelID].TO2 = setTimeout(function() {
 							bot.sendMessage({
@@ -1203,17 +1208,22 @@ function answerTrivia(user, userID, channelID, message, event) {
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "\n**Scores**:\n";
 			Object.keys(gameData[channelID].score).forEach(function(key, index) {
-                out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
-            });
+				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+			});
 		}
 		if (Object.keys(gameData[channelID].score).length > 0) {
-			let winnerID;
+			let winners = [];
 			Object.keys(gameData[channelID].score).forEach(function(key, index) {
-				if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winnerID]) {
-					winnerID = key;
+				if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
+					winners = [key];
+				} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
+					winners.push(key)
 				}
 			});
-			out += "The winner is <@" + winnerID + ">!";
+			if (winners.length > 1) {
+				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+			}
+			out += "The winner is <@" + winners + ">!";
 		}
 		bot.sendMessage({
 			to: channelID,
@@ -1238,19 +1248,24 @@ function answerTrivia(user, userID, channelID, message, event) {
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "**Scores**:\n";
 			Object.keys(gameData[channelID].score).forEach(function(key, index) {
-                out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
-            });
+				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+			});
 		}
 		if (gameData[channelID].round === 1) {
 			out += "The game is over! ";
 			if (Object.keys(gameData[channelID].score).length > 0) {
-				let winnerID;
+				let winners = [];
 				Object.keys(gameData[channelID].score).forEach(function(key, index) {
-					if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winnerID]) {
-						winnerID = key;
+					if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
+						winners = [key];
+					} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
+						winners.push(key)
 					}
 				});
-				out += "The winner is <@" + winnerID + ">!";
+				if (winners.length > 1) {
+					out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+				}
+				out += "The winner is <@" + winners + ">!";
 			}
 			bot.sendMessage({
 				to: channelID,
