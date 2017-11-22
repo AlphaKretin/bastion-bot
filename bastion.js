@@ -341,7 +341,7 @@ async function script(user, userID, channelID, message, event) {
 			let index = nameCheck(input);
 			if (index > -1 && index in ids) {
 				let out = await getCardScript(index, user, userID, channelID, message, event);
-				sendLongMessage(out[0], user, userID, channelID, message, event);
+				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
 				console.log("Invalid card ID or name, please try again.");
 				return;
