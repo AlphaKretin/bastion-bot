@@ -270,7 +270,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
-			message: "You can only search up to " + maxSearches + " cards!";
+			message: "You can only search up to " + maxSearches + " cards!"
 		});
 	} else {
 		if (results.length > 0) {
