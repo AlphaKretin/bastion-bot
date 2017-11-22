@@ -91,7 +91,7 @@ if (config.maxSearches) {
 } else {
 	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!")
 }
-let dbs = [ "cards.cdb" ];
+let dbs = ["cards.cdb"];
 if (config.dbs) {
 	dbs = config.dbs;
 } else {
@@ -266,7 +266,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			}
 		} while (regx2 !== null);
 	}
-	
+
 	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
@@ -509,7 +509,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			file: buffer,
 			filename: code + ".png"
 		}, function(err, res) {
-			
+
 		});
 	} catch (e) {
 		console.log(e);
@@ -1092,13 +1092,13 @@ function trivia(user, userID, channelID, message, event) {
 					} else {
 						bot.sendMessage({
 							to: channelID,
-							message: "Can you name this card? Time remaining: `" + triviaTimeLimit/1000 + "`"
+							message: "Can you name this card? Time remaining: `" + triviaTimeLimit / 1000 + "`"
 						}, function(err, res) {
 							if (err) {
 								console.log(err);
 							} else {
 								let messageID = res.id;
-								let i = triviaTimeLimit/1000 - 1;
+								let i = triviaTimeLimit / 1000 - 1;
 								gameData[channelID].IN = setInterval(function() {
 									bot.editMessage({
 										channelID: channelID,
