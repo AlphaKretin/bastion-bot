@@ -1,7 +1,102 @@
 let fs = require('fs');
 
 let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8')); //open config file from local directory. Expected contents are as follows
-let pre = config.prefix;
+if (!config.token) {
+	console.log("No Discord user token found at config.token! Exiting...");
+	exit();
+}
+let imagesEnabled = false;
+let imageUrlMaster;
+let imageUrlAnime;
+let imageUrlCustom;
+let imageSize = 100;
+let triviaTimeLimit = 30000;
+let triviaHintTime = 10000;
+if (config.imageUrl) {
+	imageUrlMaster = config.imageUrl;
+	imagesEnabled = true;
+	if (config.imageUrlAnime) {
+		imageUrlAnime = config.imageUrlAnime;
+	} else {
+		imageUrlAnime = imageUrlMaster;
+		console.log("URL for anime image source not found at config.imageUrlAnime! Defaulting to same source as official cards, " + imageUrlMaster + "!");
+	}
+	if (config.imageUrlCustom) {
+		imageUrlCustom = config.imageUrlCustom;
+	} else {
+		imageUrlCustom = imageUrlMaster;
+		console.log("URL for custom image source not found at config.imageUrlCustom! Defaulting to same source as official cards, " + imageUrlMaster + "!");
+	}
+	if (config.imageSize) {
+		imageSize = config.imageSize;
+	} else {
+		console.log("Size for images not found at config.imageSize! Defaulting to " + imageSize + "!");
+	}
+	if (config.triviaTimeLimit) {
+		triviaTimeLimit = config.triviaTimeLimit;
+	} else {
+		console.log("No time limit for trivia found at config.triviaTimeLimit! Defaulting to " + triviaTimeLimit + "!");
+	}
+	if (config.triviaHintTime) {
+		triviaHintTime = config.triviaHintTime;
+	} else {
+		console.log("No hint time for trivia found at config.triviaHintTime! Defaulting to " + triviaHintTime + "!");
+	}
+} else {
+	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
+}
+let scriptsEnabled = false;
+let scriptUrlMaster;
+let scriptUrlAnime;
+let scriptUrlCustom;
+if (config.scriptUrl) {
+	scriptUrlMaster = config.scriptUrl;
+	scriptsEnabled = true;
+	if (config.scriptUrlAnime) {
+		scriptUrlAnime = config.scriptUrlAnime;
+	} else {
+		scriptUrlAnime = scriptUrlMaster;
+		console.log("URL for anime script source not found at config.scriptUrlAnime! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
+	}
+	if (config.scriptUrlCustom) {
+		scriptUrlCustom = config.scriptUrlCustom;
+	} else {
+		scriptUrlCustom = scriptUrlMaster;
+		console.log("URL for custom script source not found at config.scriptUrlCustom! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
+	}
+} else {
+	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
+}
+let pre = ".";
+if (config.prefix) {
+	pre = config.prefix;
+} else {
+	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!")
+}
+let longStr = "...\n__Type \".long\" to be PMed the rest!__";
+if (config.longStr) {
+	longStr = config.longStr;
+} else {
+	console.log("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
+}
+let randFilterAttempts = 1000;
+if (config.randFilterAttempts) {
+	randFilterAttempts = config.randFilterAttempts;
+} else {
+	console.log("No upper limit on randcard re-rolls found at config.randFilterAttempts! Defaulting to " + randFilterAttempts + "!");
+}
+let maxSearches = 3;
+if (config.maxSearches) {
+	maxSearches = config.maxSearches;
+} else {
+	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!")
+}
+let dbs = [ "cards.cdb" ];
+if (config.dbs) {
+	dbs = config.dbs;
+} else {
+	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs[0] + ".");
+}
 /*
 	{
 	"token": "", //Discord bot token for log-in
@@ -51,13 +146,13 @@ bot.on('disconnect', function() {
 
 //sql setup
 let SQL = require('sql.js');
-let filebuffer = fs.readFileSync("dbs/" + config.dbs[0]);
+let filebuffer = fs.readFileSync("dbs/" + dbs[0]);
 let db = new SQL.Database(filebuffer);
 let contents = db.exec("SELECT * FROM datas");
 let names = db.exec("SELECT * FROM texts");
-if (config.dbs.length > 1) {
-	for (let i = 1; i < config.dbs.length; i++) {
-		let newbuffer = fs.readFileSync("dbs/" + config.dbs[i]);
+if (dbs.length > 1) {
+	for (let i = 1; i < dbs.length; i++) {
+		let newbuffer = fs.readFileSync("dbs/" + dbs[i]);
 		let newDB = new SQL.Database(newbuffer);
 		let newContents = newDB.exec("SELECT * FROM datas");
 		let newNames = newDB.exec("SELECT * FROM texts");
@@ -119,11 +214,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		randomCard(user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "script") === 0) {
+	if (scriptsEnabled && lowMessage.indexOf(pre + "script") === 0) {
 		script(user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "trivia") === 0) {
+	if (imagesEnabled && lowMessage.indexOf(pre + "trivia") === 0) {
 		trivia(user, userID, channelID, message, event);
 		return;
 	}
@@ -160,19 +255,22 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			results.push(regx[1]);
 		}
 	} while (regx !== null);
-	let re2 = /<([^:@]*?)>/g;
 	let results2 = [];
-	let regx2;
-	do {
-		regx2 = re2.exec(message);
-		if (regx2 !== null) {
-			results2.push(regx2[1]);
-		}
-	} while (regx2 !== null);
-	if (results.length + results2.length > config.maxSearches) {
+	if (imagesEnabled) {
+		let re2 = /<([^:@]*?)>/g;
+		let regx2;
+		do {
+			regx2 = re2.exec(message);
+			if (regx2 !== null) {
+				results2.push(regx2[1]);
+			}
+		} while (regx2 !== null);
+	}
+	
+	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
-			message: "Too many searches!"
+			message: "You can only search up to " + maxSearches + " cards!";
 		});
 	} else {
 		if (results.length > 0) {
@@ -207,20 +305,20 @@ async function randomCard(user, userID, channelID, message, event) {
 				console.log("Invalid card ID, please try again.");
 				return "Invalid card ID, please try again.";
 			}
-		} while (!randFilterCheck(code, args) && i < config.randFilterAttempts);
-		if (i >= config.randFilterAttempts) {
+		} while (!randFilterCheck(code, args) && i < randFilterAttempts);
+		if (i >= randFilterAttempts) {
 			bot.sendMessage({
 				to: channelID,
-				message: "No card matching your critera was found after " + config.randFilterAttempts + " attempts, so one probably doesn't exist."
+				message: "No card matching your critera was found after " + randFilterAttempts + " attempts, so one probably doesn't exist."
 			});
 			return
 		}
 		let out = await getCardInfo(code, user, userID, channelID, message, event);
-		if (args.indexOf("image") > -1) {
+		if (imagesEnabled && args.indexOf("image") > -1) {
 			postImage(out[1], out[0], user, userID, channelID, message, event);
 		} else {
 			if (out[0].length > 2000) {
-				let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
+				let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
 				longMsg = outArr[1];
 				bot.sendMessage({
 					to: channelID,
@@ -246,7 +344,7 @@ async function script(user, userID, channelID, message, event) {
 		try {
 			let out = await getCardScript(index, user, userID, channelID, message, event);
 			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+				let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
 				longMsg = outArr[1];
 				bot.sendMessage({
 					to: channelID,
@@ -268,7 +366,7 @@ async function script(user, userID, channelID, message, event) {
 			if (index > -1 && index in ids) {
 				let out = await getCardScript(index, user, userID, channelID, message, event);
 				if (out.length > 2000) {
-					let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+					let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
 					longMsg = outArr[1];
 					bot.sendMessage({
 						to: channelID,
@@ -300,7 +398,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				postImage(out[1], out[0], user, userID, channelID, message, event);
 			} else {
 				if (out[0].length > 2000) {
-					let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
+					let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
 					longMsg = outArr[1];
 					bot.sendMessage({
 						to: channelID,
@@ -327,7 +425,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 					postImage(out[1], out[0], user, userID, channelID, message, event);
 				} else {
 					if (out[0].length > 2000) {
-						let outArr = [out[0].slice(0, 2000 - config.longStr.length) + config.longStr, out[0].slice(2000 - config.longStr.length)];
+						let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
 						longMsg = outArr[1];
 						bot.sendMessage({
 							to: channelID,
@@ -458,12 +556,12 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 
 async function postImage(code, out, user, userID, channelID, message, event) {
 	try {
-		let imageUrl = config.imageUrl;
+		let imageUrl = imageUrlMaster;
 		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code[0]))) > -1) {
-			imageUrl = config.imageUrlAnime;
+			imageUrl = imageUrlAnime;
 		}
 		if (getOT(ids.indexOf(code[0])) === "Custom") {
-			imageUrl = config.imageUrlCustom;
+			imageUrl = imageUrlCustom;
 		}
 		let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
 		bot.uploadFile({
@@ -472,7 +570,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			filename: code + ".png"
 		}, function(err, res) {
 			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - config.longStr.length) + config.longStr, out.slice(2000 - config.longStr.length)];
+				let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
 				longMsg = outArr[1];
 				bot.sendMessage({
 					to: channelID,
@@ -495,9 +593,9 @@ function downloadImage(imageUrl, pendulum, user, userID, channelID, message, eve
 	return new Promise(function(resolve, reject) {
 		let imgWidth;
 		if (pendulum) {
-			imgWidth = Math.floor(config.imageSize * 1.36864406779661);
+			imgWidth = Math.floor(imageSize * 1.36864406779661);
 		} else {
-			imgWidth = config.imageSize;
+			imgWidth = imageSize;
 		}
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
@@ -507,7 +605,7 @@ function downloadImage(imageUrl, pendulum, user, userID, channelID, message, eve
 				let buffer = Buffer.concat(data);
 				resizeImg(buffer, {
 					width: imgWidth,
-					height: config.imageSize
+					height: imageSize
 				}).then(buf => {
 					resolve(buf);
 				});
@@ -519,12 +617,12 @@ function downloadImage(imageUrl, pendulum, user, userID, channelID, message, eve
 
 function getCardScript(index, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
-		let scriptUrl = config.scriptUrl;
+		let scriptUrl = scriptUrlMaster;
 		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index)) > -1) {
-			scriptUrl = config.scriptUrlAnime;
+			scriptUrl = scriptUrlAnime;
 		}
 		if (getOT(index) === "Custom") {
-			scriptUrl = config.scriptUrlCustom;
+			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids[index] + ".lua";
 		https.get(url.parse(fullUrl), function(response) {
@@ -1013,12 +1111,12 @@ function trivia(user, userID, channelID, message, event) {
 			"guesses": 0,
 			"time": 30
 		}
-		let imageUrl = config.imageUrl;
+		let imageUrl = imageUrlMaster;
 		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
-			imageUrl = config.imageUrlAnime;
+			imageUrl = imageUrlAnime;
 		}
 		if (getOT(ids.indexOf(code)) === "Custom") {
-			imageUrl = config.imageUrlCustom;
+			imageUrl = imageUrlCustom;
 		}
 		https.get(url.parse(imageUrl + code + ".png"), function(response) {
 			let data = [];
@@ -1036,13 +1134,13 @@ function trivia(user, userID, channelID, message, event) {
 					} else {
 						bot.sendMessage({
 							to: channelID,
-							message: "Can you name this card? Time remaining: `" + config.triviaTimeLimit / 1000 + "`"
+							message: "Can you name this card? Time remaining: `" + triviaTimeLimit/1000 + "`"
 						}, function(err, res) {
 							if (err) {
 								console.log(err);
 							} else {
 								let messageID = res.id;
-								let i = config.triviaTimeLimit / 1000 - 1;
+								let i = triviaTimeLimit/1000 - 1;
 								gameData[channelID].IN = setInterval(function() {
 									bot.editMessage({
 										channelID: channelID,
@@ -1058,7 +1156,7 @@ function trivia(user, userID, channelID, message, event) {
 								to: channelID,
 								message: "Have a hint: `" + gameData[channelID].hint + "`"
 							});
-						}, config.triviaHintTime);
+						}, triviaHintTime);
 						gameData[channelID].TO2 = setTimeout(function() {
 							bot.sendMessage({
 								to: channelID,
@@ -1066,7 +1164,7 @@ function trivia(user, userID, channelID, message, event) {
 							});
 							clearInterval(gameData[channelID].IN);
 							delete gameData[channelID];
-						}, config.triviaTimeLimit);
+						}, triviaTimeLimit);
 					}
 				});
 			});
