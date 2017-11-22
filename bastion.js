@@ -317,19 +317,7 @@ async function randomCard(user, userID, channelID, message, event) {
 		if (imagesEnabled && args.indexOf("image") > -1) {
 			postImage(out[1], out[0], user, userID, channelID, message, event);
 		} else {
-			if (out[0].length > 2000) {
-				let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
-				longMsg = outArr[1];
-				bot.sendMessage({
-					to: channelID,
-					message: outArr[0]
-				});
-			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: out[0]
-				});
-			}
+			sendLongMessage(out[0], user, userID, channelID, message, event);
 		}
 	} catch (e) {
 		console.log(e);
@@ -343,19 +331,7 @@ async function script(user, userID, channelID, message, event) {
 	if (index > -1) {
 		try {
 			let out = await getCardScript(index, user, userID, channelID, message, event);
-			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
-				longMsg = outArr[1];
-				bot.sendMessage({
-					to: channelID,
-					message: outArr[0]
-				});
-			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: out
-				});
-			}
+			sendLongMessage(out, user, userID, channelID, message, event);
 		} catch (e) {
 			console.log("Error with search by ID:");
 			console.log(e);
@@ -365,19 +341,7 @@ async function script(user, userID, channelID, message, event) {
 			let index = nameCheck(input);
 			if (index > -1 && index in ids) {
 				let out = await getCardScript(index, user, userID, channelID, message, event);
-				if (out.length > 2000) {
-					let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
-					longMsg = outArr[1];
-					bot.sendMessage({
-						to: channelID,
-						message: outArr[0]
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: out
-					});
-				}
+				sendLongMessage(out[0], user, userID, channelID, message, event);
 			} else {
 				console.log("Invalid card ID or name, please try again.");
 				return;
@@ -397,19 +361,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 			if (hasImage) {
 				postImage(out[1], out[0], user, userID, channelID, message, event);
 			} else {
-				if (out[0].length > 2000) {
-					let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
-					longMsg = outArr[1];
-					bot.sendMessage({
-						to: channelID,
-						message: outArr[0]
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: out[0]
-					});
-				}
+				sendLongMessage(out[0], user, userID, channelID, message, event);
 			}
 
 		} catch (e) {
@@ -424,19 +376,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				if (hasImage) {
 					postImage(out[1], out[0], user, userID, channelID, message, event);
 				} else {
-					if (out[0].length > 2000) {
-						let outArr = [out[0].slice(0, 2000 - longStr.length) + longStr, out[0].slice(2000 - longStr.length)];
-						longMsg = outArr[1];
-						bot.sendMessage({
-							to: channelID,
-							message: outArr[0]
-						});
-					} else {
-						bot.sendMessage({
-							to: channelID,
-							message: out[0]
-						});
-					};
+					sendLongMessage(out[0], user, userID, channelID, message, event);
 				}
 			} else {
 				console.log("Invalid card ID or name, please try again.");
@@ -569,19 +509,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			file: buffer,
 			filename: code + ".png"
 		}, function(err, res) {
-			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
-				longMsg = outArr[1];
-				bot.sendMessage({
-					to: channelID,
-					message: outArr[0]
-				});
-			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: out
-				});
-			}
+			
 		});
 	} catch (e) {
 		console.log(e);
@@ -686,6 +614,36 @@ function matches(user, userID, channelID, message, event) {
 }
 
 //utility functions
+function sendLongMessage(out, user, userID, channelID, message, event) {
+	return new Promise(function(resolve, reject) {
+		if (out.length > 2000) {
+			let outArr = [out.slice(0, 2000 - longStr.length) + longStr, out.slice(2000 - longStr.length)];
+			longMsg = outArr[1];
+			bot.sendMessage({
+				to: channelID,
+				message: outArr[0]
+			}, function(err, res) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(err);
+				}
+			});
+		} else {
+			bot.sendMessage({
+				to: channelID,
+				message: out
+			}, function(err, res) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(err);
+				}
+			});
+		}
+	});
+}
+
 function nameCheck(line) {
 	for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
 		if (names[0].values[i][1].toLowerCase() === line.toLowerCase()) {
