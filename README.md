@@ -83,3 +83,16 @@ TODO...
 ### Database  
   
 TODO...
+
+### TODO List
+- Find source for script display feature (CRUCIAL)
+- Fix trivia (*Current WIP, muti-score game and ending it in process*) --CRUCIAL
+- Add languages --Feature Simon has
+- Display alt arts for multi-ID cards --Feature Simon has
+- Scripting Library --Feature Simon has
+- Add pack opening simulation - Feature simon has, but could be improved on
+- Add OCG/Japanese prices if searching japanese language --Bonus
+- Add duel links skills --Bonus
+- Add comparison between different versions of scripts between repos --Bonus
+- Add ruling page lookup --Bonus
+- Add shortcuts and Database and other TODO's that I said on this readme
