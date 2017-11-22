@@ -10,8 +10,14 @@
     "yugioh",
     "discord"
   ],
+  "homepage": "https://www.patreon.com/alphakretinbots",
+  "bugs": "https://github.com/AlphaKretin/bastion-bot/issues",
   "author": "AlphaKretin",
   "license": "ISC",
+  "repository": {
+	"type": "git",
+	"url": "https://github.com/AlphaKretin/bastion-bot.git"
+  }
   "dependencies": {
     "discord.io": "github:izy521/discord.io",
     "fuse.js": "^3.2.0",
