@@ -54,14 +54,14 @@ The `.matches` command simulates a search for cards by name and returns the 10 c
 As an example, `.matches junk warrior` returns the following output:  
 ![.matches output](/readme-images/matches.png)  
 
-### .set
-Usage: `.set [name|setcode]`
-
-The `.set` command searches for an archetype, or "setcode" by either its name or its hexadecimal value in YGOPro (`0xba` for example) and returns both.
-
-As an example, `.set 0xba` returns the following output:
-![.set output](/readme-images/set.png)
-
+### .set  
+Usage: `.set [name|setcode]`  
+  
+The `.set` command searches for an archetype, or "setcode" by either its name or its hexadecimal value in YGOPro (`0xba` for example) and returns both.  
+  
+As an example, `.set 0xba` returns the following output:  
+![.set output](/readme-images/set.png)  
+  
 ### .trivia  
 Usage: `.trivia [options]`  
 For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can end the game prematurely by typing ".tq".  
