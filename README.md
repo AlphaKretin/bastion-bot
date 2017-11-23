@@ -16,7 +16,7 @@ Mentioning Bastion will provide a link to this readme.
 ### Card Lookup  
 Usage: `{card name|ID}`  
   
-This command searches for a card by the name or YGOPro ID specified in the brackets and returns the card's name, all of its IDs in YGOPro, its status, its lowest, average, and highest prices if available, its types, its attribute if it's a monster, any stats, and its card text.  
+This command searches for a card by the name or YGOPro ID specified in the brackets and returns the card's name, all of its IDs in YGOPro, any archetypes its a member of, its status, its lowest, average, and highest prices if available, its types, its attribute if it's a monster, any stats, and its card text.  
   
 As an example, `{dark magician}` returns the following output:  
 ![card output](/readme-images/card.png)  
@@ -53,7 +53,15 @@ The `.matches` command simulates a search for cards by name and returns the 10 c
   
 As an example, `.matches junk warrior` returns the following output:  
 ![.matches output](/readme-images/matches.png)  
-  
+
+### .set
+Usage: `.set [name|setcode]`
+
+The `.set` command searches for an archetype, or "setcode" by either its name or its hexadecimal value in YGOPro (`0xba` for example) and returns both.
+
+As an example, `.set 0xba` returns the following output:
+![.set output](/readme-images/set.png)
+
 ### .trivia  
 Usage: `.trivia [options]`  
 For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can end the game prematurely by typing ".tq".  
