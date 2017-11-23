@@ -1168,8 +1168,9 @@ function startTriviaRound(ot, round, user, userID, channelID, message, event) {
 							});
 							if (winners.length > 1) {
 								out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+							} else {
+								out += "The winner is <@" + winners + ">!";
 							}
-							out += "The winner is <@" + winners + ">!";
 						}
 						gameData[channelID].TO2 = setTimeout(function() {
 							bot.sendMessage({
@@ -1222,8 +1223,9 @@ function answerTrivia(user, userID, channelID, message, event) {
 			});
 			if (winners.length > 1) {
 				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+			} else {
+				out += "The winner is <@" + winners + ">!";
 			}
-			out += "The winner is <@" + winners + ">!";
 		}
 		bot.sendMessage({
 			to: channelID,
@@ -1263,9 +1265,10 @@ function answerTrivia(user, userID, channelID, message, event) {
 					}
 				});
 				if (winners.length > 1) {
-					out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+				} else {
+					out += "The winner is <@" + winners + ">!";
 				}
-				out += "The winner is <@" + winners + ">!";
 			}
 			bot.sendMessage({
 				to: channelID,
