@@ -429,7 +429,13 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 				}
 			}
 		}
-		out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n\n";
+		out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n";
+		let sets = setCodeCheck(index, user, userID, channelID, message, event);
+		if (sets) {
+			out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
+		} else {
+			out += "\n";
+		}
 		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
 			let data = JSON.parse(body);
 			if (data.status === "success") {
@@ -447,7 +453,7 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 						avgs.push(price.price_data.data.prices.average);
 					}
 				}
-				var avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+				let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
 				out += "**Status**: " + getOT(index) + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 			} else {
 				out += "**Status**: " + getOT(index) + "\n";
@@ -627,7 +633,7 @@ function matches(user, userID, channelID, message, event) {
 
 function set(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "set ").length);
-	if (arg in setcodes) {
+	if (arg.toLowerCase() in setcodes) {
 		bot.sendMessage({
 			to: channelID,
 			message: setcodes[arg] + ": " + arg
@@ -1048,6 +1054,34 @@ function randFilterCheck(code, args) {
 			boo = false;
 		}
 		return boo;
+	}
+}
+
+function setCodeCheck(index, user, userID, channelID, message, event) {
+	let code = contents[0].values[index][3];
+	if (code === 0) {
+		return false;
+	}
+	let sets = [];
+	Object.keys(setcodes).forEach(function(key, index) {
+		let setcode = code.toString("16");
+		let codes = [setcode.slice(0,4),setcode.slice(4,8),setcode.slice(8,12),+ setcode.slice(12,16)];
+		let settype = parseInt(key) & 0xfff;
+		let setsubtype = parseInt(key) & 0xf000;
+		for (let co of codes) {
+			if (co) {
+				let c = parseInt("0x" + co);
+				if ((c & 0xfff) == settype && (c & 0xf000 & setsubtype) == setsubtype) {
+					sets.push(setcodes[key]);
+				}
+			}	
+		}
+	});
+	console.log(sets);
+	if (sets.length === 0) {
+		return false;
+	} else {
+		return sets;
 	}
 }
 
