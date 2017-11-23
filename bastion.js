@@ -746,16 +746,8 @@ function convertStat(stat) {
 }
 
 function getLevelScales(index) {
-	let level = contents[0].values[index][7];
-	let levelStr = level.toString("16");
-	if (levelStr.length < 5) {
-		return [level, 0, 0];
-	} else {
-		let lscale = parseInt(levelStr.slice(0, 1));
-		let rscale = parseInt(levelStr.slice(2, 3));
-		let plevel = parseInt(levelStr.slice(4));
-		return [plevel, lscale, rscale];
-	}
+    let level = contents[0].values[index][7];
+    return [level & 0xff, (level & 0xf000000)>>24, (level & 0xf0000)>>16];
 }
 
 function getOT(index) {
