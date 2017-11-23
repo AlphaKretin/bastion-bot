@@ -1058,26 +1058,17 @@ function randFilterCheck(code, args) {
 }
 
 function setCodeCheck(index, user, userID, channelID, message, event) {
-	let code = contents[0].values[index][3];
-	if (code === 0) {
+	let code = contents[0].values[index][3].toString("16");
+	if (code === "0") {
 		return false;
 	}
 	let sets = [];
-	Object.keys(setcodes).forEach(function(key, index) {
-		let setcode = code.toString("16");
-		let codes = [setcode.slice(0,4),setcode.slice(4,8),setcode.slice(8,12),+ setcode.slice(12,16)];
-		let settype = parseInt(key) & 0xfff;
-		let setsubtype = parseInt(key) & 0xf000;
-		for (let co of codes) {
-			if (co) {
-				let c = parseInt("0x" + co);
-				if ((c & 0xfff) == settype && (c & 0xf000 & setsubtype) == setsubtype) {
-					sets.push(setcodes[key]);
-				}
-			}	
+	let codes = ["0x" + code.slice(0,4), "0x" +code.slice(4,8), "0x" +code.slice(8,12), "0x" + code.slice(12,16)];
+	for (let co of codes) {
+		if (co in setcodes) {
+			sets.push(setcodes[co]);
 		}
-	});
-	console.log(sets);
+	}
 	if (sets.length === 0) {
 		return false;
 	} else {
