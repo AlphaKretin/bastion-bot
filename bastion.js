@@ -1063,7 +1063,7 @@ function setCodeCheck(index, user, userID, channelID, message, event) {
 		return false;
 	}
 	let sets = [];
-	let codes = ["0x" + code.slice(0,4), "0x" +code.slice(4,8), "0x" +code.slice(8,12), "0x" + code.slice(12,16)];
+	let codes = ["0x" + code.slice(0,4).replace(/^[0]+/g,""), "0x" +code.slice(4,8).replace(/^[0]+/g,""), "0x" +code.slice(8,12).replace(/^[0]+/g,""), "0x" + code.slice(12,16).replace(/^[0]+/g,"")];
 	for (let co of codes) {
 		if (co in setcodes) {
 			sets.push(setcodes[co]);
