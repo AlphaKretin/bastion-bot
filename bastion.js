@@ -121,6 +121,7 @@ if (config.dbs) {
 }
 */
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
+let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
 /*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
 		[
 			"mst",
@@ -147,6 +148,7 @@ bot.on('ready', function() {
 });
 
 bot.on('disconnect', function() {
+	console.log("Disconnected. Reconnecting...");
 	bot.connect();
 });
 
@@ -230,6 +232,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (lowMessage.indexOf(pre + "matches") === 0) {
 		matches(user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "set") === 0) {
+		set(user, userID, channelID, message, event);
 		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1) {
@@ -615,6 +621,26 @@ function matches(user, userID, channelID, message, event) {
 		bot.sendMessage({
 			to: channelID,
 			message: out
+		});
+	}
+}
+
+function set(user, userID, channelID, message, event) {
+	let arg = message.slice((pre + "set ").length);
+	if (arg in setcodes) {
+		bot.sendMessage({
+			to: channelID,
+			message: setcodes[arg] + ": " + arg
+		});
+	} else {
+		Object.keys(setcodes).forEach(function(key, index) {
+			if (setcodes[key].toLowerCase() == arg.toLowerCase()) {
+				bot.sendMessage({
+					to: channelID,
+					message: setcodes[key] + ": " + key
+				});
+				return;
+			}
 		});
 	}
 }
