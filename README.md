@@ -95,3 +95,4 @@ TODO...
 - Add duel links skills --Bonus
 - Add comparison between different versions of scripts between repos --Bonus
 - Add ruling page lookup --Bonus
+- Auto CDB update --Bonus
