@@ -98,8 +98,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"dbs": [ "cards.cdb" ],  
 	"triviaTimeLimit": 30000,  
 	"triviaHintTime": 10000,  
-	"triviaMaxRounds": 20,
-	"triviaLocks": {}	
+	"triviaMaxRounds": 20,  
+	"triviaLocks": {}  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -130,8 +130,8 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `triviaHintTime` is the time at which Bastion will provide a hint for the player in the trivia game, in milliseconds. If it is greater than `triviaTimeLimit`, the hint will never display, which may be behaviour you desire. This field is optional - if it is missing, Bastion will default to what you see above.  
   
-`triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.
-
+`triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
 `triviaLocks` is an object with server IDs as keys and an array of channel IDs as the properties. If a server is in the object, the trivia game can only be player in the channels listed in the array. This field is optional - if it is missing, Bastion will default to what you see above, and you can configure it through Bastion even if you don't run the copy using the `.tlock` command.  
   
 ### Shortcuts  
@@ -207,7 +207,6 @@ CREATE TABLE IF NOT EXISTS "texts" (
 ### To-do List  
 - Find source for script display feature --CRUCIAL  
 - Add languages --Feature Simon has  
-- Display alt arts for multi-ID cards --Feature Simon has  
 - Scripting Library --Feature Simon has  
 - Add pack opening simulation -- Feature simon has, but could be improved on  
 - Add OCG/Japanese prices if searching japanese language --Bonus  

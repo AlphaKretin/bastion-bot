@@ -531,14 +531,60 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 		if (getOT(ids.indexOf(code[0])) === "Custom") {
 			imageUrl = imageUrlCustom;
 		}
-		let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
-		bot.uploadFile({
-			to: channelID,
-			file: buffer,
-			filename: code + ".png"
-		}, function(err, res) {
-			sendLongMessage(out, user, userID, channelID, message, event);
-		});
+		if (code.length > 1) {
+			let pics = [];
+			for (let cod of code) {
+				let buffer = await downloadImage(imageUrl + cod + ".png", (getTypes(ids.indexOf(cod)).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
+				pics.push(await new Promise(function(resolve, reject) {
+					jimp.read(buffer, function(err, image) {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(image);
+						}
+					});
+				}));
+			}
+			for (let i = 1; i < pics.length; i++) {
+				await new Promise(function(resolve, reject) {
+					new jimp(imageSize * (i + 1), imageSize, function(err, image) {
+						if (err) {
+							reject(err);
+						} else {
+							image.composite(pics[0], 0, 0);
+							image.composite(pics[i], pics[0].bitmap.width, 0);
+							pics[0] = image;
+							resolve(image);
+						}
+					});
+				});
+			}
+			let buffer = await new Promise(function(resolve, reject) {
+				pics[0].getBuffer(jimp.AUTO, function(err, res) {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(res);
+					}
+				});
+			});
+			bot.uploadFile({
+				to: channelID,
+				file: buffer,
+				filename: code + ".png"
+			}, function(err, res) {
+				sendLongMessage(out, user, userID, channelID, message, event);
+			});
+		} else {
+			let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
+			bot.uploadFile({
+				to: channelID,
+				file: buffer,
+				filename: code[0] + ".png"
+			}, function(err, res) {
+				sendLongMessage(out, user, userID, channelID, message, event);
+			});
+		}
 	} catch (e) {
 		console.log(e);
 	}
@@ -553,12 +599,12 @@ function downloadImage(imageUrl, pendulum, user, userID, channelID, message, eve
 				data.push(chunk);
 			}).on('end', function() {
 				let buffer = Buffer.concat(data);
-				jimp.read(buffer, function (err, image) {
+				jimp.read(buffer, function(err, image) {
 					if (err) {
 						reject(err)
 					} else {
-						image.resize( jimp.AUTO, imageSize );
-						image.getBuffer( jimp.AUTO, function(err, res) {
+						image.resize(jimp.AUTO, imageSize);
+						image.getBuffer(jimp.AUTO, function(err, res) {
 							if (err) {
 								reject(err);
 							} else {
@@ -758,8 +804,8 @@ function convertStat(stat) {
 }
 
 function getLevelScales(index) {
-    let level = contents[0].values[index][7];
-    return [level & 0xff, (level & 0xf000000)>>24, (level & 0xf0000)>>16];
+	let level = contents[0].values[index][7];
+	return [level & 0xff, (level & 0xf000000) >> 24, (level & 0xf0000) >> 16];
 }
 
 function getOT(index) {
@@ -1070,7 +1116,7 @@ function setCodeCheck(index, user, userID, channelID, message, event) {
 		return false;
 	}
 	let sets = [];
-	let codes = ["0x" + code.slice(0,4).replace(/^[0]+/g,""), "0x" +code.slice(4,8).replace(/^[0]+/g,""), "0x" +code.slice(8,12).replace(/^[0]+/g,""), "0x" + code.slice(12,16).replace(/^[0]+/g,"")];
+	let codes = ["0x" + code.slice(0, 4).replace(/^[0]+/g, ""), "0x" + code.slice(4, 8).replace(/^[0]+/g, ""), "0x" + code.slice(8, 12).replace(/^[0]+/g, ""), "0x" + code.slice(12, 16).replace(/^[0]+/g, "")];
 	for (let co of codes) {
 		if (co in setcodes) {
 			sets.push(setcodes[co]);
@@ -1178,7 +1224,7 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 			let buffer = Buffer.concat(data);
 			if (hard) {
 				buffer = await hardCrop(buffer, user, userID, channelID, message, event);
-			} 
+			}
 			bot.uploadFile({
 				to: channelID,
 				file: buffer,
@@ -1262,7 +1308,7 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 
 function hardCrop(buffer, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
-		jimp.read(buffer, function (err, image) {
+		jimp.read(buffer, function(err, image) {
 			if (err) {
 				reject(err)
 			} else {
@@ -1270,12 +1316,12 @@ function hardCrop(buffer, user, userID, channelID, message, event) {
 				let y;
 				let w = image.bitmap.width / 2;
 				let h = image.bitmap.height / 2;
-				switch (getIncInt(0,3)) {
-					case 0: 
+				switch (getIncInt(0, 3)) {
+					case 0:
 						x = 0;
 						y = 0;
 						break;
-					case 1: 
+					case 1:
 						x = w;
 						y = 0;
 						break;
@@ -1287,8 +1333,8 @@ function hardCrop(buffer, user, userID, channelID, message, event) {
 						x = w;
 						y = h;
 				}
-				image.crop( x, y, w, h ); 
-				image.getBuffer( jimp.AUTO, function(err, res) {
+				image.crop(x, y, w, h);
+				image.getBuffer(jimp.AUTO, function(err, res) {
 					if (err) {
 						reject(err);
 					} else {
@@ -1369,7 +1415,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 					}
 				});
 				if (winners.length > 1) {
-				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+					out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
 				} else {
 					out += "The winner is <@" + winners + ">!";
 				}
@@ -1445,67 +1491,67 @@ function tlock(user, userID, channelID, message, event) {
 
 //permission handling
 function _getPermissionArray(number) {
-    let permissions = [];
-    let binary = (number >>> 0).toString(2).split('');
-    binary.forEach(function(bit, index) {
-        if(bit == 0)
-            return;
+	let permissions = [];
+	let binary = (number >>> 0).toString(2).split('');
+	binary.forEach(function(bit, index) {
+		if (bit == 0)
+			return;
 
-        Object.keys(Discord.Permissions).forEach(function(p) {
-            if(Discord.Permissions[p] == (binary.length - index - 1))
-                permissions.push(p);
-        });
-    });
-    return permissions;
+		Object.keys(Discord.Permissions).forEach(function(p) {
+			if (Discord.Permissions[p] == (binary.length - index - 1))
+				permissions.push(p);
+		});
+	});
+	return permissions;
 }
 
 function getPermissions(userID, channelID) {
-    let serverID = bot.channels[channelID].guild_id;
+	let serverID = bot.channels[channelID].guild_id;
 
-    let permissions = [];
+	let permissions = [];
 
-    bot.servers[serverID].members[userID].roles.concat([serverID]).forEach(function(roleID) {
-        _getPermissionArray(bot.servers[serverID].roles[roleID].permissions).forEach(function (perm) {
-            if(permissions.indexOf(perm) < 0)
-                permissions.push(perm);
-        });
-    });
-	
-    Object.keys(bot.channels[channelID].permissions).forEach(function(overwrite) {
-        if((overwrite.type == 'member' && overwrite.id == userID) ||
-           (overwrite.type == 'role' &&
-                (bot.servers[serverID].members[userID].roles.indexOf(overwrite.id) > -1) ||
-                serverID == overwrite.id)) {
-            _getPermissionArray(overwrite.deny).forEach(function(denied) {
-                let index = permissions.indexOf(denied);
-                if (index > -1) {
-                    permissions.splice(index, 1);
-                }
-            });
+	bot.servers[serverID].members[userID].roles.concat([serverID]).forEach(function(roleID) {
+		_getPermissionArray(bot.servers[serverID].roles[roleID].permissions).forEach(function(perm) {
+			if (permissions.indexOf(perm) < 0)
+				permissions.push(perm);
+		});
+	});
 
-            _getPermissionArray(overwrite.allow).forEach(function(allowed) {
-                if(permissions.indexOf(allowed) < 0) {
-                    permissions.push(allowed);
-                }
-            });
-        }
-    });
+	Object.keys(bot.channels[channelID].permissions).forEach(function(overwrite) {
+		if ((overwrite.type == 'member' && overwrite.id == userID) ||
+			(overwrite.type == 'role' &&
+				(bot.servers[serverID].members[userID].roles.indexOf(overwrite.id) > -1) ||
+				serverID == overwrite.id)) {
+			_getPermissionArray(overwrite.deny).forEach(function(denied) {
+				let index = permissions.indexOf(denied);
+				if (index > -1) {
+					permissions.splice(index, 1);
+				}
+			});
 
-    return permissions;
+			_getPermissionArray(overwrite.allow).forEach(function(allowed) {
+				if (permissions.indexOf(allowed) < 0) {
+					permissions.push(allowed);
+				}
+			});
+		}
+	});
+
+	return permissions;
 }
 
 function checkForPermissions(userID, channelID, permissionValues) {
-    let serverID = bot.channels[channelID].guild_id;
-    let forbidden = false;
+	let serverID = bot.channels[channelID].guild_id;
+	let forbidden = false;
 
-    let permissions = getPermissions(userID, channelID);
-    let forbiddenPerms = [];
+	let permissions = getPermissions(userID, channelID);
+	let forbiddenPerms = [];
 
-    permissionValues.forEach(function(permission) {
-        if((permissions.indexOf(permission) < 0) && userID != bot.servers[serverID].owner_id) {
-            forbidden = true;
-            forbiddenPerms.push(permission);
-        }
-    });
-    return !forbidden;
+	permissionValues.forEach(function(permission) {
+		if ((permissions.indexOf(permission) < 0) && userID != bot.servers[serverID].owner_id) {
+			forbidden = true;
+			forbiddenPerms.push(permission);
+		}
+	});
+	return !forbidden;
 }
