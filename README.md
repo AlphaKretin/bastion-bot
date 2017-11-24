@@ -53,7 +53,7 @@ The `.matches` command simulates a search for cards by name and returns the 10 c
   
 As an example, `.matches junk warrior` returns the following output:  
 ![.matches output](/readme-images/matches.png)  
-
+  
 ### .set  
 Usage: `.set [name|setcode]`  
   
@@ -64,25 +64,64 @@ As an example, `.set 0xba` returns the following output:
   
 ### .trivia  
 Usage: `.trivia [options]`  
-For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can end the game prematurely by typing ".tq".  
+For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can have the game run for multiple rounds by specifying the number of rounds as an option. You can end the game prematurely by typing ".tq".  
   
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, and any number SQLite databases containing card data, in the format YGOPro uses.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, and any number of SQLite databases containing card data, in the format YGOPro uses.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
 ```json  
 {  
-	"TODO": "I gotta do this later when I'm home."  
+	"token": "",  
+	"prefix": ".",  
+	"longStr": "...\n__Type \".long\" to be PMed the rest!__",  
+	"randFilterAttempts": 1000,  
+	"maxSearches": 3,  
+	"imageUrl": "",  
+	"imageUrlAnime": "",  
+	"imageUrlCustom": "",  
+	"imageSize": 100,  
+	"scriptUrl": "",  
+	"scriptUrlAnime": "",  
+	"scriptUrlCustom": "",  
+	"dbs": [ "cards.cdb" ],  
+	"triviaTimeLimit": 30000,  
+	"triviaHintTime": 10000,  
+	"triviaMaxRounds": 20  
 }  
 ```  
-`token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/).  
+`token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
   
-`prefix` is the text that Bastion will look for at the start of messages to indicate that it's a bot command. For example, if `prefix` is "b$", `.randcard` becomes `b$randcard`.  
+`prefix` is the text that Bastion will look for at the start of messages to indicate that it's a bot command. For example, if `prefix` is "b$", `.randcard` becomes `b$randcard`. This field is optional - if it is missing, Bastion will default to what you see above.  
   
-TODO...  
+`longStr` is the message Bastion will append to an output that's split up due to violating Discord's character limit, instructing the user how to see the rest. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`randFilterAttempts` is the number of times Bastion will try to find a card matching the filters a user specifies with `.randcard` before giving up to prevent infinite loops. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`maxSearches` is the number of different cards Bastion will allow a user to search at once - if a message contains more queries, Bastion won't search anything, instead returning an error message. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`imageUrl` is a link to a source for card images - either official ones, or all of them. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, functions that require images will be disabled and the following fields will be ignored: `imageUrlAnime`, `imageUrlCustom`, `imageSize`, `triviaTimeLimit`, `triviaHintTime` and `triviaMaxRounds`.  
+  
+`imageUrlAnime` is a link to a source for anime card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
+  
+`imageUrlCustom` is a link to a source for custom card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
+  
+`scriptUrl` is a link to a source for card scripts - either official ones, or all of them. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, functions that require scripts will be disabled and the following fields will be ignored: `scriptUrlAnime`, and `scriptUrlCustom`.  
+  
+`scriptUrlAnime` is a link to a source for anime card scripts. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will default to `scriptUrl`.  
+  
+`scriptUrlCustom` is a link to a source for custom card scripts. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will default to `scriptUrl`.  
+  
+`dbs` is an array of filenames for card databases Bastion will read, to be found in a folder called `dbs`. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`triviaTimeLimit` is the time a player has to guess the answer in the trivia game, in milliseconds. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`triviaHintTime` is the time at which Bastion will provide a hint for the player in the trivia game, in milliseconds. If it is greater than `triviaTimeLimit`, the hint will never display, which may be behaviour you desire. This field is optional - if it is missing, Bastion will default to what you see above.  
+  
+`triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 ### Shortcuts  
   
@@ -90,17 +129,17 @@ TODO...
   
 ### Database  
   
-TODO...
-
-### To-do List
-- Find source for script display feature --CRUCIAL
-- Trivia hard mode (non-full images) --CRUCIAL
-- Add languages --Feature Simon has
-- Display alt arts for multi-ID cards --Feature Simon has
-- Scripting Library --Feature Simon has
-- Add pack opening simulation -- Feature simon has, but could be improved on
-- Add OCG/Japanese prices if searching japanese language --Bonus
-- Add duel links skills --Bonus
-- Add comparison between different versions of scripts between repos --Bonus
-- Add ruling page lookup --Bonus
-- Auto CDB update --Bonus
+TODO...  
+  
+### To-do List  
+- Find source for script display feature --CRUCIAL  
+- Trivia hard mode (non-full images) --CRUCIAL  
+- Add languages --Feature Simon has  
+- Display alt arts for multi-ID cards --Feature Simon has  
+- Scripting Library --Feature Simon has  
+- Add pack opening simulation -- Feature simon has, but could be improved on  
+- Add OCG/Japanese prices if searching japanese language --Bonus  
+- Add duel links skills --Bonus  
+- Add comparison between different versions of scripts between repos --Bonus  
+- Add ruling page lookup --Bonus  
+- Auto CDB update --Bonus  
