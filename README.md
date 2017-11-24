@@ -64,7 +64,11 @@ As an example, `.set 0xba` returns the following output:
   
 ### .trivia  
 Usage: `.trivia [options]`  
-For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can have the game run for multiple rounds by specifying the number of rounds as an option. You can have Bastion display only part of an image for added difficulty by including the option "hard". You can end the game prematurely by typing ".tq".  
+For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. The command accepts any number of the following options:  
+**Status**: By default, the game will display TCG/OCG cards, but you can specify `OCG`, `TCG`, `Anime` (which will include Video Game and Illegal cards), and `Custom`.  
+**Rounds**: If you include a number as an option, the game will run that many times and track the total scores of each player over the course of the game.  
+**Hard Mode**: If you include `hard` as an option, Bastion will display only a quarter of the card image, for added difficulty.  
+You can end the game prematurely by typing ".tq".  
   
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
