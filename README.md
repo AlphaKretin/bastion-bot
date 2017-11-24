@@ -153,7 +153,45 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
   
 ### Database  
   
-TODO...  
+Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy datbases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:
+```sql
+CREATE TABLE IF NOT EXISTS "datas" (
+	`id`	integer,
+	`ot`	integer,
+	`alias`	INTEGER,
+	`setcode`	integer,
+	`type`	integer,
+	`atk`	integer,
+	`def`	integer,
+	`level`	integer,
+	`race`	integer,
+	`attribute`	integer,
+	`category`	integer,
+	PRIMARY KEY(id)
+);
+CREATE TABLE IF NOT EXISTS "texts" (
+	`id`	integer,
+	`name`	TEXT,
+	`desc`	TEXT,
+	`str1`	TEXT,
+	`str2`	TEXT,
+	`str3`	TEXT,
+	`str4`	TEXT,
+	`str5`	TEXT,
+	`str6`	TEXT,
+	`str7`	TEXT,
+	`str8`	TEXT,
+	`str9`	TEXT,
+	`str10`	TEXT,
+	`str11`	TEXT,
+	`str12`	TEXT,
+	`str13`	TEXT,
+	`str14`	TEXT,
+	`str15`	TEXT,
+	`str16`	TEXT,
+	PRIMARY KEY(id)
+);
+```
   
 ### To-do List  
 - Find source for script display feature --CRUCIAL  
