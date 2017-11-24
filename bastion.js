@@ -1052,6 +1052,9 @@ function randFilterCheck(code, args) {
 }
 
 function setCodeCheck(index, user, userID, channelID, message, event) {
+	if (aliases[index] > 0) {
+		index = ids.indexOf(aliases[index]);
+	}
 	let code = contents[0].values[index][3].toString("16");
 	if (code === "0") {
 		return false;
