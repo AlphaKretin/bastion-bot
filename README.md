@@ -70,6 +70,10 @@ For fun, Bastion can play a game where it will provide the art of a card, and pl
 **Hard Mode**: If you include `hard` as an option, Bastion will display only a quarter of the card image, for added difficulty.  
 You can end the game prematurely by typing ".tq".  
   
+### .tlock  
+Usage: `.tlock`  
+The `.tlock` command tells Bastion that on the server you use the command, he should only allow `.trivia` in the channels in which you've used the command. Only users with the "Manage Messages" permission can use the command. You can use the command in multiple channels to allow trivia in multiple channels. Using the command in a channel already registered will remove it from the list. If there are no channels in the list, trivia will be allowed anywhere.  
+  
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   

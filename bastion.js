@@ -13,6 +13,7 @@ let imageSize = 100;
 let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
+let triviaLocks = {};
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
@@ -47,6 +48,11 @@ if (config.imageUrl) {
 		triviaMaxRounds = config.triviaMaxRounds;
 	} else {
 		console.log("No hint time for trivia found at config.triviaMaxRounds! Defaulting to " + triviaMaxRounds + "!");
+	}
+	if (config.triviaLocks) {
+		triviaLocks = config.triviaLocks;
+	} else {
+		console.log("No specifications for channels to lock trivia to found at config.triviaLocks! Defaulting to nothing, configure with \".tlock\" command!");
 	}
 } else {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
@@ -228,6 +234,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (imagesEnabled && lowMessage.indexOf(pre + "trivia") === 0) {
 		trivia(user, userID, channelID, message, event);
+		return;
+	}
+	if (imagesEnabled && checkForPermissions(userID, channelID, [8192]) && lowMessage.indexOf(pre + "tlock") === 0) {
+		tlock(user, userID, channelID, message, event);
 		return;
 	}
 	if (lowMessage.indexOf(pre + "matches") === 0) {
@@ -1090,7 +1100,8 @@ function getIncInt(min, max) {
 
 //games
 function trivia(user, userID, channelID, message, event) {
-	if (channelID in gameData) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	if (channelID in gameData || (triviaLocks[serverID] && triviaLocks[serverID].indexOf(channelID) === -1)) {
 		return;
 	} else {
 		let ot = ["TCG", "OCG", "TCG/OCG"];
@@ -1376,4 +1387,125 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, user, userID, channelID, message, event);
 		}
 	}
+}
+
+function tlock(user, userID, channelID, message, event) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	if (serverID in triviaLocks) {
+		let index = triviaLocks[serverID].indexOf(channelID);
+		if (index > -1) {
+			triviaLocks[serverID].splice(index, 1);
+			if (triviaLocks[serverID].length > 0) {
+				let out = [];
+				for (let lock of triviaLocks[serverID]) {
+					out.push("<#" + lock + ">");
+				}
+				bot.sendMessage({
+					to: channelID,
+					message: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+				});
+				config.triviaLocks = triviaLocks;
+				fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
+			} else {
+				delete triviaLocks[serverID];
+				bot.sendMessage({
+					to: channelID,
+					message: "Trivia no longer locked to any channel on this server!"
+				})
+				config.triviaLocks = triviaLocks;
+				fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
+			}
+		} else {
+			triviaLocks[serverID].push(channelID);
+			let out = [];
+			for (let lock of triviaLocks[serverID]) {
+				out.push("<#" + lock + ">");
+			}
+			bot.sendMessage({
+				to: channelID,
+				message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+			});
+			config.triviaLocks = triviaLocks;
+			fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
+		}
+	} else {
+		triviaLocks[serverID] = [channelID];
+		let out = [];
+		for (let lock of triviaLocks[serverID]) {
+			out.push("<#" + lock + ">");
+		}
+		bot.sendMessage({
+			to: channelID,
+			message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+		});
+		config.triviaLocks = triviaLocks;
+		fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
+	}
+}
+
+//permission handling
+function _getPermissionArray(number) {
+    let permissions = [];
+    let binary = (number >>> 0).toString(2).split('');
+    binary.forEach(function(bit, index) {
+        if(bit == 0)
+            return;
+
+        Object.keys(Discord.Permissions).forEach(function(p) {
+            if(Discord.Permissions[p] == (binary.length - index - 1))
+                permissions.push(p);
+        });
+    });
+    return permissions;
+}
+
+function getPermissions(userID, channelID) {
+    let serverID = bot.channels[channelID].guild_id;
+
+    let permissions = [];
+
+    bot.servers[serverID].members[userID].roles.concat([serverID]).forEach(function(roleID) {
+        _getPermissionArray(bot.servers[serverID].roles[roleID].permissions).forEach(function (perm) {
+            if(permissions.indexOf(perm) < 0)
+                permissions.push(perm);
+        });
+    });
+	
+    Object.keys(bot.channels[channelID].permissions).forEach(function(overwrite) {
+        if((overwrite.type == 'member' && overwrite.id == userID) ||
+           (overwrite.type == 'role' &&
+                (bot.servers[serverID].members[userID].roles.indexOf(overwrite.id) > -1) ||
+                serverID == overwrite.id)) {
+            _getPermissionArray(overwrite.deny).forEach(function(denied) {
+                let index = permissions.indexOf(denied);
+                if (index > -1) {
+                    permissions.splice(index, 1);
+                }
+            });
+
+            _getPermissionArray(overwrite.allow).forEach(function(allowed) {
+                if(permissions.indexOf(allowed) < 0) {
+                    permissions.push(allowed);
+                }
+            });
+        }
+    });
+
+    return permissions;
+}
+
+function checkForPermissions(userID, channelID, permissionValues) {
+    let serverID = bot.channels[channelID].guild_id;
+    let forbidden = false;
+
+    let permissions = getPermissions(userID, channelID);
+    let forbiddenPerms = [];
+
+    permissionValues.forEach(function(permission) {
+        if((permissions.indexOf(permission) < 0) && userID != bot.servers[serverID].owner_id) {
+            forbidden = true;
+            forbiddenPerms.push(permission);
+        }
+    });
+    return !forbidden;
 }
