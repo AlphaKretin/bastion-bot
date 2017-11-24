@@ -98,7 +98,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"dbs": [ "cards.cdb" ],  
 	"triviaTimeLimit": 30000,  
 	"triviaHintTime": 10000,  
-	"triviaMaxRounds": 20  
+	"triviaMaxRounds": 20,
+	"triviaLocks": {}	
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -111,7 +112,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `maxSearches` is the number of different cards Bastion will allow a user to search at once - if a message contains more queries, Bastion won't search anything, instead returning an error message. This field is optional - if it is missing, Bastion will default to what you see above.  
   
-`imageUrl` is a link to a source for card images - either official ones, or all of them. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, functions that require images will be disabled and the following fields will be ignored: `imageUrlAnime`, `imageUrlCustom`, `imageSize`, `triviaTimeLimit`, `triviaHintTime` and `triviaMaxRounds`.  
+`imageUrl` is a link to a source for card images - either official ones, or all of them. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, functions that require images will be disabled and the following fields will be ignored: `imageUrlAnime`, `imageUrlCustom`, `imageSize`, `triviaTimeLimit`, `triviaHintTime`, `triviaMaxRounds` and `triviaLocks`.  
   
 `imageUrlAnime` is a link to a source for anime card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
   
@@ -129,7 +130,9 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `triviaHintTime` is the time at which Bastion will provide a hint for the player in the trivia game, in milliseconds. If it is greater than `triviaTimeLimit`, the hint will never display, which may be behaviour you desire. This field is optional - if it is missing, Bastion will default to what you see above.  
   
-`triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
+`triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.
+
+`triviaLocks` is an object with server IDs as keys and an array of channel IDs as the properties. If a server is in the object, the trivia game can only be player in the channels listed in the array. This field is optional - if it is missing, Bastion will default to what you see above, and you can configure it through Bastion even if you don't run the copy using the `.tlock` command.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
