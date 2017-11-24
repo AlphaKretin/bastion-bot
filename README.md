@@ -64,7 +64,7 @@ As an example, `.set 0xba` returns the following output:
   
 ### .trivia  
 Usage: `.trivia [options]`  
-For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can have the game run for multiple rounds by specifying the number of rounds as an option. You can end the game prematurely by typing ".tq".  
+For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. By default, the game will display TCG/OCG cards, but you can choose the status as an option. You can have the game run for multiple rounds by specifying the number of rounds as an option. You can have Bastion display only part of an image for added difficulty by including the option "hard". You can end the game prematurely by typing ".tq".  
   
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
@@ -195,7 +195,6 @@ CREATE TABLE IF NOT EXISTS "texts" (
   
 ### To-do List  
 - Find source for script display feature --CRUCIAL  
-- Trivia hard mode (non-full images) --CRUCIAL  
 - Add languages --Feature Simon has  
 - Display alt arts for multi-ID cards --Feature Simon has  
 - Scripting Library --Feature Simon has  
