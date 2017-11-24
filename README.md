@@ -124,8 +124,26 @@ By default, the configuration file is called `config.json`, and is expected to b
 `triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 ### Shortcuts  
+By default, the configuration file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:
+```json
+[
+	[
+		"A0",
+		"AbZ.",
+		"AbZ",
+		"Elemental HERO Absolute Zero"
+	],
+	[
+		"AGGD",
+		"Ancient Gear Gadjiltron Dragon"
+	],
+	...
+]```
+The final entry in each array should be the full name of a card, for which all other entries are a shortened form of. Bastion splits queries up by spaces when checking for shortcuts, so shortcuts with a space will never be matched.
   
-TODO...  
+### Setcodes
+
+TODO...
   
 ### Database  
   
