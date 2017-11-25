@@ -225,8 +225,6 @@ let jimp = require('jimp');
 let longMsg = "";
 let gameData = {};
 
-
-//real shit
 bot.on('message', function(user, userID, channelID, message, event) {
 	if (userID === bot.id) {
 		return;
@@ -244,7 +242,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		trivia(user, userID, channelID, message, event);
 		return;
 	}
-	if (imagesEnabled && checkForPermissions(userID, channelID, [8192]) && lowMessage.indexOf(pre + "tlock") === 0) {
+	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) {
 		tlock(user, userID, channelID, message, event);
 		return;
 	}
@@ -542,7 +540,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 		if (code.length > 1) {
 			let pics = [];
 			for (let cod of code) {
-				let buffer = await downloadImage(imageUrl + cod + ".png", (getTypes(ids.indexOf(cod)).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
+				let buffer = await downloadImage(imageUrl + cod + ".png", user, userID, channelID, message, event);
 				pics.push(await new Promise(function(resolve, reject) {
 					jimp.read(buffer, function(err, image) {
 						if (err) {
@@ -553,22 +551,49 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 					});
 				}));
 			}
-			for (let i = 1; i < pics.length; i++) {
-				await new Promise(function(resolve, reject) {
-					new jimp(imageSize * (i + 1), imageSize, function(err, image) {
-						if (err) {
-							reject(err);
-						} else {
-							image.composite(pics[0], 0, 0);
-							image.composite(pics[i], pics[0].bitmap.width, 0);
-							pics[0] = image;
-							resolve(image);
-						}
+			let imgSize = pics[0].bitmap.width;
+			let a = [];
+			let b = [];
+			while (pics.length){
+				a.push(pics.splice(0,4));
+			}
+			for (let pic of a) {
+				let tempImg = pic[0];
+				for (let i = 1; i < pic.length; i++) {
+					await new Promise(function(resolve, reject) {
+						new jimp(imgSize + tempImg.bitmap.width, imageSize, function(err, image) {
+							if (err) {
+								reject(err);
+							} else {
+								image.composite(tempImg, 0, 0);
+								image.composite(pic[i], tempImg.bitmap.width, 0);
+								tempImg = image;
+								resolve(image);
+							}
+						});
 					});
-				});
+				}
+				b.push(tempImg);
+			}
+			let outImg = b[0];
+			if (b.length > 1) {
+				for (let i = 1; i < b.length; i++) {
+					await new Promise(function(resolve, reject) {
+						new jimp(outImg.bitmap.width, outImg.bitmap.height + imageSize, function(err, image) {
+							if (err) {
+								reject(err);
+							} else {
+								image.composite(outImg, 0, 0);
+								image.composite(b[i], 0, outImg.bitmap.height);
+								outImg = image;
+								resolve(image);
+							}
+						});
+					});
+				}
 			}
 			let buffer = await new Promise(function(resolve, reject) {
-				pics[0].getBuffer(jimp.AUTO, function(err, res) {
+				outImg.getBuffer(jimp.AUTO, function(err, res) {
 					if (err) {
 						reject(err);
 					} else {
@@ -584,7 +609,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 				sendLongMessage(out, user, userID, channelID, message, event);
 			});
 		} else {
-			let buffer = await downloadImage(imageUrl + code[0] + ".png", (getTypes(ids.indexOf(code[0])).indexOf("Pendulum") > -1), user, userID, channelID, message, event);
+			let buffer = await downloadImage(imageUrl + code[0] + ".png", user, userID, channelID, message, event);
 			bot.uploadFile({
 				to: channelID,
 				file: buffer,
@@ -599,7 +624,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 
 }
 
-function downloadImage(imageUrl, pendulum, user, userID, channelID, message, event) {
+function downloadImage(imageUrl, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
