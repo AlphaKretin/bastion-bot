@@ -221,6 +221,7 @@ let request = require('request');
 let https = require('https');
 let url = require('url');
 let jimp = require('jimp');
+let filetype = require('file-type');
 
 let longMsg = "";
 let gameData = {};
@@ -554,8 +555,8 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			let imgSize = pics[0].bitmap.width;
 			let a = [];
 			let b = [];
-			while (pics.length){
-				a.push(pics.splice(0,4));
+			while (pics.length) {
+				a.push(pics.splice(0, 4));
 			}
 			for (let pic of a) {
 				let tempImg = pic[0];
@@ -610,13 +611,18 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			});
 		} else {
 			let buffer = await downloadImage(imageUrl + code[0] + ".png", user, userID, channelID, message, event);
-			bot.uploadFile({
-				to: channelID,
-				file: buffer,
-				filename: code[0] + ".png"
-			}, function(err, res) {
+			if (buffer) {
+				bot.uploadFile({
+					to: channelID,
+					file: buffer,
+					filename: code[0] + ".png"
+				}, function(err, res) {
+					sendLongMessage(out, user, userID, channelID, message, event);
+				});
+			} else {
 				sendLongMessage(out, user, userID, channelID, message, event);
-			});
+			}
+
 		}
 	} catch (e) {
 		console.log(e);
@@ -632,20 +638,25 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 				data.push(chunk);
 			}).on('end', function() {
 				let buffer = Buffer.concat(data);
-				jimp.read(buffer, function(err, image) {
-					if (err) {
-						reject(err)
-					} else {
-						image.resize(jimp.AUTO, imageSize);
-						image.getBuffer(jimp.AUTO, function(err, res) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(res);
-							}
-						});
-					}
-				});
+				if (filetype(buffer) && filetype(buffer).ext === "png") {
+					jimp.read(buffer, function(err, image) {
+						if (err) {
+							reject(err)
+						} else {
+							image.resize(jimp.AUTO, imageSize);
+							image.getBuffer(jimp.AUTO, function(err, res) {
+								if (err) {
+									reject(err);
+								} else {
+									resolve(res);
+								}
+							});
+						}
+					});
+				} else {
+					resolve(false);
+				}
+
 			});
 		});
 	});
