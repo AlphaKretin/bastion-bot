@@ -161,8 +161,7 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 	"0x1": "Ally of Justice",  
 	"0x2": "Genex",  
 	...  
-}  
-  
+}``` 
   
 ### Database  
   
@@ -206,8 +205,7 @@ CREATE TABLE IF NOT EXISTS "texts" (
 );  
 ```  
   
-### To-do List  
-- Find source for script display feature --CRUCIAL  
+### To-do List   
 - Add languages --Feature Simon has  
 - Scripting Library --Feature Simon has  
 - Add pack opening simulation -- Feature simon has, but could be improved on  
