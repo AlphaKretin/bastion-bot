@@ -476,8 +476,8 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 			}
 			let types = getTypes(index);
 			if (types.indexOf("Monster") > -1) {
-				let typesStr = types.toString().replace("Monster", getRace(index)).replace(/,/g, "/");
-				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index) + "\n";
+				let typesStr = types.toString().replace("Monster", getRace(index).toString().replace(/,/g, "|")).replace(/,/g, "/");
+				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index).toString().replace(/,/g, "|") + "\n";
 				let lvName = "Level";
 				let lv = getLevelScales(index);
 				let def = true;
@@ -513,8 +513,8 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 			} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
 				let lv = getLevelScales(index)[0];
 				if (lv > 0) { //is trap monster
-					let typesStr = getRace(index) + "/" + types.toString().replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index) + "\n";
+					let typesStr = getRace(index).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
+					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index).toString().replace(/,/g, "|") + "\n";
 					out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
 					out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
@@ -880,87 +880,126 @@ function getOT(index) {
 
 function getRace(index) {
 	let race = contents[0].values[index][8];
-	switch (race) {
-		case 0x1:
-			return "Warrior";
-		case 0x2:
-			return "Spellcaster";
-		case 0x4:
-			return "Fairy";
-		case 0x8:
-			return "Fiend";
-		case 0x10:
-			return "Zombie";
-		case 0x20:
-			return "Machine";
-		case 0x40:
-			return "Aqua";
-		case 0x80:
-			return "Pyro";
-		case 0x100:
-			return "Rock";
-		case 0x200:
-			return "Winged Beast";
-		case 0x400:
-			return "Plant";
-		case 0x800:
-			return "Insect";
-		case 0x1000:
-			return "Thunder";
-		case 0x2000:
-			return "Dragon";
-		case 0x4000:
-			return "Beast";
-		case 0x8000:
-			return "Beast-Warrior";
-		case 0x10000:
-			return "Dinosaur";
-		case 0x20000:
-			return "Fish";
-		case 0x40000:
-			return "Sea Serpent";
-		case 0x80000:
-			return "Reptile";
-		case 0x100000:
-			return "Psychic";
-		case 0x200000:
-			return "Divine-Beast";
-		case 0x400000:
-			return "Creator God";
-		case 0x800000:
-			return "Wyrm";
-		case 0x1000000:
-			return "Cyberse";
-		case 0x80000000:
-			return "Yokai";
-		case 0x100000000:
-			return "Charisma";
-		default:
-			return "Null Race";
+	let races = [];
+	if (race & 0x1) {
+		races.push("Warrior");
+	}
+	if (race & 0x2) {
+		races.push("Spellcaster");
+	}
+	if (race & 0x4) {
+		races.push("Fairy");
+	}
+	if (race & 0x8) {
+		races.push("Fiend");
+	}
+	if (race & 0x10) {
+		races.push("Zombie");
+	}
+	if (race & 0x20) {
+		races.push("Machine");
+	}
+	if (race & 0x40) {
+		races.push("Aqua");
+	}
+	if (race & 0x80) {
+		races.push("Pyro");
+	}
+	if (race & 0x100) {
+		races.push("Rock");
+	}
+	if (race & 0x200) {
+		races.push("Winged Beast");
+	}
+	if (race & 0x400) {
+		races.push("Plant");
+	}
+	if (race & 0x800) {
+		races.push("Insect");
+	}
+	if (race & 0x1000) {
+		races.push("Thunder");
+	}
+	if (race & 0x2000) {
+		races.push("Dragon");
+	}
+	if (race & 0x4000) {
+		races.push("Beast");
+	}
+	if (race & 0x8000) {
+		races.push("Beast-Warrior");
+	}
+	if (race & 0x10000) {
+		races.push("Dinosaur");
+	}
+	if (race & 0x20000) {
+		races.push("Fish");
+	}
+	if (race & 0x40000) {
+		races.push("Sea Serpent");
+	}
+	if (race & 0x80000) {
+		races.push("Reptile");
+	}
+	if (race & 0x100000) {
+		races.push("Psychic");
+	}
+	if (race & 0x200000) {
+		races.push("Divine-Beast");
+	}
+	if (race & 0x400000) {
+		races.push("Creator God");
+	}
+	if (race & 0x800000) {
+		races.push("Wyrm");
+	}
+	if (race & 0x1000000) {
+		races.push("Cyberse");
+	}
+	if (race & 0x80000000) {
+		races.push("Yokai");
+	}
+	if (race & 0x100000000) {
+		races.push("Charisma");
+	}
+	if (races.length === 0) {
+		return ["Null Race"];
+	} else {
+		return races;
 	}
 }
 
 function getAtt(index) {
 	let att = contents[0].values[index][9];
-	switch (att) {
-		case 0x1:
-			return "EARTH";
-		case 0x2:
-			return "WATER";
-		case 0x4:
-			return "FIRE";
-		case 0x8:
-			return "WIND";
-		case 0x10:
-			return "LIGHT";
-		case 0x20:
-			return "DARK";
-		case 0x40:
-			return "DIVINE";
-		case 0x80:
-			return "LAUGH";
-		default:
-			return "Null Attribute";
+	let atts = [];
+	if (att & 0x1) {
+		atts.push("EARTH");
+	}
+	if (att & 0x2) {
+		atts.push("WATER");
+	}
+	if (att & 0x4) {
+		atts.push("FIRE");
+	}
+	if (att & 0x8) {
+		atts.push("WIND");
+	}
+	if (att & 0x10) {
+		atts.push("LIGHT");
+	}
+	if (att & 0x20) {
+		atts.push("DARK");
+	}
+	if (att & 0x40) {
+		atts.push("DIVINE");
+	}
+	if (att & 0x80) {
+		atts.push("LAUGH");
+	}
+	if (atts.length === 0) {
+		return ["Null Attribute"];
+	} else {
+		return atts;
 	}
 }
 
@@ -1142,10 +1181,10 @@ function randFilterCheck(code, args) {
 			}
 			boo = subBoo;
 		}
-		if (raceFilters.length > 0 && raceFilters.indexOf(getRace(index).toLowerCase()) === -1) {
+		if (raceFilters.length > 0 && raceFilters.indexOf(getRace(index)[0].toLowerCase()) === -1) {
 			boo = false;
 		}
-		if (attFilters.length > 0 && attFilters.indexOf(getAtt(index).toLowerCase()) === -1) {
+		if (attFilters.length > 0 && attFilters.indexOf(getAtt(index)[0].toLowerCase()) === -1) {
 			boo = false;
 		}
 		if (lvFilters.length > 0 && lvFilters.indexOf(getLevelScales(index)[0].toString()) === -1) {
