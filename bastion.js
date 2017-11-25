@@ -61,6 +61,8 @@ let scriptsEnabled = false;
 let scriptUrlMaster;
 let scriptUrlAnime;
 let scriptUrlCustom;
+let scriptBackupEnabled = false;
+let scriptUrlBackup;
 if (config.scriptUrl) {
 	scriptUrlMaster = config.scriptUrl;
 	scriptsEnabled = true;
@@ -75,6 +77,12 @@ if (config.scriptUrl) {
 	} else {
 		scriptUrlCustom = scriptUrlMaster;
 		console.log("URL for custom script source not found at config.scriptUrlCustom! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
+	}
+	if (config.scriptUrlBackup) {
+		scriptUrlBackup = config.scriptUrlBackup;
+		scriptBackupEnabled = true;
+	} else {
+		console.log("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
 	}
 } else {
 	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
@@ -633,10 +641,25 @@ function getCardScript(index, user, userID, channelID, message, event) {
 			let data = [];
 			response.on('data', function(chunk) {
 				data.push(chunk);
-			}).on('end', function() {
+			}).on('end', async function() {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
-				if (script.length + 11 + fullUrl.length > 2000) {
+				if (script === "404: Not Found\n" && scriptBackupEnabled) {
+					script = await new Promise(function(resolve, reject) {
+						fullUrl = scriptUrlBackup + "c" + ids[index] + ".lua";
+						https.get(url.parse(fullUrl), function(response) {
+							let data2 = [];
+							response.on('data', function(chunk) {
+								data2.push(chunk);
+							}).on('end', async function() {
+								let buffer2 = Buffer.concat(data2);
+								let script2 = buffer2.toString();
+								resolve(script2)
+							});
+						});
+					});
+				}
+				if (script.length + "```lua\n```\n".length + fullUrl.length > 2000) {
 					resolve(fullUrl);
 				} else {
 					resolve("```lua\n" + script + "```\n" + fullUrl);

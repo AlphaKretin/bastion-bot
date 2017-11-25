@@ -124,6 +124,8 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptUrlCustom` is a link to a source for custom card scripts. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will default to `scriptUrl`.  
   
+`scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
+  
 `dbs` is an array of filenames for card databases Bastion will read, to be found in a folder called `dbs`. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `triviaTimeLimit` is the time a player has to guess the answer in the trivia game, in milliseconds. This field is optional - if it is missing, Bastion will default to what you see above.  
