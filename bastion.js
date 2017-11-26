@@ -255,6 +255,42 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		set(user, userID, channelID, message, event);
 		return;
 	}
+	if (lowMessage.indexOf(pre + "name") === 0) {
+		getSingleProp("name", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "id") === 0) {
+		getSingleProp("id", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "status") === 0) {
+		getSingleProp("status", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "price") === 0) {
+		getSingleProp("price", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "effect") === 0) {
+		getSingleProp("effect", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "peffect") === 0) {
+		getSingleProp("peffect", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "type") === 0) {
+		getSingleProp("type", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "att") === 0) {
+		getSingleProp("att", user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.indexOf(pre + "stats") === 0) {
+		getSingleProp("stats", user, userID, channelID, message, event);
+		return;
+	}
 	if (message.indexOf("<@" + bot.id + ">") > -1) {
 		help(user, userID, channelID, message, event);
 	}
@@ -661,6 +697,162 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 		});
 	});
 
+}
+
+async function getSingleProp(prop, user, userID, channelID, message, event) {
+	let input = message.slice((pre + prop + " ").length);
+	let inInt = parseInt(input);
+	let index = 0;
+	if (ids.indexOf(inInt) > -1) {
+		index = ids.indexOf(inInt);
+	} else {
+		index = nameCheck(input);
+	}
+	if (index > -1 && index in ids) {
+		let out = "";
+		switch (prop) {
+			case "name":
+				out = names[0].values[index][1];
+				break;
+			case "id":
+				let code = ids[index];
+				let alIDs = [code];
+				if (aliases[ids.indexOf(code)] > 0) {
+					if (getOT(ids.indexOf(code)) === getOT(ids.indexOf(aliases[ids.indexOf(code)]))) {
+						code = aliases[ids.indexOf(code)];
+						alIDs = [code];
+						for (let i = 0; i < aliases.length; i++) {
+							if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+								alIDs.push(ids[i]);
+							}
+						}
+					}
+				} else if (aliases.indexOf(code) > 0) {
+					for (let i = 0; i < aliases.length; i++) {
+						if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
+							alIDs.push(ids[i]);
+						}
+					}
+				}
+				out = alIDs.toString().replace(/,/g, "|");
+				break;
+			case "status":
+				out = getOT(index);
+				break;
+			case "price":
+				try {
+					out = await new Promise(function(resolve, reject) {
+						request('https://yugiohprices.com/api/get_card_prices/' + names[0].values[index][1], function(error, response, body) {
+							if (!error && JSON.parse(body).status === "success") {
+								let data = JSON.parse(body);
+								let low = 9999999999;
+								let hi = 0;
+								let avgs = [];
+								for (let price of data.data) {
+									if (price.price_data.status === "success") {
+										if (price.price_data.data.prices.high > hi) {
+											hi = price.price_data.data.prices.high;
+										}
+										if (price.price_data.data.prices.low < low) {
+											low = price.price_data.data.prices.low;
+										}
+										avgs.push(price.price_data.data.prices.average);
+									}
+								}
+								let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+								resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD");
+							} else {
+								reject(error);
+							} 
+						});
+					});
+				} catch (e) {
+					console.log(e);
+					return;
+				}
+				break;
+			case "effect":
+				let cardText = getCardText(index);
+				if (cardText.length === 2) {
+					out = cardText[1];
+				} else {
+					out = cardText[0];
+				}
+				break;
+			case "peffect":
+				let pText = getCardText(index);
+				if (pText.length === 2) {
+					out = pText[0];
+				} else {
+					return;
+				}
+				break;
+			case "type":
+				let types = getTypes(index);
+				if (types.indexOf("Monster") > -1) {
+					out = types.toString().replace("Monster", getRace(index).toString().replace(/,/g, "|")).replace(/,/g, "/");
+				} else {
+					let lv = getLevelScales(index)[0];
+					if (lv > 0) { //is trap monster
+						out = getRace(index).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
+					} else {
+						out = types.toString().replace(/,/g, "/");
+					} 
+				}
+				break;
+			case "att":
+				let typs = getTypes(index);
+				if (typs.indexOf("Monster") > -1) {
+					out = getAtt(index).toString().replace(/,/g, "|");
+				} else {
+					let lv = getLevelScales(index)[0];
+					if (lv > 0) { //is trap monster
+						out = getAtt(index).toString().replace(/,/g, "|");
+					}
+				}
+				break;
+			case "stats":
+				let tys = getTypes(index);
+				let card = contents[0].values[index];
+				if (tys.indexOf("Monster") > -1) {
+					let lvName = "Level";
+					let lv = getLevelScales(index);
+					let def = true;
+					if (tys.indexOf("Xyz") > -1) {
+						lvName = "Rank";
+					} else if (tys.indexOf("Link") > -1) {
+						lvName = "Link Rating";
+						def = false;
+					}
+					out = "**" + lvName + "**: " + lv[0] + " ";
+					out += "**ATK**: " + convertStat(card[5]) + " ";
+					if (def) {
+						out += "**DEF**: " + convertStat(card[6]);
+					} else {
+						out += "**Link Markers**: " + getMarkers(index);
+					}
+					if (tys.indexOf("Pendulum") > -1) {
+						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2];
+					}
+				} else {
+					let lv = getLevelScales(index)[0];
+					if (lv > 0) { //is trap monster
+						out = "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]);
+					}
+				}
+				break;
+			default:
+				return;
+		}
+		if (out.length > 0) {
+			bot.sendMessage({
+				to: channelID,
+				message: out
+			});
+		}
+	} else {
+		console.log("Invalid card ID or name, please try again.");
+	}
 }
 
 function getCardScript(index, user, userID, channelID, message, event) {

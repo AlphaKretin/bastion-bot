@@ -29,6 +29,11 @@ This command works the same way as the above command, but also displays an image
 As an example, `<stardust dragon>` returns the following output:  
 ![card image output](/readme-images/card-image.png)  
   
+### Individual Property Lookup  
+Usage: `.name [card name|ID]`, `.id [card name|ID]`, `.status [card name|ID]`, `.price [card name|ID]`, `.effect [card name|ID]`, `.peffect [card name|ID]`, `.type [card name|ID]`, `.att [card name|ID]`, `.stats [card name|ID]`  
+  
+Using these commands, you can search for these individual parts of what the above commands return. If the property does not exist, for example the attribute of a Spell Card, nothing will be returned.  
+  
 ### .randcard  
 Usage: `.randcard [opts]`  
   
@@ -149,8 +154,7 @@ By default, the shortcut file is called `shortcuts.json`, and is expected to be 
 	[  
 		"AGGD",  
 		"Ancient Gear Gadjiltron Dragon"  
-	],  
-	...  
+	]  
 ]```  
 The final entry in each array should be the full name of a card, for which all other entries are a shortened form of. Bastion splits queries up by spaces when checking for shortcuts, so shortcuts with a space will never be matched.  
   
@@ -159,9 +163,8 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 ```json  
 {  
 	"0x1": "Ally of Justice",  
-	"0x2": "Genex",  
-	...  
-}``` 
+	"0x2": "Genex"  
+}```  
   
 ### Database  
   
@@ -205,7 +208,7 @@ CREATE TABLE IF NOT EXISTS "texts" (
 );  
 ```  
   
-### To-do List   
+### To-do List  
 - Add languages --Feature Simon has  
 - Scripting Library --Feature Simon has  
 - Add pack opening simulation -- Feature simon has, but could be improved on  
