@@ -170,7 +170,7 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
   
 ### Database  
   
-Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy datbases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:  
+Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:  
 ```sql  
 CREATE TABLE IF NOT EXISTS "datas" (  
 	`id`	integer,  
