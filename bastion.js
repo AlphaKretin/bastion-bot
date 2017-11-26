@@ -490,7 +490,7 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 			out += "\n";
 		}
 		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
-			if (!error && JSON.parse(body).status === "success") {
+			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
 				let data = JSON.parse(body);
 				let low = 9999999999;
 				let hi = 0;
