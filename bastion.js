@@ -117,6 +117,14 @@ if (config.dbs) {
 } else {
 	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs[0] + ".");
 }
+let owner;
+let servLogEnabled = false;
+if (config.botOwner) {
+	servLogEnabled = true;
+	owner = config.botOwner;
+} else {
+	console.log("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
+}
 /*
 	{
 	"token": "", //Discord bot token for log-in
@@ -289,6 +297,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (lowMessage.indexOf(pre + "stats") === 0) {
 		getSingleProp("stats", user, userID, channelID, message, event);
+		return;
+	}
+	if (servLogEnabled && lowMessage.indexOf(pre + "servers") === 0) {
+		servers(user, userID, channelID, message, event);
 		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1) {
@@ -1844,4 +1856,16 @@ function checkForPermissions(userID, channelID, permissionValues) {
 		}
 	});
 	return !forbidden;
+}
+
+function servers(user, userID, channelID, message, event) {
+	let out = "```\n";
+	Object.keys(bot.servers).forEach(function(key, index) {
+		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
+	});
+	out += "```";
+	bot.sendMessage({
+		to: owner,
+		message: out
+	});
 }
