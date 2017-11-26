@@ -299,7 +299,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		getSingleProp("stats", user, userID, channelID, message, event);
 		return;
 	}
-	if (servLogEnabled && lowMessage.indexOf(pre + "servers") === 0) {
+	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
 		return;
 	}
