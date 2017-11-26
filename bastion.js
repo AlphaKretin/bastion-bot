@@ -1174,7 +1174,7 @@ function getRace(index) {
 	if (race & 0x80000000) {
 		races.push("Yokai");
 	}
-	if (race & 0x100000000) {
+	if (race === 0x100000000) {
 		races.push("Charisma");
 	}
 	if (races.length === 0) {
