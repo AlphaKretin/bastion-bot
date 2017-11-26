@@ -155,7 +155,8 @@ By default, the shortcut file is called `shortcuts.json`, and is expected to be 
 		"AGGD",  
 		"Ancient Gear Gadjiltron Dragon"  
 	]  
-]```  
+]
+```  
 The final entry in each array should be the full name of a card, for which all other entries are a shortened form of. Bastion splits queries up by spaces when checking for shortcuts, so shortcuts with a space will never be matched.  
   
 ### Setcodes  
@@ -164,7 +165,8 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 {  
 	"0x1": "Ally of Justice",  
 	"0x2": "Genex"  
-}```  
+}
+```  
   
 ### Database  
   
