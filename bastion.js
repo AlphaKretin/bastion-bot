@@ -410,10 +410,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 });
 
 bot.on('messageUpdate', function(oldMsg, newMsg, event) {
-	if (newMsg.author.id === bot.id) {
+	if (newMsg.author && newMsg.author.id === bot.id) {
 		return;
 	}
-	let lowMessage = message.toLowerCase();
+	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
 	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
 		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
 	}
