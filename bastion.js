@@ -1946,6 +1946,9 @@ function searchFunctions(user, userID, channelID, message, event){
 	while (searched.length) {
 		pages.push(searched.splice(0, 9));
 	}
+	if (pages.length === 0) {
+		return;
+	}
 	let out = "```cs\n";
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
@@ -1992,6 +1995,9 @@ function searchConstants(user, userID, channelID, message, event){
 	while (searched.length) {
 		pages.push(searched.splice(0, 9));
 	}
+	if (pages.length === 0) {
+		return;
+	}
 	let out = "```cs\n";
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
@@ -2037,6 +2043,9 @@ function searchParams(user, userID, channelID, message, event){
 	let pages = [];
 	while (searched.length) {
 		pages.push(searched.splice(0, 9));
+	}
+	if (pages.length === 0) {
+		return;
 	}
 	let out = "```cs\n";
 	for (let i = 0; i < pages[0].length; i++) {
