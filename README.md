@@ -219,3 +219,5 @@ CREATE TABLE IF NOT EXISTS "texts" (
 - Add comparison between different versions of scripts between repos --Bonus  
 - Add ruling page lookup --Bonus  
 - Auto CDB update --Bonus  
+- Grab DBs (and whatever else) from online *or* local
+- Prevent search on `{}`/`<>`
