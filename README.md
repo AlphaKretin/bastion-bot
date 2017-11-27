@@ -66,6 +66,11 @@ The `.set` command searches for an archetype, or "setcode" by either its name or
   
 As an example, `.set 0xba` returns the following output:  
 ![.set output](/readme-images/set.png)  
+
+### Scripting Library
+Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`
+
+Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type o edit `.d[number]` to see a more detailed description of that entry, if available.
   
 ### .trivia  
 Usage: `.trivia [options]`  
@@ -82,7 +87,7 @@ The `.tlock` command tells Bastion that on the server you use the command, he sh
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, and any number of SQLite databases containing card data, in the format YGOPro uses. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
@@ -104,7 +109,11 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"triviaTimeLimit": 30000,  
 	"triviaHintTime": 10000,  
 	"triviaMaxRounds": 20,  
-	"triviaLocks": {}  
+	"triviaLocks": {},
+	"botOwner": "169299769695535105",
+	"scriptFunctions": "functions.json",
+	"scriptConstants": "constants.json",
+	"scriptParams": "parameters.json"
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -140,6 +149,14 @@ By default, the configuration file is called `config.json`, and is expected to b
 `triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `triviaLocks` is an object with server IDs as keys and an array of channel IDs as the properties. If a server is in the object, the trivia game can only be player in the channels listed in the array. This field is optional - if it is missing, Bastion will default to what you see above, and you can configure it through Bastion even if you don't run the copy using the `.tlock` command.  
+
+`botOwner` is the Discord user ID of the user you consider to own the bot, likely yourself, for the sake of administrative functions. This field is optional - if it is missing, such functions will be disabled.
+
+`scriptFunctions` is the name of the JSON file Bastion will load containing information about the YGOPro API's functions - details on this file below. This field is optional - if it is missing, searching for functions will be disabled.
+
+`scriptConstants` is the name of the JSON file Bastion will load containing information about the YGOPro API's constants - details on this file below. This field is optional - if it is missing, searching for constants will be disabled.
+
+`scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -210,6 +227,57 @@ CREATE TABLE IF NOT EXISTS "texts" (
 );  
 ```  
   
+### API
+
+Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects detailing the functions, constants, and parameters in YGOPro's API. Examples of their format below.
+
+#### functions.json
+```json
+[
+	{
+		"sig": "int,int",
+		"name": "Card.GetOriginalCodeRule(Card c)",
+		"desc": "Gets the original code of a Card (Card c) (used for wording \"original name\")"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsFusionCode(Card c, int code)",
+		"desc": "Checks if a Card (Card c) has a specific code (int code) (for Fusion Summons)"
+	}
+]
+```
+
+#### constants.json
+```json
+[
+	{
+		"val": "0x01",
+		"name": "LOCATION_DECK",
+		"desc": ""
+	},
+	{
+		"val": "0x02",
+		"name": "LOCATION_HAND",
+		"desc": ""
+	}
+]
+```
+
+#### parameters.json
+```json
+[
+{
+		"type": "string",
+		"name": "any msg",
+		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"
+	},
+	{
+		"type": "bool",
+		"name": "cancel",
+		"desc": "Determines if it's cancelled or not"
+	}
+]
+```  
 ### To-do List  
 - Add languages --Feature Simon has  
 - Scripting Library --Feature Simon has  

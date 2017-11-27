@@ -125,6 +125,33 @@ if (config.botOwner) {
 } else {
 	console.log("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
 }
+let libFuncEnabled = false;
+let libFunctions;
+let libConstEnabled = false;
+let libConstants;
+let libParamsEnabled = false;
+let libParams;
+if (config.scriptFunctions) {
+	let path = "dbs/" + config.scriptFunctions;
+	libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+	libFuncEnabled = true;
+} else {
+	console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
+}
+if (config.scriptConstants) {
+	let path = "dbs/" + config.scriptConstants;
+	libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
+	libConstEnabled = true;
+} else {
+	console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
+}
+if (config.scriptParams) {
+	let path = "dbs/" + config.scriptParams;
+	libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
+	libParamsEnabled = true;
+} else {
+	console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
+}
 /*
 	{
 	"token": "", //Discord bot token for log-in
@@ -234,6 +261,10 @@ let filetype = require('file-type');
 let longMsg = "";
 let gameData = {};
 
+let searchPage = {
+	active: false
+};
+
 bot.on('message', function(user, userID, channelID, message, event) {
 	if (userID === bot.id) {
 		return;
@@ -299,6 +330,21 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		getSingleProp("stats", user, userID, channelID, message, event);
 		return;
 	}
+	if (libFuncEnabled && lowMessage.indexOf(pre + "f") === 0) {
+		searchFunctions(user, userID, channelID, message, event);
+	}
+	if (libConstEnabled && lowMessage.indexOf(pre + "c") === 0) {
+		searchConstants(user, userID, channelID, message, event);
+	}
+	if (libParamsEnabled && lowMessage.indexOf(pre + "param") === 0) {
+		searchParams(user, userID, channelID, message, event);
+	}
+	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
+		libPage(user, userID, channelID, message, event);
+	}
+	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
+		libDesc(user, userID, channelID, message, event);
+	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
 		return;
@@ -360,6 +406,23 @@ bot.on('message', function(user, userID, channelID, message, event) {
 				searchCard(result, true, user, userID, channelID, message, event);
 			}
 		}
+	}
+});
+
+bot.on('messageUpdate', function(oldMsg, newMsg, event) {
+	let user = newMsg.author.username;
+	let userID = newMsg.author.id;
+	if (userID === bot.id) {
+		return;
+	}
+	let channelID = newMsg.channelID;
+	let message = newMsg.content;
+	let lowMessage = message.toLowerCase();
+	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
+		libPage(user, userID, channelID, message, event);
+	}
+	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
+		libDesc(user, userID, channelID, message, event);
 	}
 });
 
@@ -1867,5 +1930,198 @@ function servers(user, userID, channelID, message, event) {
 	bot.sendMessage({
 		to: owner,
 		message: out
+	});
+}
+
+//scripting lib 
+function searchFunctions(user, userID, channelID, message, event){
+	let arg = message.slice((pre + "f ").length);
+	let searched = [];
+	let len = 0;
+	for (let func of libFunctions) {
+		if (func.name.toLowerCase().split("(")[0].indexOf(arg.toLowerCase()) > -1) {
+			searched.push(func);
+			if (func.sig.length > len) {
+				len = func.sig.length;
+			}
+		}
+	}
+	let pages = [];
+	while (searched.length) {
+		pages.push(searched.splice(0, 9));
+	}
+	let out = "```cs\n";
+	for (let i = 0; i < pages[0].length; i++) {
+		let line = pages[0][i];
+		while (line.sig.length < len) {
+			line.sig = " " + line.sig;
+		}
+		out += "[" + (i + 1) + "] " + line.sig + " | " + line.name + "\n"
+	}
+	out += "````Page: 1/" + pages.length + "`";
+	bot.sendMessage({
+		to: channelID,
+		message: out
+	}, function(err, res) {
+		if (err) {
+			console.log(err);
+		} else {
+			searchPage = {
+				pages: pages,
+				index: 0,
+				user: userID,
+				channel: channelID,
+				search: "f",
+				message: res.id,
+				content: out,
+				active: true
+			};
+		}
+	});
+}
+
+function searchConstants(user, userID, channelID, message, event){
+	let arg = message.slice((pre + "c ").length);
+	let searched = [];
+	let len = 0;
+	for (let con of libConstants) {
+		if (con.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
+			searched.push(con);
+			if (con.val.length > len) {
+				len = con.val.length;
+			}
+		}
+	}
+	let pages = [];
+	while (searched.length) {
+		pages.push(searched.splice(0, 9));
+	}
+	let out = "```cs\n";
+	for (let i = 0; i < pages[0].length; i++) {
+		let line = pages[0][i];
+		while (line.val.length < len) {
+			line.val = " " + line.val;
+		}
+		out += "[" + (i + 1) + "] " + line.val + " | " + line.name + "\n"
+	}
+	out += "````Page: 1/" + pages.length + "`";
+	bot.sendMessage({
+		to: channelID,
+		message: out
+	}, function(err, res) {
+		if (err) {
+			console.log(err);
+		} else {
+			searchPage = {
+				pages: pages,
+				index: 0,
+				user: userID,
+				channel: channelID,
+				search: "c",
+				message: res.id,
+				content: out,
+				active: true
+			};
+		}
+	});
+}
+
+function searchParams(user, userID, channelID, message, event){
+	let arg = message.slice((pre + "param ").length);
+	let searched = [];
+	let len = 0;
+	for (let par of libParams) {
+		if (par.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
+			searched.push(par);
+			if (par.type.length > len) {
+				len = par.type.length;
+			}
+		}
+	}
+	let pages = [];
+	while (searched.length) {
+		pages.push(searched.splice(0, 9));
+	}
+	let out = "```cs\n";
+	for (let i = 0; i < pages[0].length; i++) {
+		let line = pages[0][i];
+		while (line.type.length < len) {
+			line.type = " " + line.type;
+		}
+		out += "[" + (i + 1) + "] " + line.type + " | " + line.name + "\n"
+	}
+	out += "````Page: 1/" + pages.length + "`";
+	bot.sendMessage({
+		to: channelID,
+		message: out
+	}, function(err, res) {
+		if (err) {
+			console.log(err);
+		} else {
+			searchPage = {
+				pages: pages,
+				index: 0,
+				user: userID,
+				channel: channelID,
+				search: "p",
+				message: res.id,
+				content: out,
+				active: true
+			};
+		}
+	});
+}
+	
+function libPage(user, userID, channelID, message, event) {
+	let arg = parseInt(message.slice((pre + "p").length));
+	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages.length) {
+		return;
+	}
+	let index = arg - 1;
+	let len = 0;
+	let pages = searchPage.pages;
+	let n = "sig";
+	switch (searchPage.search) {
+		case "c": n = "val"; break;
+		case "p": n = "type"; break;
+		default: break;
+	}
+	for (let line of pages[index]) {
+		if (line[n].length > len) {
+			len = line[n].length;
+		}
+	} 
+	let out = "```cs\n";
+	for (let i = 0; i < pages[index].length; i++) {
+		let line = pages[index][i];
+		while (line[n].length < len) {
+			line[n] = " " + line[n];
+		}
+		out += "[" + (i + 1) + "] " + line[n] + " | " + line.name + "\n"
+	}
+	out += "````Page: " + arg + "/" + pages.length + "`";
+	searchPage.index = index;
+	searchPage.content = out;
+	bot.editMessage({
+		channelID: searchPage.channel,
+		messageID: searchPage.message,
+		message: out
+	});
+}
+
+function libDesc(user, userID, channelID, message, event) {
+	let arg = parseInt(message.slice((pre + "d").length));
+	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages[searchPage.index].length) {
+		return;
+	}
+	let index = arg - 1;
+	let desc = searchPage.pages[searchPage.index][index].desc;
+	if (desc.length === 0) {
+		desc = "No description found for this entry.";
+	}
+	bot.editMessage({
+		channelID: searchPage.channel,
+		messageID: searchPage.message,
+		message: searchPage.content + "\n`" + desc + "`"
 	});
 }
