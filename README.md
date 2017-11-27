@@ -96,7 +96,6 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"token": "",  
 	"prefix": ".",  
 	"longStr": "...\n__Type \".long\" to be PMed the rest!__",  
-	"randFilterAttempts": 1000,  
 	"maxSearches": 3,  
 	"imageUrl": "",  
 	"imageUrlAnime": "",  
@@ -121,8 +120,6 @@ By default, the configuration file is called `config.json`, and is expected to b
 `prefix` is the text that Bastion will look for at the start of messages to indicate that it's a bot command. For example, if `prefix` is "b$", `.randcard` becomes `b$randcard`. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `longStr` is the message Bastion will append to an output that's split up due to violating Discord's character limit, instructing the user how to see the rest. This field is optional - if it is missing, Bastion will default to what you see above.  
-  
-`randFilterAttempts` is the number of times Bastion will try to find a card matching the filters a user specifies with `.randcard` before giving up to prevent infinite loops. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `maxSearches` is the number of different cards Bastion will allow a user to search at once - if a message contains more queries, Bastion won't search anything, instead returning an error message. This field is optional - if it is missing, Bastion will default to what you see above.  
   

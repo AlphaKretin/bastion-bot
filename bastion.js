@@ -99,12 +99,6 @@ if (config.longStr) {
 } else {
 	console.log("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
 }
-let randFilterAttempts = 1000;
-if (config.randFilterAttempts) {
-	randFilterAttempts = config.randFilterAttempts;
-} else {
-	console.log("No upper limit on randcard re-rolls found at config.randFilterAttempts! Defaulting to " + randFilterAttempts + "!");
-}
 let maxSearches = 3;
 if (config.maxSearches) {
 	maxSearches = config.maxSearches;
@@ -434,20 +428,19 @@ async function randomCard(user, userID, channelID, message, event) {
 		let args = message.toLowerCase().split(" ");
 		let code;
 		let i = 0;
-		do {
-			i++;
-			code = ids[Math.floor(Math.random() * ids.length)];
-			if (ids.indexOf(code) === -1) {
-				console.log("Invalid card ID, please try again.");
-				return "Invalid card ID, please try again.";
+		if (args.length > 1) {
+			let matches = [];
+			for (let id of ids) {
+				if (randFilterCheck(id, args)) {
+					matches.push(id);
+				}
 			}
-		} while (!randFilterCheck(code, args) && i < randFilterAttempts);
-		if (i >= randFilterAttempts) {
-			bot.sendMessage({
-				to: channelID,
-				message: "No card matching your critera was found after " + randFilterAttempts + " attempts, so one probably doesn't exist."
-			});
-			return
+			if (matches.length === 0) {
+				return;
+			}
+			code = matches[Math.floor(Math.random() * matches.length)];
+		} else {
+			code = ids[Math.floor(Math.random() * ids.length)];
 		}
 		let out = await getCardInfo(code, user, userID, channelID, message, event);
 		if (imagesEnabled && args.indexOf("image") > -1) {
