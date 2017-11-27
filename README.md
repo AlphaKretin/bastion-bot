@@ -82,7 +82,7 @@ The `.tlock` command tells Bastion that on the server you use the command, he sh
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, and any number of SQLite databases containing card data, in the format YGOPro uses.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, and any number of SQLite databases containing card data, in the format YGOPro uses. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
@@ -155,7 +155,7 @@ By default, the shortcut file is called `shortcuts.json`, and is expected to be 
 		"AGGD",  
 		"Ancient Gear Gadjiltron Dragon"  
 	]  
-]
+]  
 ```  
 The final entry in each array should be the full name of a card, for which all other entries are a shortened form of. Bastion splits queries up by spaces when checking for shortcuts, so shortcuts with a space will never be matched.  
   
@@ -165,7 +165,7 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 {  
 	"0x1": "Ally of Justice",  
 	"0x2": "Genex"  
-}
+}  
 ```  
   
 ### Database  
