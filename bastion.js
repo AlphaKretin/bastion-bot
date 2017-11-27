@@ -414,10 +414,10 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) {
 		return;
 	}
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
-	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
+	if (searchPage.active && lowMessage && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
 		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
 	}
-	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
+	if (searchPage.active && lowMessage && lowMessage.indexOf(pre + "d") === 0) {
 		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
 	}
 });
