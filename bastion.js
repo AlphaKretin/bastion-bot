@@ -410,19 +410,15 @@ bot.on('message', function(user, userID, channelID, message, event) {
 });
 
 bot.on('messageUpdate', function(oldMsg, newMsg, event) {
-	let user = newMsg.author.username;
-	let userID = newMsg.author.id;
-	if (userID === bot.id) {
+	if (newMsg.author.id === bot.id) {
 		return;
 	}
-	let channelID = newMsg.channelID;
-	let message = newMsg.content;
 	let lowMessage = message.toLowerCase();
 	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
-		libPage(user, userID, channelID, message, event);
+		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
-		libDesc(user, userID, channelID, message, event);
+		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
 	}
 });
 
