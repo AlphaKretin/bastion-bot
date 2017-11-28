@@ -363,7 +363,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	let re = /{([^:@]*?)}/g;
+	let re = /{(.*?)}/g;
 	let results = [];
 	let regx;
 	do {
@@ -374,7 +374,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	} while (regx !== null);
 	let results2 = [];
 	if (imagesEnabled) {
-		let re2 = /<([^:@]*?)>/g;
+		let re2 = /<(.*?)>/g;
 		let regx2;
 		do {
 			regx2 = re2.exec(message);
@@ -484,7 +484,7 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let inInt = parseInt(input);
-	if (input.length === 0) {
+	if (input.length === 0 || input.indexOf(":") === 0 || input.indexOf("@") === 0 || input.indexOf("#") === 0 ) {
 		return;
 	}
 	if (ids.indexOf(inInt) > -1) {
