@@ -645,7 +645,8 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 			let pics = [];
 			for (let cod of code) {
 				let buffer = await downloadImage(imageUrl + cod + ".png", user, userID, channelID, message, event);
-				pics.push(await new Promise(function(resolve, reject) {
+				if (filetype(buffer) && filetype(buffer).ext === "png") {
+					pics.push(await new Promise(function(resolve, reject) {
 					jimp.read(buffer, function(err, image) {
 						if (err) {
 							reject(err);
@@ -654,6 +655,7 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 						}
 					});
 				}));
+				}
 			}
 			let imgSize = pics[0].bitmap.width;
 			let a = [];
@@ -1537,10 +1539,28 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 	//pick a random card
 	let index;
 	let code;
+	let buffer;
 	do {
 		index = Math.floor(Math.random() * ids.length);
 		code = ids[index];
-	} while (ot.indexOf(getOT(index)) === -1);
+		let imageUrl = imageUrlMaster;
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
+			imageUrl = imageUrlAnime;
+		}
+		if (getOT(ids.indexOf(code)) === "Custom") {
+			imageUrl = imageUrlCustom;
+		}
+		buffer = await new Promise(function(resolve, reject) {
+			https.get(url.parse(imageUrl + code + ".png"), function(response) {
+				let data = [];
+				response.on('data', function(chunk) {
+					data.push(chunk);
+				}).on('end', async function() {
+					resolve(Buffer.concat(data));
+				});
+			});
+		});
+	} while (ot.indexOf(getOT(index)) === -1 && filetype(buffer) && filetype(buffer).ext === "png");
 	let name = names[0].values[index][1];
 	let hint = "";
 	for (let letter of name) {
@@ -1566,100 +1586,85 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 			"hard": hard
 		}
 	}
-	let imageUrl = imageUrlMaster;
-	if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
-		imageUrl = imageUrlAnime;
+	if (hard) {
+		buffer = await hardCrop(buffer, user, userID, channelID, message, event);
 	}
-	if (getOT(ids.indexOf(code)) === "Custom") {
-		imageUrl = imageUrlCustom;
-	}
-	https.get(url.parse(imageUrl + code + ".png"), function(response) {
-		let data = [];
-		response.on('data', function(chunk) {
-			data.push(chunk);
-		}).on('end', async function() {
-			let buffer = Buffer.concat(data);
-			if (hard) {
-				buffer = await hardCrop(buffer, user, userID, channelID, message, event);
-			}
-			bot.uploadFile({
+	bot.uploadFile({
+		to: channelID,
+		file: buffer,
+		filename: code + ".png"
+	}, function(err, res) {
+		if (err) {
+			console.log(err);
+		} else {
+			bot.sendMessage({
 				to: channelID,
-				file: buffer,
-				filename: code + ".png"
+				message: "Can you name this card? Time remaining: `" + triviaTimeLimit / 1000 + "`"
 			}, function(err, res) {
 				if (err) {
 					console.log(err);
 				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: "Can you name this card? Time remaining: `" + triviaTimeLimit / 1000 + "`"
-					}, function(err, res) {
-						if (err) {
-							console.log(err);
-						} else {
-							let messageID = res.id;
-							let i = triviaTimeLimit / 1000 - 1;
-							gameData[channelID].IN = setInterval(function() {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									message: "Can you name this card? Time remaining: `" + i + "`"
-								});
-								i--;
-							}, 1000);
-						}
-					});
-					gameData[channelID].TO1 = setTimeout(function() {
-						bot.sendMessage({
-							to: channelID,
-							message: "Have a hint: `" + gameData[channelID].hint + "`"
+					let messageID = res.id;
+					let i = triviaTimeLimit / 1000 - 1;
+					gameData[channelID].IN = setInterval(function() {
+						bot.editMessage({
+							channelID: channelID,
+							messageID: messageID,
+							message: "Can you name this card? Time remaining: `" + i + "`"
 						});
-					}, triviaHintTime);
-					let out = "Time's up! The card was **" + gameData[channelID].name + "**!\n";
-					if (Object.keys(gameData[channelID].score).length > 0) {
-						out += "**Scores**:\n";
-						Object.keys(gameData[channelID].score).forEach(function(key, index) {
-							out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
-						});
-					}
-					if (gameData[channelID].round === 1) {
-						out += "The game is over! ";
-						if (Object.keys(gameData[channelID].score).length > 0) {
-							let winners = [];
-							Object.keys(gameData[channelID].score).forEach(function(key, index) {
-								if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
-									winners = [key];
-								} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
-									winners.push(key)
-								}
-							});
-							if (winners.length > 1) {
-								out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
-							} else {
-								out += "The winner is <@" + winners + ">!";
-							}
-						}
-						gameData[channelID].TO2 = setTimeout(function() {
-							bot.sendMessage({
-								to: channelID,
-								message: out
-							});
-							clearInterval(gameData[channelID].IN);
-							delete gameData[channelID];
-						}, triviaTimeLimit);
-					} else {
-						gameData[channelID].TO2 = setTimeout(function() {
-							bot.sendMessage({
-								to: channelID,
-								message: out
-							});
-							clearInterval(gameData[channelID].IN);
-							startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, user, userID, channelID, message, event);
-						}, triviaTimeLimit);
-					}
+						i--;
+					}, 1000);
 				}
 			});
-		});
+			gameData[channelID].TO1 = setTimeout(function() {
+				bot.sendMessage({
+					to: channelID,
+					message: "Have a hint: `" + gameData[channelID].hint + "`"
+				});
+			}, triviaHintTime);
+			let out = "Time's up! The card was **" + gameData[channelID].name + "**!\n";
+			if (Object.keys(gameData[channelID].score).length > 0) {
+				out += "**Scores**:\n";
+				Object.keys(gameData[channelID].score).forEach(function(key, index) {
+					out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+				});
+			}
+			if (gameData[channelID].round === 1) {
+				out += "The game is over! ";
+				if (Object.keys(gameData[channelID].score).length > 0) {
+					let winners = [];
+					Object.keys(gameData[channelID].score).forEach(function(key, index) {
+						if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
+							winners = [key];
+						} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
+							winners.push(key)
+						}
+					});
+					if (winners.length > 1) {
+						out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+					} else {
+						out += "The winner is <@" + winners + ">!";
+					}
+				}
+				gameData[channelID].TO2 = setTimeout(function() {
+					bot.sendMessage({
+						to: channelID,
+						message: out
+					});
+					clearInterval(gameData[channelID].IN);
+					delete gameData[channelID];
+				}, triviaTimeLimit);
+			} else {
+				gameData[channelID].TO2 = setTimeout(function() {
+					bot.sendMessage({
+						to: channelID,
+						message: out
+					});
+					clearInterval(gameData[channelID].IN);
+					startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, user, userID, channelID, message, event);
+				}, triviaTimeLimit);
+			}
+		}
 	});
 }
 
