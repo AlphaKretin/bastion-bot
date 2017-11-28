@@ -343,7 +343,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		servers(user, userID, channelID, message, event);
 		return;
 	}
-	if (message.indexOf("<@" + bot.id + ">") > -1) {
+	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.indexOf(pre + "help") === 0) {
 		help(user, userID, channelID, message, event);
 	}
 	if (longMsg.length > 0 && lowMessage.indexOf(".long") === 0) {
