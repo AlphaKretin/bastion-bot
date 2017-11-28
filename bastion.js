@@ -484,6 +484,9 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let inInt = parseInt(input);
+	if (input.length === 0) {
+		return;
+	}
 	if (ids.indexOf(inInt) > -1) {
 		try {
 			let out = await getCardInfo(inInt, user, userID, channelID, message, event);
