@@ -647,14 +647,14 @@ async function postImage(code, out, user, userID, channelID, message, event) {
 				let buffer = await downloadImage(imageUrl + cod + ".png", user, userID, channelID, message, event);
 				if (filetype(buffer) && filetype(buffer).ext === "png") {
 					pics.push(await new Promise(function(resolve, reject) {
-					jimp.read(buffer, function(err, image) {
-						if (err) {
-							reject(err);
-						} else {
-							resolve(image);
-						}
-					});
-				}));
+						jimp.read(buffer, function(err, image) {
+							if (err) {
+								reject(err);
+							} else {
+								resolve(image);
+							}
+						});
+					}));
 				}
 			}
 			let imgSize = pics[0].bitmap.width;
@@ -832,7 +832,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 								resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD");
 							} else {
 								reject(error);
-							} 
+							}
 						});
 					});
 				} catch (e) {
@@ -866,7 +866,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						out = getRace(index).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
 					} else {
 						out = types.toString().replace(/,/g, "/");
-					} 
+					}
 				}
 				break;
 			case "att":
@@ -1931,7 +1931,7 @@ function servers(user, userID, channelID, message, event) {
 }
 
 //scripting lib 
-function searchFunctions(user, userID, channelID, message, event){
+function searchFunctions(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "f ").length);
 	let searched = [];
 	let len = 0;
@@ -1980,7 +1980,7 @@ function searchFunctions(user, userID, channelID, message, event){
 	});
 }
 
-function searchConstants(user, userID, channelID, message, event){
+function searchConstants(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "c ").length);
 	let searched = [];
 	let len = 0;
@@ -2029,7 +2029,7 @@ function searchConstants(user, userID, channelID, message, event){
 	});
 }
 
-function searchParams(user, userID, channelID, message, event){
+function searchParams(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "param ").length);
 	let searched = [];
 	let len = 0;
@@ -2077,7 +2077,7 @@ function searchParams(user, userID, channelID, message, event){
 		}
 	});
 }
-	
+
 function libPage(user, userID, channelID, message, event) {
 	let arg = parseInt(message.slice((pre + "p").length));
 	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages.length) {
@@ -2088,15 +2088,20 @@ function libPage(user, userID, channelID, message, event) {
 	let pages = searchPage.pages;
 	let n = "sig";
 	switch (searchPage.search) {
-		case "c": n = "val"; break;
-		case "p": n = "type"; break;
-		default: break;
+		case "c":
+			n = "val";
+			break;
+		case "p":
+			n = "type";
+			break;
+		default:
+			break;
 	}
 	for (let line of pages[index]) {
 		if (line[n].length > len) {
 			len = line[n].length;
 		}
-	} 
+	}
 	let out = "```cs\n";
 	for (let i = 0; i < pages[index].length; i++) {
 		let line = pages[index][i];
