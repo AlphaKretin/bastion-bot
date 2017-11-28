@@ -1,0 +1,2902 @@
+[
+	{
+		"sig": "",
+		"name": "initial_effect(Card c)",
+		"desc": "The function that will be called for each card's initialization"
+	},
+	{
+		"sig": "int[,int]",
+		"name": "Card.GetCode(Card c)",
+		"desc": "Gets the current code of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalCode(Card c)",
+		"desc": "Gets the original code of a Card (Card c)"
+	},
+	{
+		"sig": "int,int",
+		"name": "Card.GetOriginalCodeRule(Card c)",
+		"desc": "Gets the original code of a Card (Card c) (used for wording \"original name\")"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsFusionCode(Card c, int code)",
+		"desc": "Checks if a Card (Card c) has a specific code (int code) (for Fusion Summons)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSetCard(Card c, int setname)",
+		"desc": "Checks if a Card (Card c) is part of a specific archetype (int setname)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsPreviousSetCard(Card c, int setname)",
+		"desc": "Checks if a Card (Card c) was previously a part of a specific archetype (int setname)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsFusionSetCard(Card c, int setname)",
+		"desc": "Checks if a Card (Card c) is part of a specific archetype (int setname) (for Fusion Summons)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetType(Card c)",
+		"desc": "Gets the current type of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalType(Card c)",
+		"desc": "Gets the original type of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetLevel(Card c)",
+		"desc": "Gets the current level of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetRank(Card c)",
+		"desc": "Gets the current rank of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetSynchroLevel(Card c, Card sc)",
+		"desc": "Gets the possible Level of a card (Card c) if it would be used as a Synchro material for a Synchro Monster (Card sc)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetRitualLevel(Card c, Card rc)",
+		"desc": "Gets the possible Level of a card (Card c) if it would be used as a Tribute for the Special Summon of a Ritual Monster (Card rc)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalLevel(Card c)",
+		"desc": "Gets the original level of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalRank(Card c)",
+		"desc": "Gets the original rank of the Card c"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsXyzLevel(Card c, Card xyzc, int lv)",
+		"desc": "Checks if the Level of a card (Card c) would be the given Level (int lv) if it would be used as Xyz material for an Xyz monster (Card xyzc)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetLeftScale(Card c)",
+		"desc": "Gets the current left scale of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalLeftScale(Card c)",
+		"desc": "Gets the original left scale of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetRightScale(Card c)",
+		"desc": "Gets the current right scale of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalRightScale(Card c)",
+		"desc": "Gets the original right scale of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetAttribute(Card c)",
+		"desc": "Gets the current attribute of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalAttribute(Card c)",
+		"desc": "Gets the original attribute of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetRace(Card c)",
+		"desc": "Gets the current race of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOriginalRace(Card c)",
+		"desc": "Gets the original race of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetAttack(Card c)",
+		"desc": "Gets the current attack of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetBaseAttack(Card c)",
+		"desc": "Gets the base attack of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetTextAttack(Card c)",
+		"desc": "Gets the printed attack of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetDefense(Card c)",
+		"desc": "Gets the current defense of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetBaseDefense(Card c)",
+		"desc": "Gets the base defense of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetTextDefense(Card c)",
+		"desc": "Gets the printed defense of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousCodeOnField(Card c)",
+		"desc": "Gets the code of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousTypeOnField(Card c)",
+		"desc": "Gets the type of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousLevelOnField(Card c)",
+		"desc": "Gets the level of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousRankOnField(Card c)",
+		"desc": "Gets the rank of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousAttributeOnField(Card c)",
+		"desc": "Gets the attribute of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousRaceOnField(Card c)",
+		"desc": "Gets the race of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousAttackOnField(Card c)",
+		"desc": "Gets the attack of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousDefenseOnField(Card c)",
+		"desc": "Gets the defense of a Card (Card c) which it had when it was lastly on the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOwner(Card c)",
+		"desc": "Gets the owner of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetControler(Card c)",
+		"desc": "Gets the controler of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousControler(Card c)",
+		"desc": "Gets the previous controler of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetReason(Card c)",
+		"desc": "Gets the reason for an event that happened to a Card (Card c)"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetReasonCard(Card c)",
+		"desc": "Gets the card which is reason for an event that happened to a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetReasonPlayer(Card c)",
+		"desc": "Gets the player which is reason for an event that happened to a Card (Card c)"
+	},
+	{
+		"sig": "Effect",
+		"name": "Card.GetReasonEffect(Card c)",
+		"desc": "Gets the effect which is reason for an event that happened to a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPosition(Card c)",
+		"desc": "Gets the current position of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousPosition(Card c)",
+		"desc": "Gets the previous position of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetBattlePosition(Card c)",
+		"desc": "Gets the battle position of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetLocation(Card c)",
+		"desc": "Gets the location of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousLocation(Card c)",
+		"desc": "Gets the previous location of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetSequence(Card c)",
+		"desc": "Gets the ID of the location of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetPreviousSequence(Card c)",
+		"desc": "Gets the previous ID of the location of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetSummonType(Card c)",
+		"desc": "Gets the summon type in which a Card (Card c) was summoned"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetSummonLocation(Card c)",
+		"desc": "Gets the location of where a Card (Card c) was summoned"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetSummonPlayer(Card c)",
+		"desc": "Gets the player who summoned a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetDestination(Card c)",
+		"desc": "Gets the destination (a location, for example LOCATION_MZONE) of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetLeaveFieldDest(Card c)",
+		"desc": "Gets the destination (a location, for example LOCATION_GRAVE) of a Card (Card c) when it leaves the field"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetTurnID(Card c)",
+		"desc": "Gets the turn ID of a a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetFieldID(Card c)",
+		"desc": "Gets the unique field ID of a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetRealFieldID(Card c)",
+		"desc": "Gets the real field ID of the a Card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCode(Card c, int code1[, int code2,...])",
+		"desc": "Checks if the a Card (Card c) has every given code (int code1, ...) (these are IDs)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsType(Card c, int type)",
+		"desc": "Checks if the a Card (Card c) has the given type (TYPE_x)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRace(Card c, int race)",
+		"desc": "Checks if the a Card (Card c) has the given race (RACE_x)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAttribute(Card c, int attribute)",
+		"desc": "Checks if the a Card (Card c) has the given attribute (ATTRIBUTE_x)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsReason(Card c, int reason)",
+		"desc": "Checks if something has happened to a Card (Card c) because of the given reason (REASON_x)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsStatus(Card c, int status)",
+		"desc": "Checks if the a Card (Card c) has the given status (STATUS_x)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsNotTuner(Card c)",
+		"desc": "Checks if the a Card (Card c) is not a tuner"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetStatus(Card c, int state, bool enable)",
+		"desc": "Sets the status (STATUS_x) of a Card (Card c) and possibly enables it"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDualState(Card c)",
+		"desc": "Checks if a Card (Card c) is a Gemini monster with its effect enabled"
+	},
+	{
+		"sig": "void",
+		"name": "Card.EnableDualState(Card c)",
+		"desc": "Enables the Gemini effect of a card (Card c)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetTurnCounter(Card c, int counter)",
+		"desc": "Sets the turn counter of a Card (Card c) to a value (int count)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetTurnCounter(Card c)",
+		"desc": "Gets the turn counter of a Card (Card c)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetMaterial(Card c, Group g)",
+		"desc": "Sets the Material of a Card (Card c) to another Group (Group g)"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetMaterial(Card c)",
+		"desc": "Gets the material which was used as cost for a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetMaterialCount(Card c)",
+		"desc": "Gets the number of materials used as cost for a Card (Card c)"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetEquipGroup(Card c)",
+		"desc": "Gets a Group of Cards equipped to a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetEquipCount(Card c)",
+		"desc": "Gets the number of cards equipped to a Card (Card c)"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetEquipTarget(Card c)",
+		"desc": "Gets the Card that a Card (Card c) is equipped to"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetPreviousEquipTarget(Card c)",
+		"desc": "Gets the Card that a Card (Card c) was equipped to"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.CheckEquipTarget(Card c1, Card c2)",
+		"desc": "Checks if a Card (Card c1) has another Card (Card c2) as equip target"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetUnionCount(Card c)",
+		"desc": "Gets Amount of Union monsters equipped to a Card (Card c)"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetOverlayGroup(Card c)",
+		"desc": "Gets the cards overlayed to a Card (Card c)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOverlayCount(Card c)",
+		"desc": "Gets the number of cards overlayed to a Card (Card c)"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetOverlayTarget(Card c)",
+		"desc": "Gets the card that (Card c) is an overlay of"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.CheckRemoveOverlayCard(Card c, int player, int count, int reason)",
+		"desc": "Checks if the player (int player) can remove a number (int count) of Xyz materials from a Card c for a specific reason (int reason)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.RemoveOverlayCard(Card c, int player, int min, int max, int reason)",
+		"desc": "Makes player (int Player) remove overlay cards from a Card (Card c), with minimum of (int min) and maximum of (int max) with (int reason) as reason"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetAttackedGroup(Card c)",
+		"desc": "Gets a group of cards attacked by Card c, cleared before drawing and when starting second Battle Phase"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetAttackedGroupCount(Card c)",
+		"desc": "Gets the number of cards attacked by Card c, set to 0 before drawing and when starting second Battle Phase"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetAttackedCount(Card c)",
+		"desc": "Gets the number of successful(not negated) attacks done by Card c, set to 0 before drawing and when starting second Battle Phase"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetBattledGroup(Card c)",
+		"desc": "Gets a Group of cards that are battled (all the attacking and the attacked cards), cleared at predraw and when starting second Battle Phase"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetBattledGroupCount(Card c)",
+		"desc": "Gets the count of cards that has battled (all the attacking and the attacked cards)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetAttackAnnouncedCount(Card c)",
+		"desc": "Gets the number of attacks declared by Card c, set to 0 before drawing and when starting second Battle Phase"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDirectAttacked(Card c)",
+		"desc": "Checks if a Card (Card c) has successfully attacked directly"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetCardTarget(Card c1, Card c2)",
+		"desc": "Sets the second card (Card c2) as a target of the first card (Card c1)"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetCardTarget(Card c)",
+		"desc": "Gets the group of cards that a card (Card c) is assigned targets to"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetFirstCardTarget(Card c)",
+		"desc": "Get the first of a card (Card c)'s target cards. A bit faster than Card.GetCardTarget(Card c):GetFirst()"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetCardTargetCount(Card c)",
+		"desc": "Gets the number of targets that a card (Card c) is assigned to"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsHasCardTarget(Card c1, Card c2)",
+		"desc": "Checks whether the second card (Card c2) is a target of the first card (Card c1)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.CancelCardTarget(Card c1, Card c2)",
+		"desc": "Removes the second card (Card c2) from the list of the first card (Card c1)'s target"
+	},
+	{
+		"sig": "Group",
+		"name": "Card.GetOwnerTarget(Card c)",
+		"desc": "Gets a group of cards (including equips) that a card (Card c) is a target of"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetOwnerTargetCount(Card c)",
+		"desc": "Gets the number of cards (including equips) that a card (Card c) is a target of"
+	},
+	{
+		"sig": "Effect",
+		"name": "Card.GetActivateEffect(Card c)",
+		"desc": "Gets a card (Card c)'s EFFECT_TYPE_ACTIVATE effect"
+	},
+	{
+		"sig": "Effect[,Group,int,int,Effect,int,int]",
+		"name": "Card.CheckActivateEffect(Card c, bool neglect_con, bool neglect_cost, bool copy_info)",
+		"desc": "Checks a card (Card c)'s EFFECT_TYPE_ACTIVATE effect while checking for whether it can be activated. Returns _nil_ if effect condition is not met. Set _neglect_con_ to _true_ to ignore condition checking. Set _neglect_cost_ to _true_ to ignore cost payable checking. Set _copy_info_ to true to return the activate effect's supposed info, for other than EVENT_FREE_CHAIN usually (eg,ep,ev,r,re,rp)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.RegisterEffect(Card c, Effect e[, bool forced=false])",
+		"desc": "Registers an Effect (Effect e) (usually an Effect created with Effect.CreateEffect()) to a Card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsHasEffect(Card c, int code)",
+		"desc": "Checks if a Card (Card c) has an Effect (EFFECT_x)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ResetEffect(Card c, int reset_code, int reset_type)",
+		"desc": "Resets all effects of a Card (Card c) (e.g. \"c:ResetEffect(RESET_DISABLE,RESET_EVENT)\")"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetEffectCount(Card c, int code)",
+		"desc": "Gets the amount of an Effect (EFFECT_x) registered to a Card (Card c)"
+	},
+	{
+		"sig": "Effect",
+		"name": "Card.RegisterFlagEffect(Card c, int code, int reset_flag, int property, int reset_count[, int label, int desc])",
+		"desc": "Registers a flag effect to a card (Card c) with (int code) as the effect code"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetFlagEffect(Card c, int code)",
+		"desc": "Gets the flag effect with (int code) as the effect code that is registered to a card (Card c), returns 0 if no effect, a positive integer otherwise"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ResetFlagEffect(Card c, int code)",
+		"desc": "Resets a flag with (int code) as the effect code from a card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.SetFlagEffectLabel(Card c, int code, int label)",
+		"desc": "Assigns an integer (int label) number to the flag effect attached to a card (Card c) with (int code) as the effect code"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetFlagEffectLabel(Card c, int code)",
+		"desc": "Gets the integer label to the flag effect attached to a card (Card c) with (int code) as the effect code. Defaults to 0"
+	},
+	{
+		"sig": "void",
+		"name": "Card.CreateRelation(Card c1, Card c2, int reset_flag)",
+		"desc": "Creates a relation between the first card (Card c1) and the second card (Card c2), which will be reset when the first card hits the reset flag"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ReleaseRelation(Card c1, Card c2)",
+		"desc": "Releases the relation between the first card (Card c1) and the second card (Card c2). Does not release relation from the second card that is resulting from _c2:CreateRelation(c1)_"
+	},
+	{
+		"sig": "void",
+		"name": "Card.CreateEffectRelation(Card c, Effect e)",
+		"desc": "Creates a relation between a card (Card c) and an effect (Effect e)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ReleaseEffectRelation(Card c,Effect e)",
+		"desc": "Releases any relation between a card (Card c) and an effect (Effect e)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ClearEffectRelation(Card c)",
+		"desc": "Clears any relation between a card (Card c) and all effects and chains"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRelateToEffect(Card c, Effect e)",
+		"desc": "Checks whether a card (Card c) is related to an effect (Effect e)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRelateToChain(Card c, int chainc)",
+		"desc": "Checks whether a card (Card c) is related to the chain numbered (int chainc)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRelateToCard(Card c1, Card c2)",
+		"desc": "Checks whether a card (Card c1) is related to another card (Card c2) (That results from _c1:CreateRelation(c2)_)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRelateToBattle(Card c)",
+		"desc": "Checks whether a card (Card c) is related to battle (either as attacker or as an attack target)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.CopyEffect(Card c, int code, int reset_flag[, int reset_count])",
+		"desc": "Temporarily adds to a card (Card c) the effect of card with the specified card code (int code) that resets according to the ascribed reset flag (int reset_flag)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.ReplaceEffect(Card c, int code, int reset_flag[, int reset_count])",
+		"desc": "Temporarily replace all effects of a card (Card c) with the effect of card with the specified card code (int code) that resets according to the ascribed reset flag (int reset_flag)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.EnableUnsummonable(Card c)",
+		"desc": "Makes a card (Card c) unsummonable except with it's own procedure"
+	},
+	{
+		"sig": "void",
+		"name": "Card.EnableReviveLimit(Card c)",
+		"desc": "Makes a card (Card c) unsummonable except with it's own procedure, or after it's Summon procedure is complete"
+	},
+	{
+		"sig": "void",
+		"name": "Card.CompleteProcedure(Card c)",
+		"desc": "Makes a card (Card c) be considered that it's Summon procedure is complete"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDisabled(Card c)",
+		"desc": "Checks whether a card (Card c) is disabled, equivalent with c:IsStatus(STATUS_DISABLED)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDestructable(Card c[, Effect e])",
+		"desc": "Checks whether a card (Card c) can be destroyed; if an effect (effect e) is given, checks whether the card can be destroyed by that effect"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSummonableCard(Card c)",
+		"desc": "Checks if a card (Card c) is normally summonable, returns false when the card is subject of Card.EnableUnsummonable or Card.EnableReviveLimit"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSpecialSummonable(Card c)",
+		"desc": "Checks if a card (Card c) is summonable by it's summon procedure"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSynchroSummonable(Card c ,Card tuner|nil[, Group mg])",
+		"desc": "Checks if a card (Card c) is able to be Synchro Summoned. How this works is that the script would check for all EFFECT_SPSUMMON_PROC that has SUMMON_TYPE_SYNCHRO as it's Value, then checks the effects' Condition with the provided arguments. Check out \"Auxiliary.SynCondition\" in \"utility.lua\" for how this is handled."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsXyzSummonable(Card c, Group mg|nil[, min=0, max=0])",
+		"desc": "Checks if a card (Card c) is able to be Xyz Summoned How this works is that the script would check for all EFFECT_SPSUMMON_PROC that has SUMMON_TYPE_XYZ as it's Value, then checks the effects' Condition with the provided arguments. Check out \"Auxiliary.XyzCondition\" in \"utility.lua\" for how this is handled."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSummonable(Card c, bool ignore_count, Effect e|nil[, int min=0])",
+		"desc": "Checks whether a card (Card c) can be Normal Summoned. Setting ignore_count to true makes it ignore the standard once per turn summon limit. If an effect (Effect e) is given, checks whether it can be Normal Summoned by that effect. The last value denotes the minimum tribute amount."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsMSetable(Card, bool ignore_count, Effect e|nil[, int min=0])",
+		"desc": "Checks whether a card (Card c) can be Normal Set as a monster. Setting ignore_count to true makes it ignore the standard once per turn summon limit. If an effect (Effect e) is given, checks whether it can be Normal Summoned by that effect. The last value denotes the minimum tribute amount."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsSSetable(Card c[, bool ignore_field=false])",
+		"desc": "Checks whether a card (Card c) can be Set in S/T zone. Setting ignore_field to true makes it ignore the presence of any Field Spell Card."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeSpecialSummoned(Card c, Effect e, int sumtype, int sumplayer, bool nocheck, bool nolimit[, int sumpos=POS_FACEUP, int target_player=sumplayer])",
+		"desc": "Checks whether a card (Card c) can be Special Summoned"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToHand(Card c)",
+		"desc": "Return if the card c can be returned to the hand (return true or false)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToDeck(Card c)",
+		"desc": "Return if the card c can be returned to the Deck (return true or false)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToExtra(Card c)",
+		"desc": "Return if the card c can be returned to the Extra Deck (return true or false)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToGrave(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to the Graveyard"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToRemove(Card c[, int player])",
+		"desc": "Checks if a card (Card c) is able to be banished"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToHandAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to the Hand as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToDeckAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to the Deck as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToExtraAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to the Extra Deck as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToDeckOrExtraAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to either the Deck or the Extra Deck as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToGraveAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to go to the Graveyard as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToRemoveAsCost(Card c)",
+		"desc": "Checks if a card (Card c) is able to be banished as a cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsReleasable(Card c)",
+		"desc": "Checks if a card (Card c) is able to be Tributed"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsReleasableByEffect(Card c)",
+		"desc": "Checks if a card (Card c) is able to be Tributed by a card effect"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDiscardable(Card[, int reason=REASON_COST])",
+		"desc": "Checks if a card (Card c) can be discarded. If reason (int reason) is provided, checks if that card can be discarded with that reason"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAttackable(Card c)",
+		"desc": "Checks if a card (Card c) can attack"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsChainAttackable(Card c[, int ac = 2, bool monsteronly = false])",
+		"desc": "Checks if a card (Card c) can make a follow-up attack. Specifying the integer ac checks whether it can attack that number of times. Setting monsteronly to true checks only the possibility of follow-up attack to monster"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsFaceup(Card c)",
+		"desc": "Checks if a card (Card c) is face-up"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAttackPos(Card c)",
+		"desc": "Checks if a card (Card c) is in Attack position"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsFacedown(Card c)",
+		"desc": "Checks if a card (Card c) is face-down"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDefensePos(Card c)",
+		"desc": "Checks if a card (Card c) is in Defense position"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsPosition(Card c, int pos)",
+		"desc": "Checks if a card (Card c) is in the specified position (int pos)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsPreviousPosition(Card c, int pos)",
+		"desc": "Checks if a card (Card c) is previously in the specified position (int pos)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsControler(Card c, int controler)",
+		"desc": "Checks if a card (Card c) has player (int p) as it's controler"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsOnField(Card c)",
+		"desc": "Checks if a card (Card c) is located on the field"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsLocation(Card c, int location)",
+		"desc": "Checks if a card (Card c) is located on the specified location (int location)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsPreviousLocation(Card c, int location)",
+		"desc": "Checks if a card (Card c) is previously located on the specified location (int location)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsLevelBelow(Card c, int level)",
+		"desc": "Checks if a card (Card c) has level equal or below the specified number (int level), will return false if the card has no level."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsLevelAbove(Card c, int level)",
+		"desc": "Checks if a card (Card c) has level equal or above the specified number (int level), will return false if the card has no level."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRankBelow(Card c, int rank)",
+		"desc": "Checks if a card (Card c) has rank equal or below the specified number (int rank), will return false if the card has no rank"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsRankAbove(Card c, int rank)",
+		"desc": "Checks if a card (Card c) has rank equal or above the specified number (int rank), will return false if the card has no rank"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAttackBelow(Card c, int atk)",
+		"desc": "Checks if a card (Card c) has ATK equal or below the specified number (int attack), will return false if the card has ? ATK and is not face-up on the field."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAttackAbove(Card c, int atk)",
+		"desc": "Checks if a card (Card c) has ATK equal or above the specified number (int attack), will return false if the card has ? ATK and is not face-up on the field."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDefenseBelow(Card c, int def)",
+		"desc": "Checks if a card (Card c) has DEF equal or below the specified number (int defense), will return false if the card has ? DEF and is not face-up on the field."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsDefenseAbove(Card c, int def)",
+		"desc": "Checks if a card (Card c) has DEF equal or above the specified number (int defense), will return false if the card has ? DEF and is not face-up on the field."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsPublic(Card c)",
+		"desc": "Checks if a card's (Card c) information is known to both players. In practice, about the same as c:IsPosition(POS_FACEUP)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsForbidden(Card c)",
+		"desc": "Checks if a card (Card c) is forbidden to be used (equal to calling c:IsStatus(STATUS_FORBIDDEN))"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsAbleToChangeControler(Card c)",
+		"desc": "Checks if a card (Card c) is capable of having it's control changed. Checks only whether the card is affected by EFFECT_CANNOT_CHANGE_CONTROL."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsControlerCanBeChanged(Card c)",
+		"desc": "Checks if a card (Card c) can change control. Checks whether the card is in Monster Zone and whether the opposing player has enough space, in addition of checking for EFFECT_CANNOT_CHANGE_CONTROL."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.AddCounter(Card c, int countertype, int count[, int singly=false])",
+		"desc": "Adds a number (int count) of the specified counter (int countertype) to a card (Card c). If singly is set to a number, then it will be added by that number each time. When the number of added counter would exceed the limit for that card, it is not added."
+	},
+	{
+		"sig": "void",
+		"name": "Card.RemoveCounter(Card c, int player, int countertype, int count, int reason)",
+		"desc": "Remove a number (int count) of the specified counter (int countertype) from a card (Card c), with reason described by (int reason)"
+	},
+	{
+		"sig": "int",
+		"name": "Card.GetCounter(Card c, int countertype)",
+		"desc": "Gets the number of counter (int countertype) on a card (Card c)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.EnableCounterPermit(Card c, int countertype[, int location])",
+		"desc": "Makes the card (Card c) able to hold a type of counter (int countertype). If a location is provided (int location), the card will be able to hold counter only when in the specified location."
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetCounterLimit(Card c, int countertype, int count)",
+		"desc": "Sets the limit (int count) of how many counter of a type (int countertype) can be held by a card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanTurnSet(Card c)",
+		"desc": "Checks if a card (Card c) can be made to face-down position (Set)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanAddCounter(Card c, int countertype, int count[, int singly=false])",
+		"desc": "Checks if a number (int count) of the specified counter (int countertype) can be added to a card (Card c). When the number of added counter would exceed the limit for that card, if singly is set to an integer, then it may return true if the amount of singly doesn't exceed the limit, otherwise, it will return false."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanRemoveCounter(Card c, int player, int countertype, int count, int reason)",
+		"desc": "Checks if a number (int count) of the specified counter (int countertype) can be removed from a card (Card c), with reason described by (int reason)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeFusionMaterial(Card c[, Card fc, bool ignore_mon=false])",
+		"desc": "Checks if a card (Card c) can be a Fusion material. If (Card fc) is provided, checks if it can be a Fusion Material for that card. If ignore_mon is true, it does not check whether the card is a monster."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeSynchroMaterial(Card c[, Card sc, Card tuner])",
+		"desc": "Checks if a card (Card c) can be used as a Synchro Material. If (Card sc) is provided, checks if it can be a Synchro Material for that card. If (Card tuner) is also provided, also checks if it can be a Synchro Material if the tuner if that card."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeRitualMaterial(Card c[, Card sc])",
+		"desc": "Checks if a card (Card c) can be used as Tribute for Ritual Summon. If (Card sc) is provided, checks if it can be used as Tribute for that card's Ritual Summon."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeXyzMaterial(Card c, Card sc|nil)",
+		"desc": "Checks if a card (Card c) can be used as an Xyz Material. If (Card sc) is provided, checks if it can be used for that card's Xyz Summon."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.CheckFusionMaterial(Card c[, Group g, Card gc|nil, int chkf=PLAYER_NONE])",
+		"desc": "Check if g contains a set of fusion material that c needs [must contain gc] ## Check the Condition function for the effect of EFFECT_FUSION_MATERIAL according to the type of c"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.CheckFusionSubstitute(Card c, Card fc)",
+		"desc": "Checks if a card (Card c) can be treated as a substitute for one of a Fusion Monster's (Card fc) Fusion Material."
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsImmuneToEffect(Card c, Effect e)",
+		"desc": "Checks if a card (Card c) is not affected by an effect (Effect e)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeEffectTarget(Card c, Effect e)",
+		"desc": "Checks if a card (Card c) is targetable by an effect (Effect e)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.IsCanBeBattleTarget(Card c1, Card c2)",
+		"desc": "Checks if a card (Card c1) is a valid battle target for another card (Card c2)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.AddMonsterAttribute(Card c, int extra_type, [int attribute, int race, int level, int atk, int def])",
+		"desc": "Transforms a card (Card c) to a monster. The card type will become TYPE_MONSTER + extra_type. Uses the values if provided, otherwise uses the card's own values in Database. Be aware that the values added using this (except for Card type) will be reset when the card is flipped face-down."
+	},
+	{
+		"sig": "void",
+		"name": "Card.AddMonsterAttributeComplete(Card c)",
+		"desc": "Used in conjunction with Card.AddMonsterAttribute, completes a card's (Card c) tranformation to a monster. It is best to call this after the card has arrived in Monster Zone (i.e. after Duel.SpecialSummonStep). Does nothing with cards without EFFECT_PRE_MONSTER (added automatically by Card.AddMonsterAttribute)."
+	},
+	{
+		"sig": "void",
+		"name": "Card.CancelToGrave(Card c[, bool cancel=true])",
+		"desc": "if cancel is true, cancels the to-grave rule and movement of a card (Card c). If false, enforce the rule that it must go from the field to Graveyard instead."
+	},
+	{
+		"sig": "int,int",
+		"name": "Card.GetTributeRequirement(Card c)",
+		"desc": "Give a min and a max tribute requeriment of a card"
+	},
+	{
+		"sig": "Card",
+		"name": "Card.GetBattleTarget(Card c)",
+		"desc": "Gets a card's (Card c) current battle target"
+	},
+	{
+		"sig": "Group,bool",
+		"name": "Card.GetAttackableTarget(Card c)",
+		"desc": "Gets a card's (Card c) valid attack targets"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetHint(Card c, int type, int value)",
+		"desc": "Sets a card (Card c) hint displaying, type is CHINT_* and value is the appropriate value depending on the type"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ReverseInDeck(Card c)",
+		"desc": "Reverse a card (Card c) in Deck (make it face-up)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetUniqueOnField(Card c, int s, int o, int unique_code[, int unique_location=LOCATION_ONFIELD])",
+		"desc": "Sets a card's (Card c) \"Can only control 1\" clause, int s denotes checking of the would-be owner's field, int o denotes checking the opposing field. unique_location denotes the location the card is unique (setting location outide the fueld has no meaning)"
+	},
+	{
+		"sig": "bool",
+		"name": "Card.CheckUniqueOnField(Card c,int check_player)",
+		"desc": "Checks if a card's (Card c) going to a player's (int player) field would violate the \"Can only control 1\" clause"
+	},
+	{
+		"sig": "void",
+		"name": "Card.ResetNegateEffect(Card c[, int code1,...])",
+		"desc": "Reset a card c affected by the effect of cards whose card number is code1, code2 ..."
+	},
+	{
+		"sig": "void",
+		"name": "Card.AssumeProperty(Card c,int assume_type, int assume_value)",
+		"desc": "Assume a property for a card (Card c), the card will be considered as having an assumed specific property (int assume_type) as the inputted value (int assume_value) (only as long as the function is still processing)"
+	},
+	{
+		"sig": "void",
+		"name": "Card.SetSPSummonOnce(Card c, int spsummon_code)",
+		"desc": "Make a card (Card c) can only be Special Summoned when the turn has not Special Summoned another card with the same code (int code) as its Card.SetSpecialSummonOnce. Basically, makes the \"You can only Special Summon \"Some Monster\" once per turn\" condition"
+	},
+	{
+		"sig": "Effect",
+		"name": "Effect.CreateEffect(Card c)",
+		"desc": "Create a new effect object with a card (Card c) as it's owner"
+	},
+	{
+		"sig": "Effect",
+		"name": "Effect.GlobalEffect()",
+		"desc": "Create a new effect object without owner"
+	},
+	{
+		"sig": "Effect",
+		"name": "Effect.Clone(Effect e)",
+		"desc": "Clone an effect object (Effect e), duplicating all except register status and assigned labels"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.Reset(Effect e)",
+		"desc": "Reset an effect (Effect e), effectively deleting it"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetFieldID(Effect e)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetDescription(Effect e, int desc)",
+		"desc": "Sets an effect's (Effect e) description string id with (int desc) taken from cdb and strings.conf (description in cdb is [cardnumber *16+index], aux.Stringid is a shortcut)."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetCategory(Effect e, int cate)",
+		"desc": "Sets an effect's (Effect e) category. Refer to constant.lua for valid categories."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetType(Effect e, int type)",
+		"desc": "Sets an effect's (Effect e) type. Refer to constant.lua and card scripts that has been already there for valid types (or ask someone)."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetCode(Effect e, int code)",
+		"desc": "Sets an effect's (Effect e) code. Refer to constant.lua and card scripts that has been already there for valid codes (or ask someone)."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetProperty(Effect e, int prop1[, int prop2])",
+		"desc": "Sets an effect's (Effect e) property. Refer to constant.lua and card scripts that has been already there for valid properties (or ask someone)."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetRange(Effect e, int range)",
+		"desc": "Sets an effect's (Effect e) effective range (int range) i.e. LOCATION_MZONE. The location is the effect handler's location."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetAbsoluteRange(Effect e, int playerid, int s_range, int o_range)",
+		"desc": "Sets an effect's (Effect e) target range in perspective of the supplied player (int playerid), s_range denotes the supplied player's range and o_range denotes the opponent's."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetCountLimit(Effect e, int count[, int code=0])",
+		"desc": "Sets an effect's (Effect e) use limit per turn to (int count), if code is supplied, then it would count toward all effects with the same count limit code (i.e. Hard OPT)"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetReset(Effect e, int reset_flag[, int reset_count=1])",
+		"desc": "Sets the timing that the effect (Effect e) would be erased (with reset_flag)"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetLabel(Effect e, int label)",
+		"desc": "Sets an effect's (Effect e) internal label to (int label)"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetLabelObject(Effect e, Card|Group|Effect labelobject)",
+		"desc": "Sets an effect's (Effect e) internal label object to labelobject"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetHintTiming(Effect e, int s_time[, int o_time=s_time])",
+		"desc": "Sets an activated effect's (Effect e) client usage hint timing"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetCondition(Effect e, function con_func)",
+		"desc": "Sets an effect's (Effect e) condition function"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetCost(Effect e, function cost_func)",
+		"desc": "Sets an effect's (Effect e) cost function"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetTarget(Effect e, function targ_func)",
+		"desc": "Sets an effect's (Effect e) target function"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetTargetRange(Effect e, int s_range, int o_range)",
+		"desc": "Sets an effect's (Effect e) target range, s_range denotes the effect's handler player's range and o_range denotes the opponent's."
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetValue(Effect e, function|int|bool val)",
+		"desc": "Sets an effect's (Effect e) value, or value function"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetOperation(Effect e, function op_func)",
+		"desc": "Sets an effect's (Effect e) operation function"
+	},
+	{
+		"sig": "void",
+		"name": "Effect.SetOwnerPlayer(Effect e[, int player])",
+		"desc": "Sets an effect's (Effect e) owner player (the [int player] is actually not optional)"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetDescription(Effect e)",
+		"desc": "Gets an effect's (Effect e) assigned description string id"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetCode(Effect e)",
+		"desc": "Gets an effect's (Effect e) code"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetType(Effect e)",
+		"desc": "Gets an effect's (Effect e) type"
+	},
+	{
+		"sig": "int,int",
+		"name": "Effect.GetProperty(Effect e)",
+		"desc": "Gets an effect's (Effect e) property"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetLabel(Effect e)",
+		"desc": "Gets an effect's (Effect e) internal label"
+	},
+	{
+		"sig": "Card|Group|Effect",
+		"name": "Effect.GetLabelObject(Effect e)",
+		"desc": "Gets an effect's (Effect e) internal label object"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetCategory(Effect e)",
+		"desc": "Gets an effect's (Effect e) category"
+	},
+	{
+		"sig": "Card",
+		"name": "Effect.GetOwner(Effect e)",
+		"desc": "Gets an effect's (Effect e) card owner, if the owner is not a card (GlobalEffect) then returns nil"
+	},
+	{
+		"sig": "Card",
+		"name": "Effect.GetHandler(Effect e)",
+		"desc": "Gets an effect's (Effect e) card handler, if the effect is not attached to a card (i.e. registered to player) it returns nil"
+	},
+	{
+		"sig": "function",
+		"name": "Effect.GetCondition(Effect e)",
+		"desc": "Gets an effect's (Effect e) condition function, returns nil if no function was set"
+	},
+	{
+		"sig": "function",
+		"name": "Effect.GetTarget(Effect e)",
+		"desc": "Gets an effect's (Effect e) target function, returns nil if no function was set"
+	},
+	{
+		"sig": "function",
+		"name": "Effect.GetCost(Effect e)",
+		"desc": "Gets an effect's (Effect e) cost function, returns nil if no function was set"
+	},
+	{
+		"sig": "function|int",
+		"name": "Effect.GetValue(Effect e)",
+		"desc": "Gets an effect's (Effect e) value or value function, returns nil if no function was set"
+	},
+	{
+		"sig": "function",
+		"name": "Effect.GetOperation(Effect e)",
+		"desc": "Gets an effect's (Effect e) operation function, returns nil if no function was set"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetActiveType(Effect e)",
+		"desc": "Gets an effect's (Effect e) card type of activation effect. Activation type is often the effect handler's card type, or the owner's if not attached to a card. Exception for Pendulum scale activation (would return TYPE_SPELL+TYPE_PENDULUM)."
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsActiveType(Effect e, int type)",
+		"desc": "Compares (with OR) an effect's (Effect e) card type of activation effect with supplied type (int type). Activation type is often the handler's card type, or the owner's if not attached to a card. Exception for Pendulum scale activation (would return TYPE_SPELL+TYPE_PENDULUM)."
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetOwnerPlayer(Effect e)",
+		"desc": "Gets an effect's (Effect e) owner player"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetHandlerPlayer(Effect e)",
+		"desc": "Gets an effect's (Effect e) handler player"
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsHasProperty(Effect e, int prop1[, int prop2])",
+		"desc": "Returns true if the effect (Effect e) has any property listed in (int prop1) or (int prop2), otherwise returns false"
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsHasCategory(Effect e, int cate)",
+		"desc": "Returns true if the effect (Effect e) has any category listed in (int cate), otherwise returns false"
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsHasType(Effect e, int type)",
+		"desc": "Returns true if the effect (Effect e) has any type listed in (int type), otherwise returns false"
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsActivatable(Effect e, int player)",
+		"desc": "Checks if an effect (Effect e) can be activated by a player (int player)"
+	},
+	{
+		"sig": "bool",
+		"name": "Effect.IsActivated(Effect e)",
+		"desc": "Checks if an effect (Effect e) is an activated effect (not continuous and is a triggering effect)"
+	},
+	{
+		"sig": "int",
+		"name": "Effect.GetActivateLocation(Effect e)",
+		"desc": "Get the effect's (Effect e) applicable range (gets it's s_range)"
+	},
+	{
+		"sig": "Group",
+		"name": "Group.CreateGroup()",
+		"desc": "Create a new Group object"
+	},
+	{
+		"sig": "void",
+		"name": "Group.KeepAlive(Group g)",
+		"desc": "Make a group (Group g) not be destroyed upon exiting the function"
+	},
+	{
+		"sig": "void",
+		"name": "Group.DeleteGroup(Group g)",
+		"desc": "Destroy a group (Group g)"
+	},
+	{
+		"sig": "Group",
+		"name": "Group.Clone(Group g)",
+		"desc": "Create a copy of a group (Group g) with the same members"
+	},
+	{
+		"sig": "Group",
+		"name": "Group.FromCards(Card c[, ...])",
+		"desc": "Create a new Group object and populate it with cards (Card c, ...)"
+	},
+	{
+		"sig": "void",
+		"name": "Group.Clear(Group g)",
+		"desc": "Empty a group (Group g)"
+	},
+	{
+		"sig": "void",
+		"name": "Group.AddCard(Group g, Card c)",
+		"desc": "Add a card (Card c) to a group (Group g)"
+	},
+	{
+		"sig": "void",
+		"name": "Group.RemoveCard(Group g, Card c)",
+		"desc": "Remove a card (Card c) from a group (Group g)"
+	},
+	{
+		"sig": "Card",
+		"name": "Group.GetFirst(Group g)",
+		"desc": "Gets the first member of Group g (also resets the internal enumerator)"
+	},
+	{
+		"sig": "Card",
+		"name": "Group.GetNext(Group g)",
+		"desc": "Gets then next member of Group g (moves the internal enumerator by a step)"
+	},
+	{
+		"sig": "int",
+		"name": "Group.GetCount(Group g)",
+		"desc": "Gets the amount of objects in a group (Group g)"
+	},
+	{
+		"sig": "void",
+		"name": "Group.ForEach(Group g, function f)",
+		"desc": "Executes a function for each card in a group (Group g), function f should accept one parameter (e.g. f(c), with c as each member of the group)"
+	},
+	{
+		"sig": "Group",
+		"name": "Group.Filter(Group g, function f, Card ex|nil, ...)",
+		"desc": "Create a new group with members from another group (Group g) filtered according to a function (function f). Excludes a card (Card ex) if not nil. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the card will be included if f(c,...) returns true."
+	},
+	{
+		"sig": "int",
+		"name": "Group.FilterCount(Group g, function f, Card ex|nil, ...)",
+		"desc": "Counts the amount of members of a group (Group g) which meets the function (function f). Excludes a card (Card ex) if not nil. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the card will be included if f(c,...) returns true."
+	},
+	{
+		"sig": "Group",
+		"name": "Group.FilterSelect(Group g, int player, function f, int min, int max, Card ex|nil, ...)",
+		"desc": "Make a player (int player) select members of a group (Group g) which meets the function (function f), with a minimum and a maximum, then outputs the result as a new Group. Excludes a card (Card ex) if not nil. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the card will be included if f(c,...) returns true."
+	},
+	{
+		"sig": "Group",
+		"name": "Group.Select(Group g, int player, int min, int max, Card ex|nil)",
+		"desc": "Make a player (int player) select members of a group (Group g), with a minimum and a maximum, then outputs the result as a new Group. Excludes a card (Card ex) if not nil."
+	},
+	{
+		"sig": "Group",
+		"name": "Group.RandomSelect(Group g, int player, int count)",
+		"desc": "Make a player (int player) randomly select (int amount) members of a group (Group g)."
+	},
+	{
+		"sig": "bool",
+		"name": "Group.IsExists(Group g, function f, int count, Card ex|nil, ...)",
+		"desc": "Checks if at least a number (int count) of members of a group (Group g) meet the function (function f). Excludes a card (Card ex) if not nil. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the card will be included if f(c,...) returns true."
+	},
+	{
+		"sig": "bool",
+		"name": "Group.CheckWithSumEqual(Group g, function f, int sum, int min, int max, ...)",
+		"desc": "Checks if there is a combination of cards, with a minimum and maximum, that has the sum of f(c,...) result equal to (int sum) in a group (Group g). Function f accepts at least one parameter (f(c,...). with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "Group",
+		"name": "Group.SelectWithSumEqual(Group g, int player, function f, int sum, int min, int max, ...)",
+		"desc": "Makes a player (int player) select members of a group (Group g) which results in a combination of cards, with a minimum and maximum, that has the sum of f(c,...) result equal to (int sum). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "bool",
+		"name": "Group.CheckWithSumGreater(Group g, function f, int sum, ...)",
+		"desc": "Checks if there is a combination of cards, with a minimum and maximum, that has the sum of f(c,...) result greater than or equal to (int sum) in a group (Group g). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "Group",
+		"name": "Group.SelectWithSumGreater(Group g, int player, function f, int sum, ...)",
+		"desc": "Makes a player (int player) select members of a group (Group g) which results in a combination of cards, with a minimum and maximum, that has the sum of f(c,...) result greater than or equal to (int sum). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "Group,int",
+		"name": "Group.GetMinGroup(Group g, function f, ...)",
+		"desc": "Create a new group with members from another group (Group g) which has the minimum result from f(c,...). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "Group,int",
+		"name": "Group.GetMaxGroup(Group g, function f, ...)",
+		"desc": "Create a new group with members from another group (Group g) which has the maximum result from f(c,...). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "int",
+		"name": "Group.GetSum(Group g, function f, ...)",
+		"desc": "Gets the sum of f(c,...) result from all members of a group (Group g). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "int",
+		"name": "Group.GetClassCount(Group g, function f, ...)",
+		"desc": "Gets the count of different f(c,...) results from all members of a group (Group g). Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the return value should be integer."
+	},
+	{
+		"sig": "void",
+		"name": "Group.Remove(Group g, function f, Card ex|nil, ...)",
+		"desc": "Removes members of a group (Group g) that meets the function (function f). Excludes a card (Card ex) from removal if not nil. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and the card will be included if f(c,...) returns true."
+	},
+	{
+		"sig": "void",
+		"name": "Group.Merge(Group g1, Group g2)",
+		"desc": "Inserts members of the second group (Group g2) to the first group (Group g1). (This will alter g1)"
+	},
+	{
+		"sig": "void",
+		"name": "Group.Sub(Group g1, Group g2)",
+		"desc": "Removes members of the second group (Group g2) from the first group (Group g1). (This will alter g1)"
+	},
+	{
+		"sig": "bool",
+		"name": "Group.Equal(Group g1, Group g2)",
+		"desc": "Checks if the first group (Group g1) has the same members with the second group (Group g2)"
+	},
+	{
+		"sig": "bool",
+		"name": "Group.IsContains(Group g, Card c)",
+		"desc": "Checks if a group (Group g) contains a specifed card (Card c)"
+	},
+	{
+		"sig": "Card",
+		"name": "Group.SearchCard(Group g, function f, ...)",
+		"desc": "Gets the first card found in a group (Group g) which f(c,...) returns true. Function f accepts at least one parameter (f(c,...), with c as each member of the group), and must return a boolean."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.EnableGlobalFlag(int global_flag)",
+		"desc": "Enables the specified global flags (int global_flag) for the rest of the Duel (GLOBALFLAG_x)."
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetLP(int player)",
+		"desc": "Gets a specified player's (int player) current Life Point value"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetLP(int player, int lp)",
+		"desc": "Sets a specified player's (int player) current Life Point value to a value (int lp)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetTurnPlayer()",
+		"desc": "Gets the turn's player"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetTurnCount()",
+		"desc": "Gets the turn count"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetDrawCount(int player)",
+		"desc": "Gets the draw count for normal draw for a player (int player)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.RegisterEffect(Effect e, int player)",
+		"desc": "Register an effect (Effect e) to a player (int player)"
+	},
+	{
+		"sig": "Effect",
+		"name": "Duel.RegisterFlagEffect(int player, int code, int reset_flag, int property, int reset_count)",
+		"desc": "Registers a flag effect to a player (int player) with (int code) as the effect code"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetFlagEffect(int player, int code)",
+		"desc": "Gets the flag effect with (int code) as the effect code that is registered to a player (int player), returns 0 if no effect, a positive integer otherwise"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ResetFlagEffect(int player, int code)",
+		"desc": "Resets a flag with (int code) as the effect code from a player (int player)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Destroy(Card|Group targets, int reason[ ,int dest = LOCATION_GRAVE])",
+		"desc": "Destroys a card or group (Card|Group targets) with (int reason) as reason, if (int dest) is supplied, the destination of the destroyed cards will be it's value"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Remove(Card|Group targets, int pos, int reason[,int player])",
+		"desc": "Banishes a card or group (Card|Group targets) in position as supplied by (int pos) (nil means default banish position), with (int reason) as reason, if (int player) is supplied, the destination would be that player's zone"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SendtoGrave(Card|Group targets, int reason[, int player])",
+		"desc": "Sends a card or group (Card|Group targets) to the Graveyard with (int reason) as reason, if (int player) is supplied, the destination would be that player's Graveyard"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SendtoHand(Card|Group targets, int player|nil, int reason)",
+		"desc": "Sends a card or group (Card|Group targets) to the Hand with (int reason) as reason, if (int player) is supplied, the destination would be that player's Hand"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SendtoDeck(Card|Group targets, int player|nil, int seq, int reason)",
+		"desc": "Sends a card or group (Card|Group targets) to the Deck with (int reason) as reason, if (int player) is supplied, the destination would be that player's Deck. A seq value of 0 means it's put on the top, 1 means it's put on the bottom, other values means it 's put on the top, and the Deck will be shuffled after the function resolution except if Duel.DisableShuffleCheck() is set to true beforehand."
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SendtoExtraP(Card|Group targets, int player|nil, int reason)",
+		"desc": "Sends a card or group (Card|Group targets) to the Extra Deck face-up with (int reason) as reason, if (int player) is supplied, the destination would be that player's Extra Deck (for Pendulum monsters only)"
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetOperatedGroup()",
+		"desc": "Gets the last group of operated cards (from last call of some functions, ex. calling this after Duel.Draw would return a group of the drawn cards)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.Summon(int player, Card c, bool ignore_count, Effect e|nil[, min=0])",
+		"desc": "A player Normal Summons a card (Card c) using Normal Summon proc that the card has. if ignore_count is true, the Summon would not count towards the standard limit of Normal Summon/Set. If an effect (Effect e) is provided, the Normal Summon is counted as a Summon by that effect. if min>0 then the Summon proc must need that amount or more tributes."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SpecialSummonRule(int player, Card c)",
+		"desc": "A player (int player) Special Summons a card (Card c) using Special Summon proc that the card has"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SynchroSummon(int player, Card c, Card tuner[, Group mg])",
+		"desc": "A player (int player) Synchro Summons a card (Card c) using Synchro Summon proc that the card has, using materials described by the function parameters (Card tuner[, Group mg])"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.XyzSummon(int player, Card c, Group mg|nil[, min=0, max=0])",
+		"desc": "A player (int player) Xyz Summons a card (Card c) using Xyz Summon proc that the card has, using materials described by the function parameters (Group mg|nil[, min=0, max=0])"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.MSet(int player, Card c, bool ignore_count, Effect e|nil[, min=0])",
+		"desc": "A player Sets a card (Card c) using Normal Summon proc that the card has. if ignore_count is true, the Set would not count towards the standard limit of Normal Summon/Set. If an effect (Effect e) is provided, the Normal Set is counted as a Set by that effect. if min>0 then the Set proc must need that amount or more tributes."
+	},
+	{
+		"sig": "void|int",
+		"name": "Duel.SSet(int player, Card|Group targets[, int target_player = player])",
+		"desc": "A player Sets a card/cards (Card|Group target) to the Spell and Trap Card Zone. If target_player is provided, then the player will Set the card to that target player"
+	},
+	{
+		"sig": "Card",
+		"name": "Duel.CreateToken(int player, int code[, int setcode, int attack, int defense, int level, int race, int attribute])",
+		"desc": "Create a token for a player (int player) with card code (int code)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SpecialSummon(Card|Group targets, int sumtype, int sumplayer, int target_player, bool nocheck, bool nolimit, int pos)",
+		"desc": "A player (int sumplayer) Special Summons a card/group of cards (Card|Group targets) with summon type described with SUMMON_TYPE_x (int sumtype) to a player's (int target_player) field."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.SpecialSummonStep(Card c, int sumtype, int sumplayer, int target_player, bool nocheck, bool nolimit, int pos)",
+		"desc": "A player (int sumplayer) Special Summons a card (Card c) with summon type described with SUMMON_TYPE_x (int sumtype) to a player's (int target_player) field."
+	},
+	{
+		"sig": "void|int",
+		"name": "Duel.SpecialSummonComplete()",
+		"desc": "Completes Special Summons conducted with Duel.SpecialSummonStep"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsCanAddCounter(int player, int countertype, int count, Card c)",
+		"desc": "Checks whether a player (int player) can add a number (int count) of counters (int countertype) to a card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.RemoveCounter(int player, int s, int o, int countertype, int count, int reason)",
+		"desc": "Makes a player (int player) remove counter(s) (int countertype) (int count) from the field with a reason (int reason). The variables int s and int o are the player's and the opponent's field, respecitvely, 0 to exclude and 1 (or higher) to include."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsCanRemoveCounter(int player, int s, int o, int countertype, int count, int reason)",
+		"desc": "Checks if a player (int player) can remove counter(s) (int countertype) (int count) from the field with a reason (int reason). The variables int s and int o are the player's and the opponent's field, respecitvely, 0 to exclude and 1 (or higher) to include."
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetCounter(int player, int s, int o, int countertype)",
+		"desc": "Gets the number of counter (int countertype) on the field, from a player's (int player) perspective. The variables int s and int o are the player's and the opponent's field, respecitvely, 0 to exclude and 1 (or higher) to include."
+	},
+	{
+		"sig": "int",
+		"name": "Duel.ChangePosition(Card|Group targets, int au[, int ad=au, int du=au, int dd=au, bool noflip=false, bool setavailable=false])",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Release(Card|Group targets, int reason)",
+		"desc": "Tribute a card(s) (Card|Group targets) with listed reason (int reason)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.MoveToField(Card c, int move_player, int target_player, int dest, int pos, bool enabled)",
+		"desc": "A player (int move_player) moves a card (Card c) to the target player's field. The destination must be either LOCATION_MZONE or LOCATION_SZONE (maybe LOCATION_ONFIELD too). It will be sent with the given position (int pos). Its effects will either be enabled or disabled according to the last parameter (bool enabled)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.ReturnToField(Card c[, int pos])",
+		"desc": "Return a card (Card c) to the field (only valid for cards that leaves the field with REASON_TEMPORARY, pos denotes the return position (if not specifed, uses the card's previous posistion on field)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.MoveSequence(Card c, int seq)",
+		"desc": "Move a card (Card c) to another sequence within it's location (int seq)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetChainLimit(function f)",
+		"desc": "Sets a function for limiting effects that could chain from this point for the chain, removed when an effect is chained to the current chain. Function f accepts at most 3 parameters [f(e,tp,p)] in which e is the effect that would be chained, tp is the same tp form the effect function where this function is called , and p is the player who would activate the would-be chaining effect."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetChainLimitTillChainEnd(function f)",
+		"desc": "Sets a function for limiting effects that could chain from this point for the chain until the end of the chain. Function f accepts at most 3 parameters [f(e,tp,p)] in which e is the effect that would be chained, tp is the same tp form the effect function where this function is called , and p is the player who would activate the would-be chaining effect."
+	},
+	{
+		"sig": "Effect",
+		"name": "Duel.GetChainMaterial(int player)",
+		"desc": "Gets the EFFECT_CHAIN_MATERIAL field effect that is applied to a player (int player). Would only get the first effect it founds."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ConfirmDecktop(int player, int count)",
+		"desc": "Made a number (int count) of cards from the top of a player's (int player) Deck known to both players"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ConfirmCards(int player, Card|Group targets)",
+		"desc": "Confirm the informations of a card/group of cards (Card|Group targets) to the specified player (int player)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SortDecktop(int sort_player, int target_player, int count)",
+		"desc": "Player (int sort_player) sorts an amount of cards (int count) of a player's (int target_player) decktop"
+	},
+	{
+		"sig": "bool[,Group,int,int,Effect,int,int]",
+		"name": "Duel.CheckEvent(int event[, bool get_info])",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.RaiseEvent(Group|Card eg, int code, Effect re, int r, int rp, int ep, int ev)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.RaiseSingleEvent(Card ec, int code, Effect re, int r, int rp, int ep, int ev)",
+		"desc": "Raises an Event which can for example trigger other Effects with the entered Code"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckTiming(int timing)",
+		"desc": ""
+	},
+	{
+		"sig": "int,int",
+		"name": "Duel.GetEnvironment()",
+		"desc": "Gets the environment code for the applied field card (the same as the Field Spell's code, usually). Returns the code, then the controlling player. Prioritizes the first player."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsEnvironment(int code[, int player=PLAYER_ALL])",
+		"desc": "Checks if the environntment contains a code (int code). If specified, checks only for the player's (int player) side."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.Win(int player, int win_reason)",
+		"desc": "Player (int player) wins the Duel for a reason (REASON_x)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Draw(int player, int count, int reason)",
+		"desc": "Player (int player) draws a specific amount (int count) of Cards for a reason (REASON_x)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Damage(int player, int value, int reason[, bool is_step=false])",
+		"desc": "Damages/Decreases player's (int player) Life Points by an amount (int value) for a reason (REASON_x). Setting is_step to true made the damage considered dealt at the call of Duel.RDComplete()"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.Recover(int player, int value, int reason[, bool is_step=false])",
+		"desc": "Increases player's (int player) Life Points by an amount (int value) for a reason (REASON_x). Setting is_step to true made the recovery considered being done at the call of Duel.RDComplete()"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.RDComplete()",
+		"desc": "Complete Damage/Recover step (for simultaneous damage/recovery)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.Equip(int player, Card c1, Card c2[, bool up=true, bool is_step=false])",
+		"desc": "A Player (int player) equips a Card (Card c1) to another Card (Card c2)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.EquipComplete()",
+		"desc": "Concludes a series of Equips (Always used with 'is_step = true' in Duel.Equip())"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.GetControl(Card|Group targets, int player[, int reset_phase=0, int reset_count=0])",
+		"desc": "Give control of a card/group (Card|Group targets) to a player (int player). If reset_phase and reset_count is specified, will behave like other effects with those resets (and so, the control will be returned when the effect has expired). Works only for monsters in Monster Zone."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.SwapControl(Card c1, Card c2[, int reset_phase=0, int reset_count=0])",
+		"desc": "Swaps control of 2 cards (Card c1, Card c2). If reset_phase and reset_count is specified, will behave like other effects with those resets (and so, the control will be returned when the effect has expired). Works only for monsters in Monster Zone."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckLPCost(int player, int cost)",
+		"desc": "Checks if a player (int player) can pay an amount (int cost) of LP"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.PayLPCost(int player, int cost)",
+		"desc": "Make a player (int player) pay an amount (int cost) of LP"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.DiscardDeck(int player, int count, int reason)",
+		"desc": "A player (int player) sends the top n cards (int count) to the Graveyard (discard mechanic) with a reason (int reason)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.DiscardHand(int player, function f, int min, int max, int reason, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.DisableShuffleCheck([disable=true])",
+		"desc": "If disable is true, makes an action that adds/removes a card(s) from/to Deck/hand not trigger the shuffle check at the end of the the current routine execution. Putting false would revert to normal behavior."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ShuffleDeck(int player)",
+		"desc": "shuffle the player deck"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ShuffleHand(int player)",
+		"desc": "shuffle the player hand"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ShuffleSetCard(Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeAttacker(Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ReplaceAttacker(Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.ChangeAttackTarget(Card c|nil)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ReplaceAttackTarget(Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.CalculateDamage(Card c1, Card c2)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetBattleDamage(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeBattleDamage(int player, int value[, bool check=true])",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeTargetCard(int chainc, Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeTargetPlayer(int chainc, in player)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeTargetParam(int chainc, int param)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.BreakEffect()",
+		"desc": "Breaks the effect from one action to another to make sequential actions."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChangeChainOperation(int chainc, function f)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.NegateActivation(int chainc)",
+		"desc": "negate the activation of a effect"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.NegateEffect(int chainc)",
+		"desc": "negate the effect"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.NegateRelatedChain(Card c, int reset)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.NegateSummon(Card|Group targets)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.IncreaseSummonedCount([Card c])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckSummonedCount([Card c])",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetLocationCount(int player, int location[, int use_player, int reason = LOCATION_REASON_TOFIELD])",
+		"desc": ""
+	},
+	{
+		"sig": "Card",
+		"name": "Duel.GetFieldCard(int player, int location, int seq)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckLocation(int player, int location, int seq)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetCurrentChain()",
+		"desc": "Gets the current chain"
+	},
+	{
+		"sig": "...",
+		"name": "Duel.GetChainInfo(int chainc, ...)",
+		"desc": "Gets the chain number (int chainc), or current chain if it's 0, various informations (described by constant group CHAININFO_)"
+	},
+	{
+		"sig": "Card,...",
+		"name": "Duel.GetFirstTarget()",
+		"desc": "Gets the current chain's first target card (first here doesn't mean \"first when selected\", so don't rely on this for multi-target effect)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetCurrentPhase()",
+		"desc": "Gets the current Phase of the game (corresponds to PHASE_x in constants.lua)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SkipPhase(int player, int phase, int reset_flag, int reset_count[, int value])",
+		"desc": "Makes the specified player (int player) skips the encountered phase (int phase), the effect is reset when reset_flag is met reset_count times. (int value) sets the skip effect's value (don't know what it's used for though...)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsDamageCalculated()",
+		"desc": "Returns true if damage has been calculated during the current (or previous) damage calculation, otherwise returns false"
+	},
+	{
+		"sig": "Card",
+		"name": "Duel.GetAttacker()",
+		"desc": "Gets the attacking card (or nil if there is no attacker)"
+	},
+	{
+		"sig": "Card|nil",
+		"name": "Duel.GetAttackTarget()",
+		"desc": "Gets the attack target card (or nil if there's no attack target/the attack is a direct attack)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.NegateAttack()",
+		"desc": "Negates the current attack. Has no effect if the game has confirmed battle (about to enter Damage Step)"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ChainAttack([Card c])",
+		"desc": "Makes the currently attacking card attacks a card (Card c) after it's current attack"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.Readjust()",
+		"desc": "Makes the game do the adjustments ( win, disable, control, self destroy, equip, position, trap monster), Calling this while adjusting (most likely, in EVENT_ADJUST) four times with the same card (calling this will raise EVENT_ADJUST at the end, so it is possible to loop) will make the card instantly destroyed."
+	},
+	{
+		"sig": "void",
+		"name": "Duel.AdjustInstantly([Card c])",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetFieldGroup(int player, int s, int o)",
+		"desc": "Gets a group containing cards from a specified location of a player (int player), s denotes the player's side of the field, o denotes opposing player's side of the field"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetFieldGroupCount(int player, int s, int o)",
+		"desc": "Counts the number of cards from a specified location of a player (int player), s denotes the player's side of the field, o denotes opposing player's side of the field"
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetDecktopGroup(int player, int count)",
+		"desc": "Gets a group of a player's (int player) top n (int count) cards of their Deck"
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetMatchingGroup(function f, int player, int s, int o, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetMatchingGroupCount(function f, int player, int s, int o, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Card",
+		"name": "Duel.GetFirstMatchingCard(function f, int player, int s, int o, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsExistingMatchingCard(function f, int player, int s, int o, int count, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectMatchingCard(int sel_player, function f, int player, int s, int o, int min, int max, Card ex|nil, ...)",
+		"desc": "make a specific player select a card witch satifies function f, wich a min and a max, with exception of certain card, with possible extras argument in ..."
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetReleaseGroup(int player[, bool use_hand=false])",
+		"desc": ""
+	},
+	{
+		"sig": "integer",
+		"name": "Duel.GetReleaseGroupCount(int player[, bool use_hand=false])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckReleaseGroup(int player, function f, int count, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectReleaseGroup(int sel_player, function f, int min, int max, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckReleaseGroupEx(int player, function f, int count, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectReleaseGroupEx(int player, function f, int min, int max, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetTributeGroup(Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetTributeCount(Card c[, Group mg, bool ex=false])",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectTribute(int player, Card c, int min, int max[, Group mg, bool ex=false])",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetTargetCount(function f, int player, int s, int o, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsExistingTarget(function f, int player, int s, int o, int count, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectTarget(int sel_player, function f, int player, int s, int o, int min, int max, Card ex|nil, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectFusionMaterial(int player, Card c, Group g[, Card gc|nil, int chkf=PLAYER_NONE])",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetFusionMaterial(Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetSynchroMaterial(Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectSynchroMaterial(int player, Card c, function f1, function f2, int min, int max[, Card smat, Group mg])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckSynchroMaterial(Card c, function f1, function f2, int min, int max[, Card smat, Group mg])",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectTunerMaterial(int player, Card c, Card tuner, function f1, function f2, int min, int max[, Group mg])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckTunerMaterial(Card c, Card tuner, function f1, function f2, int min, int max[, Group mg])",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetRitualMaterial(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ReleaseRitualMaterial(Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetSelectedCard(Card|Group cards)",
+		"desc": "Sets a card/group (Card|Group targets) as cards that would need to be used as Synchro/Xyz/Ritual/Fusion materials"
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetTargetCard(Card|Group targets)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.ClearTargetCard()",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetTargetPlayer(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetTargetParam(integer)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetOperationInfo(int chainc, int category, Card|Group targets, int count, int target_player, int target_param)",
+		"desc": ""
+	},
+	{
+		"sig": "bool,Card|Group,int,int,int",
+		"name": "Duel.GetOperationInfo(int chainc, int category)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetOperationCount(int chainc)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckXyzMaterial(Card c, function f, int lv, int min, int max, Group mg|nil)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.SelectXyzMaterial(int player, Card c, function f, int lv, int min, int max[, Group mg])",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.Overlay(Card c, Card|Group ocard)",
+		"desc": ""
+	},
+	{
+		"sig": "Group",
+		"name": "Duel.GetOverlayGroup(int player, int s, int o)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetOverlayCount(int player, int s, int o)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckRemoveOverlayCard(int player, int s, int o, int count, int reason)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.RemoveOverlayCard(int player, int s, int o, int min, int max, int reason)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.Hint(int hint_type, int player, int desc)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.HintSelection(Group g)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.SelectEffectYesNo(int player, Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.SelectYesNo(int player, int desc)",
+		"desc": "let's a player choose no/yes"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SelectOption(int player, int desc1, ...)",
+		"desc": "let's a certain player choose any option, it will return a number from 0 to number of option-1, like, Duel.SelectOption(int player, opt1, opt 2, ...), if opt1 return 0, opt2 return 1, ... "
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SelectSequence()",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SelectPosition(int player, Card c, int pos)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.SelectDisableField(int player, int count, int s, int o, int filter)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.AnnounceRace(int player, int count, int available)",
+		"desc": "makes a player (int player) announce any amount of races (int count) from certain list of races (int availabre)"
+	},
+	{
+		"sig": "int",
+		"name": "Duel.AnnounceAttribute(int player, int count, int available)",
+		"desc": ""
+	},
+	{
+		"sig": "int|nil",
+		"name": "Duel.AnnounceLevel(int player[,int min = 1,int max=12, int exception=nil,...])",
+		"desc": "make a player (int player) select a number from int min (1 if not declared) to int max (12 if not declared) in context of level/rank, if exception are declare (int exception), the player can't select theses, if by some way there no number to select, the function will return nil."
+	},
+	{
+		"sig": "int",
+		"name": "Duel.AnnounceCard(int player[, type=TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP])",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.AnnounceType(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "int,int",
+		"name": "Duel.AnnounceNumber(int player, int number, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.AnnounceCoin(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "...",
+		"name": "Duel.TossCoin(int player, int count)",
+		"desc": ""
+	},
+	{
+		"sig": "...",
+		"name": "Duel.TossDice(int player, int count1[, int count2 = 0])",
+		"desc": ""
+	},
+	{
+		"sig": "int,int,int,int,int",
+		"name": "Duel.GetCoinResult()",
+		"desc": ""
+	},
+	{
+		"sig": "int,int,int,int,int",
+		"name": "Duel.GetDiceResult()",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetCoinResult(int res, ... )",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SetDiceResult(int res, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "Effect|nil",
+		"name": "Duel.IsPlayerAffectedByEffect(int player, int code)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanDraw(int player[, int count=0])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanDiscardDeck(int player, int count)",
+		"desc": "Checks if a player (int player) can mill a number of cards (int count) from their Deck"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanDiscardDeckAsCost(int player, int count)",
+		"desc": "Checks if a player (int player) can mill a number of cards (int count) from their Deck as cost"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSummon(int player[, int sumtype, Card c])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSpecialSummon(int player[, int sumtype, int sumpos, int target_player, Card c])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanFlipSummon(int player, Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSpecialSummonMonster(int player, int code, int setcode, int type, int atk, int def, int level, int race, int attribute[, integer pos=POS_FACEUP, integer target_player=player, int sumtype])",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSpecialSummonCount(int player, int count)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanRelease(int player, Card c)",
+		"desc": "Checks if a player (int player) can Tribute a card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanRemove(int player, Card c)",
+		"desc": "Checks if a player (int player) can banish a card (Card c)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSendtoHand(int player, Card c)",
+		"desc": "Checks if a player (int player) can send a card (Card c) to the Hand"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSendtoGrave(int player, Card c)",
+		"desc": "Checks if a player (int player) can send a card (Card c) to the Graveyard"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsPlayerCanSendtoDeck(int player, Card c)",
+		"desc": "Checks if a player (int player) can send a card (Card c) to the Deck"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsChainNegatable(int chainc)",
+		"desc": "Check if a chain's (int chainc) effect activation can be negated (Negate Activation)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsChainDisablable(int chainc)",
+		"desc": "Check if a chain's (int chainc) effect can be disabled (Negate Effect)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckChainTarget(int chainc, Card c)",
+		"desc": "Checks if a card (Card c) can be a target for a chain's (int chainc) effect (via calling target(chkc) function of the effect)"
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckChainUniqueness()",
+		"desc": "Checks if there is no card with the same name in the current chain"
+	},
+	{
+		"sig": "int,...",
+		"name": "Duel.GetActivityCount(int player, int activity_type, ...)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.CheckPhaseActivity()",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.AddCustomActivityCounter(int counter_id, int activity_type, function f)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetCustomActivityCount(int counter_id, int player, int activity_type)",
+		"desc": ""
+	},
+	{
+		"sig": "int",
+		"name": "Duel.GetBattledCount(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.IsAbleToEnterBP()",
+		"desc": "Checks if the player can enter BP this turn."
+	},
+	{
+		"sig": "bool",
+		"name": "Duel.VenomSwampCheck(Effect e, Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.SwapDeckAndGrave(int player)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "Duel.MajesticCopy(Card c1, Card c2)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddSynchroProcedure(Card c, function f1, function f2, int ct)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddSynchroProcedure2(Card c, function f1, function f2)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddXyzProcedure(Card c, function f, int lv, int ct[, function alterf|nil, int desc|nil, int maxct=ct, function op|nil])",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcCode2(Card c, int code1, int code2, bool sub, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcCode3(Card c, int code1, int code2, int code3, bool sub, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcCode4(Card c, int code1, int code2, int code3, int code4, bool sub, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcCodeFun(Card c, int code, function f, int cc, bool sub, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcFun2(Card c, function f1, function f2, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcCodeRep(Card c, int code, int cc, bool sub, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddFusionProcFunRep(Card c, function f, int cc, bool insf)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddRitualProcGreater(Card c, function filter)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.AddRitualProcEqual(Card c, function filter)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.EnablePendulumAttribute(Card c[, active_effect=true])",
+		"desc": "that for pendulum summoning+active effect, if reg is not nil it will only be activated if condition where meet."
+	},
+	{
+		"sig": "void",
+		"name": "aux.EnableDualAttribute(Card c)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "aux.IsDualState(Effect e)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "aux.DualNormalCondition(Effect e)",
+		"desc": ""
+	},
+	{
+		"sig": "bool",
+		"name": "aux.IsNotDualState(Effect e)",
+		"desc": ""
+	},
+	{
+		"sig": "void",
+		"name": "aux.BeginPuzzle()",
+		"desc": "beguin the puzzle, used after reload field, also this set you lp 0 on end turn, if you want a puzzle with more than 1 turn, just don't add it or modify it!"
+	},
+	{
+		"sig": "bool",
+		"name": "aux.IsCodeListed(card c, int code)",
+		"desc": "return if a card list a certain card code (the card code is listed via \"cxxx.card_code_list={yyy,zzz}\""
+	},
+	{
+		"sig": "void",
+		"name": "Debug.Message(any msg)",
+		"desc": "send any \"message\" or content inside a variable or a expression"
+	},
+	{
+		"sig": "Card",
+		"name": "Debug.AddCard(int code, int owner, int player, int location, int seq, int pos[, bool proc=false])",
+		"desc": "add the card of code from onwer to player on a certain location on a position of this location (location+sequence) with some postion, you can make it proprely summoned with last parameter"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.SetPlayerInfo(int playerid, int lp, int startcount, int drawcount)",
+		"desc": "set the information of a certain player with start lp, initial hand and number of card per draw"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.PreSummon(Card c, int sum_type[, int sum_location=0])",
+		"desc": "treat a card as pre summoned by a certain summon (?) from certain location (?)"
+	},
+	{
+		"sig": "bool",
+		"name": "Debug.PreEquip(Card equip_card, Card target)",
+		"desc": "equip a card to a targeted card"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.PreSetTarget(Card c, Card target)",
+		"desc": "set the target of a card (?)"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.PreAddCounter(Card c, int counter_type, int count)",
+		"desc": "a card beguin with a certain amouth of certain counter"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.ReloadFieldBegin(int flag)",
+		"desc": "start creating a puzzle, used with Flags (DUEL_TEST_MODE/DUEL_ATTACK_FIRST_TURN/DUEL_SIMPLE_AI/....)"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.ReloadFieldEnd()",
+		"desc": "end the puzzle creation"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.SetAIName(string name)",
+		"desc": "set the ai name"
+	},
+	{
+		"sig": "void",
+		"name": "Debug.ShowHint(string msg)",
+		"desc": "set the message that apear when the game beguin"
+	},
+	{
+		"sig": "void",
+		"name": "AI.Chat(string text)",
+		"desc": "Displays a chat message by the AI"
+	},
+	{
+		"sig": "int",
+		"name": "AI.GetPlayerLP(int player)",
+		"desc": "Gets the current life points of a player. 1 = AI, 2 = human"
+	},
+	{
+		"sig": "int",
+		"name": "AI.GetCurrentPhase()",
+		"desc": "Gets the current phase of the duel. Refer to PHASE_ constants"
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppMonsterZones()",
+		"desc": "Provides a list of all cards in the human player's monster zones."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIMonsterZones()",
+		"desc": "Provides a list of all cards in the AI's monster zones."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppSpellTrapZones()",
+		"desc": "Provides a list of all cards in the human player's S/T zones."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAISpellTrapZones()",
+		"desc": "Provides a list of all cards in the AI's S/T zones."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppGraveyard()",
+		"desc": "Provides a list of all cards in the human player's graveyard."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIGraveyard()",
+		"desc": "Provides a list of all cards in the AI's graveyard."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppBanished()",
+		"desc": "Provides a list of all cards in the human player's banished zone."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIBanished()",
+		"desc": "Provides a list of all cards in the AI's banished zone."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppHand()",
+		"desc": "Provides a list of all cards in the human player's hand."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIHand()",
+		"desc": "Provides a list of all cards in the AI's hand."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppExtraDeck()",
+		"desc": "Provides a list of all cards in the human player's extra deck."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIExtraDeck()",
+		"desc": "Provides a list of all cards in the AI's extra deck."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetOppMainDeck()",
+		"desc": "Provides a list of all cards in the human player's deck."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetAIMainDeck()",
+		"desc": "Provides a list of all cards in the AI's deck."
+	},
+	{
+		"sig": "table",
+		"name": "AI.GetLastSummonedCards()",
+		"desc": "Provides a list of the last summoned cards."
+	},
+	{
+		"sig": "Card",
+		"name": "AI.GetScriptFromCardObject(Card_AI ai_card)",
+		"desc": "Converts an AI card to a regular card object"
+	},
+	{
+		"sig": "Card_AI",
+		"name": "AI.GetCardObjectFromScript(Card script_card)",
+		"desc": "Converts a regular card object to an AI card"
+	},
+	{
+		"sig": "string",
+		"name": "AI.GetCardName(int id)",
+		"desc": "Converts the id of a card to the name of that card"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnAIGoingFirstSecond(string ai_deck_name)",
+		"desc": "Handles the decision of the AI going first or second. Gets the name of the deck (string ai_deck_name). Return 1 to go first, return 0 to go 2nd"
+	},
+	{
+		"sig": "void",
+		"name": "[AI] OnPlayerGoingFirstSecond(int player_is_first)",
+		"desc": "Informs you about the human player's decision to go first or second (int player_is_first). 1 -> human goes first, 0 -> AI goes first."
+	},
+	{
+		"sig": "void",
+		"name": "[AI] OnStartOfDuel()",
+		"desc": "Function called at the start of the duel, after the rock-paper-scissors, and after the choice to go first or second, but before the first draw phase."
+	},
+	{
+		"sig": "table",
+		"name": "[AI] OnSelectChainOrder(table cards)",
+		"desc": "Function to handle the chain order. Gets a table of cards in the current chain (table cards). Return a list of indexes in the desired order."
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectPosition(int id, table available)",
+		"desc": "Function to handle selecting monster positions. Gets the id of the monster (int id), and a table of available positions (table available). Return a valid position, refer to POS_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectOption(table options)",
+		"desc": "Function to handle selecting options. Gets a list of available options (table options). Return the index of the desired option."
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectEffectYesNo(int id, Card_AI triggeringCard)",
+		"desc": "Function to handle effects asking to be activated. Gets the id of the triggering card (int id) and the triggering card (Card_AI triggeringCard). Return 1 -> activate or 0 -> don't activate"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectYesNo(int description_id)",
+		"desc": "Function to handle yes/no questions not tied to a specific card. Gets the description id of the yes/no question (description_id). Return 1 -> activate or 0 -> don't activate"
+	},
+	{
+		"sig": "table",
+		"name": "[AI] OnSelectTribute(table cards, int minTributes, int maxTributes)",
+		"desc": "Function to handle tribute selection for tribute summons. Gets a table of available tributes (table cards), the minimum amount of tributes (int minTributes) and the maximum amount of tributes (int maxTributes). Return a table of indexes to be tributed."
+	},
+	{
+		"sig": "table",
+		"name": "[AI] OnDeclareMonsterType(int count, table choices)",
+		"desc": "Function to handle declaring a monster type. Gets the count of types (int count) and a table of available types (table choices). Return a table of indexes. Refer to RACE_constants"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnDeclareAttribute(int count, table choices)",
+		"desc": "Function to handle declaring a monster attribute. Gets the count of attributes (int count) and a table of available types (table choices). Return a table of indexes. Refer to ATTRIBUTE_constants"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnDeclareCard()",
+		"desc": "Function to handle declaring a specific card. Return the id of the desired card."
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectNumber(table choices)",
+		"desc": "Function to handle declaring a number. Gets a table of available numbers (table choices). Return the index of the desired number."
+	},
+	{
+		"sig": "int,int",
+		"name": "[AI] OnSelectChain(table cards, int only_chains_by_player, int forced)",
+		"desc": "Function to handle chaining card effects. Gets a table of chainable cards (table cards). Return 1,index of the card to activate or 0,0 to activate nothing."
+	},
+	{
+		"sig": "table",
+		"name": "[AI] OnSelectSum(table cards, int sum, Card_AI triggeringCard)",
+		"desc": "Function to handle selecting cards for a sum. Gets a table of useable cards(table cards), the sum to match (int sum) and the triggering card (Card_AI triggeringCard, can be nil). Return a list of indexes"
+	},
+	{
+		"sig": "int",
+		"name": "[AI] OnSelectCard(table cards, int minTargets, int maxTargets, int triggeringID, Card_AI triggeringCard)",
+		"desc": "Function to handle selecting card targets. Gets a table of available targets (table cards), the minimum and maximum amount of targets (int minTargets, int maxTargets), the id of the triggering card (int triggeringID) and the triggering card (Card_AI triggeringCard). Return a table of indexes for the desired targets"
+	},
+	{
+		"sig": "int,int",
+		"name": "[AI] OnSelectBattleCommand(table cards, table activatable_cards)",
+		"desc": "Function to handle selecting cards to battle with. Gets a table of monsters able to attack (table card) and a table of chainable cards (table activatable_cards), Return the index of the monster to attack with."
+	},
+	{
+		"sig": "int,int",
+		"name": "[AI] OnSelectInitCommand(table cards, int to_bp_allowed, int to_ep_allowed)",
+		"desc": "Function to handle most things to activate/summon/set in the main phase. Gets a table of card tables (table cards) and information, if the battle phase and end phase are allowed (int to_bp_allowed, int to_ep_allowed). Return a command and a card index. Refer to COMMAND_ constants."
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.id",
+		"desc": "The id of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.original_id",
+		"desc": "The original (printed) id of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.cardid",
+		"desc": "A unique identifier for the card within the current duel"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.description",
+		"desc": "The description id of the current effect. Use to differentiate multiple effects activatable at the same time."
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.type",
+		"desc": "The type of the card. Refer to TYPE_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.attack",
+		"desc": "The attack of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.defense",
+		"desc": "The defense of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.base_attack",
+		"desc": "The base attack of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.base_defense",
+		"desc": "The base defense of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.level",
+		"desc": "The level of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.base_level",
+		"desc": "The original (printed) level of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.rank",
+		"desc": "The rank of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.race",
+		"desc": "The race of the card. Refer to RACE_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.attribute",
+		"desc": "The attribute of the card. Refer to ATTRIBUTE_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.position",
+		"desc": "The position of the card. Refer to POS_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.setcode",
+		"desc": "The archetype setcode of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.location",
+		"desc": "The location of the card. Refer to LOCATION_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.xyz_material_count",
+		"desc": "The amount of xyz materials of the card"
+	},
+	{
+		"sig": "table",
+		"name": "Card_AI.xyz_materials",
+		"desc": "A table holding all xyz materials of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.owner",
+		"desc": "The owner of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.status",
+		"desc": "The status of the card. Refer to STATUS_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.previous_location",
+		"desc": "The previous location of the card. Refer to LOCATION_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.summon_type",
+		"desc": "The kind of summon, that was used for this card. Refer to SUMMON_TYPE_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.lscale",
+		"desc": "The left pendulum scale of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.rscale",
+		"desc": "The right pendulum scale of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.equip_count",
+		"desc": "The amount of cards equipped to the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.text_attack",
+		"desc": "The original (printed) attack of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.text_defense",
+		"desc": "The original (printed) defense of the card"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.turnid",
+		"desc": "The turn, the location of the card was last changed."
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.extra_attack_count",
+		"desc": "The amount of additional attacks the card can perform each battle phase"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.is_affected_by(Card_AI c, int effect_type)",
+		"desc": "Check, if the card is affected by a certain effect type. Gets the type of effect (int effect_type). Refer to EFFECT_ constants"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.get_counter(Card_AI c, int counter_type)",
+		"desc": "The amount of counters on a card. Gets the id of the counter (int counter_type)"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.is_affectable_by_chain(Card_AI c, int index)",
+		"desc": "Check, if the card is affected by a specific effect in the current chain. Gets the index of the effect in the current chain (int index)"
+	},
+	{
+		"sig": "int",
+		"name": "Card_AI.can_be_targeted_by_chain(Card_AI c, int index)",
+		"desc": "Check, if the card can be targeted by a specific effect in the current chain. Gets the index of the effect in the current chain (int index)"
+	},
+	{
+		"sig": "table",
+		"name": "Card_AI.get_equipped_cards(Card_AI c)",
+		"desc": "A table holding all cards equipped to the card"
+	},
+	{
+		"sig": "Card_AI",
+		"name": "Card_AI.get_equip_target(Card_AI c)",
+		"desc": "The card this card is equipped to"
+	}
+]

@@ -1,0 +1,16 @@
+{
+	"token": "",
+	"prefix": ".",
+	"longStr": "...\n__Type \".long\" to be PMed the rest!__",
+	"maxSearches": 3,
+	"imageSize": 100,
+	"dbs": [
+		"cards.cdb"
+	],
+	"triviaTimeLimit": 30000,
+	"triviaHintTime": 10000,
+	"triviaMaxRounds": 20,
+	"scriptFunctions": "functions.json",
+	"scriptConstants": "constants.json",
+	"scriptParams": "parameters.json"
+}

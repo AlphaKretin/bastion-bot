@@ -1,0 +1,712 @@
+[
+	{
+		"type": "string",
+		"name": "any msg",
+		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"
+	},
+	{
+		"type": "bool",
+		"name": "cancel",
+		"desc": "Determines if it's cancelled or not"
+	},
+	{
+		"type": "bool",
+		"name": "check",
+		"desc": "Checks if the battle damage is 0 and cancels the effect if it is"
+	},
+	{
+		"type": "bool",
+		"name": "copy_info",
+		"desc": "Copys the effects information if the effect is duplicated"
+	},
+	{
+		"type": "bool",
+		"name": "enable",
+		"desc": "Applys the status to the card"
+	},
+	{
+		"type": "bool",
+		"name": "enabled",
+		"desc": "Enables field effects"
+	},
+	{
+		"type": "bool",
+		"name": "ex",
+		"desc": "Excludes mg from the effect targets"
+	},
+	{
+		"type": "bool",
+		"name": "forced",
+		"desc": "The effects registration will be forced"
+	},
+	{
+		"type": "bool",
+		"name": "get_info",
+		"desc": "Gets the event's information"
+	},
+	{
+		"type": "bool",
+		"name": "ignore_count",
+		"desc": "Ignores the amount of cards"
+	},
+	{
+		"type": "bool",
+		"name": "ignore_field",
+		"desc": "Ignores if there is a free space on the field"
+	},
+	{
+		"type": "bool",
+		"name": "ignore_mon",
+		"desc": "Ignores fusion material monsters"
+	},
+	{
+		"type": "bool",
+		"name": "is_step",
+		"desc": "Equips multiple cards (in one step, which is concluded with 'Duel.EquipComplete()')"
+	},
+	{
+		"type": "bool",
+		"name": "monsteronly",
+		"desc": "Can only attack monsters"
+	},
+	{
+		"type": "bool",
+		"name": "neglect_con",
+		"desc": "Ignores if it meets the effects condition(s) or not"
+	},
+	{
+		"type": "bool",
+		"name": "neglect_cost",
+		"desc": "Ignores the effects costs"
+	},
+	{
+		"type": "bool",
+		"name": "nocheck",
+		"desc": "Does not check if there is a free space on the field"
+	},
+	{
+		"type": "bool",
+		"name": "noflip",
+		"desc": "Flip effects are not activated at this time"
+	},
+	{
+		"type": "bool",
+		"name": "nolimit",
+		"desc": "Ignoring summoning conditions"
+	},
+	{
+		"type": "bool",
+		"name": "proc",
+		"desc": "The card is treated as if it was summoned by its proper summoning procedure (used in puzzles)"
+	},
+	{
+		"type": "bool",
+		"name": "setavailable",
+		"desc": "Raises a \"set\" event (cards/effects that activate if one of the targets is set are triggered)"
+	},
+	{
+		"type": "bool",
+		"name": "up",
+		"desc": "Set to true if the card itself is equipped, to false if it gets equipped"
+	},
+	{
+		"type": "bool",
+		"name": "use_hand",
+		"desc": "Includes player's hand"
+	},
+	{
+		"type": "Card",
+		"name": "equip_card",
+		"desc": "The card which is equipped to the target"
+	},
+	{
+		"type": "Card",
+		"name": "ex",
+		"desc": "Excluded cards which will not be affected"
+	},
+	{
+		"type": "Card",
+		"name": "c",
+		"desc": "Any single card (The interpreter will complain if you use a Card which is still treated as a Group. Use Group.GetFirst(Group g) to convert it)"
+	},
+	{
+		"type": "Card",
+		"name": "fc",
+		"desc": "A fusion card (fusion monster)"
+	},
+	{
+		"type": "Card",
+		"name": "gc",
+		"desc": ""
+	},
+	{
+		"type": "Card",
+		"name": "rc",
+		"desc": "A ritual card (ritual monster)"
+	},
+	{
+		"type": "Card",
+		"name": "sc",
+		"desc": "The effects target card"
+	},
+	{
+		"type": "Card",
+		"name": "smat",
+		"desc": "A single synchro material card (ignored if there is a mg, which is then used as synchro material)"
+	},
+	{
+		"type": "Card",
+		"name": "tuner",
+		"desc": "Tuner card"
+	},
+	{
+		"type": "Card",
+		"name": "xyzc",
+		"desc": "An xyz card (xyz monster)"
+	},
+	{
+		"type": "Card|Group",
+		"name": "targets",
+		"desc": "A card or group which will be affected by the effect"
+	},
+	{
+		"type": "Card|Group|Effect",
+		"name": "labelobject",
+		"desc": "Object to embed in the effect, accepts Card, Group, or Effect (In case of group from outside the effect, don't forget to keep the group alive)"
+	},
+	{
+		"type": "Effect",
+		"name": "e",
+		"desc": "Any effect"
+	},
+	{
+		"type": "Effect",
+		"name": "re",
+		"desc": "The reason effect which caused a certain event"
+	},
+	{
+		"type": "function",
+		"name": "f",
+		"desc": "Any function which returns a boolean value(s)"
+	},
+	{
+		"type": "function",
+		"name": "op_func",
+		"desc": "An operation function (with these parameters:)"
+	},
+	{
+		"type": "function",
+		"name": "targ_func",
+		"desc": "A target function (with these parameters:)"
+	},
+	{
+		"type": "function",
+		"name": "con_func",
+		"desc": "A condition function (with these parameters depending on the effect's code:)"
+	},
+	{
+		"type": "function",
+		"name": "cost_func",
+		"desc": "A cost function (with these parameters:)"
+	},
+	{
+		"type": "function|int|bool",
+		"name": "val",
+		"desc": "A boolean or integer value or a function with these parameters:"
+	},
+	{
+		"type": "Group",
+		"name": "g",
+		"desc": "Any amount of cards"
+	},
+	{
+		"type": "Group",
+		"name": "mg",
+		"desc": "A matching group of cards which are targets for the effect"
+	},
+	{
+		"type": "Group",
+		"name": "ocard",
+		"desc": "Group of cards to overlay to the card"
+	},
+	{
+		"type": "int",
+		"name": "ac",
+		"desc": "The attack chain number to check"
+	},
+	{
+		"type": "int",
+		"name": "activity_type",
+		"desc": "Type of activity to check (for example: ACTIVITY_SUMMON)"
+	},
+	{
+		"type": "int",
+		"name": "ad",
+		"desc": "Facedown attack position monsters are changed to this position"
+	},
+	{
+		"type": "int",
+		"name": "assume_type",
+		"desc": "Type of assuming to be done by the card (ASSUME_x)"
+	},
+	{
+		"type": "int",
+		"name": "assume_value",
+		"desc": "value of assuming (for example: if assume_type is ASSUME_LEVEL, assume_value would be the assumed level)"
+	},
+	{
+		"type": "int",
+		"name": "atk",
+		"desc": "Value of Attack Points"
+	},
+	{
+		"type": "int",
+		"name": "attack",
+		"desc": "Value of Attack Points"
+	},
+	{
+		"type": "int",
+		"name": "attribute",
+		"desc": "Attribute (for example: ATTRIBUTE_WATER)"
+	},
+	{
+		"type": "int",
+		"name": "au",
+		"desc": "Faceup attack position monsters are changed to this position"
+	},
+	{
+		"type": "int",
+		"name": "available",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "cate",
+		"desc": "Category of effect (CATEGORY_x)"
+	},
+	{
+		"type": "int",
+		"name": "chainc",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "check_player",
+		"desc": "The player that checks"
+	},
+	{
+		"type": "int",
+		"name": "chkf",
+		"desc": "Checking function"
+	},
+	{
+		"type": "int",
+		"name": "code",
+		"desc": "Either a card's ID (for example: 1855932) or an Effect (for example: EFFECT_UPDATE_ATTACK), depending on usage"
+	},
+	{
+		"type": "int",
+		"name": "controler",
+		"desc": "The player that will get control"
+	},
+	{
+		"type": "int",
+		"name": "cost",
+		"desc": "Cost function"
+	},
+	{
+		"type": "int",
+		"name": "count",
+		"desc": "Amount"
+	},
+	{
+		"type": "int",
+		"name": "counter",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "counter_id",
+		"desc": "ID of Activity Counter (for example: ACTIVITY_SUMMON)"
+	},
+	{
+		"type": "int",
+		"name": "countertype",
+		"desc": "Type of counter (0x3001=Spell Counter, etc. Look at strings.conf for official available counters)"
+	},
+	{
+		"type": "int",
+		"name": "dd",
+		"desc": "Facedown Defense Position monsters are changed to this position"
+	},
+	{
+		"type": "int",
+		"name": "def",
+		"desc": "Value of Defense Points"
+	},
+	{
+		"type": "int",
+		"name": "defense",
+		"desc": "Value of Defense Points"
+	},
+	{
+		"type": "int",
+		"name": "desc",
+		"desc": "Description (commonly represented by 'aux.Stringid(code, id)' which pulls the description text from the cdb) (It will show \"???\" if your ID is outside the allowed range: See \".constant GetDesc()\")"
+	},
+	{
+		"type": "int",
+		"name": "dest",
+		"desc": "Destination (a location, for example: LOCATION_MZONE)"
+	},
+	{
+		"type": "int",
+		"name": "drawcount",
+		"desc": "Sets Player's Draw count to the number"
+	},
+	{
+		"type": "int",
+		"name": "du",
+		"desc": "Faceup defense position monsters are changed to this position"
+	},
+	{
+		"type": "int",
+		"name": "ep",
+		"desc": "Sets the Event Player for the raised event"
+	},
+	{
+		"type": "int",
+		"name": "ev",
+		"desc": "Event value"
+	},
+	{
+		"type": "int",
+		"name": "event",
+		"desc": "Event"
+	},
+	{
+		"type": "int",
+		"name": "extra_type",
+		"desc": "Additional Card Types for Trap Monster"
+	},
+	{
+		"type": "int",
+		"name": "filter",
+		"desc": "A bitflag denoting disabled field positions (for example: '0b00101' = '0x7' means Position 0 and 2 is disabled)"
+	},
+	{
+		"type": "int",
+		"name": "flag",
+		"desc": "Reload files with these Flags"
+	},
+	{
+		"type": "int",
+		"name": "global_flag",
+		"desc": "Global flag(s) to enable (for example: GLOBALFLAG_DECK_REVERSE_CHECK+GLOBALFLAG_SCRAP_CHIMERA)"
+	},
+	{
+		"type": "int",
+		"name": "hint_type",
+		"desc": "Type of Hint"
+	},
+	{
+		"type": "int",
+		"name": "label",
+		"desc": "A value"
+	},
+	{
+		"type": "int",
+		"name": "level",
+		"desc": "Level"
+	},
+	{
+		"type": "int",
+		"name": "location",
+		"desc": "Location (for example: LOCATION_DECK)"
+	},
+	{
+		"type": "int",
+		"name": "lp",
+		"desc": "Amount of Lifepoints"
+	},
+	{
+		"type": "int",
+		"name": "lv",
+		"desc": "Level"
+	},
+	{
+		"type": "int",
+		"name": "max",
+		"desc": "Maximum amount"
+	},
+	{
+		"type": "int",
+		"name": "min",
+		"desc": "Minimum amount"
+	},
+	{
+		"type": "int",
+		"name": "move_player",
+		"desc": "Sets the player that moves the card"
+	},
+	{
+		"type": "int",
+		"name": "number",
+		"desc": "An integer number"
+	},
+	{
+		"type": "int",
+		"name": "o",
+		"desc": "Opponent's player's Field Bitflags"
+	},
+	{
+		"type": "int",
+		"name": "o_range",
+		"desc": "Opposing player's locations affected by the effect (for example: LOCATION_SZONE+LOCATION_DECK)"
+	},
+	{
+		"type": "int",
+		"name": "o_time",
+		"desc": "Timing of effect in opposing player's turn (TIMING_x)"
+	},
+	{
+		"type": "int",
+		"name": "owner",
+		"desc": "Owner of the added card"
+	},
+	{
+		"type": "int",
+		"name": "param",
+		"desc": "The chain's new parameter"
+	},
+	{
+		"type": "int",
+		"name": "player",
+		"desc": "Any player"
+	},
+	{
+		"type": "int",
+		"name": "player_target",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "playerid",
+		"desc": "Player whose info would be set"
+	},
+	{
+		"type": "int",
+		"name": "pos",
+		"desc": "Position (for example: POS_FACEUP)"
+	},
+	{
+		"type": "int",
+		"name": "prop",
+		"desc": "Property for effect (for example: EFFECT_FLAG_x)"
+	},
+	{
+		"type": "int",
+		"name": "property",
+		"desc": "Property for the flag effect (for example: EFFECT_FLAG_x)"
+	},
+	{
+		"type": "int",
+		"name": "r",
+		"desc": "Sets Reason for the raised event (for example: REASON_RELEASE+REASON_RULE)"
+	},
+	{
+		"type": "int",
+		"name": "race",
+		"desc": "Race (for example: RACE_FISH)"
+	},
+	{
+		"type": "int",
+		"name": "range",
+		"desc": "Location of handler card where the effect can be applied or activated"
+	},
+	{
+		"type": "int",
+		"name": "rank",
+		"desc": "Rank"
+	},
+	{
+		"type": "int",
+		"name": "reason",
+		"desc": "Reason"
+	},
+	{
+		"type": "int",
+		"name": "res",
+		"desc": "New result of coin/dice"
+	},
+	{
+		"type": "int",
+		"name": "reset",
+		"desc": "Timing of NegateRelatedChain to reset (RESET_x)"
+	},
+	{
+		"type": "int",
+		"name": "reset_code",
+		"desc": "Code for Effect Resetting. May be various things depending on reset_type"
+	},
+	{
+		"type": "int",
+		"name": "reset_count",
+		"desc": "How many times after hitting phase reset will the effect or relation be finally truly reset. A value of 0 or 1 means the effect resets immediately after meeting the reset condition"
+	},
+	{
+		"type": "int",
+		"name": "reset_flag",
+		"desc": "Flag for conditions of resetting the effect or relation (for example: RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_DAMAGE)"
+	},
+	{
+		"type": "int",
+		"name": "reset_phase",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "reset_type",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "rp",
+		"desc": "Sets the Reason Player for the raised effect"
+	},
+	{
+		"type": "int",
+		"name": "s",
+		"desc": "Selected player's Field Bitflags"
+	},
+	{
+		"type": "int",
+		"name": "s_range",
+		"desc": "Selected player's Field Bitflags"
+	},
+	{
+		"type": "int",
+		"name": "s_time",
+		"desc": "Bitflag denoting timing for selected player's turn"
+	},
+	{
+		"type": "int",
+		"name": "seq",
+		"desc": "Sequence in Deck, or sequence on the field"
+	},
+	{
+		"type": "int",
+		"name": "setcode",
+		"desc": "Card's SetCode (Archetype)"
+	},
+	{
+		"type": "int",
+		"name": "setname",
+		"desc": "Card's SetCode (Archetype)"
+	},
+	{
+		"type": "int",
+		"name": "singly",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "sort_player",
+		"desc": "The player sorting the Decktop"
+	},
+	{
+		"type": "int",
+		"name": "spsummon_code",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "startcount",
+		"desc": "Player's starting hand count"
+	},
+	{
+		"type": "int",
+		"name": "state",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "status",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "sum",
+		"desc": ""
+	},
+	{
+		"type": "int",
+		"name": "sumplayer",
+		"desc": "Summoning Player"
+	},
+	{
+		"type": "int",
+		"name": "sumpos",
+		"desc": "Summoning position"
+	},
+	{
+		"type": "int",
+		"name": "sumtype",
+		"desc": "Summoning type"
+	},
+	{
+		"type": "int",
+		"name": "target_player",
+		"desc": "Targetting Player"
+	},
+	{
+		"type": "int",
+		"name": "timing",
+		"desc": "When things happen (for example: TIMING_DRAW)"
+	},
+	{
+		"type": "int",
+		"name": "type",
+		"desc": "The effect's type (for example: EFFECT_TYPE_SINGLE/FIELD/TRIGGER_F)"
+	},
+	{
+		"type": "int",
+		"name": "unique_code",
+		"desc": "Card code to be unique"
+	},
+	{
+		"type": "int",
+		"name": "unique_location",
+		"desc": "The location where the card should be unique"
+	},
+	{
+		"type": "int",
+		"name": "use_player",
+		"desc": "The Player that will use the location"
+	},
+	{
+		"type": "int",
+		"name": "value",
+		"desc": "An integer value"
+	},
+	{
+		"type": "int",
+		"name": "win_reason",
+		"desc": "Reason of winning"
+	},
+	{
+		"type": "nil",
+		"name": "nil",
+		"desc": "Empty/Undefined/Nothing"
+	},
+	{
+		"type": "string",
+		"name": "msg",
+		"desc": "Any message"
+	},
+	{
+		"type": "string",
+		"name": "name",
+		"desc": "Any String"
+	}
+]

@@ -1,0 +1,3437 @@
+[
+	{
+		"val": "0x01",
+		"name": "LOCATION_DECK",
+		"desc": ""
+	},
+	{
+		"val": "0x02",
+		"name": "LOCATION_HAND",
+		"desc": ""
+	},
+	{
+		"val": "0x04",
+		"name": "LOCATION_MZONE",
+		"desc": ""
+	},
+	{
+		"val": "0x08",
+		"name": "LOCATION_SZONE",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "LOCATION_GRAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "LOCATION_REMOVED",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "LOCATION_EXTRA",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "LOCATION_OVERLAY",
+		"desc": ""
+	},
+	{
+		"val": "0x0c",
+		"name": "LOCATION_ONFIELD",
+		"desc": ""
+	},
+	{
+		"val": "0x10001",
+		"name": "LOCATION_DECKBOT",
+		"desc": ""
+	},
+	{
+		"val": "0x20001",
+		"name": "LOCATION_DECKSHF",
+		"desc": ""
+	},
+	{
+		"val": "0x0100",
+		"name": "LOCATION_FZONE",
+		"desc": ""
+	},
+	{
+		"val": "0x0200",
+		"name": "LOCATION_PZONE",
+		"desc": ""
+	},
+	{
+		"val": "0x5",
+		"name": "POS_FACEUP",
+		"desc": ""
+	},
+	{
+		"val": "0xa",
+		"name": "POS_FACEDOWN",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "POS_FACEUP_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "POS_FACEUP_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "0x8",
+		"name": "POS_FACEDOWN_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "0x3",
+		"name": "POS_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "0xc",
+		"name": "POS_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "NO_FLIP_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "TYPE_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "0x2",
+		"name": "TYPE_SPELL",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "TYPE_TRAP",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "TYPE_NORMAL",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "TYPE_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "TYPE_FUSION",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "TYPE_RITUAL",
+		"desc": ""
+	},
+	{
+		"val": "0x100",
+		"name": "TYPE_TRAPMONSTER",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "TYPE_SPIRIT",
+		"desc": ""
+	},
+	{
+		"val": "0x400",
+		"name": "TYPE_UNION",
+		"desc": ""
+	},
+	{
+		"val": "0x800",
+		"name": "TYPE_DUAL",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "TYPE_TUNER",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "TYPE_SYNCHRO",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "TYPE_TOKEN",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "TYPE_QUICKPLAY",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "TYPE_CONTINUOUS",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "TYPE_EQUIP",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "TYPE_FIELD",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "TYPE_COUNTER",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "TYPE_FLIP",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "TYPE_TOON",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "TYPE_XYZ",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "TYPE_PENDULUM",
+		"desc": ""
+	},
+	{
+		"val": "0x01",
+		"name": "ATTRIBUTE_EARTH",
+		"desc": ""
+	},
+	{
+		"val": "0x02",
+		"name": "ATTRIBUTE_WATER",
+		"desc": ""
+	},
+	{
+		"val": "0x04",
+		"name": "ATTRIBUTE_FIRE",
+		"desc": ""
+	},
+	{
+		"val": "0x08",
+		"name": "ATTRIBUTE_WIND",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "ATTRIBUTE_LIGHT",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "ATTRIBUTE_DARK",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "ATTRIBUTE_DEVINE",
+		"desc": ""
+	},
+	{
+		"val": "0xffffff",
+		"name": "RACE_ALL",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "RACE_WARRIOR",
+		"desc": ""
+	},
+	{
+		"val": "0x2",
+		"name": "RACE_SPELLCASTER",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "RACE_FAIRY",
+		"desc": ""
+	},
+	{
+		"val": "0x8",
+		"name": "RACE_FIEND",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "RACE_ZOMBIE",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "RACE_MACHINE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "RACE_AQUA",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "RACE_PYRO",
+		"desc": ""
+	},
+	{
+		"val": "0x100",
+		"name": "RACE_ROCK",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "RACE_WINDBEAST",
+		"desc": ""
+	},
+	{
+		"val": "0x400",
+		"name": "RACE_PLANT",
+		"desc": ""
+	},
+	{
+		"val": "0x800",
+		"name": "RACE_INSECT",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "RACE_THUNDER",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "RACE_DRAGON",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "RACE_BEAST",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "RACE_BEASTWARRIOR",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "RACE_DINOSAUR",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "RACE_FISH",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "RACE_SEASERPENT",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "RACE_REPTILE",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "RACE_PSYCHO",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "RACE_DEVINE",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "RACE_CREATORGOD",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "RACE_WYRM",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "REASON_DESTROY",
+		"desc": ""
+	},
+	{
+		"val": "0x2",
+		"name": "REASON_RELEASE",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "REASON_TEMPORARY",
+		"desc": ""
+	},
+	{
+		"val": "0x8",
+		"name": "REASON_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "REASON_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "REASON_BATTLE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "REASON_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "REASON_COST",
+		"desc": ""
+	},
+	{
+		"val": "0x100",
+		"name": "REASON_ADJUST",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "REASON_LOST_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "0x400",
+		"name": "REASON_RULE",
+		"desc": ""
+	},
+	{
+		"val": "0x800",
+		"name": "REASON_SPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "REASON_DISSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "REASON_FLIP",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "REASON_DISCARD",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "REASON_RDAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "REASON_RRECOVER",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "REASON_RETURN",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "REASON_FUSION",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "REASON_SYNCHRO",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "REASON_RITUAL",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "REASON_XYZ",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "REASON_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "REASON_DRAW",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "REASON_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "0x2000000",
+		"name": "REASON_REVEAL",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "LOCATION_REASON_TOFIELD",
+		"desc": ""
+	},
+	{
+		"val": "0x2",
+		"name": "LOCATION_REASON_CONTROL",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "SUMMON_TYPE_NORMAL",
+		"desc": ""
+	},
+	{
+		"val": "0x11000000",
+		"name": "SUMMON_TYPE_ADVANCE",
+		"desc": ""
+	},
+	{
+		"val": "0x12000000",
+		"name": "SUMMON_TYPE_DUAL",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "SUMMON_TYPE_FLIP",
+		"desc": ""
+	},
+	{
+		"val": "0x40000000",
+		"name": "SUMMON_TYPE_SPECIAL",
+		"desc": ""
+	},
+	{
+		"val": "0x43000000",
+		"name": "SUMMON_TYPE_FUSION",
+		"desc": ""
+	},
+	{
+		"val": "0x45000000",
+		"name": "SUMMON_TYPE_RITUAL",
+		"desc": ""
+	},
+	{
+		"val": "0x46000000",
+		"name": "SUMMON_TYPE_SYNCHRO",
+		"desc": ""
+	},
+	{
+		"val": "0x49000000",
+		"name": "SUMMON_TYPE_XYZ",
+		"desc": ""
+	},
+	{
+		"val": "0x4a000000",
+		"name": "SUMMON_TYPE_PENDULUM",
+		"desc": ""
+	},
+	{
+		"val": "0x0001",
+		"name": "STATUS_DISABLED",
+		"desc": ""
+	},
+	{
+		"val": "0x0002",
+		"name": "STATUS_TO_ENABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x0004",
+		"name": "STATUS_TO_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x0008",
+		"name": "STATUS_PROC_COMPLETE",
+		"desc": ""
+	},
+	{
+		"val": "0x0010",
+		"name": "STATUS_SET_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x0020",
+		"name": "STATUS_NO_LEVEL",
+		"desc": ""
+	},
+	{
+		"val": "0x0040",
+		"name": "STATUS_BATTLE_RESULT",
+		"desc": ""
+	},
+	{
+		"val": "0x0080",
+		"name": "STATUS_SPSUMMON_STEP",
+		"desc": ""
+	},
+	{
+		"val": "0x0100",
+		"name": "STATUS_FORM_CHANGED",
+		"desc": ""
+	},
+	{
+		"val": "0x0200",
+		"name": "STATUS_SUMMONING",
+		"desc": ""
+	},
+	{
+		"val": "0x0400",
+		"name": "STATUS_EFFECT_ENABLED",
+		"desc": ""
+	},
+	{
+		"val": "0x0800",
+		"name": "STATUS_SUMMON_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "STATUS_DESTROY_CONFIRMED",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "STATUS_LEAVE_CONFIRMED",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "STATUS_BATTLE_DESTROYED",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "STATUS_COPYING_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "STATUS_CHAINING",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "STATUS_SUMMON_DISABLED",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "STATUS_ACTIVATE_DISABLED",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "STATUS_EFFECT_REPLACED",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "STATUS_UNION",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "STATUS_ATTACK_CANCELED",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "STATUS_INITIALIZING",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "STATUS_ACTIVATED",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "STATUS_JUST_POS",
+		"desc": ""
+	},
+	{
+		"val": "0x2000000",
+		"name": "STATUS_CONTINUOUS_POS",
+		"desc": ""
+	},
+	{
+		"val": "0x4000000",
+		"name": "STATUS_FORBIDDEN",
+		"desc": ""
+	},
+	{
+		"val": "0x8000000",
+		"name": "STATUS_ACT_FROM_HAND",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "STATUS_OPPO_BATTLE",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "STATUS_FLIP_SUMMON_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x40000000",
+		"name": "STATUS_SPSUMMON_TURN",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "ASSUME_CODE",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "ASSUME_TYPE",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "ASSUME_LEVEL",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "ASSUME_RANK",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "ASSUME_ATTRIBUTE",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "ASSUME_RACE",
+		"desc": ""
+	},
+	{
+		"val": "7",
+		"name": "ASSUME_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "8",
+		"name": "ASSUME_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "COUNTER_WITHOUT_PERMIT",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "COUNTER_NEED_ENABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x01",
+		"name": "PHASE_DRAW",
+		"desc": "the phase you draw a card"
+	},
+	{
+		"val": "0x02",
+		"name": "PHASE_STANDBY",
+		"desc": ""
+	},
+	{
+		"val": "0x04",
+		"name": "PHASE_MAIN1",
+		"desc": ""
+	},
+	{
+		"val": "0x08",
+		"name": "PHASE_BATTLE_START",
+		"desc": "beguining of battle"
+	},
+	{
+		"val": "0x10",
+		"name": "PHASE_BATTLE_STEP",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "PHASE_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "PHASE_DAMAGE_CAL",
+		"desc": "damage calculation phase"
+	},
+	{
+		"val": "0x80",
+		"name": "PHASE_BATTLE",
+		"desc": "battle phase"
+	},
+	{
+		"val": "0x100",
+		"name": "PHASE_MAIN2",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "PHASE_END",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "PLAYER_NONE",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "PLAYER_ALL",
+		"desc": ""
+	},
+	{
+		"val": "0x01",
+		"name": "CHAININFO_CHAIN_COUNT",
+		"desc": ""
+	},
+	{
+		"val": "0x02",
+		"name": "CHAININFO_TRIGGERING_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x04",
+		"name": "CHAININFO_TRIGGERING_PLAYER",
+		"desc": ""
+	},
+	{
+		"val": "0x08",
+		"name": "CHAININFO_TRIGGERING_CONTROLER",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "CHAININFO_TRIGGERING_LOCATION",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "CHAININFO_TRIGGERING_SEQUENCE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "CHAININFO_TARGET_CARDS",
+		"desc": "get the card's of chain"
+	},
+	{
+		"val": "0x80",
+		"name": "CHAININFO_TARGET_PLAYER",
+		"desc": "get the player of chain"
+	},
+	{
+		"val": "0x100",
+		"name": "CHAININFO_TARGET_PARAM",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "CHAININFO_DISABLE_REASON",
+		"desc": ""
+	},
+	{
+		"val": "0x400",
+		"name": "CHAININFO_DISABLE_PLAYER",
+		"desc": ""
+	},
+	{
+		"val": "0x800",
+		"name": "CHAININFO_CHAIN_ID",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "CHAININFO_TYPE",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "CHAININFO_EXTTYPE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "RESET_SELF_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "RESET_OPPO_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x40000000",
+		"name": "RESET_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "0x40000000",
+		"name": "RESET_CHAIN",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "RESET_EVENT",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "RESET_CARD",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "RESET_CODE",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "RESET_COPY",
+		"desc": ""
+	},
+	{
+		"val": "0x00010000",
+		"name": "RESET_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x00020000",
+		"name": "RESET_TURN_SET",
+		"desc": ""
+	},
+	{
+		"val": "0x00040000",
+		"name": "RESET_TOGRAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x00080000",
+		"name": "RESET_REMOVE",
+		"desc": ""
+	},
+	{
+		"val": "0x00100000",
+		"name": "RESET_TEMP_REMOVE",
+		"desc": ""
+	},
+	{
+		"val": "0x00200000",
+		"name": "RESET_TOHAND",
+		"desc": ""
+	},
+	{
+		"val": "0x00400000",
+		"name": "RESET_TODECK",
+		"desc": ""
+	},
+	{
+		"val": "0x00800000",
+		"name": "RESET_LEAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x01000000",
+		"name": "RESET_TOFIELD",
+		"desc": ""
+	},
+	{
+		"val": "0x02000000",
+		"name": "RESET_CONTROL",
+		"desc": ""
+	},
+	{
+		"val": "0x04000000",
+		"name": "RESET_OVERLAY",
+		"desc": ""
+	},
+	{
+		"val": "0x08000000",
+		"name": "RESET_MSCHANGE",
+		"desc": ""
+	},
+	{
+		"val": "0x0001",
+		"name": "EFFECT_TYPE_SINGLE",
+		"desc": ""
+	},
+	{
+		"val": "0x0002",
+		"name": "EFFECT_TYPE_FIELD",
+		"desc": ""
+	},
+	{
+		"val": "0x0004",
+		"name": "EFFECT_TYPE_EQUIP",
+		"desc": ""
+	},
+	{
+		"val": "0x0008",
+		"name": "EFFECT_TYPE_ACTIONS",
+		"desc": ""
+	},
+	{
+		"val": "0x0010",
+		"name": "EFFECT_TYPE_ACTIVATE",
+		"desc": ""
+	},
+	{
+		"val": "0x0020",
+		"name": "EFFECT_TYPE_FLIP",
+		"desc": ""
+	},
+	{
+		"val": "0x0040",
+		"name": "EFFECT_TYPE_IGNITION",
+		"desc": ""
+	},
+	{
+		"val": "0x0080",
+		"name": "EFFECT_TYPE_TRIGGER_O",
+		"desc": ""
+	},
+	{
+		"val": "0x0100",
+		"name": "EFFECT_TYPE_QUICK_O",
+		"desc": ""
+	},
+	{
+		"val": "0x0200",
+		"name": "EFFECT_TYPE_TRIGGER_F",
+		"desc": ""
+	},
+	{
+		"val": "0x0400",
+		"name": "EFFECT_TYPE_QUICK_F",
+		"desc": ""
+	},
+	{
+		"val": "0x0800",
+		"name": "EFFECT_TYPE_CONTINUOUS",
+		"desc": ""
+	},
+	{
+		"val": "0x0001",
+		"name": "EFFECT_FLAG_INITIAL",
+		"desc": ""
+	},
+	{
+		"val": "0x0002",
+		"name": "EFFECT_FLAG_FUNC_VALUE",
+		"desc": ""
+	},
+	{
+		"val": "0x0004",
+		"name": "EFFECT_FLAG_COUNT_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "0x0008",
+		"name": "EFFECT_FLAG_FIELD_ONLY",
+		"desc": ""
+	},
+	{
+		"val": "0x0010",
+		"name": "EFFECT_FLAG_CARD_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "0x0020",
+		"name": "EFFECT_FLAG_IGNORE_RANGE",
+		"desc": "this ignore range?"
+	},
+	{
+		"val": "0x0040",
+		"name": "EFFECT_FLAG_ABSOLUTE_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "0x0080",
+		"name": "EFFECT_FLAG_IGNORE_IMMUNE",
+		"desc": ""
+	},
+	{
+		"val": "0x0100",
+		"name": "EFFECT_FLAG_SET_AVAILABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x0200",
+		"name": "EFFECT_FLAG_CANNOT_NEGATE",
+		"desc": ""
+	},
+	{
+		"val": "0x0400",
+		"name": "EFFECT_FLAG_CANNOT_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x0800",
+		"name": "EFFECT_FLAG_PLAYER_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "EFFECT_FLAG_BOTH_SIDE",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "EFFECT_FLAG_COPY_INHERIT",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "EFFECT_FLAG_DAMAGE_STEP",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "EFFECT_FLAG_DAMAGE_CAL",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "EFFECT_FLAG_DELAY",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "EFFECT_FLAG_SINGLE_RANGE",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "EFFECT_FLAG_UNCOPYABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "EFFECT_FLAG_OATH",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "EFFECT_FLAG_SPSUM_PARAM",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "EFFECT_FLAG_REPEAT",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "EFFECT_FLAG_NO_TURN_RESET",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "EFFECT_FLAG_EVENT_PLAYER",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "EFFECT_FLAG_OWNER_RELATE",
+		"desc": ""
+	},
+	{
+		"val": "0x2000000",
+		"name": "EFFECT_FLAG_AVAILABLE_BD",
+		"desc": ""
+	},
+	{
+		"val": "0x4000000",
+		"name": "EFFECT_FLAG_CLIENT_HINT",
+		"desc": ""
+	},
+	{
+		"val": "0x8000000",
+		"name": "EFFECT_FLAG_CHAIN_UNIQUE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "EFFECT_FLAG_NAGA",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "EFFECT_FLAG_COF",
+		"desc": ""
+	},
+	{
+		"val": "0x40000000",
+		"name": "EFFECT_FLAG_CVAL_CHECK",
+		"desc": ""
+	},
+	{
+		"val": "0x80000000",
+		"name": "EFFECT_FLAG_IMMEDIATELY_APPLY",
+		"desc": ""
+	},
+	{
+		"val": "0x0001",
+		"name": "EFFECT_FLAG2_NAGA",
+		"desc": ""
+	},
+	{
+		"val": "0x0002",
+		"name": "EFFECT_FLAG2_COF",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "EFFECT_IMMUNE_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "EFFECT_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "EFFECT_CANNOT_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "EFFECT_SET_CONTROL",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "EFFECT_CANNOT_CHANGE_CONTROL",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "EFFECT_CANNOT_ACTIVATE",
+		"desc": ""
+	},
+	{
+		"val": "7",
+		"name": "EFFECT_CANNOT_TRIGGER",
+		"desc": ""
+	},
+	{
+		"val": "8",
+		"name": "EFFECT_DISABLE_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "9",
+		"name": "EFFECT_DISABLE_CHAIN",
+		"desc": ""
+	},
+	{
+		"val": "10",
+		"name": "EFFECT_DISABLE_TRAPMONSTER",
+		"desc": ""
+	},
+	{
+		"val": "12",
+		"name": "EFFECT_CANNOT_INACTIVATE",
+		"desc": ""
+	},
+	{
+		"val": "13",
+		"name": "EFFECT_CANNOT_DISEFFECT",
+		"desc": ""
+	},
+	{
+		"val": "14",
+		"name": "EFFECT_CANNOT_CHANGE_POSITION",
+		"desc": ""
+	},
+	{
+		"val": "15",
+		"name": "EFFECT_TRAP_ACT_IN_HAND",
+		"desc": ""
+	},
+	{
+		"val": "16",
+		"name": "EFFECT_TRAP_ACT_IN_SET_TURN",
+		"desc": ""
+	},
+	{
+		"val": "17",
+		"name": "EFFECT_REMAIN_FIELD",
+		"desc": ""
+	},
+	{
+		"val": "18",
+		"name": "EFFECT_MONSTER_SSET",
+		"desc": ""
+	},
+	{
+		"val": "20",
+		"name": "EFFECT_CANNOT_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "21",
+		"name": "EFFECT_CANNOT_FLIP_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "22",
+		"name": "EFFECT_CANNOT_SPECIAL_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "23",
+		"name": "EFFECT_CANNOT_MSET",
+		"desc": ""
+	},
+	{
+		"val": "24",
+		"name": "EFFECT_CANNOT_SSET",
+		"desc": ""
+	},
+	{
+		"val": "25",
+		"name": "EFFECT_CANNOT_DRAW",
+		"desc": "you cannot draw cards"
+	},
+	{
+		"val": "26",
+		"name": "EFFECT_CANNOT_DISABLE_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "27",
+		"name": "EFFECT_CANNOT_DISABLE_SPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "28",
+		"name": "EFFECT_SET_SUMMON_COUNT_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "29",
+		"name": "EFFECT_EXTRA_SUMMON_COUNT",
+		"desc": ""
+	},
+	{
+		"val": "30",
+		"name": "EFFECT_SPSUMMON_CONDITION",
+		"desc": ""
+	},
+	{
+		"val": "31",
+		"name": "EFFECT_REVIVE_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "32",
+		"name": "EFFECT_SUMMON_PROC",
+		"desc": ""
+	},
+	{
+		"val": "33",
+		"name": "EFFECT_LIMIT_SUMMON_PROC",
+		"desc": ""
+	},
+	{
+		"val": "34",
+		"name": "EFFECT_SPSUMMON_PROC",
+		"desc": ""
+	},
+	{
+		"val": "35",
+		"name": "EFFECT_EXTRA_SET_COUNT",
+		"desc": ""
+	},
+	{
+		"val": "36",
+		"name": "EFFECT_SET_PROC",
+		"desc": ""
+	},
+	{
+		"val": "37",
+		"name": "EFFECT_LIMIT_SET_PROC",
+		"desc": ""
+	},
+	{
+		"val": "38",
+		"name": "EFFECT_DEVINE_LIGHT",
+		"desc": ""
+	},
+	{
+		"val": "39",
+		"name": "EFFECT_CANNOT_DISABLE_FLIP_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "40",
+		"name": "EFFECT_INDESTRUCTABLE",
+		"desc": "cannot be destroyed"
+	},
+	{
+		"val": "41",
+		"name": "EFFECT_INDESTRUCTABLE_EFFECT",
+		"desc": "cannot be destroyed by effect"
+	},
+	{
+		"val": "42",
+		"name": "EFFECT_INDESTRUCTABLE_BATTLE",
+		"desc": "cannot be destroyed by battle"
+	},
+	{
+		"val": "43",
+		"name": "EFFECT_UNRELEASABLE_SUM",
+		"desc": "cannot be tributed for tribute summon"
+	},
+	{
+		"val": "44",
+		"name": "EFFECT_UNRELEASABLE_NONSUM",
+		"desc": "cannot be tributed for effects"
+	},
+	{
+		"val": "45",
+		"name": "EFFECT_DESTROY_SUBSTITUTE",
+		"desc": ""
+	},
+	{
+		"val": "46",
+		"name": "EFFECT_CANNOT_RELEASE",
+		"desc": "cannot tribute monster"
+	},
+	{
+		"val": "47",
+		"name": "EFFECT_INDESTRUCTABLE_COUNT",
+		"desc": "cannot be destroyed up to a # of set times"
+	},
+	{
+		"val": "48",
+		"name": "EFFECT_UNRELEASABLE_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "50",
+		"name": "EFFECT_DESTROY_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "51",
+		"name": "EFFECT_RELEASE_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "52",
+		"name": "EFFECT_SEND_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "55",
+		"name": "EFFECT_CANNOT_DISCARD_HAND",
+		"desc": ""
+	},
+	{
+		"val": "56",
+		"name": "EFFECT_CANNOT_DISCARD_DECK",
+		"desc": ""
+	},
+	{
+		"val": "57",
+		"name": "EFFECT_CANNOT_USE_AS_COST",
+		"desc": ""
+	},
+	{
+		"val": "58",
+		"name": "EFFECT_CANNOT_PLACE_COUNTER",
+		"desc": ""
+	},
+	{
+		"val": "60",
+		"name": "EFFECT_LEAVE_FIELD_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "61",
+		"name": "EFFECT_TO_HAND_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "62",
+		"name": "EFFECT_TO_DECK_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "63",
+		"name": "EFFECT_TO_GRAVE_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "64",
+		"name": "EFFECT_REMOVE_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "65",
+		"name": "EFFECT_CANNOT_TO_HAND",
+		"desc": "the card cannot go to hand"
+	},
+	{
+		"val": "66",
+		"name": "EFFECT_CANNOT_TO_DECK",
+		"desc": "the card cannot go to deck"
+	},
+	{
+		"val": "67",
+		"name": "EFFECT_CANNOT_REMOVE",
+		"desc": "the card cannot be removed from game"
+	},
+	{
+		"val": "68",
+		"name": "EFFECT_CANNOT_TO_GRAVE",
+		"desc": "the card cannot go to grave"
+	},
+	{
+		"val": "69",
+		"name": "EFFECT_CANNOT_TURN_SET",
+		"desc": ""
+	},
+	{
+		"val": "70",
+		"name": "EFFECT_CANNOT_BE_BATTLE_TARGET",
+		"desc": "the card cannot be battle target"
+	},
+	{
+		"val": "71",
+		"name": "EFFECT_CANNOT_BE_EFFECT_TARGET",
+		"desc": "the card cannot be effect target"
+	},
+	{
+		"val": "72",
+		"name": "EFFECT_IGNORE_BATTLE_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "73",
+		"name": "EFFECT_CANNOT_DIRECT_ATTACK",
+		"desc": "the card can't attack you opponent direct"
+	},
+	{
+		"val": "74",
+		"name": "EFFECT_DIRECT_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "75",
+		"name": "EFFECT_DUAL_STATUS",
+		"desc": ""
+	},
+	{
+		"val": "76",
+		"name": "EFFECT_EQUIP_LIMIT",
+		"desc": "define to what card it can be equiped"
+	},
+	{
+		"val": "77",
+		"name": "EFFECT_DUAL_SUMMONABLE",
+		"desc": ""
+	},
+	{
+		"val": "80",
+		"name": "EFFECT_REVERSE_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "81",
+		"name": "EFFECT_REVERSE_RECOVER",
+		"desc": ""
+	},
+	{
+		"val": "82",
+		"name": "EFFECT_CHANGE_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "83",
+		"name": "EFFECT_REFLECT_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "85",
+		"name": "EFFECT_CANNOT_ATTACK",
+		"desc": "the card cannot attack"
+	},
+	{
+		"val": "86",
+		"name": "EFFECT_CANNOT_ATTACK_ANNOUNCE",
+		"desc": ""
+	},
+	{
+		"val": "87",
+		"name": "EFFECT_CANNOT_CHANGE_POS_E",
+		"desc": ""
+	},
+	{
+		"val": "90",
+		"name": "EFFECT_ACTIVATE_COST",
+		"desc": ""
+	},
+	{
+		"val": "91",
+		"name": "EFFECT_SUMMON_COST",
+		"desc": ""
+	},
+	{
+		"val": "92",
+		"name": "EFFECT_SPSUMMON_COST",
+		"desc": ""
+	},
+	{
+		"val": "93",
+		"name": "EFFECT_FLIPSUMMON_COST",
+		"desc": ""
+	},
+	{
+		"val": "94",
+		"name": "EFFECT_MSET_COST",
+		"desc": ""
+	},
+	{
+		"val": "95",
+		"name": "EFFECT_SSET_COST",
+		"desc": ""
+	},
+	{
+		"val": "96",
+		"name": "EFFECT_ATTACK_COST",
+		"desc": ""
+	},
+	{
+		"val": "100",
+		"name": "EFFECT_UPDATE_ATTACK",
+		"desc": "update the attack of a monster by a value (written into Effect.SetValue())"
+	},
+	{
+		"val": "101",
+		"name": "EFFECT_SET_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "102",
+		"name": "EFFECT_SET_ATTACK_FINAL",
+		"desc": "set the final attack of the monster (written into Effect.SetValue())"
+	},
+	{
+		"val": "103",
+		"name": "EFFECT_SET_BASE_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "104",
+		"name": "EFFECT_UPDATE_DEFENSE",
+		"desc": "update the defense of a monster by a value (written into Effect.SetValue())"
+	},
+	{
+		"val": "105",
+		"name": "EFFECT_SET_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "106",
+		"name": "EFFECT_SET_DEFENSE_FINAL",
+		"desc": "set the final defense of the monster (written into Effect.SetValue())"
+	},
+	{
+		"val": "107",
+		"name": "EFFECT_SET_BASE_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "108",
+		"name": "EFFECT_REVERSE_UPDATE",
+		"desc": ""
+	},
+	{
+		"val": "109",
+		"name": "EFFECT_SWAP_AD",
+		"desc": ""
+	},
+	{
+		"val": "110",
+		"name": "EFFECT_SWAP_BASE_AD",
+		"desc": ""
+	},
+	{
+		"val": "111",
+		"name": "EFFECT_SWAP_ATTACK_FINAL",
+		"desc": ""
+	},
+	{
+		"val": "112",
+		"name": "EFFECT_SWAP_DEFENSE_FINAL",
+		"desc": ""
+	},
+	{
+		"val": "113",
+		"name": "EFFECT_ADD_CODE",
+		"desc": "Treats a Card(s) as another Card by adding one additional Code (ID) to it (written into Effect.SetValue())"
+	},
+	{
+		"val": "114",
+		"name": "EFFECT_CHANGE_CODE",
+		"desc": "Treats a Card(s) as one different Card by overwriting its Code(s) (ID(s)) it currently has (written into Effect.SetValue())"
+	},
+	{
+		"val": "115",
+		"name": "EFFECT_ADD_TYPE",
+		"desc": "Treats a Card(s) as a additional type(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "116",
+		"name": "EFFECT_REMOVE_TYPE",
+		"desc": "Treats a Card(s) as not a type(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "117",
+		"name": "EFFECT_CHANGE_TYPE",
+		"desc": "Treats a Card(s) as another type overwriting its type (written into Effect.SetValue())"
+	},
+	{
+		"val": "120",
+		"name": "EFFECT_ADD_RACE",
+		"desc": "Treats a Card(s) as a additional race(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "121",
+		"name": "EFFECT_REMOVE_RACE",
+		"desc": "Treats a Card(s) as not a race(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "122",
+		"name": "EFFECT_CHANGE_RACE",
+		"desc": "Treats a Card(s) as another type overwriting its type (written into Effect.SetValue())"
+	},
+	{
+		"val": "125",
+		"name": "EFFECT_ADD_ATTRIBUTE",
+		"desc": "Treats a Card(s) as a additional element(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "126",
+		"name": "EFFECT_REMOVE_ATTRIBUTE",
+		"desc": "Treats a Card(s) as not a element(s) (written into Effect.SetValue())"
+	},
+	{
+		"val": "127",
+		"name": "EFFECT_CHANGE_ATTRIBUTE",
+		"desc": "Treats a Card(s) as another element overwriting its element (written into Effect.SetValue())"
+	},
+	{
+		"val": "130",
+		"name": "EFFECT_UPDATE_LEVEL",
+		"desc": "Update a Card(s) level by a ammout (written into Effect.SetValue())"
+	},
+	{
+		"val": "131",
+		"name": "EFFECT_CHANGE_LEVEL",
+		"desc": "Turn a Card(s) level into a another level (written into Effect.SetValue())"
+	},
+	{
+		"val": "132",
+		"name": "EFFECT_UPDATE_RANK",
+		"desc": "Update a Card(s) rank by a ammout (written into Effect.SetValue())"
+	},
+	{
+		"val": "133",
+		"name": "EFFECT_CHANGE_RANK",
+		"desc": "Turn a Card(s) rank into a another rank (written into Effect.SetValue())"
+	},
+	{
+		"val": "134",
+		"name": "EFFECT_UPDATE_LSCALE",
+		"desc": "Update a Card(s) left pendulum escale(blue escale) by a ammout (written into Effect.SetValue())"
+	},
+	{
+		"val": "135",
+		"name": "EFFECT_CHANGE_LSCALE",
+		"desc": "Turn a Card(s) left pendulum escale(blue escale) into a another left pendulum escale(blue escale) (written into Effect.SetValue())"
+	},
+	{
+		"val": "136",
+		"name": "EFFECT_UPDATE_RSCALE",
+		"desc": "Update a Card(s) right pendulum scale(red scale) by a ammout (written into Effect.SetValue())"
+	},
+	{
+		"val": "137",
+		"name": "EFFECT_CHANGE_RSCALE",
+		"desc": "Turn a Card(s) right pendulum scale(red scale) into a another right pendulum scale(red scale) (written into Effect.SetValue())"
+	},
+	{
+		"val": "140",
+		"name": "EFFECT_SET_POSITION",
+		"desc": ""
+	},
+	{
+		"val": "141",
+		"name": "EFFECT_SELF_DESTROY",
+		"desc": "self-destruct effect"
+	},
+	{
+		"val": "142",
+		"name": "EFFECT_SELF_TOGRAVE",
+		"desc": ""
+	},
+	{
+		"val": "150",
+		"name": "EFFECT_DOUBLE_TRIBUTE",
+		"desc": "Treats a card as 2 tributes for a tribute summon"
+	},
+	{
+		"val": "151",
+		"name": "EFFECT_DECREASE_TRIBUTE",
+		"desc": ""
+	},
+	{
+		"val": "152",
+		"name": "EFFECT_DECREASE_TRIBUTE_SET",
+		"desc": ""
+	},
+	{
+		"val": "153",
+		"name": "EFFECT_EXTRA_RELEASE",
+		"desc": ""
+	},
+	{
+		"val": "154",
+		"name": "EFFECT_TRIBUTE_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "155",
+		"name": "EFFECT_EXTRA_RELEASE_SUM",
+		"desc": ""
+	},
+	{
+		"val": "156",
+		"name": "EFFECT_TRIPLE_TRIBUTE",
+		"desc": "Treats a card as 3 tributes for a tribute summon"
+	},
+	{
+		"val": "160",
+		"name": "EFFECT_PUBLIC",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "EFFECT_COUNTER_PERMIT",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "EFFECT_COUNTER_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "0x30000",
+		"name": "EFFECT_RCOUNTER_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "170",
+		"name": "EFFECT_LPCOST_CHANGE",
+		"desc": ""
+	},
+	{
+		"val": "171",
+		"name": "EFFECT_LPCOST_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "180",
+		"name": "EFFECT_SKIP_DP",
+		"desc": "skip a certain player draw phase (used with SerTargetRange(tp value,1-tp value), 0 for not affected, 1 for affect)"
+	},
+	{
+		"val": "181",
+		"name": "EFFECT_SKIP_SP",
+		"desc": "skip a certain player standby phase (used with SerTargetRange(tp value,1-tp value), 0 for not affected, 1 for affect)"
+	},
+	{
+		"val": "182",
+		"name": "EFFECT_SKIP_M1",
+		"desc": "skip a certain player main phase 1 (used with SerTargetRange(tp value,1-tp value), 0 for not affected, 1 for affect)"
+	},
+	{
+		"val": "183",
+		"name": "EFFECT_SKIP_BP",
+		"desc": "skip a certain player battle phase (used with SerTargetRange(tp value,1-tp value), 0 for not affected, 1 for affect)"
+	},
+	{
+		"val": "184",
+		"name": "EFFECT_SKIP_M2",
+		"desc": "skip a certain player main phase 2 (used with SerTargetRange(tp value,1-tp value), 0 for not affected, 1 for affect)"
+	},
+	{
+		"val": "185",
+		"name": "EFFECT_CANNOT_BP",
+		"desc": "cannot enter battle phase"
+	},
+	{
+		"val": "186",
+		"name": "EFFECT_CANNOT_M2",
+		"desc": "cannot enter main phase 2"
+	},
+	{
+		"val": "187",
+		"name": "EFFECT_CANNOT_EP",
+		"desc": "cannot enter end phase"
+	},
+	{
+		"val": "188",
+		"name": "EFFECT_SKIP_TURN",
+		"desc": "skip end phase?"
+	},
+	{
+		"val": "190",
+		"name": "EFFECT_DEFENSE_ATTACK",
+		"desc": "card can attack while in defense position"
+	},
+	{
+		"val": "191",
+		"name": "EFFECT_MUST_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "192",
+		"name": "EFFECT_FIRST_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "193",
+		"name": "EFFECT_ATTACK_ALL",
+		"desc": "can attack all monsters opponent controls"
+	},
+	{
+		"val": "194",
+		"name": "EFFECT_EXTRA_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "195",
+		"name": "EFFECT_MUST_BE_ATTACKED",
+		"desc": ""
+	},
+	{
+		"val": "196",
+		"name": "EFFECT_ONLY_BE_ATTACKED",
+		"desc": "other battle targets cannot be selected"
+	},
+	{
+		"val": "197",
+		"name": "EFFECT_ATTACK_DISABLED",
+		"desc": ""
+	},
+	{
+		"val": "200",
+		"name": "EFFECT_NO_BATTLE_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "201",
+		"name": "EFFECT_AVOID_BATTLE_DAMAGE",
+		"desc": "no battle damage involving card"
+	},
+	{
+		"val": "202",
+		"name": "EFFECT_REFLECT_BATTLE_DAMAGE",
+		"desc": "opponent takes battle damage instead"
+	},
+	{
+		"val": "203",
+		"name": "EFFECT_PIERCE",
+		"desc": "piercing damage effect"
+	},
+	{
+		"val": "204",
+		"name": "EFFECT_BATTLE_DESTROY_REDIRECT",
+		"desc": ""
+	},
+	{
+		"val": "205",
+		"name": "EFFECT_BATTLE_DAMAGE_TO_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "200",
+		"name": "EFFECT_TOSS_COIN_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "221",
+		"name": "EFFECT_TOSS_DICE_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "230",
+		"name": "EFFECT_FUSION_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "231",
+		"name": "EFFECT_CHAIN_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "232",
+		"name": "EFFECT_SYNCHRO_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "233",
+		"name": "EFFECT_XYZ_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "234",
+		"name": "EFFECT_FUSION_SUBSTITUTE",
+		"desc": ""
+	},
+	{
+		"val": "235",
+		"name": "EFFECT_CANNOT_BE_FUSION_MATERIAL",
+		"desc": "the card can't be used as fusion material"
+	},
+	{
+		"val": "236",
+		"name": "EFFECT_CANNOT_BE_SYNCHRO_MATERIAL",
+		"desc": "the card can't be used as synchro material"
+	},
+	{
+		"val": "237",
+		"name": "EFFECT_SYNCHRO_MATERIAL_CUSTOM",
+		"desc": ""
+	},
+	{
+		"val": "238",
+		"name": "EFFECT_CANNOT_BE_XYZ_MATERIAL",
+		"desc": "the card can't be used as xyz material"
+	},
+	{
+		"val": "240",
+		"name": "EFFECT_SYNCHRO_LEVEL",
+		"desc": ""
+	},
+	{
+		"val": "241",
+		"name": "EFFECT_RITUAL_LEVEL",
+		"desc": ""
+	},
+	{
+		"val": "242",
+		"name": "EFFECT_XYZ_LEVEL",
+		"desc": ""
+	},
+	{
+		"val": "243",
+		"name": "EFFECT_EXTRA_RITUAL_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "244",
+		"name": "EFFECT_NONTUNER",
+		"desc": ""
+	},
+	{
+		"val": "245",
+		"name": "EFFECT_OVERLAY_REMOVE_REPLACE",
+		"desc": ""
+	},
+	{
+		"val": "246",
+		"name": "EFFECT_SCRAP_CHIMERA",
+		"desc": ""
+	},
+	{
+		"val": "250",
+		"name": "EFFECT_PRE_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "251",
+		"name": "EFFECT_MATERIAL_CHECK",
+		"desc": ""
+	},
+	{
+		"val": "260",
+		"name": "EFFECT_DISABLE_FIELD",
+		"desc": ""
+	},
+	{
+		"val": "261",
+		"name": "EFFECT_USE_EXTRA_MZONE",
+		"desc": ""
+	},
+	{
+		"val": "262",
+		"name": "EFFECT_USE_EXTRA_SZONE",
+		"desc": ""
+	},
+	{
+		"val": "263",
+		"name": "EFFECT_MAX_MZONE",
+		"desc": ""
+	},
+	{
+		"val": "264",
+		"name": "EFFECT_MAX_SZONE",
+		"desc": ""
+	},
+	{
+		"val": "270",
+		"name": "EFFECT_HAND_LIMIT",
+		"desc": "change the limits of card on hand"
+	},
+	{
+		"val": "271",
+		"name": "EFFECT_DRAW_COUNT",
+		"desc": "change the number of card(s) you draw per turn"
+	},
+	{
+		"val": "280",
+		"name": "EFFECT_SPIRIT_DONOT_RETURN",
+		"desc": ""
+	},
+	{
+		"val": "281",
+		"name": "EFFECT_SPIRIT_MAYNOT_RETURN",
+		"desc": ""
+	},
+	{
+		"val": "290",
+		"name": "EFFECT_CHANGE_ENVIRONMENT",
+		"desc": "field is treated as a field card is in play"
+	},
+	{
+		"val": "291",
+		"name": "EFFECT_NECRO_VALLEY",
+		"desc": "for necro valley effect (obvious the main effect of kuriboh)"
+	},
+	{
+		"val": "292",
+		"name": "EFFECT_FORBIDDEN",
+		"desc": "card becomes unusable for play as such by effect of \"Prohibition\""
+	},
+	{
+		"val": "293",
+		"name": "EFFECT_NECRO_VALLEY_IM",
+		"desc": "for cards that are imune to necrovalley effect"
+	},
+	{
+		"val": "294",
+		"name": "EFFECT_REVERSE_DECK",
+		"desc": "this effect flip player deck, used with GLOBALFLAG_DECK_REVERSE_CHECK, set the player afected with SetTargetRange(,)"
+	},
+	{
+		"val": "295",
+		"name": "EFFECT_REMOVE_BRAINWASHING",
+		"desc": ""
+	},
+	{
+		"val": "296",
+		"name": "EFFECT_BP_TWICE",
+		"desc": "allows to conduct battle-phase twice"
+	},
+	{
+		"val": "297",
+		"name": "EFFECT_UNIQUE_CHECK",
+		"desc": ""
+	},
+	{
+		"val": "300",
+		"name": "EFFECT_MATCH_KILL",
+		"desc": ""
+	},
+	{
+		"val": "310",
+		"name": "EFFECT_SYNCHRO_CHECK",
+		"desc": ""
+	},
+	{
+		"val": "311",
+		"name": "EFFECT_QP_ACT_IN_NTPHAND",
+		"desc": "allows a card to be used as a quick play card in the hand"
+	},
+	{
+		"val": "312",
+		"name": "EFFECT_MUST_BE_SMATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "313",
+		"name": "EFFECT_TO_GRAVE_REDIRECT_CB",
+		"desc": ""
+	},
+	{
+		"val": "314",
+		"name": "EFFECT_CHANGE_LEVEL_FINAL",
+		"desc": "change the card final level(?)"
+	},
+	{
+		"val": "315",
+		"name": "EFFECT_CHANGE_RANK_FINAL",
+		"desc": "change the card final rank(?)"
+	},
+	{
+		"val": "320",
+		"name": "EFFECT_SPSUMMON_PROC_G",
+		"desc": ""
+	},
+	{
+		"val": "330",
+		"name": "EFFECT_SPSUMMON_COUNT_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "331",
+		"name": "EFFECT_LEFT_SPSUMMON_COUNT",
+		"desc": ""
+	},
+	{
+		"val": "332",
+		"name": "EFFECT_CANNOT_SELECT_BATTLE_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "333",
+		"name": "EFFECT_CANNOT_SELECT_EFFECT_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "334",
+		"name": "EFFECT_ADD_SETCODE",
+		"desc": "add a setcode(s) to a card"
+	},
+	{
+		"val": "335",
+		"name": "EFFECT_NO_EFFECT_DAMAGE",
+		"desc": "no damage from effects"
+	},
+	{
+		"val": "336",
+		"name": "EFFECT_UNSUMMONABLE_CARD",
+		"desc": ""
+	},
+	{
+		"val": "337",
+		"name": "EFFECT_DISABLE_CHAIN_FIELD",
+		"desc": ""
+	},
+	{
+		"val": "338",
+		"name": "EFFECT_DISCARD_COST_CHANGE",
+		"desc": ""
+	},
+	{
+		"val": "339",
+		"name": "EFFECT_HAND_SYNCHRO",
+		"desc": ""
+	},
+	{
+		"val": "340",
+		"name": "EFFECT_ADD_FUSION_CODE",
+		"desc": ""
+	},
+	{
+		"val": "341",
+		"name": "EFFECT_ADD_FUSION_SETCODE",
+		"desc": ""
+	},
+	{
+		"val": "342",
+		"name": "EFFECT_RISE_TO_FULL_HEIGHT",
+		"desc": ""
+	},
+	{
+		"val": "343",
+		"name": "EFFECT_ONLY_ATTACK_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "344",
+		"name": "EFFECT_MUST_ATTACK_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "345",
+		"name": "EFFECT_PATRICIAN_OF_DARKNESS",
+		"desc": "choose the attack target of you opponent"
+	},
+	{
+		"val": "346",
+		"name": "EFFECT_EXTRA_ATTACK_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "347",
+		"name": "EFFECT_CANNOT_LOSE_DECK",
+		"desc": "you cannot lose by deck out"
+	},
+	{
+		"val": "348",
+		"name": "EFFECT_CANNOT_LOSE_LP",
+		"desc": "you cannot lose by being with 0 LP"
+	},
+	{
+		"val": "349",
+		"name": "EFFECT_CANNOT_LOSE_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "350",
+		"name": "EFFECT_BP_FIRST_TURN",
+		"desc": "you can conduct your battle-phase during the first turn of the duel"
+	},
+	{
+		"val": "351",
+		"name": "EFFECT_ALWAYS_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "1000",
+		"name": "EVENT_STARTUP",
+		"desc": "trigger at the start "
+	},
+	{
+		"val": "1001",
+		"name": "EVENT_FLIP",
+		"desc": "trigger when a card is flipped"
+	},
+	{
+		"val": "1002",
+		"name": "EVENT_FREE_CHAIN",
+		"desc": "allows spell/traps to be activated with no specific timing "
+	},
+	{
+		"val": "1010",
+		"name": "EVENT_DESTROY",
+		"desc": "trigger when a card is destroyed"
+	},
+	{
+		"val": "1011",
+		"name": "EVENT_REMOVE",
+		"desc": "trigger when a card is removed from play"
+	},
+	{
+		"val": "1012",
+		"name": "EVENT_TO_HAND",
+		"desc": "trigger when a card go to hand"
+	},
+	{
+		"val": "1013",
+		"name": "EVENT_TO_DECK",
+		"desc": "trigger when a card go to deck"
+	},
+	{
+		"val": "1014",
+		"name": "EVENT_TO_GRAVE",
+		"desc": "trigger when a card goes to the graveyard"
+	},
+	{
+		"val": "1015",
+		"name": "EVENT_LEAVE_FIELD",
+		"desc": "trigger when a card leaves the field"
+	},
+	{
+		"val": "1016",
+		"name": "EVENT_CHANGE_POS",
+		"desc": "trigger when a card changes position"
+	},
+	{
+		"val": "1017",
+		"name": "EVENT_RELEASE",
+		"desc": "trigger when a card is tributed"
+	},
+	{
+		"val": "1018",
+		"name": "EVENT_DISCARD",
+		"desc": "trigger when a card is discarded"
+	},
+	{
+		"val": "1019",
+		"name": "EVENT_LEAVE_FIELD_P",
+		"desc": "trigger before a card leaves the field"
+	},
+	{
+		"val": "1020",
+		"name": "EVENT_CHAIN_SOLVING",
+		"desc": ""
+	},
+	{
+		"val": "1021",
+		"name": "EVENT_CHAIN_ACTIVATING",
+		"desc": ""
+	},
+	{
+		"val": "1022",
+		"name": "EVENT_CHAIN_SOLVED",
+		"desc": ""
+	},
+	{
+		"val": "1023",
+		"name": "EVENT_CHAIN_ACTIVATED",
+		"desc": ""
+	},
+	{
+		"val": "1024",
+		"name": "EVENT_CHAIN_NEGATED",
+		"desc": ""
+	},
+	{
+		"val": "1025",
+		"name": "EVENT_CHAIN_DISABLED",
+		"desc": ""
+	},
+	{
+		"val": "1026",
+		"name": "EVENT_CHAIN_END",
+		"desc": ""
+	},
+	{
+		"val": "1027",
+		"name": "EVENT_CHAINING",
+		"desc": ""
+	},
+	{
+		"val": "1028",
+		"name": "EVENT_BECOME_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "1029",
+		"name": "EVENT_DESTROYED",
+		"desc": "trigger after a card is destroyed"
+	},
+	{
+		"val": "1040",
+		"name": "EVENT_ADJUST",
+		"desc": ""
+	},
+	{
+		"val": "1100",
+		"name": "EVENT_SUMMON_SUCCESS",
+		"desc": "trigger when a monster is successfully summoned"
+	},
+	{
+		"val": "1101",
+		"name": "EVENT_FLIP_SUMMON_SUCCESS",
+		"desc": "trigger when a monster is successfully flip summoned"
+	},
+	{
+		"val": "1102",
+		"name": "EVENT_SPSUMMON_SUCCESS",
+		"desc": "trigger when a monster is successfully special summoned"
+	},
+	{
+		"val": "1103",
+		"name": "EVENT_SUMMON",
+		"desc": "trigger when a monster is summoned"
+	},
+	{
+		"val": "1104",
+		"name": "EVENT_FLIP_SUMMON",
+		"desc": "trigger when a monster is flip summoned"
+	},
+	{
+		"val": "1105",
+		"name": "EVENT_SPSUMMON",
+		"desc": "trigger when a monster is special summoned"
+	},
+	{
+		"val": "1106",
+		"name": "EVENT_MSET",
+		"desc": "trigger when a monster is set "
+	},
+	{
+		"val": "1107",
+		"name": "EVENT_SSET",
+		"desc": "trigger when a spell/trap is set"
+	},
+	{
+		"val": "1108",
+		"name": "EVENT_BE_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "1109",
+		"name": "EVENT_BE_PRE_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "1110",
+		"name": "EVENT_DRAW",
+		"desc": "trigger when you draw a card"
+	},
+	{
+		"val": "1111",
+		"name": "EVENT_DAMAGE",
+		"desc": "trigger when you take damage"
+	},
+	{
+		"val": "1112",
+		"name": "EVENT_RECOVER",
+		"desc": "trigger when you gain LP"
+	},
+	{
+		"val": "1113",
+		"name": "EVENT_PREDRAW",
+		"desc": "trigger before you draw a card at your draw phase"
+	},
+	{
+		"val": "1120",
+		"name": "EVENT_CONTROL_CHANGED",
+		"desc": "trigger when a control of a card is changed"
+	},
+	{
+		"val": "1121",
+		"name": "EVENT_EQUIP",
+		"desc": "trigger when a card is equipped"
+	},
+	{
+		"val": "1130",
+		"name": "EVENT_ATTACK_ANNOUNCE",
+		"desc": "when the player announce a attack"
+	},
+	{
+		"val": "1131",
+		"name": "EVENT_BE_BATTLE_TARGET",
+		"desc": "trigger when monster become a battle target"
+	},
+	{
+		"val": "1132",
+		"name": "EVENT_BATTLE_START",
+		"desc": ""
+	},
+	{
+		"val": "1133",
+		"name": "EVENT_BATTLE_CONFIRM",
+		"desc": "trigger when a monster successfully engages in a battle with another monster"
+	},
+	{
+		"val": "1134",
+		"name": "EVENT_PRE_DAMAGE_CALCULATE",
+		"desc": ""
+	},
+	{
+		"val": "1135",
+		"name": "EVENT_DAMAGE_CALCULATING",
+		"desc": ""
+	},
+	{
+		"val": "1136",
+		"name": "EVENT_PRE_BATTLE_DAMAGE",
+		"desc": "trigger before battle damage"
+	},
+	{
+		"val": "1137",
+		"name": "EVENT_BATTLE_END",
+		"desc": ""
+	},
+	{
+		"val": "1138",
+		"name": "EVENT_BATTLED",
+		"desc": "trigger after a monster has battled"
+	},
+	{
+		"val": "1139",
+		"name": "EVENT_BATTLE_DESTROYING",
+		"desc": "trigger when a monster destroys another monster"
+	},
+	{
+		"val": "1140",
+		"name": "EVENT_BATTLE_DESTROYED",
+		"desc": "trigger when a monster is destroyed in battle"
+	},
+	{
+		"val": "1142",
+		"name": "EVENT_ATTACK_DISABLED",
+		"desc": "trigger when attack is negated"
+	},
+	{
+		"val": "1143",
+		"name": "EVENT_BATTLE_DAMAGE",
+		"desc": "trigger when battle damage occurs"
+	},
+	{
+		"val": "1150",
+		"name": "EVENT_TOSS_DICE",
+		"desc": "trigger when dice are rolled"
+	},
+	{
+		"val": "1151",
+		"name": "EVENT_TOSS_COIN",
+		"desc": "trigger when coin is tossed"
+	},
+	{
+		"val": "1152",
+		"name": "EVENT_TOSS_COIN_NEGATE",
+		"desc": ""
+	},
+	{
+		"val": "1153",
+		"name": "EVENT_TOSS_DICE_NEGATE",
+		"desc": ""
+	},
+	{
+		"val": "1200",
+		"name": "EVENT_LEVEL_UP",
+		"desc": ""
+	},
+	{
+		"val": "1201",
+		"name": "EVENT_PAY_LPCOST",
+		"desc": "trigger when life points are used to pay a cost"
+	},
+	{
+		"val": "1202",
+		"name": "EVENT_DETACH_MATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "1203",
+		"name": "EVENT_RETURN_TO_GRAVE",
+		"desc": ""
+	},
+	{
+		"val": "1210",
+		"name": "EVENT_TURN_END",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "EVENT_PHASE",
+		"desc": "at a phase (used with the phase)"
+	},
+	{
+		"val": "0x2000",
+		"name": "EVENT_PHASE_START",
+		"desc": "at start of a phase (used with the phase)"
+	},
+	{
+		"val": "0x10000",
+		"name": "EVENT_ADD_COUNTER",
+		"desc": "trigger when a counter is added"
+	},
+	{
+		"val": "0x20000",
+		"name": "EVENT_REMOVE_COUNTER",
+		"desc": "trigger when a counter is removed"
+	},
+	{
+		"val": "0xx10000000",
+		"name": "EVENT_CUSTOM",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "CATEGORY_DESTROY",
+		"desc": "Describes that an effect destroys"
+	},
+	{
+		"val": "0x2",
+		"name": "CATEGORY_RELEASE",
+		"desc": "Describes that an effect tributes"
+	},
+	{
+		"val": "0x4",
+		"name": "CATEGORY_REMOVE",
+		"desc": "Describes that an effect banishes"
+	},
+	{
+		"val": "0x8",
+		"name": "CATEGORY_TOHAND",
+		"desc": "Describes that an effect adds a card to the hand (from any location)"
+	},
+	{
+		"val": "0x10",
+		"name": "CATEGORY_TODECK",
+		"desc": "Describes that an effect adds a card to the Deck (from any location)"
+	},
+	{
+		"val": "0x20",
+		"name": "CATEGORY_TOGRAVE",
+		"desc": "Describes that an effect sends a card to the Graveyard (from any location)"
+	},
+	{
+		"val": "0x40",
+		"name": "CATEGORY_DECKDES",
+		"desc": "Describes that an effect removes a card(s) from the Deck (to move them to the Graveyard or to banish them)"
+	},
+	{
+		"val": "0x80",
+		"name": "CATEGORY_HANDES",
+		"desc": "Describes that an effect removes a card(s) from the hand (to move them to the Graveyard or to banish them)"
+	},
+	{
+		"val": "0x100",
+		"name": "CATEGORY_SUMMON",
+		"desc": "Describes that an effect Normal Summons a monster(s)"
+	},
+	{
+		"val": "0x200",
+		"name": "CATEGORY_SPECIAL_SUMMON",
+		"desc": "Describes that an effect Special Summons a monster(s)"
+	},
+	{
+		"val": "0x400",
+		"name": "CATEGORY_TOKEN",
+		"desc": "Describes that an effect Special Summons a token(s)"
+	},
+	{
+		"val": "0x800",
+		"name": "CATEGORY_FLIP",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "CATEGORY_POSITION",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "CATEGORY_CONTROL",
+		"desc": "Describes that an effect takes or switches control"
+	},
+	{
+		"val": "0x4000",
+		"name": "CATEGORY_DISABLE",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "CATEGORY_DISABLE_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "CATEGORY_DRAW",
+		"desc": "Describes that a card draws"
+	},
+	{
+		"val": "0x20000",
+		"name": "CATEGORY_SEARCH",
+		"desc": "Describes that a card searches"
+	},
+	{
+		"val": "0x40000",
+		"name": "CATEGORY_EQUIP",
+		"desc": "Describes that a card equips"
+	},
+	{
+		"val": "0x80000",
+		"name": "CATEGORY_DAMAGE",
+		"desc": "Describes that a card deals damage"
+	},
+	{
+		"val": "0x100000",
+		"name": "CATEGORY_RECOVER",
+		"desc": "Describes that a card recovers life points"
+	},
+	{
+		"val": "0x200000",
+		"name": "CATEGORY_ATKCHANGE",
+		"desc": "Describes that a card changes ATK"
+	},
+	{
+		"val": "0x400000",
+		"name": "CATEGORY_DEFCHANGE",
+		"desc": "Describes that a card changes DEF"
+	},
+	{
+		"val": "0x800000",
+		"name": "CATEGORY_COUNTER",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "CATEGORY_COIN",
+		"desc": "Describes that a card uses a coin"
+	},
+	{
+		"val": "0x2000000",
+		"name": "CATEGORY_DICE",
+		"desc": "Describes that a card uses a dice"
+	},
+	{
+		"val": "0x4000000",
+		"name": "CATEGORY_LEAVE_GRAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x8000000",
+		"name": "CATEGORY_LVCHANGE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "CATEGORY_NEGATE",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "CATEGORY_ANNOUNCE",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "HINT_EVENT",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "HINT_MESSAGE",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "HINT_SELECTMSG",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "HINT_OPSELECTED",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "HINT_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "HINT_RACE",
+		"desc": ""
+	},
+	{
+		"val": "7",
+		"name": "HINT_ATTRIB",
+		"desc": ""
+	},
+	{
+		"val": "8",
+		"name": "HINT_CODE",
+		"desc": ""
+	},
+	{
+		"val": "9",
+		"name": "HINT_NUMBER",
+		"desc": ""
+	},
+	{
+		"val": "10",
+		"name": "HINT_CARD",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "CHINT_TURN",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "CHINT_CARD",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "CHINT_RACE",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "CHINT_ATTRIBUTE",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "CHINT_NUMBER",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "CHINT_DESC",
+		"desc": ""
+	},
+	{
+		"val": "500",
+		"name": "HINTMSG_RELEASE",
+		"desc": ""
+	},
+	{
+		"val": "501",
+		"name": "HINTMSG_DISCARD",
+		"desc": ""
+	},
+	{
+		"val": "502",
+		"name": "HINTMSG_DESTROY",
+		"desc": ""
+	},
+	{
+		"val": "503",
+		"name": "HINTMSG_REMOVE",
+		"desc": ""
+	},
+	{
+		"val": "504",
+		"name": "HINTMSG_TOGRAVE",
+		"desc": ""
+	},
+	{
+		"val": "505",
+		"name": "HINTMSG_RTOHAND",
+		"desc": ""
+	},
+	{
+		"val": "506",
+		"name": "HINTMSG_ATOHAND",
+		"desc": ""
+	},
+	{
+		"val": "507",
+		"name": "HINTMSG_TODECK",
+		"desc": ""
+	},
+	{
+		"val": "508",
+		"name": "HINTMSG_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "509",
+		"name": "HINTMSG_SPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "510",
+		"name": "HINTMSG_SET",
+		"desc": ""
+	},
+	{
+		"val": "511",
+		"name": "HINTMSG_FMATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "512",
+		"name": "HINTMSG_SMATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "513",
+		"name": "HINTMSG_XMATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "514",
+		"name": "HINTMSG_FACEUP",
+		"desc": ""
+	},
+	{
+		"val": "515",
+		"name": "HINTMSG_FACEDOWN",
+		"desc": ""
+	},
+	{
+		"val": "516",
+		"name": "HINTMSG_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "517",
+		"name": "HINTMSG_DEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "518",
+		"name": "HINTMSG_EQUIP",
+		"desc": ""
+	},
+	{
+		"val": "519",
+		"name": "HINTMSG_REMOVEXYZ",
+		"desc": ""
+	},
+	{
+		"val": "520",
+		"name": "HINTMSG_CONTROL",
+		"desc": ""
+	},
+	{
+		"val": "521",
+		"name": "HINTMSG_DESREPLACE",
+		"desc": ""
+	},
+	{
+		"val": "522",
+		"name": "HINTMSG_FACEUPATTACK",
+		"desc": ""
+	},
+	{
+		"val": "523",
+		"name": "HINTMSG_FACEUPDEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "524",
+		"name": "HINTMSG_FACEDOWNATTACK",
+		"desc": ""
+	},
+	{
+		"val": "525",
+		"name": "HINTMSG_FACEDOWNDEFENSE",
+		"desc": ""
+	},
+	{
+		"val": "526",
+		"name": "HINTMSG_CONFIRM",
+		"desc": ""
+	},
+	{
+		"val": "527",
+		"name": "HINTMSG_TOFIELD",
+		"desc": ""
+	},
+	{
+		"val": "528",
+		"name": "HINTMSG_POSCHANGE",
+		"desc": ""
+	},
+	{
+		"val": "529",
+		"name": "HINTMSG_SELF",
+		"desc": ""
+	},
+	{
+		"val": "530",
+		"name": "HINTMSG_OPPO",
+		"desc": ""
+	},
+	{
+		"val": "550",
+		"name": "HINTMSG_EFFECT",
+		"desc": ""
+	},
+	{
+		"val": "551",
+		"name": "HINTMSG_TARGET",
+		"desc": ""
+	},
+	{
+		"val": "552",
+		"name": "HINTMSG_COIN",
+		"desc": ""
+	},
+	{
+		"val": "553",
+		"name": "HINTMSG_DICE",
+		"desc": ""
+	},
+	{
+		"val": "554",
+		"name": "HINTMSG_CARDTYPE",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "TIMING_DRAW_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "0x2",
+		"name": "TIMING_STANDBY_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "TIMING_MAIN_END",
+		"desc": ""
+	},
+	{
+		"val": "0x8",
+		"name": "TIMING_BATTLE_START",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "TIMING_BATTLE_END",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "TIMING_END_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "TIMING_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "TIMING_SPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x100",
+		"name": "TIMING_FLIPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "TIMING_MSET",
+		"desc": ""
+	},
+	{
+		"val": "0x400",
+		"name": "TIMING_SSET",
+		"desc": ""
+	},
+	{
+		"val": "0x800",
+		"name": "TIMING_POS_CHANGE",
+		"desc": ""
+	},
+	{
+		"val": "0x1000",
+		"name": "TIMING_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "0x2000",
+		"name": "TIMING_DAMAGE_STEP",
+		"desc": ""
+	},
+	{
+		"val": "0x4000",
+		"name": "TIMING_DAMAGE_CAL",
+		"desc": ""
+	},
+	{
+		"val": "0x8000",
+		"name": "TIMING_CHAIN_END",
+		"desc": ""
+	},
+	{
+		"val": "0x10000",
+		"name": "TIMING_DRAW",
+		"desc": ""
+	},
+	{
+		"val": "0x20000",
+		"name": "TIMING_DAMAGE",
+		"desc": ""
+	},
+	{
+		"val": "0x40000",
+		"name": "TIMING_RECOVER",
+		"desc": ""
+	},
+	{
+		"val": "0x80000",
+		"name": "TIMING_DESTROY",
+		"desc": ""
+	},
+	{
+		"val": "0x100000",
+		"name": "TIMING_REMOVE",
+		"desc": ""
+	},
+	{
+		"val": "0x200000",
+		"name": "TIMING_TOHAND",
+		"desc": ""
+	},
+	{
+		"val": "0x400000",
+		"name": "TIMING_TODECK",
+		"desc": ""
+	},
+	{
+		"val": "0x800000",
+		"name": "TIMING_TOGRAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x1000000",
+		"name": "TIMING_BATTLE_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "0x2000000",
+		"name": "TIMING_EQUIP",
+		"desc": ""
+	},
+	{
+		"val": "0x4000000",
+		"name": "TIMING_BATTLE_STEP_END",
+		"desc": ""
+	},
+	{
+		"val": "0x1c0",
+		"name": "TIMINGS_CHECK_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "0x1e0",
+		"name": "TIMINGS_CHECK_MONSTER_E",
+		"desc": ""
+	},
+	{
+		"val": "0x1",
+		"name": "GLOBALFLAG_DECK_REVERSE_CHECK",
+		"desc": "allow EFFECT_REVERSE_DECK"
+	},
+	{
+		"val": "0x2",
+		"name": "GLOBALFLAG_BRAINWASHING_CHECK",
+		"desc": ""
+	},
+	{
+		"val": "0x4",
+		"name": "GLOBALFLAG_SCRAP_CHIMERA",
+		"desc": ""
+	},
+	{
+		"val": "0x8",
+		"name": "GLOBALFLAG_DELAYED_QUICKEFFECT",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "GLOBALFLAG_DETACH_EVENT",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "GLOBALFLAG_MUST_BE_SMATERIAL",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "GLOBALFLAG_SPSUMMON_COUNT",
+		"desc": ""
+	},
+	{
+		"val": "0x80",
+		"name": "GLOBALFLAG_XMAT_COUNT_LIMIT",
+		"desc": ""
+	},
+	{
+		"val": "0x100",
+		"name": "GLOBALFLAG_SELF_TOGRAVE",
+		"desc": ""
+	},
+	{
+		"val": "0x200",
+		"name": "GLOBALFLAG_SPSUMMON_ONCE",
+		"desc": ""
+	},
+	{
+		"val": "0x10000000",
+		"name": "EFFECT_COUNT_CODE_OATH",
+		"desc": ""
+	},
+	{
+		"val": "0x20000000",
+		"name": "EFFECT_COUNT_CODE_DUEL",
+		"desc": "allow a effect to be used a amout per duel"
+	},
+	{
+		"val": "0x1",
+		"name": "EFFECT_COUNT_CODE_SINGLE",
+		"desc": ""
+	},
+	{
+		"val": "0x01",
+		"name": "DUEL_TEST_MODE",
+		"desc": ""
+	},
+	{
+		"val": "0x02",
+		"name": "DUEL_ATTACK_FIRST_TURN",
+		"desc": ""
+	},
+	{
+		"val": "0x04",
+		"name": "DUEL_NO_CHAIN_HINT",
+		"desc": ""
+	},
+	{
+		"val": "0x08",
+		"name": "DUEL_OBSOLETE_RULING",
+		"desc": ""
+	},
+	{
+		"val": "0x10",
+		"name": "DUEL_PSEUDO_SHUFFLE",
+		"desc": ""
+	},
+	{
+		"val": "0x20",
+		"name": "DUEL_TAG_MODE",
+		"desc": ""
+	},
+	{
+		"val": "0x40",
+		"name": "DUEL_SIMPLE_AI",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "ACTIVITY_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "ACTIVITY_NORMALSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "ACTIVITY_SPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "ACTIVITY_FLIPSUMMON",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "ACTIVITY_ATTACK",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "ACTIVITY_BATTLE_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "7",
+		"name": "ACTIVITY_CHAIN",
+		"desc": ""
+	},
+	{
+		"val": "0x7",
+		"name": "ANNOUNCE_CARD",
+		"desc": ""
+	},
+	{
+		"val": "78734254",
+		"name": "CARD_MARINE_DOLPHIN",
+		"desc": ""
+	},
+	{
+		"val": "13857930",
+		"name": "CARD_TWINKLE_MOSS",
+		"desc": ""
+	},
+	{
+		"val": "-1",
+		"name": "[AI] COMMAND_LET_AI_DECIDE",
+		"desc": ""
+	},
+	{
+		"val": "0",
+		"name": "[AI] COMMAND_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "1",
+		"name": "[AI] COMMAND_SPECIAL_SUMMON",
+		"desc": ""
+	},
+	{
+		"val": "2",
+		"name": "[AI] COMMAND_CHANGE_POS",
+		"desc": ""
+	},
+	{
+		"val": "3",
+		"name": "[AI] COMMAND_SET_MONSTER",
+		"desc": ""
+	},
+	{
+		"val": "4",
+		"name": "[AI] COMMAND_SET_ST",
+		"desc": ""
+	},
+	{
+		"val": "5",
+		"name": "[AI] COMMAND_ACTIVATE",
+		"desc": ""
+	},
+	{
+		"val": "6",
+		"name": "[AI] COMMAND_TO_NEXT_PHASE",
+		"desc": ""
+	},
+	{
+		"val": "7",
+		"name": "[AI] COMMAND_TO_END_PHASE",
+		"desc": ""
+	}
+]
