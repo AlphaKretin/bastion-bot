@@ -284,4 +284,3 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 - Add ruling page lookup --Bonus  
 - Auto CDB update --Bonus  
 - Grab DBs (and whatever else) from online *or* local
-- Prevent search on `{}`/`<>`
