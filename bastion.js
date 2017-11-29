@@ -506,8 +506,8 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		return;
 	}
 	let args = input.split(",");
-	let inLang = args[args.length - 2].replace(/ /g, "").toLowerCase();
-	let outLang = args[args.length - 1].replace(/ /g, "").toLowerCase();
+	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();
+	let outLang = args[args.length - 1] & args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
 	} else {
@@ -566,10 +566,10 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		let out = "__**" + name[1] + "**__\n";
 		let alIDs = [code];
 		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
-			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[ids[outLang].indexOf(code)]), outLang)) {
+			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) {
 				code = aliases[outLang][ids[outLang].indexOf(code)];
 				alIDs = [code];
-				for (let i = 0; i < aliases.length; i++) {
+				for (let i = 0; i < aliases[outLang].length; i++) {
 					if (aliases[outLang][i] === code && getOT(i, outLang) === getOT(ids[outLang].indexOf(code), outLang)) {
 						alIDs.push(ids[outLang][i]);
 					}
