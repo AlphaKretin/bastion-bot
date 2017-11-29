@@ -382,7 +382,9 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	do {
 		regx = re.exec(message);
 		if (regx !== null) {
-			results.push(regx[1]);
+			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) {
+				results.push(regx[1]);
+			}
 		}
 	} while (regx !== null);
 	let results2 = [];
@@ -392,7 +394,9 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 !== null) {
-				results2.push(regx2[1]);
+				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) {
+					results2.push(regx2[1]);
+				}
 			}
 		} while (regx2 !== null);
 	}
@@ -502,9 +506,6 @@ async function script(user, userID, channelID, message, event) {
 }
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
-	if (input.length === 0 || input.indexOf(":") === 0 || input.indexOf("@") === 0 || input.indexOf("#") === 0) {
-		return;
-	}
 	let args = input.split(",");
 	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();
 	let outLang = args[args.length - 1] & args[args.length - 1].replace(/ /g, "").toLowerCase();
