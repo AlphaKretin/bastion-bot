@@ -1,6 +1,6 @@
 let fs = require('fs');
 
-let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8')); //open config file from local directory. Expected contents are as follows
+let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8'));
 if (!config.token) {
 	console.log("No Discord user token found at config.token! Exiting...");
 	exit();
@@ -105,11 +105,11 @@ if (config.maxSearches) {
 } else {
 	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!")
 }
-let dbs = ["cards.cdb"];
+let dbs = {"en":["cards.cdb"]};
 if (config.dbs) {
 	dbs = config.dbs;
 } else {
-	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs[0] + ".");
+	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs.en[0] + ".");
 }
 let owner;
 let servLogEnabled = false;
@@ -146,23 +146,7 @@ if (config.scriptParams) {
 } else {
 	console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
 }
-/*
-	{
-	"token": "", //Discord bot token for log-in
-	"prefix" "!", //character at the start of commands
-	"longStr": "", //The string to be appended to the end of a too-long message, telling the user to type ".long"
-	"randFilterAttempts": 1000, //the number of tries to find a random card meeting criteria before bastion gives up. Infinite loop without this!
-	"maxSearches": 3, //the number of searches a user is allowed per post
-	"imageUrl": "", //this will be the start of the URL from which official card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageUrlAnime": "", //this will be the start of the URL from which anime card images are downloaded. Bastion will appened the card ID, and then .png.
-	"imageUrlCustom": "", //this will be the start of the URL from which custom card images are downloaded. Bastion will appened the card ID, and then .png.
-	"scriptUrl": "",
-	"scriptUrlAnime": "",
-	"scriptUrlCustom": "",
-	"imageSize": 100, //the height and width for card images to be resized to, in px.
-	"dbs" [ "", "" ] //a list of databases to read cards from, in a folder in the local directory called "dbs"
-}
-*/
+
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
 let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
 /*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
@@ -197,36 +181,46 @@ bot.on('disconnect', function() {
 
 //sql setup
 let SQL = require('sql.js');
-let filebuffer = fs.readFileSync("dbs/" + dbs[0]);
-let db = new SQL.Database(filebuffer);
-let contents = db.exec("SELECT * FROM datas");
-let names = db.exec("SELECT * FROM texts");
-if (dbs.length > 1) {
-	for (let i = 1; i < dbs.length; i++) {
-		let newbuffer = fs.readFileSync("dbs/" + dbs[i]);
-		let newDB = new SQL.Database(newbuffer);
-		let newContents = newDB.exec("SELECT * FROM datas");
-		let newNames = newDB.exec("SELECT * FROM texts");
-		for (let card of newContents[0].values) {
-			contents[0].values.push(card);
-		}
-		for (let card of newNames[0].values) {
-			names[0].values.push(card);
+let contents = {};
+let names = {};
+let ids = {};
+let aliases = {};
+let nameList = {};
+let langs = [];
+for (let lang in dbs) {
+	console.log("loading " + lang +" database");
+	langs.push(lang);
+	let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
+	let db = new SQL.Database(filebuffer);
+	ids[lang] = [];
+	aliases[lang] = [];
+	nameList[lang] = [];
+	contents[lang] = db.exec("SELECT * FROM datas");
+	names[lang] = db.exec("SELECT * FROM texts");
+	if (dbs[lang].length > 1) {
+		for (let i = 1; i < dbs[lang].length; i++) {
+			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
+			let newDB = new SQL.Database(newbuffer);
+			let newContents = newDB.exec("SELECT * FROM datas");
+			let newNames = newDB.exec("SELECT * FROM texts");
+			for (let card of newContents[0].values) {
+				contents[lang][0].values.push(card);
+			}
+			for (let card of newNames[0].values) {
+				names[lang][0].values.push(card);
+			}
 		}
 	}
-}
-let ids = [];
-let aliases = [];
-let nameList = [];
-for (let card of contents[0].values) { //populate ID list for easy checking of card validity
-	ids.push(card[0]);
-	aliases.push(card[2]);
-}
-for (let card of names[0].values) { //populatre array of objects containing names for the sake of fuse
-	nameList.push({
-		name: card[1],
-		id: card[0]
-	});
+	for (let card of contents[lang][0].values) { //populate ID list for easy checking of card validity
+		ids[lang].push(card[0]);
+		aliases[lang].push(card[2]);
+	}
+	for (let card of names[lang][0].values) { //populatre array of objects containing names for the sake of fuse
+		nameList[lang].push({
+			name: card[1],
+			id: card[0]
+		});
+	}
 }
 
 //fuse setup
@@ -244,7 +238,10 @@ let options = {
 		"name"
 	]
 };
-let fuse = new Fuse(nameList, options);
+let fuse = {}
+for (let lang of langs) {
+	fuse[lang] = new Fuse(nameList[lang], options);
+}
 
 let request = require('request');
 let https = require('https');
@@ -326,18 +323,23 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (libFuncEnabled && lowMessage.indexOf(pre + "f") === 0) {
 		searchFunctions(user, userID, channelID, message, event);
+		return;
 	}
 	if (libConstEnabled && lowMessage.indexOf(pre + "c") === 0) {
 		searchConstants(user, userID, channelID, message, event);
+		return;
 	}
 	if (libParamsEnabled && lowMessage.indexOf(pre + "param") === 0) {
 		searchParams(user, userID, channelID, message, event);
+		return;
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
 		libPage(user, userID, channelID, message, event);
+		return;
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
 		libDesc(user, userID, channelID, message, event);
+		return;
 	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
@@ -346,7 +348,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.indexOf(pre + "help") === 0) {
 		help(user, userID, channelID, message, event);
 	}
-	if (longMsg.length > 0 && lowMessage.indexOf(".long") === 0) {
+	if (longMsg.length > 0 && lowMessage.indexOf(pre + "long") === 0) {
 		bot.sendMessage({
 			to: userID,
 			message: longMsg
@@ -428,10 +430,16 @@ async function randomCard(user, userID, channelID, message, event) {
 		let args = message.toLowerCase().split(" ");
 		let code;
 		let i = 0;
+		let outLang = "en";
+		for (let arg of args) {
+			if (langs.indexOf(arg) > -1) {
+				outLang = arg;
+			}
+		}
 		if (args.length > 1) {
 			let matches = [];
-			for (let id of ids) {
-				if (randFilterCheck(id, args)) {
+			for (let id of ids[outLang]) {
+				if (randFilterCheck(id, args, outLang)) {
 					matches.push(id);
 				}
 			}
@@ -440,11 +448,11 @@ async function randomCard(user, userID, channelID, message, event) {
 			}
 			code = matches[Math.floor(Math.random() * matches.length)];
 		} else {
-			code = ids[Math.floor(Math.random() * ids.length)];
+			code = ids[outLang][Math.floor(Math.random() * ids[outLang].length)];
 		}
-		let out = await getCardInfo(code, user, userID, channelID, message, event);
+		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event);
 		if (imagesEnabled && args.indexOf("image") > -1) {
-			postImage(out[1], out[0], user, userID, channelID, message, event);
+			postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
 		} else {
 			sendLongMessage(out[0], user, userID, channelID, message, event);
 		}
@@ -456,7 +464,7 @@ async function randomCard(user, userID, channelID, message, event) {
 async function script(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "script ").length);
 	let inInt = parseInt(input);
-	let index = ids.indexOf(inInt)
+	let index = ids.en.indexOf(inInt)
 	if (index > -1) {
 		try {
 			let out = await getCardScript(index, user, userID, channelID, message, event);
@@ -467,8 +475,8 @@ async function script(user, userID, channelID, message, event) {
 		}
 	} else {
 		try {
-			let index = nameCheck(input);
-			if (index > -1 && index in ids) {
+			let index = nameCheck(input, "en");
+			if (index > -1 && index in ids.en) {
 				let out = await getCardScript(index, user, userID, channelID, message, event);
 				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
@@ -483,32 +491,46 @@ async function script(user, userID, channelID, message, event) {
 }
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
-	let inInt = parseInt(input);
 	if (input.length === 0 || input.indexOf(":") === 0 || input.indexOf("@") === 0 || input.indexOf("#") === 0 ) {
 		return;
 	}
-	if (ids.indexOf(inInt) > -1) {
+	let args = input.split(",");
+	let inLang = args[args.length - 2].replace(/ /g, "");
+	let outLang = args[args.length - 1].replace(/ /g, "");
+	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
+		input = args.splice(0,args.length - 2).toString();
+	} else {
+		inLang = "en";
+		outLang = "en";
+	}
+	let inInt = parseInt(input);
+	if (ids[outLang].indexOf(inInt) > -1) {
 		try {
-			let out = await getCardInfo(inInt, user, userID, channelID, message, event);
+			let out = await getCardInfo(inInt, outLang, user, userID, channelID, message, event);
 			if (hasImage) {
-				postImage(out[1], out[0], user, userID, channelID, message, event);
+				postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
 			} else {
 				sendLongMessage(out[0], user, userID, channelID, message, event);
 			}
-
 		} catch (e) {
 			console.log("Error with search by ID:");
 			console.log(e);
 		}
 	} else {
 		try {
-			let index = nameCheck(input);
-			if (index > -1 && index in ids) {
-				let out = await getCardInfo(ids[index], user, userID, channelID, message, event);
-				if (hasImage) {
-					postImage(out[1], out[0], user, userID, channelID, message, event);
+			let index = nameCheck(input, inLang);
+			if (index > -1 && index in ids[inLang]) {
+				index = ids[outLang].indexOf(ids[inLang][index]);
+				if (index > -1 && index in ids[inLang]) {
+					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
+					if (hasImage) {
+						postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
+					} else {
+						sendLongMessage(out[0], user, userID, channelID, message, event);
+					}
 				} else {
-					sendLongMessage(out[0], user, userID, channelID, message, event);
+					console.log("No corresponding entry in out language DB, please try again.");
+					return;
 				}
 			} else {
 				console.log("Invalid card ID or name, please try again.");
@@ -521,36 +543,36 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	}
 }
 
-function getCardInfo(code, user, userID, channelID, message, event) {
-	let index = ids.indexOf(code);
+function getCardInfo(code, outLang, user, userID, channelID, message, event) {
+	let index = ids[outLang].indexOf(code);
 	if (index === -1) {
 		console.log("Invalid card ID, please try again.");
 		return "Invalid card ID, please try again.";
 	}
-	let card = contents[0].values[index];
-	let name = names[0].values[index];
+	let card = contents[outLang][0].values[index];
+	let name = names[outLang][0].values[index];
 	return new Promise(function(resolve, reject) {
 		let out = "__**" + name[1] + "**__\n";
 		let alIDs = [code];
-		if (aliases[ids.indexOf(code)] > 0) {
-			if (getOT(ids.indexOf(code)) === getOT(ids.indexOf(aliases[ids.indexOf(code)]))) {
-				code = aliases[ids.indexOf(code)];
+		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
+			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[ids[outLang].indexOf(code)]), outLang)) {
+				code = aliases[outLang][ids[outLang].indexOf(code)];
 				alIDs = [code];
 				for (let i = 0; i < aliases.length; i++) {
-					if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-						alIDs.push(ids[i]);
+					if (aliases[outLang][i] === code && getOT(i, outLang) === getOT(ids[outLang].indexOf(code), outLang)) {
+						alIDs.push(ids[outLang][i]);
 					}
 				}
 			}
-		} else if (aliases.indexOf(code) > 0) {
-			for (let i = 0; i < aliases.length; i++) {
-				if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-					alIDs.push(ids[i]);
+		} else if (aliases[outLang].indexOf(code) > 0) {
+			for (let i = 0; i < aliases[outLang].length; i++) {
+				if (aliases[outLang][i] === code && getOT(i, outLang) === getOT(ids[outLang].indexOf(code), outLang)) {
+					alIDs.push(ids[outLang][i]);
 				}
 			}
 		}
 		out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n";
-		let sets = setCodeCheck(index, user, userID, channelID, message, event);
+		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event);
 		if (sets) {
 			out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
 		} else {
@@ -574,16 +596,16 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 					}
 				}
 				let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-				out += "**Status**: " + getOT(index) + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				out += "**Status**: " + getOT(index, outLang) + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 			} else {
-				out += "**Status**: " + getOT(index) + "\n";
+				out += "**Status**: " + getOT(index, outLang) + "\n";
 			}
-			let types = getTypes(index);
+			let types = getTypes(index, outLang);
 			if (types.indexOf("Monster") > -1) {
-				let typesStr = types.toString().replace("Monster", getRace(index).toString().replace(/,/g, "|")).replace(/,/g, "/");
-				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index).toString().replace(/,/g, "|") + "\n";
+				let typesStr = types.toString().replace("Monster", getRace(index, outLang).toString().replace(/,/g, "|")).replace(/,/g, "/");
+				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
 				let lvName = "Level";
-				let lv = getLevelScales(index);
+				let lv = getLevelScales(index, outLang);
 				let def = true;
 				if (types.indexOf("Xyz") > -1) {
 					lvName = "Rank";
@@ -596,14 +618,14 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 				if (def) {
 					out += "**DEF**: " + convertStat(card[6]);
 				} else {
-					out += "**Link Markers**: " + getMarkers(index);
+					out += "**Link Markers**: " + getMarkers(index, outLang);
 				}
 				if (types.indexOf("Pendulum") > -1) {
 					out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
 				} else {
 					out += "\n";
 				}
-				let cardText = getCardText(index);
+				let cardText = getCardText(index, outLang);
 				let textName = "Monster Effect";
 				if (types.indexOf("Normal") > -1) {
 					textName = "Flavour Text";
@@ -615,10 +637,10 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 					out += "**" + textName + "**: " + cardText[0];
 				}
 			} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
-				let lv = getLevelScales(index)[0];
+				let lv = getLevelScales(index, outLang)[0];
 				if (lv > 0) { //is trap monster
-					let typesStr = getRace(index).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index).toString().replace(/,/g, "|") + "\n";
+					let typesStr = getRace(index, outLang).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
+					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
 					out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
 					out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
@@ -632,13 +654,13 @@ function getCardInfo(code, user, userID, channelID, message, event) {
 	});
 }
 
-async function postImage(code, out, user, userID, channelID, message, event) {
+async function postImage(code, out, outLang, user, userID, channelID, message, event) {
 	try {
 		let imageUrl = imageUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code[0]))) > -1) {
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids[outLang].indexOf(code[0]), outLang)) > -1) {
 			imageUrl = imageUrlAnime;
 		}
-		if (getOT(ids.indexOf(code[0])) === "Custom") {
+		if (getOT(ids[outLang].indexOf(code[0]), outLang) === "Custom") {
 			imageUrl = imageUrlCustom;
 		}
 		if (code.length > 1) {
@@ -772,46 +794,46 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 	let input = message.slice((pre + prop + " ").length);
 	let inInt = parseInt(input);
 	let index = 0;
-	if (ids.indexOf(inInt) > -1) {
-		index = ids.indexOf(inInt);
+	if (ids.en.indexOf(inInt) > -1) {
+		index = ids.en.indexOf(inInt);
 	} else {
-		index = nameCheck(input);
+		index = nameCheck(input, "en");
 	}
-	if (index > -1 && index in ids) {
+	if (index > -1 && index in ids.en) {
 		let out = "";
 		switch (prop) {
 			case "name":
-				out = names[0].values[index][1];
+				out = names.en[0].values[index][1];
 				break;
 			case "id":
-				let code = ids[index];
+				let code = ids.en[index];
 				let alIDs = [code];
-				if (aliases[ids.indexOf(code)] > 0) {
-					if (getOT(ids.indexOf(code)) === getOT(ids.indexOf(aliases[ids.indexOf(code)]))) {
-						code = aliases[ids.indexOf(code)];
+				if (aliases.en[ids.indexOf(code)] > 0) {
+					if (getOT(ids.en.indexOf(code), "en") === getOT(ids.en.indexOf(aliases.en[ids.indexOf(code)]), "en")) {
+						code = aliases.en[ids.en.indexOf(code)];
 						alIDs = [code];
-						for (let i = 0; i < aliases.length; i++) {
-							if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-								alIDs.push(ids[i]);
+						for (let i = 0; i < aliases.en.length; i++) {
+							if (aliases.en[i] === code && getOT(i) === getOT(ids.en.indexOf(code), "en")) {
+								alIDs.push(ids.en[i]);
 							}
 						}
 					}
-				} else if (aliases.indexOf(code) > 0) {
-					for (let i = 0; i < aliases.length; i++) {
-						if (aliases[i] === code && getOT(i) === getOT(ids.indexOf(code))) {
-							alIDs.push(ids[i]);
+				} else if (aliases.en.indexOf(code) > 0) {
+					for (let i = 0; i < aliases.en.length; i++) {
+						if (aliases.en[i] === code && getOT(i, "en") === getOT(ids.en.indexOf(code), "en")) {
+							alIDs.push(ids.en[i]);
 						}
 					}
 				}
 				out = alIDs.toString().replace(/,/g, "|");
 				break;
 			case "status":
-				out = getOT(index);
+				out = getOT(index, "en");
 				break;
 			case "price":
 				try {
 					out = await new Promise(function(resolve, reject) {
-						request('https://yugiohprices.com/api/get_card_prices/' + names[0].values[index][1], function(error, response, body) {
+						request('https://yugiohprices.com/api/get_card_prices/' + names.en[0].values[index][1], function(error, response, body) {
 							if (!error && JSON.parse(body).status === "success") {
 								let data = JSON.parse(body);
 								let low = 9999999999;
@@ -841,7 +863,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				}
 				break;
 			case "effect":
-				let cardText = getCardText(index);
+				let cardText = getCardText(index, "en");
 				if (cardText.length === 2) {
 					out = cardText[1];
 				} else {
@@ -849,7 +871,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				}
 				break;
 			case "peffect":
-				let pText = getCardText(index);
+				let pText = getCardText(index, "en");
 				if (pText.length === 2) {
 					out = pText[0];
 				} else {
@@ -857,35 +879,35 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				}
 				break;
 			case "type":
-				let types = getTypes(index);
+				let types = getTypes(index, "en");
 				if (types.indexOf("Monster") > -1) {
-					out = types.toString().replace("Monster", getRace(index).toString().replace(/,/g, "|")).replace(/,/g, "/");
+					out = types.toString().replace("Monster", getRace(index, "en").toString().replace(/,/g, "|")).replace(/,/g, "/");
 				} else {
-					let lv = getLevelScales(index)[0];
+					let lv = getLevelScales(index, "en")[0];
 					if (lv > 0) { //is trap monster
-						out = getRace(index).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
+						out = getRace(index, "en").toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
 					} else {
 						out = types.toString().replace(/,/g, "/");
 					}
 				}
 				break;
 			case "att":
-				let typs = getTypes(index);
+				let typs = getTypes(index, "en");
 				if (typs.indexOf("Monster") > -1) {
-					out = getAtt(index).toString().replace(/,/g, "|");
+					out = getAtt(index, "en").toString().replace(/,/g, "|");
 				} else {
-					let lv = getLevelScales(index)[0];
+					let lv = getLevelScales(index, "en")[0];
 					if (lv > 0) { //is trap monster
-						out = getAtt(index).toString().replace(/,/g, "|");
+						out = getAtt(index, "en").toString().replace(/,/g, "|");
 					}
 				}
 				break;
 			case "stats":
-				let tys = getTypes(index);
-				let card = contents[0].values[index];
+				let tys = getTypes(index, "en");
+				let card = contents.en[0].values[index];
 				if (tys.indexOf("Monster") > -1) {
 					let lvName = "Level";
-					let lv = getLevelScales(index);
+					let lv = getLevelScales(index, "en");
 					let def = true;
 					if (tys.indexOf("Xyz") > -1) {
 						lvName = "Rank";
@@ -898,13 +920,13 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 					if (def) {
 						out += "**DEF**: " + convertStat(card[6]);
 					} else {
-						out += "**Link Markers**: " + getMarkers(index);
+						out += "**Link Markers**: " + getMarkers(index, "en");
 					}
 					if (tys.indexOf("Pendulum") > -1) {
 						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2];
 					}
 				} else {
-					let lv = getLevelScales(index)[0];
+					let lv = getLevelScales(index, "en")[0];
 					if (lv > 0) { //is trap monster
 						out = "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]);
 					}
@@ -927,13 +949,13 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 function getCardScript(index, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		let scriptUrl = scriptUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index)) > -1) {
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index, "en")) > -1) {
 			scriptUrl = scriptUrlAnime;
 		}
-		if (getOT(index) === "Custom") {
+		if (getOT(index, "en") === "Custom") {
 			scriptUrl = scriptUrlCustom;
 		}
-		let fullUrl = scriptUrl + "c" + ids[index] + ".lua";
+		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
 		https.get(url.parse(fullUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -943,7 +965,7 @@ function getCardScript(index, user, userID, channelID, message, event) {
 				let script = buffer.toString();
 				if (script === "404: Not Found\n" && scriptBackupEnabled) {
 					script = await new Promise(function(resolve, reject) {
-						fullUrl = scriptUrlBackup + "c" + ids[index] + ".lua";
+						fullUrl = scriptUrlBackup + "c" + ids.en[index] + ".lua";
 						https.get(url.parse(fullUrl), function(response) {
 							let data2 = [];
 							response.on('data', function(chunk) {
@@ -951,7 +973,7 @@ function getCardScript(index, user, userID, channelID, message, event) {
 							}).on('end', async function() {
 								let buffer2 = Buffer.concat(data2);
 								let script2 = buffer2.toString();
-								resolve(script2)
+								resolve(script2);
 							});
 						});
 					});
@@ -981,7 +1003,7 @@ function matches(user, userID, channelID, message, event) {
 		}
 		arg = lineArr.toString().replace(/,/g, " ");
 	}
-	let results = fuse.search(arg);
+	let results = fuse.en.search(arg);
 	if (results.length < 1) {
 		bot.sendMessage({
 			to: channelID,
@@ -991,10 +1013,10 @@ function matches(user, userID, channelID, message, event) {
 		let out = "Top 10 card name matches for `" + arg + "`:";
 		let i = 0;
 		let outs = [];
-		let ot = getOT(ids.indexOf(results[0].item.id));
+		let ot = getOT(ids.en.indexOf(results[0].item.id), "en");
 		while (results[i] && outs.length < 10) {
-			let index = ids.indexOf(results[i].item.id)
-			if (ot === getOT(index) && aliasCheck(index)) {
+			let index = ids.en.indexOf(results[i].item.id)
+			if (ot === getOT(index, "en") && aliasCheck(index, "en")) {
 				outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 			}
 			i++;
@@ -1064,9 +1086,12 @@ function sendLongMessage(out, user, userID, channelID, message, event) {
 	});
 }
 
-function nameCheck(line) {
-	for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
-		if (names[0].values[i][1].toLowerCase() === line.toLowerCase()) {
+function nameCheck(line, inLang) {
+	if (langs.indexOf(inLang) === -1) {
+		inLang = "en";
+	}
+	for (let i = 0; i < names[inLang][0].values.length; i++) { //check all entries for exact name
+		if (names[inLang][0].values[i][1].toLowerCase() === line.toLowerCase()) {
 			return i;
 		}
 	}
@@ -1082,31 +1107,31 @@ function nameCheck(line) {
 			}
 		}
 		let newLine = lineArr.toString().replace(/,/g, " ");
-		for (let i = 0; i < names[0].values.length; i++) { //check all entries for exact name
-			if (names[0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
+		for (let i = 0; i < names[inLang][0].values.length; i++) { //check all entries for exact name
+			if (names[inLang][0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
 				return i;
 			}
 		}
-		let result = fuse.search(newLine);
+		let result = fuse[inLang].search(newLine);
 		if (result.length < 1) {
 			return -1;
 		} else {
 			let index = -1;
-			for (let i = 0; i < names[0].values.length; i++) {
-				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+			for (let i = 0; i < names[inLang][0].values.length; i++) {
+				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
 					index = i;
 				}
 			}
 			return index;
 		}
 	} else {
-		let result = fuse.search(line);
+		let result = fuse[inLang].search(line);
 		if (result.length < 1) {
 			return -1;
 		} else {
 			let index = -1;
-			for (let i = 0; i < names[0].values.length; i++) {
-				if (names[0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
+			for (let i = 0; i < names[inLang][0].values.length; i++) {
+				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
 					index = i;
 				}
 			}
@@ -1123,13 +1148,13 @@ function convertStat(stat) {
 	}
 }
 
-function getLevelScales(index) {
-	let level = contents[0].values[index][7];
+function getLevelScales(index, outLang) {
+	let level = contents[outLang][0].values[index][7];
 	return [level & 0xff, (level & 0xf000000) >> 24, (level & 0xf0000) >> 16];
 }
 
-function getOT(index) {
-	let ot = contents[0].values[index][1];
+function getOT(index, outLang) {
+	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
 		case 1:
 			return "OCG";
@@ -1150,8 +1175,8 @@ function getOT(index) {
 	}
 }
 
-function getRace(index) {
-	let race = contents[0].values[index][8];
+function getRace(index, outLang) {
+	let race = contents[outLang][0].values[index][8];
 	let races = [];
 	if (race & 0x1) {
 		races.push("Warrior");
@@ -1241,8 +1266,8 @@ function getRace(index) {
 	}
 }
 
-function getAtt(index) {
-	let att = contents[0].values[index][9];
+function getAtt(index, outLang) {
+	let att = contents[outLang][0].values[index][9];
 	let atts = [];
 	if (att & 0x1) {
 		atts.push("EARTH");
@@ -1275,8 +1300,8 @@ function getAtt(index) {
 	}
 }
 
-function getMarkers(index) {
-	let marks = contents[0].values[index][6];
+function getMarkers(index, outLang) {
+	let marks = contents[outLang][0].values[index][6];
 	let out = "";
 	if (marks & 0x001) {
 		out += "↙️";
@@ -1305,9 +1330,9 @@ function getMarkers(index) {
 	return out;
 }
 
-function getTypes(index) {
+function getTypes(index, outLang) {
 	let types = [];
-	let type = contents[0].values[index][4];
+	let type = contents[outLang][0].values[index][4];
 	if (type & 0x1) {
 		types.push("Monster");
 	}
@@ -1394,8 +1419,8 @@ function getTypes(index) {
 	return types;
 }
 
-function getCardText(index) {
-	let cardText = names[0].values[index][2];
+function getCardText(index, outLang) {
+	let cardText = names[outLang][0].values[index][2];
 	let re = /\][\s\S]*?\n([\S\s]*?)\n-/g;
 	let regx = re.exec(cardText);
 	if (regx === null) {
@@ -1409,7 +1434,7 @@ function getCardText(index) {
 	}
 }
 
-function randFilterCheck(code, args) {
+function randFilterCheck(code, args, outLang) {
 	let otFilters = [];
 	let typeFilters = [];
 	let raceFilters = [];
@@ -1439,38 +1464,38 @@ function randFilterCheck(code, args) {
 	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length === 0) {
 		return true;
 	} else {
-		let index = ids.indexOf(code);
+		let index = ids[outLang].indexOf(code);
 		let boo = true;
-		if (otFilters.length > 0 && otFilters.indexOf(getOT(index).toLowerCase()) === -1) {
+		if (otFilters.length > 0 && otFilters.indexOf(getOT(index, outLang).toLowerCase()) === -1) {
 			boo = false;
 		}
 		if (typeFilters.length > 0) {
 			let subBoo = false;
-			for (let type of getTypes(index)) {
+			for (let type of getTypes(index, outLang)) {
 				if (typeFilters.indexOf(type.toLowerCase()) > -1) {
 					subBoo = true;
 				}
 			}
 			boo = subBoo;
 		}
-		if (raceFilters.length > 0 && raceFilters.indexOf(getRace(index)[0].toLowerCase()) === -1) {
+		if (raceFilters.length > 0 && raceFilters.indexOf(getRace(index, outLang)[0].toLowerCase()) === -1) {
 			boo = false;
 		}
-		if (attFilters.length > 0 && attFilters.indexOf(getAtt(index)[0].toLowerCase()) === -1) {
+		if (attFilters.length > 0 && attFilters.indexOf(getAtt(index, outLang)[0].toLowerCase()) === -1) {
 			boo = false;
 		}
-		if (lvFilters.length > 0 && lvFilters.indexOf(getLevelScales(index)[0].toString()) === -1) {
+		if (lvFilters.length > 0 && lvFilters.indexOf(getLevelScales(index, outLang)[0].toString()) === -1) {
 			boo = false;
 		}
 		return boo;
 	}
 }
 
-function setCodeCheck(index, user, userID, channelID, message, event) {
-	if (aliases[index] > 0) {
-		index = ids.indexOf(aliases[index]);
+function setCodeCheck(index, outLang, user, userID, channelID, message, event) {
+	if (aliases[outLang][index] > 0) {
+		index = ids[outLang].indexOf(aliases[outLang][index]);
 	}
-	let code = contents[0].values[index][3].toString("16");
+	let code = contents[outLang][0].values[index][3].toString("16");
 	if (code === "0") {
 		return false;
 	}
@@ -1488,13 +1513,13 @@ function setCodeCheck(index, user, userID, channelID, message, event) {
 	}
 }
 
-function aliasCheck(index) {
-	let alias = aliases[index];
+function aliasCheck(index, outLang) {
+	let alias = aliases[outLang][index];
 	if (alias === 0) {
 		return true;
 	}
-	let alIndex = ids.indexOf(alias);
-	return getOT(index) !== getOT(alIndex);
+	let alIndex = ids[outLang].indexOf(alias);
+	return getOT(index, outLang) !== getOT(alIndex, outLang);
 }
 
 function getIncInt(min, max) {
@@ -1520,6 +1545,12 @@ function trivia(user, userID, channelID, message, event) {
 		} else if (args.indexOf("custom") > -1) {
 			ot = ["Custom"];
 		}
+		let outLang = "en";
+		for (let arg of args) {
+			if (langs.indexOf(arg) > -1) {
+				outLang = arg;
+			}
+		}
 		let round = 1;
 		for (let arg of args) {
 			if (parseInt(arg) > round) {
@@ -1531,37 +1562,42 @@ function trivia(user, userID, channelID, message, event) {
 			}
 		}
 		let hard = (args.indexOf("hard") > -1);
-		startTriviaRound(ot, round, hard, user, userID, channelID, message, event);
+		startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event);
 	}
 }
 
-async function startTriviaRound(ot, round, hard, user, userID, channelID, message, event) {
+async function startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event) {
 	//pick a random card
 	let index;
 	let code;
 	let buffer;
 	do {
-		index = Math.floor(Math.random() * ids.length);
-		code = ids[index];
+		index = Math.floor(Math.random() * ids[outLang].length);
+		code = ids[outLang][index];
 		let imageUrl = imageUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids.indexOf(code))) > -1) {
+		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids[outLang].indexOf(code), outLang)) > -1) {
 			imageUrl = imageUrlAnime;
 		}
-		if (getOT(ids.indexOf(code)) === "Custom") {
+		if (getOT(ids[outLang].indexOf(code), outLang) === "Custom") {
 			imageUrl = imageUrlCustom;
 		}
-		buffer = await new Promise(function(resolve, reject) {
-			https.get(url.parse(imageUrl + code + ".png"), function(response) {
-				let data = [];
-				response.on('data', function(chunk) {
-					data.push(chunk);
-				}).on('end', async function() {
-					resolve(Buffer.concat(data));
+		if (ot.indexOf(getOT(index, outLang)) > -1) {
+			buffer = await new Promise(function(resolve, reject) {
+				https.get(url.parse(imageUrl + code + ".png"), function(response) {
+					let data = [];
+					response.on('data', function(chunk) {
+						data.push(chunk);
+					}).on('end', async function() {
+						resolve(Buffer.concat(data));
+					});
 				});
 			});
-		});
-	} while (ot.indexOf(getOT(index)) === -1 && filetype(buffer) && filetype(buffer).ext === "png");
-	let name = names[0].values[index][1];
+		}
+	} while (ot.indexOf(getOT(index, outLang)) === -1 && filetype(buffer) && filetype(buffer).ext === "png");
+	console.log(Object.keys(names));
+	console.log(outLang);
+	console.log(outLang in names);
+	let name = names[outLang][0].values[index][1];
 	let hint = "";
 	for (let letter of name) {
 		if (getIncInt(0, 2) !== 0 && letter !== " ") {
@@ -1583,7 +1619,8 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 			"round": round,
 			"ot": ot,
 			"score": {},
-			"hard": hard
+			"hard": hard,
+			"lang": outLang
 		}
 	}
 	if (hard) {
@@ -1661,7 +1698,7 @@ async function startTriviaRound(ot, round, hard, user, userID, channelID, messag
 						message: out
 					});
 					clearInterval(gameData[channelID].IN);
-					startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, user, userID, channelID, message, event);
+					startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 				}, triviaTimeLimit);
 			}
 		}
@@ -1792,7 +1829,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				to: channelID,
 				message: out
 			});
-			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, user, userID, channelID, message, event);
+			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 		}
 	}
 }
