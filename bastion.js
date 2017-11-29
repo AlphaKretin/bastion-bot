@@ -506,8 +506,8 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		return;
 	}
 	let args = input.split(",");
-	let inLang = args[args.length - 2].replace(/ /g, "");
-	let outLang = args[args.length - 1].replace(/ /g, "");
+	let inLang = args[args.length - 2].replace(/ /g, "").toLowerCase();
+	let outLang = args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
 	} else {
