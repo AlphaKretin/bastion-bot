@@ -113,6 +113,12 @@ if (config.dbs) {
 } else {
 	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs.en[0] + ".");
 }
+let dbMemory = 33554432;
+if (config.dbMemory) {
+	dbMemory = config.dbMemory;
+} else {
+	console.log("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
+}
 let owner;
 let servLogEnabled = false;
 if (config.botOwner) {
@@ -182,6 +188,9 @@ bot.on('disconnect', function() {
 });
 
 //sql setup
+Module = {
+	TOTAL_MEMORY: dbMemory
+};
 let SQL = require('sql.js');
 let contents = {};
 let names = {};

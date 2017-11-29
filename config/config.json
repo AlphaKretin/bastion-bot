@@ -9,6 +9,7 @@
 			"cards.cdb"
 		]
 	},
+	"dbMemory": 33554432,
 	"triviaTimeLimit": 30000,
 	"triviaHintTime": 10000,
 	"triviaMaxRounds": 20,
