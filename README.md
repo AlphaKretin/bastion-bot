@@ -14,15 +14,15 @@ Usage: `@Bastion#3599`
 Mentioning Bastion will provide a link to this readme.  
   
 ### Card Lookup  
-Usage: `{card name|ID}`  
+Usage: `{card name|ID[,lang,lang]}`  
   
-This command searches for a card by the name or YGOPro ID specified in the brackets and returns the card's name, all of its IDs in YGOPro, any archetypes its a member of, its status, its lowest, average, and highest prices if available, its types, its attribute if it's a monster, any stats, and its card text.  
+This command searches for a card by the name or YGOPro ID specified in the brackets and returns the card's name, all of its IDs in YGOPro, any archetypes its a member of, its status, its lowest, average, and highest prices if available, its types, its attribute if it's a monster, any stats, and its card text. If you enter two valid language codes (e.g. "en", "ja", "es"), Bastion will search by the first language and output in the second.  
   
 As an example, `{dark magician}` returns the following output:  
 ![card output](/readme-images/card.png)  
   
 ### Card With Image  
-Usage: `<card name|ID>`  
+Usage: `<card name|ID[,lang,lang]>`  
   
 This command works the same way as the above command, but also displays an image of the card's artwork.  
   
@@ -37,7 +37,7 @@ Using these commands, you can search for these individual parts of what the abov
 ### .randcard  
 Usage: `.randcard [opts]`  
   
-The `.randcard` command will select a random card and display its information as if you searched it. The command accepts options that allow you to specify the status, level, type, or attribute of the card, as well as optionally display an image by including "image".  
+The `.randcard` command will select a random card and display its information as if you searched it. The command accepts options that allow you to specify the status, level, type, or attribute of the card, as well as optionally display an image by including "image" or display cards in different languages by including the language code for that language.  
   
 As an example, `.randcard tcg/ocg 4 image` returns the following output:  
 ![.randcard output](/readme-images/randcard.png)  
@@ -66,11 +66,11 @@ The `.set` command searches for an archetype, or "setcode" by either its name or
   
 As an example, `.set 0xba` returns the following output:  
 ![.set output](/readme-images/set.png)  
-
-### Scripting Library
-Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`
-
-Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type o edit `.d[number]` to see a more detailed description of that entry, if available.
+  
+### Scripting Library  
+Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
+  
+Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type o edit `.d[number]` to see a more detailed description of that entry, if available.  
   
 ### .trivia  
 Usage: `.trivia [options]`  
@@ -79,6 +79,7 @@ For fun, Bastion can play a game where it will provide the art of a card, and pl
 **Rounds**: If you include a number as an option, the game will run that many times and track the total scores of each player over the course of the game.  
 **Hard Mode**: If you include `hard` as an option, Bastion will display only a quarter of the card image, for added difficulty.  
 You can end the game prematurely by typing ".tq".  
+**Language**: If you include a language code as an option, Bastion will use that language for the card name.  
   
 ### .tlock  
 Usage: `.tlock`  
@@ -104,15 +105,17 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"scriptUrl": "",  
 	"scriptUrlAnime": "",  
 	"scriptUrlCustom": "",  
-	"dbs": [ "cards.cdb" ],  
+	"dbs": {  
+		"en": [ "cards.cdb" ]  
+	},  
 	"triviaTimeLimit": 30000,  
 	"triviaHintTime": 10000,  
 	"triviaMaxRounds": 20,  
-	"triviaLocks": {},
-	"botOwner": "169299769695535105",
-	"scriptFunctions": "functions.json",
-	"scriptConstants": "constants.json",
-	"scriptParams": "parameters.json"
+	"triviaLocks": {},  
+	"botOwner": "169299769695535105",  
+	"scriptFunctions": "functions.json",  
+	"scriptConstants": "constants.json",  
+	"scriptParams": "parameters.json"  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -137,7 +140,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
   
-`dbs` is an array of filenames for card databases Bastion will read, to be found in a folder called `dbs`. This field is optional - if it is missing, Bastion will default to what you see above.  
+`dbs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language codes. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `triviaTimeLimit` is the time a player has to guess the answer in the trivia game, in milliseconds. This field is optional - if it is missing, Bastion will default to what you see above.  
   
@@ -146,14 +149,14 @@ By default, the configuration file is called `config.json`, and is expected to b
 `triviaMaxRounds` is the maximum number of rounds a player can set the trivia game to run for, to prevent someone from forcing it to run for an arbitrarily long time. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `triviaLocks` is an object with server IDs as keys and an array of channel IDs as the properties. If a server is in the object, the trivia game can only be player in the channels listed in the array. This field is optional - if it is missing, Bastion will default to what you see above, and you can configure it through Bastion even if you don't run the copy using the `.tlock` command.  
-
-`botOwner` is the Discord user ID of the user you consider to own the bot, likely yourself, for the sake of administrative functions. This field is optional - if it is missing, such functions will be disabled.
-
-`scriptFunctions` is the name of the JSON file Bastion will load containing information about the YGOPro API's functions - details on this file below. This field is optional - if it is missing, searching for functions will be disabled.
-
-`scriptConstants` is the name of the JSON file Bastion will load containing information about the YGOPro API's constants - details on this file below. This field is optional - if it is missing, searching for constants will be disabled.
-
-`scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.
+  
+`botOwner` is the Discord user ID of the user you consider to own the bot, likely yourself, for the sake of administrative functions. This field is optional - if it is missing, such functions will be disabled.  
+  
+`scriptFunctions` is the name of the JSON file Bastion will load containing information about the YGOPro API's functions - details on this file below. This field is optional - if it is missing, searching for functions will be disabled.  
+  
+`scriptConstants` is the name of the JSON file Bastion will load containing information about the YGOPro API's constants - details on this file below. This field is optional - if it is missing, searching for constants will be disabled.  
+  
+`scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -224,56 +227,56 @@ CREATE TABLE IF NOT EXISTS "texts" (
 );  
 ```  
   
-### API
-
-Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects detailing the functions, constants, and parameters in YGOPro's API. Examples of their format below.
-
-#### functions.json
-```json
-[
-	{
-		"sig": "int,int",
-		"name": "Card.GetOriginalCodeRule(Card c)",
-		"desc": "Gets the original code of a Card (Card c) (used for wording \"original name\")"
-	},
-	{
-		"sig": "bool",
-		"name": "Card.IsFusionCode(Card c, int code)",
-		"desc": "Checks if a Card (Card c) has a specific code (int code) (for Fusion Summons)"
-	}
-]
-```
-
-#### constants.json
-```json
-[
-	{
-		"val": "0x01",
-		"name": "LOCATION_DECK",
-		"desc": ""
-	},
-	{
-		"val": "0x02",
-		"name": "LOCATION_HAND",
-		"desc": ""
-	}
-]
-```
-
-#### parameters.json
-```json
-[
-{
-		"type": "string",
-		"name": "any msg",
-		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"
-	},
-	{
-		"type": "bool",
-		"name": "cancel",
-		"desc": "Determines if it's cancelled or not"
-	}
-]
+### API  
+  
+Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects detailing the functions, constants, and parameters in YGOPro's API. Examples of their format below.  
+  
+#### functions.json  
+```json  
+[  
+	{  
+		"sig": "int,int",  
+		"name": "Card.GetOriginalCodeRule(Card c)",  
+		"desc": "Gets the original code of a Card (Card c) (used for wording \"original name\")"  
+	},  
+	{  
+		"sig": "bool",  
+		"name": "Card.IsFusionCode(Card c, int code)",  
+		"desc": "Checks if a Card (Card c) has a specific code (int code) (for Fusion Summons)"  
+	}  
+]  
+```  
+  
+#### constants.json  
+```json  
+[  
+	{  
+		"val": "0x01",  
+		"name": "LOCATION_DECK",  
+		"desc": ""  
+	},  
+	{  
+		"val": "0x02",  
+		"name": "LOCATION_HAND",  
+		"desc": ""  
+	}  
+]  
+```  
+  
+#### parameters.json  
+```json  
+[  
+{  
+		"type": "string",  
+		"name": "any msg",  
+		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"  
+	},  
+	{  
+		"type": "bool",  
+		"name": "cancel",  
+		"desc": "Determines if it's cancelled or not"  
+	}  
+]  
 ```  
 ### To-do List  
 - Add languages --Feature Simon has  

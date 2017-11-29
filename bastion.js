@@ -105,7 +105,9 @@ if (config.maxSearches) {
 } else {
 	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!")
 }
-let dbs = {"en":["cards.cdb"]};
+let dbs = {
+	"en": ["cards.cdb"]
+};
 if (config.dbs) {
 	dbs = config.dbs;
 } else {
@@ -188,7 +190,7 @@ let aliases = {};
 let nameList = {};
 let langs = [];
 for (let lang in dbs) {
-	console.log("loading " + lang +" database");
+	console.log("loading " + lang + " database");
 	langs.push(lang);
 	let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
 	let db = new SQL.Database(filebuffer);
@@ -491,14 +493,14 @@ async function script(user, userID, channelID, message, event) {
 }
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
-	if (input.length === 0 || input.indexOf(":") === 0 || input.indexOf("@") === 0 || input.indexOf("#") === 0 ) {
+	if (input.length === 0 || input.indexOf(":") === 0 || input.indexOf("@") === 0 || input.indexOf("#") === 0) {
 		return;
 	}
 	let args = input.split(",");
 	let inLang = args[args.length - 2].replace(/ /g, "");
 	let outLang = args[args.length - 1].replace(/ /g, "");
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
-		input = args.splice(0,args.length - 2).toString();
+		input = args.splice(0, args.length - 2).toString();
 	} else {
 		inLang = "en";
 		outLang = "en";
