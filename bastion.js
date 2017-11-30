@@ -332,6 +332,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		getSingleProp("stats", user, userID, channelID, message, event);
 		return;
 	}
+		if (lowMessage.indexOf(pre + "commands") === 0) {
+		commands(user, userID, channelID, message, event);
+		return;
+	}
 	if (libFuncEnabled && lowMessage.indexOf(pre + "f") === 0) {
 		searchFunctions(user, userID, channelID, message, event);
 		return;
@@ -436,7 +440,22 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) {
 function help(user, userID, channelID, message, event) {
 	bot.sendMessage({
 		to: channelID,
-		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>"
+		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."
+	});
+}
+
+function commands(user, userID, channelID, message, event) {
+	let out = "Type a card name or ID between `{}` (or `<>` for images) to see its profile.\n";
+	out += "`" + pre + "randcard` displays a random card profile.\n";
+	out += "`" + pre + "script` displays the YGOPro script of the specified card.\n";
+	out += "`" + pre + "matches` displays the 10 card names Bastion thinks are most similar to the text you type after.\n";
+	out += "`" + pre + "set` translates between YGOPro setcodes and their name.\n";
+	out += "`" + pre + "f`, `" + pre + "c` and `" + pre + "p` search for the functions, constants and parameters respectively used for scripting in YGOPro.\n";
+	out += "`" + pre + "trivia` plays a game where you guess a card name from its image.\n";
+	out += "See the readme for details and other commands I skimmed over: <https://github.com/AlphaKretin/bastion-bot/>";
+	bot.sendMessage({
+		to: userID,
+		message: out
 	});
 }
 
