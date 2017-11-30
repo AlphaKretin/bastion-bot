@@ -820,8 +820,8 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 			case "id":
 				let code = ids.en[index];
 				let alIDs = [code];
-				if (aliases.en[ids.indexOf(code)] > 0) {
-					if (getOT(ids.en.indexOf(code), "en") === getOT(ids.en.indexOf(aliases.en[ids.indexOf(code)]), "en")) {
+				if (aliases.en[ids.en.indexOf(code)] > 0) {
+					if (getOT(ids.en.indexOf(code), "en") === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(code)]), "en")) {
 						code = aliases.en[ids.en.indexOf(code)];
 						alIDs = [code];
 						for (let i = 0; i < aliases.en.length; i++) {
@@ -1605,10 +1605,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 				});
 			});
 		}
-	} while (ot.indexOf(getOT(index, outLang)) === -1 && filetype(buffer) && filetype(buffer).ext === "png");
-	console.log(Object.keys(names));
-	console.log(outLang);
-	console.log(outLang in names);
+	} while (ot.indexOf(getOT(index, outLang)) === -1 || !(filetype(buffer) && filetype(buffer).ext === "png"));
 	let name = names[outLang][0].values[index][1];
 	let hint = "";
 	for (let letter of name) {
