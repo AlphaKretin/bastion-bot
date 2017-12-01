@@ -1728,7 +1728,9 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 						to: channelID,
 						message: out
 					});
-					clearInterval(gameData[channelID].IN);
+					if (gameData[channelID].IN) {
+						clearInterval(gameData[channelID].IN);
+					}
 					delete gameData[channelID];
 				}, triviaTimeLimit);
 			} else {
@@ -1737,7 +1739,9 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 						to: channelID,
 						message: out
 					});
-					clearInterval(gameData[channelID].IN);
+					if (gameData[channelID].IN) {
+						clearInterval(gameData[channelID].IN);
+					}
 					startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 				}, triviaTimeLimit);
 			}
@@ -1791,9 +1795,15 @@ async function answerTrivia(user, userID, channelID, message, event) {
 	}
 	let out;
 	if (message.toLowerCase().indexOf(pre + "tq") === 0) {
-		clearTimeout(gameData[channelID].TO1);
-		clearTimeout(gameData[channelID].TO2);
-		clearInterval(gameData[channelID].IN);
+		if (gameData[channelID].TO1) {
+			clearTimeout(gameData[channelID].TO1);
+		}
+		if (gameData[channelID].TO2) {
+			clearTimeout(gameData[channelID].TO2);
+		}
+		if (gameData[channelID].IN) {
+			clearInterval(gameData[channelID].IN);
+		}
 		out = "<@" + userID + "> quit the game. The answer was **" + gameData[channelID].name + "**!\n"
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "\n**Scores**:\n";
@@ -1822,9 +1832,15 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		});
 		delete gameData[channelID];
 	} else if (message.toLowerCase() === gameData[channelID].name.toLowerCase()) {
-		clearTimeout(gameData[channelID].TO1);
-		clearTimeout(gameData[channelID].TO2);
-		clearInterval(gameData[channelID].IN);
+		if (gameData[channelID].TO1) {
+			clearTimeout(gameData[channelID].TO1);
+		}
+		if (gameData[channelID].TO2) {
+			clearTimeout(gameData[channelID].TO2);
+		}
+		if (gameData[channelID].IN) {
+			clearInterval(gameData[channelID].IN);
+		}
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
