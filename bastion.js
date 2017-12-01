@@ -386,7 +386,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	do {
 		regx = re.exec(message);
 		if (regx !== null) {
-			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) {
+			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1 && blockCheck(message, regx[1])) {
 				results.push(regx[1]);
 			}
 		}
@@ -398,7 +398,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 !== null) {
-				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) {
+				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1 && blockCheck(message, regx2[1])) {
 					results2.push(regx2[1]);
 				}
 			}
@@ -1551,6 +1551,34 @@ function aliasCheck(index, outLang) {
 	}
 	let alIndex = ids[outLang].indexOf(alias);
 	return getOT(index, outLang) !== getOT(alIndex, outLang);
+}
+
+function blockCheck(message, result) {
+	let arr = doubleSplit(message, "```", "`");
+	arr.forEach(function(key, index) {
+		if (arr[index].indexOf("{") > -1) {
+			arr[index] = sliceBetween(arr[index],"{","}");
+		} else {
+			arr[index] = sliceBetween(arr[index],"<",">");
+		}
+	});
+	return arr.indexOf(result) % 2 === 0;
+	//In an array split in this manner, text that's between ``` or `, i.e. in a code block, is at odd-numbered positions in the split array, hence its index mod 2 will be 1.
+}
+
+function sliceBetween(str, cha1, cha2) {
+	return str.slice(str.indexOf(cha1) + 1, str.indexOf(cha2));
+}
+
+function doubleSplit(str, spl1, spl2) {
+	let arr = str.split(spl1);
+	let out = [];
+	for (let a of arr) {
+		for (let b of a.split(spl2)) {
+			out.push(b);
+		}
+	}
+	return out;
 }
 
 function getIncInt(min, max) {
