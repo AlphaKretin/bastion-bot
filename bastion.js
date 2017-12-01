@@ -1541,9 +1541,9 @@ function blockCheck(message, result) {
 	let arr = doubleSplit(message, "```", "`");
 	arr.forEach(function(key, index) {
 		if (arr[index].indexOf("{") > -1) {
-			arr[index] = sliceBetween(arr[index],"{","}");
+			arr[index] = sliceBetween(arr[index], "{", "}");
 		} else {
-			arr[index] = sliceBetween(arr[index],"<",">");
+			arr[index] = sliceBetween(arr[index], "<", ">");
 		}
 	});
 	return arr.indexOf(result) % 2 === 0;
