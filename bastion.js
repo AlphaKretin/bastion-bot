@@ -296,43 +296,19 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		set(user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "name") === 0) {
-		getSingleProp("name", user, userID, channelID, message, event);
-		return;
-	}
 	if (lowMessage.indexOf(pre + "id") === 0) {
 		getSingleProp("id", user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "status") === 0) {
-		getSingleProp("status", user, userID, channelID, message, event);
-		return;
-	}
-	if (lowMessage.indexOf(pre + "price") === 0) {
-		getSingleProp("price", user, userID, channelID, message, event);
+	if (lowMessage.indexOf(pre + "notext") === 0) {
+		getSingleProp("notext", user, userID, channelID, message, event);
 		return;
 	}
 	if (lowMessage.indexOf(pre + "effect") === 0) {
 		getSingleProp("effect", user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "peffect") === 0) {
-		getSingleProp("peffect", user, userID, channelID, message, event);
-		return;
-	}
-	if (lowMessage.indexOf(pre + "type") === 0) {
-		getSingleProp("type", user, userID, channelID, message, event);
-		return;
-	}
-	if (lowMessage.indexOf(pre + "att") === 0) {
-		getSingleProp("att", user, userID, channelID, message, event);
-		return;
-	}
-	if (lowMessage.indexOf(pre + "stats") === 0) {
-		getSingleProp("stats", user, userID, channelID, message, event);
-		return;
-	}
-		if (lowMessage.indexOf(pre + "commands") === 0) {
+	if (lowMessage.indexOf(pre + "commands") === 0) {
 		commands(user, userID, channelID, message, event);
 		return;
 	}
@@ -833,9 +809,6 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 	if (index > -1 && index in ids.en) {
 		let out = "";
 		switch (prop) {
-			case "name":
-				out = names.en[0].values[index][1];
-				break;
 			case "id":
 				let code = ids.en[index];
 				let alIDs = [code];
@@ -844,7 +817,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						code = aliases.en[ids.en.indexOf(code)];
 						alIDs = [code];
 						for (let i = 0; i < aliases.en.length; i++) {
-							if (aliases.en[i] === code && getOT(i) === getOT(ids.en.indexOf(code), "en")) {
+							if (aliases.en[i] === code && getOT(i, "en") === getOT(ids.en.indexOf(code), "en")) {
 								alIDs.push(ids.en[i]);
 							}
 						}
@@ -856,111 +829,122 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				out = alIDs.toString().replace(/,/g, "|");
+				out = names.en[0].values[index][1] + ": " + alIDs.toString().replace(/,/g, "|");
 				break;
-			case "status":
-				out = getOT(index, "en");
-				break;
-			case "price":
-				try {
-					out = await new Promise(function(resolve, reject) {
-						request('https://yugiohprices.com/api/get_card_prices/' + names.en[0].values[index][1], function(error, response, body) {
-							if (!error && JSON.parse(body).status === "success") {
-								let data = JSON.parse(body);
-								let low = 9999999999;
-								let hi = 0;
-								let avgs = [];
-								for (let price of data.data) {
-									if (price.price_data.status === "success") {
-										if (price.price_data.data.prices.high > hi) {
-											hi = price.price_data.data.prices.high;
-										}
-										if (price.price_data.data.prices.low < low) {
-											low = price.price_data.data.prices.low;
-										}
-										avgs.push(price.price_data.data.prices.average);
-									}
-								}
-								let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-								resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD");
-							} else {
-								reject(error);
+			case "notext":
+				console.log("notext");
+				let card = contents.en[0].values[index];
+				let name = names.en[0].values[index];
+				let cod = ids.en[index];
+				out += "__**" + name[1] + "**__\n";
+				let alIs = [cod];
+				if (aliases.en[ids.en.indexOf(cod)] > 0) {
+					if (getOT(ids.en.indexOf(cod), "en") === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(cod)]), "en")) {
+						cod = aliases.en[ids.en.indexOf(cod)];
+						alIs = [cod];
+						for (let i = 0; i < aliases.en.length; i++) {
+							if (aliases.en[i] === cod && getOT(i, "en") === getOT(ids.en.indexOf(cod), "en")) {
+								alIs.push(ids.en[i]);
 							}
-						});
+						}
+					}
+				} else if (aliases.en.indexOf(cod) > 0) {
+					for (let i = 0; i < aliases.en.length; i++) {
+						if (aliases.en[i] === cod && getOT(i, "en") === getOT(ids.en.indexOf(cod), "en")) {
+							alIs.push(ids.en[i]);
+						}
+					}
+				}
+				out += "**ID**: " + alIs.toString().replace(/,/g, "|") + "\n";
+				let sets = setCodeCheck(index, "en", user, userID, channelID, message, event);
+				if (sets) {
+					out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
+				} else {
+					out += "\n";
+				}
+				out += await new Promise(function(resolve, reject) {
+					request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
+						if (error) {
+							reject(error);
+						} else if (response.statusCode === 200 && JSON.parse(body).status === "success") {
+							let data = JSON.parse(body);
+							let low = 9999999999;
+							let hi = 0;
+							let avgs = [];
+							for (let price of data.data) {
+								if (price.price_data.status === "success") {
+									if (price.price_data.data.prices.high > hi) {
+										hi = price.price_data.data.prices.high;
+									}
+									if (price.price_data.data.prices.low < low) {
+										low = price.price_data.data.prices.low;
+									}
+									avgs.push(price.price_data.data.prices.average);
+								}
+							}
+							let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+							resolve("**Status**: " + getOT(index, "en") + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						} else {
+							resolve("**Status**: " + getOT(index, "en") + "\n");
+						}
 					});
-				} catch (e) {
-					console.log(e);
-					return;
-				}
-				break;
-			case "effect":
-				let cardText = getCardText(index, "en");
-				if (cardText.length === 2) {
-					out = cardText[1];
-				} else {
-					out = cardText[0];
-				}
-				break;
-			case "peffect":
-				let pText = getCardText(index, "en");
-				if (pText.length === 2) {
-					out = pText[0];
-				} else {
-					return;
-				}
-				break;
-			case "type":
+				});
 				let types = getTypes(index, "en");
 				if (types.indexOf("Monster") > -1) {
-					out = types.toString().replace("Monster", getRace(index, "en").toString().replace(/,/g, "|")).replace(/,/g, "/");
-				} else {
-					let lv = getLevelScales(index, "en")[0];
-					if (lv > 0) { //is trap monster
-						out = getRace(index, "en").toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-					} else {
-						out = types.toString().replace(/,/g, "/");
-					}
-				}
-				break;
-			case "att":
-				let typs = getTypes(index, "en");
-				if (typs.indexOf("Monster") > -1) {
-					out = getAtt(index, "en").toString().replace(/,/g, "|");
-				} else {
-					let lv = getLevelScales(index, "en")[0];
-					if (lv > 0) { //is trap monster
-						out = getAtt(index, "en").toString().replace(/,/g, "|");
-					}
-				}
-				break;
-			case "stats":
-				let tys = getTypes(index, "en");
-				let card = contents.en[0].values[index];
-				if (tys.indexOf("Monster") > -1) {
+					let typesStr = types.toString().replace("Monster", getRace(index, "en").toString().replace(/,/g, "|")).replace(/,/g, "/");
+					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
 					let lvName = "Level";
 					let lv = getLevelScales(index, "en");
 					let def = true;
-					if (tys.indexOf("Xyz") > -1) {
+					if (types.indexOf("Xyz") > -1) {
 						lvName = "Rank";
-					} else if (tys.indexOf("Link") > -1) {
+					} else if (types.indexOf("Link") > -1) {
 						lvName = "Link Rating";
 						def = false;
 					}
-					out = "**" + lvName + "**: " + lv[0] + " ";
+					out += "**" + lvName + "**: " + lv[0] + " ";
 					out += "**ATK**: " + convertStat(card[5]) + " ";
 					if (def) {
 						out += "**DEF**: " + convertStat(card[6]);
 					} else {
 						out += "**Link Markers**: " + getMarkers(index, "en");
 					}
-					if (tys.indexOf("Pendulum") > -1) {
-						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2];
+					if (types.indexOf("Pendulum") > -1) {
+						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
+					} else {
+						out += "\n";
 					}
-				} else {
+				} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
 					let lv = getLevelScales(index, "en")[0];
 					if (lv > 0) { //is trap monster
-						out = "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]);
+						let typesStr = getRace(index, "en").toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
+						out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
+						out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
+					} else {
+						out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
 					}
+				}
+				break;
+			case "effect":
+				let nam = names.en[0].values[index];
+				out += "__**" + nam[1] + "**__\n";
+				let typs = getTypes(index, "en");
+				if (typs.indexOf("Monster") > -1) {
+					let cardText = getCardText(index, "en");
+					let textName = "Monster Effect";
+					if (typs.indexOf("Normal") > -1) {
+						textName = "Flavour Text";
+					}
+					if (cardText.length === 2) {
+						out += "**Pendulum Effect**: " + cardText[0] + "\n";
+						out += "**" + textName + "**: " + cardText[1];
+					} else {
+						out += "**" + textName + "**: " + cardText[0];
+					}
+				} else if (typs.indexOf("Spell") > -1 || typs.indexOf("Trap") > -1) {
+					out += "**Effect**: " + nam[2].replace(/\n/g, "\n");
+				} else {
+					out += "**Card Text**: " + nam[2].replace(/\n/g, "\n");
 				}
 				break;
 			default:

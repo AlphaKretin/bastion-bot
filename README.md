@@ -30,9 +30,9 @@ As an example, `<stardust dragon>` returns the following output:
 ![card image output](/readme-images/card-image.png)  
   
 ### Individual Property Lookup  
-Usage: `.name [card name|ID]`, `.id [card name|ID]`, `.status [card name|ID]`, `.price [card name|ID]`, `.effect [card name|ID]`, `.peffect [card name|ID]`, `.type [card name|ID]`, `.att [card name|ID]`, `.stats [card name|ID]`  
+Usage: `.id [card name|ID]`, `.notext [card name|ID]`, `.effect [card name|ID]`  
   
-Using these commands, you can search for these individual parts of what the above commands return. If the property does not exist, for example the attribute of a Spell Card, nothing will be returned.  
+Using these commands, you can search like the above two, but it will return only the card IDs, just the stats etc. without card text, or only card text respectively. None of these options display the image.  
   
 ### .randcard  
 Usage: `.randcard [opts]`  
@@ -107,8 +107,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"scriptUrlCustom": "",  
 	"dbs": {  
 		"en": [ "cards.cdb" ]  
-	},
-	"dbMemory": 33554432,
+	},  
+	"dbMemory": 33554432,  
 	"triviaTimeLimit": 30000,  
 	"triviaHintTime": 10000,  
 	"triviaMaxRounds": 20,  
@@ -142,8 +142,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 `scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
   
 `dbs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language codes. This field is optional - if it is missing, Bastion will default to what you see above.  
-
-`dbMemory` is the size allocated in memory for Bastion to load card database, in bytes. If you get the error "Cannot adjust memory arrays" in the middle of loading databases, you need to increase this. This field is optional - if it is missing, Bastion will default to what you see above.
+  
+`dbMemory` is the size allocated in memory for Bastion to load card database, in bytes. If you get the error "Cannot adjust memory arrays" in the middle of loading databases, you need to increase this. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `triviaTimeLimit` is the time a player has to guess the answer in the trivia game, in milliseconds. This field is optional - if it is missing, Bastion will default to what you see above.  
   
