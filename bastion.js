@@ -2195,6 +2195,9 @@ function libPage(user, userID, channelID, message, event) {
 		default:
 			break;
 	}
+	if (!pages[index]) {
+		return;
+	}
 	for (let line of pages[index]) {
 		if (line[n].length > len) {
 			len = line[n].length;
@@ -2224,6 +2227,9 @@ function libDesc(user, userID, channelID, message, event) {
 		return;
 	}
 	let index = arg - 1;
+	if (!searchPage.pages[searchPage.index][index]) {
+		return;
+	}
 	let desc = searchPage.pages[searchPage.index][index].desc;
 	if (desc.length === 0) {
 		desc = "No description found for this entry.";
