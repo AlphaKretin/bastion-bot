@@ -1655,13 +1655,24 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 	} while (ot.indexOf(getOT(index, outLang)) === -1 || !(filetype(buffer) && filetype(buffer).ext === "png"));
 	let name = names[outLang][0].values[index][1];
+	let hintIs = [];
+	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
+	for (let i = 0; i < times; i++) {
+		let ind;
+		do {
+			ind = getIncInt(0, name.length - 1);
+		} while (hintIs.indexOf(ind) > -1);
+		hintIs.push(ind);
+	}
 	let hint = "";
-	for (let letter of name) {
-		if (getIncInt(0, 2) !== 0 && letter !== " ") {
+	let nameArr = name.split("");
+	nameArr.forEach(function (key, index) {
+		let letter = nameArr[index];
+		if (hintIs.indexOf(index) === -1 && letter !== " ") {
 			letter = "_";
 		}
 		hint += letter + " ";
-	}
+	});
 	if (channelID in gameData) {
 		//start game
 		gameData[channelID].name = name;
@@ -1770,7 +1781,7 @@ function hardCrop(buffer, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		jimp.read(buffer, function(err, image) {
 			if (err) {
-				reject(err)
+				reject(err);
 			} else {
 				let x;
 				let y;
