@@ -157,6 +157,7 @@ if (config.scriptParams) {
 
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
 let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
+let lflist = JSON.parse(fs.readFileSync('config/lflist.json', 'utf8'));
 /*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
 		[
 			"mst",
@@ -585,6 +586,17 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		} else {
 			out += "\n";
 		}
+		let stat = getOT(index, outLang);
+		Object.keys(lflist).forEach(function(key, index) {
+			if (stat.indexOf(key) > -1) {
+				let lim = 3;
+				if (lflist[key][code] || lflist[key][code] === 0) {
+					lim = lflist[key][code];
+				}
+				let re = new RegExp(key);
+				stat = stat.replace(re, key + ": " + lim)
+			}
+		});
 		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
 			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
 				let data = JSON.parse(body);
@@ -603,9 +615,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					}
 				}
 				let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-				out += "**Status**: " + getOT(index, outLang) + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 			} else {
-				out += "**Status**: " + getOT(index, outLang) + "\n";
+				out += "**Status**: " + stat + "\n";
 			}
 			let types = getTypes(index, outLang);
 			if (types.indexOf("Monster") > -1) {

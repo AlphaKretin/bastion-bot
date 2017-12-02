@@ -88,7 +88,7 @@ The `.tlock` command tells Bastion that on the server you use the command, he sh
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a shortcuts file, a setcodes file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. To run the bot, the script expects some certain files - a configuration file, a banlist file, a shortcuts file, a setcodes file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
@@ -187,6 +187,20 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 	"0x2": "Genex"  
 }  
 ```  
+  
+### Banlist  
+By default, the banlist file is called `lflist.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/lflist.json`. The script expects `lflist.json` to contain a object, with statuses (e.g. "TCG", "OCG") as the keys, and the values are further objects, with card IDs as keys and how many copies you are allowed in your deck as the value. If a card is not in the list, it is assumed to be unlimited.  
+```json  
+{  
+	"TCG": {  
+		"581014": 0,  
+		"2295440": 1  
+	},  
+	"OCG": {  
+		"423585": 2,  
+		"1561110": 1  
+	}  
+}  
   
 ### Database  
   
