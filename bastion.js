@@ -993,6 +993,11 @@ function getCardScript(index, user, userID, channelID, message, event) {
 						});
 					});
 				}
+				let scriptArr = script.split("\n");
+				script = "";
+				scriptArr.forEach(function(key, index) {
+					script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n";
+				});
 				if (script.length + "```lua\n```\n".length + fullUrl.length > 2000) {
 					resolve(fullUrl);
 				} else {
