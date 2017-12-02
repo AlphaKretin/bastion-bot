@@ -1657,15 +1657,15 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 	let name = names[outLang][0].values[index][1];
 	let hintIs = [];
 	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
+	let nameArr = name.split("");
 	for (let i = 0; i < times; i++) {
 		let ind;
 		do {
 			ind = getIncInt(0, name.length - 1);
-		} while (hintIs.indexOf(ind) > -1);
+		} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
 		hintIs.push(ind);
 	}
 	let hint = "";
-	let nameArr = name.split("");
 	nameArr.forEach(function (key, index) {
 		let letter = nameArr[index];
 		if (hintIs.indexOf(index) === -1 && letter !== " ") {
