@@ -78,8 +78,8 @@ For fun, Bastion can play a game where it will provide the art of a card, and pl
 **Status**: By default, the game will display TCG/OCG cards, but you can specify `OCG`, `TCG`, `Anime` (which will include Video Game and Illegal cards), and `Custom`.  
 **Rounds**: If you include a number as an option, the game will run that many times and track the total scores of each player over the course of the game.  
 **Hard Mode**: If you include `hard` as an option, Bastion will display only a quarter of the card image, for added difficulty.  
-You can end the game prematurely by typing ".tq".  
 **Language**: If you include a language code as an option, Bastion will use that language for the card name.  
+You can end the game prematurely by typing ".tq", or pass a round by typing ".tskip".  
   
 ### .tlock  
 Usage: `.tlock`  
