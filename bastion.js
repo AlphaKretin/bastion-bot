@@ -1029,21 +1029,21 @@ function deck(user, userID, channelID, message, event) {
 			if (mainArr.length > 0) {
 				let mainCount = arrayCount(mainArr);
 				out += "**Main Deck**\n";
-				Object.keys(mainCount).forEach( function (key, index) {
+				Object.keys(mainCount).forEach(function(key, index) {
 					out += mainCount[key] + " " + key + "\n";
 				});
 			}
 			if (extraArr.length > 0) {
 				let extraCount = arrayCount(extraArr);
 				out += "**Extra Deck**\n";
-				Object.keys(extraCount).forEach( function (key, index) {
+				Object.keys(extraCount).forEach(function(key, index) {
 					out += extraCount[key] + " " + key + "\n";
 				});
 			}
 			if (sideArr.length > 0) {
 				let sideCount = arrayCount(sideArr);
 				out += "**Side Deck**\n";
-				Object.keys(sideCount).forEach( function (key, index) {
+				Object.keys(sideCount).forEach(function(key, index) {
 					out += sideCount[key] + " " + key + "\n";
 				});
 			}
@@ -1761,7 +1761,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		hintIs.push(ind);
 	}
 	let hint = "";
-	nameArr.forEach(function (key, index) {
+	nameArr.forEach(function(key, index) {
 		let letter = nameArr[index];
 		if (hintIs.indexOf(index) === -1 && letter !== " ") {
 			letter = "_";
