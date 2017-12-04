@@ -1955,7 +1955,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			message: out
 		});
 		startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
-	} else if (message.toLowerCase() === gameData[channelID].name.toLowerCase()) {
+	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
 		gameData[channelID].lock = true;
 		if (gameData[channelID].TO1) {
 			clearTimeout(gameData[channelID].TO1);
