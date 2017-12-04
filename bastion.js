@@ -309,6 +309,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		getSingleProp("effect", user, userID, channelID, message, event);
 		return;
 	}
+	if (lowMessage.indexOf(pre + "deck") === 0) {
+		deck(user, userID, channelID, message, event);
+		return;
+	}
 	if (lowMessage.indexOf(pre + "commands") === 0) {
 		commands(user, userID, channelID, message, event);
 		return;
@@ -973,6 +977,89 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 	}
 }
 
+function deck(user, userID, channelID, message, event) {
+	let deckUrl = event.d.attachments && event.d.attachments[0] && event.d.attachments[0].url;
+	if (!deckUrl) {
+		return;
+	}
+	let args = message.toLowerCase().split(" ");
+	let outLang = "en";
+	for (let arg of args) {
+		if (langs.indexOf(arg) > -1) {
+			outLang = arg;
+		}
+	}
+	https.get(url.parse(deckUrl), function(response) {
+		let data = [];
+		response.on('data', function(chunk) {
+			data.push(chunk);
+		}).on('end', async function() {
+			let buffer = Buffer.concat(data);
+			let deckString = buffer.toString();
+			let mainDeck = sliceBetween(deckString, "#main", "#extra").split("\r\n");
+			let extraDeck = sliceBetween(deckString, "#extra", "!side").split("\r\n");
+			let sideDeck = deckString.split("!side")[1] && deckString.split("!side")[1].split("\r\n");
+			let mainArr = [];
+			let extraArr = [];
+			let sideArr = [];
+			for (let card of mainDeck) {
+				let index = ids[outLang].indexOf(parseInt(card));
+				if (index > -1) {
+					mainArr.push(names[outLang][0].values[index][1]);
+				}
+			}
+			for (let card of extraDeck) {
+				let index = ids[outLang].indexOf(parseInt(card));
+				if (index > -1) {
+					extraArr.push(names[outLang][0].values[index][1]);
+				}
+			}
+			if (sideDeck) {
+				for (let card of sideDeck) {
+					let index = ids[outLang].indexOf(parseInt(card));
+					if (index > -1) {
+						sideArr.push(names[outLang][0].values[index][1]);
+					}
+				}
+			}
+			if (mainArr.length + extraArr.length + sideArr.length === 0) {
+				return;
+			}
+			let out = "";
+			if (mainArr.length > 0) {
+				let mainCount = arrayCount(mainArr);
+				out += "**Main Deck**\n";
+				Object.keys(mainCount).forEach( function (key, index) {
+					out += mainCount[key] + " " + key + "\n";
+				});
+			}
+			if (extraArr.length > 0) {
+				let extraCount = arrayCount(extraArr);
+				out += "**Extra Deck**\n";
+				Object.keys(extraCount).forEach( function (key, index) {
+					out += extraCount[key] + " " + key + "\n";
+				});
+			}
+			if (sideArr.length > 0) {
+				let sideCount = arrayCount(sideArr);
+				out += "**Side Deck**\n";
+				Object.keys(sideCount).forEach( function (key, index) {
+					out += sideCount[key] + " " + key + "\n";
+				});
+			}
+			if (out.length > 0) {
+				let outArr = out.match(/[\s\S]{1,2000}/g);
+				for (let msg of outArr) {
+					bot.sendMessage({
+						to: userID,
+						message: out
+					});
+				}
+			}
+		});
+	});
+}
+
 function getCardScript(index, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		let scriptUrl = scriptUrlMaster;
@@ -1568,7 +1655,7 @@ function blockCheck(message, result) {
 }
 
 function sliceBetween(str, cha1, cha2) {
-	return str.slice(str.indexOf(cha1) + 1, str.indexOf(cha2));
+	return str.slice(str.indexOf(cha1) + cha1.length, str.indexOf(cha2));
 }
 
 function doubleSplit(str, spl1, spl2) {
@@ -1586,6 +1673,13 @@ function getIncInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+function arrayCount(arr) {
+	return arr.reduce(function(prev, cur) {
+		prev[cur] = (prev[cur] || 0) + 1;
+		return prev;
+	}, {});
 }
 
 //games

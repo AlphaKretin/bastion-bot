@@ -67,6 +67,11 @@ The `.set` command searches for an archetype, or "setcode" by either its name or
 As an example, `.set 0xba` returns the following output:  
 ![.set output](/readme-images/set.png)  
   
+### .deck  
+Usage `.deck [language]` and upload file  
+  
+The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the message, and sends a direct message to the user listing the contents of the deck in the specified language (English by default).  
+  
 ### Scripting Library  
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
   
