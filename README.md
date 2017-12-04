@@ -206,7 +206,7 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 		"1561110": 1  
 	}  
 }  
-  
+```  
 ### Database  
   
 Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:  
@@ -288,7 +288,7 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 #### parameters.json  
 ```json  
 [  
-{  
+	{  
 		"type": "string",  
 		"name": "any msg",  
 		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"  
