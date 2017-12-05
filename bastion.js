@@ -240,7 +240,6 @@ let Fuse = require('fuse.js');
 let options = {
 	shouldSort: true,
 	includeScore: true,
-	tokenize: true,
 	threshold: 0.6,
 	location: 0,
 	distance: 100,
