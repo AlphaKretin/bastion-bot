@@ -1540,7 +1540,7 @@ function getTypes(index, outLang) {
 
 function getCardText(index, outLang) {
 	let cardText = names[outLang][0].values[index][2];
-	let re = /\][\s\S]*?\n([\S\s]*?)\n-/g;
+	let re = /\][\s\S]*?\n([\S\s]*?)\n[-=]/g;
 	let regx = re.exec(cardText);
 	if (regx === null) {
 		return [cardText];
