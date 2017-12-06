@@ -1,0 +1,183 @@
+[
+	{
+		"name": "LIGHT",
+		"val": ""
+	},
+	{
+		"name": "DARK",
+		"val": ""
+	},
+	{
+		"name": "EARTH",
+		"val": ""
+	},
+	{
+		"name": "WIND",
+		"val": ""
+	},
+	{
+		"name": "WATER",
+		"val": ""
+	},
+	{
+		"name": "FIRE",
+		"val": ""
+	},
+	{
+		"name": "DIVINE",
+		"val": ""
+	},
+	{
+		"name": "LAUGH",
+		"val": ""
+	},
+	{
+		"name": "Warrior",
+		"val": ""
+	},
+	{
+		"name": "Spellcaster",
+		"val": ""
+	},
+	{
+		"name": "Fairy",
+		"val": ""
+	},
+	{
+		"name": "Fiend",
+		"val": ""
+	},
+	{
+		"name": "Zombie",
+		"val": ""
+	},
+	{
+		"name": "Machine",
+		"val": ""
+	},
+	{
+		"name": "Aqua",
+		"val": ""
+	},
+	{
+		"name": "Pyro",
+		"val": ""
+	},
+	{
+		"name": "Rock",
+		"val": ""
+	},
+	{
+		"name": "Winged Beast",
+		"val": ""
+	},
+	{
+		"name": "Plant",
+		"val": ""
+	},
+	{
+		"name": "Insect",
+		"val": ""
+	},
+	{
+		"name": "Thunder",
+		"val": ""
+	},
+	{
+		"name": "Dragon",
+		"val": ""
+	},
+	{
+		"name": "Beast",
+		"val": ""
+	},
+	{
+		"name": "Beast-Warrior",
+		"val": ""
+	},
+	{
+		"name": "Dinosaur",
+		"val": ""
+	},
+	{
+		"name": "Fish",
+		"val": ""
+	},
+	{
+		"name": "Sea Serpent",
+		"val": ""
+	},
+	{
+		"name": "Reptile",
+		"val": ""
+	},
+	{
+		"name": "Psychic",
+		"val": ""
+	},
+	{
+		"name": "Divine-Beast",
+		"val": ""
+	},
+	{
+		"name": "Creator God",
+		"val": ""
+	},
+	{
+		"name": "Wyrm",
+		"val": ""
+	},
+	{
+		"name": "Cyberse",
+		"val": ""
+	},
+	{
+		"name": "Yokai",
+		"val": ""
+	},
+	{
+		"name": "Charisma",
+		"val": ""
+	},
+	{
+		"name": "thumbsup",
+		"val": ""
+	},
+	{
+		"name": "thumbsdown",
+		"val": ""
+	},
+	{
+		"name": "Spell",
+		"val": ""
+	},
+	{
+		"name": "Trap",
+		"val": ""
+	},
+	{
+		"name": "Continuous",
+		"val": ""
+	},
+	{
+		"name": "Equip",
+		"val": ""
+	},
+	{
+		"name": "Quick-Play",
+		"val": ""
+	},
+	{
+		"name": "Field",
+		"val": ""
+	},
+	{
+		"name": "Ritual",
+		"val": ""
+	},
+	{
+		"name": "Counter",
+		"val": ""
+	}
+]
+
