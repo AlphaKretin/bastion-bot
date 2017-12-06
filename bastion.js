@@ -582,10 +582,10 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 			}
 		}
-		out += "**ID**: " + alIDs.toString().replace(/,/g, "|") + "\n";
+		out += "**ID**: " + alIDs.join("|") + "\n";
 		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event);
 		if (sets) {
-			out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
+			out += "**Archetype**: " + sets.join(", ") + "\n";
 		} else {
 			out += "\n";
 		}
