@@ -52,9 +52,9 @@ As an example, `.script macro cosmos` returns the following output:
 ![.script output 2](/readme-images/script2.png)  
   
 ### .matches  
-Usage: `.matches [name]`  
+Usage: `.matches [name]|[args]`  
   
-The `.matches` command simulates a search for cards by name and returns the 10 closest matches for your search term, that share a status. This command ignores cards with the same name, for example alternate artworks.  
+The `.matches` command simulates a search for cards by name and returns the 10 closest matches for your search term. If you specify arguments after a `|`, (the same kinds as `.randcard`), it will only show matches that fit that critera. This command ignores cards with the same name, for example alternate artworks, however it will allow Anime versions of existing cards, etc., unless you specify a status as an arg.  
   
 As an example, `.matches junk warrior` returns the following output:  
 ![.matches output](/readme-images/matches.png)  

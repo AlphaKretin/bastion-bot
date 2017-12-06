@@ -1107,7 +1107,17 @@ function getCardScript(index, user, userID, channelID, message, event) {
 }
 
 function matches(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "matches ").length);
+	let a = message.toLowerCase().split("|")
+	let arg = a[0].slice((pre + "matches ").length);
+	let args = a[1] && a[1].split(" ");
+	let outLang = "en";
+	if (args) {
+		for (let ar of args) {
+			if (langs.indexOf(ar) > -1) {
+				outLang = ar;
+			}
+		}
+	}	
 	if (shortcuts.length > 0) {
 		let lineArr = arg.split(" ");
 		for (let i = 0; i < lineArr.length; i++) {
@@ -1121,7 +1131,7 @@ function matches(user, userID, channelID, message, event) {
 		}
 		arg = lineArr.toString().replace(/,/g, " ");
 	}
-	let results = fuse.en.search(arg);
+	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
 		bot.sendMessage({
 			to: channelID,
@@ -1131,10 +1141,10 @@ function matches(user, userID, channelID, message, event) {
 		let out = "Top 10 card name matches for `" + arg + "`:";
 		let i = 0;
 		let outs = [];
-		let ot = getOT(ids.en.indexOf(results[0].item.id), "en");
+		let ot = getOT(ids[outLang].indexOf(results[0].item.id), outLang);
 		while (results[i] && outs.length < 10) {
-			let index = ids.en.indexOf(results[i].item.id)
-			if (ot === getOT(index, "en") && aliasCheck(index, "en")) {
+			let index = ids[outLang].indexOf(results[i].item.id)
+			if (aliasCheck(index, outLang) && (!args || randFilterCheck(results[i].item.id, args, outLang))) {
 				outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 			}
 			i++;
