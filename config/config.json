@@ -15,5 +15,10 @@
 	"triviaMaxRounds": 20,
 	"scriptFunctions": "functions.json",
 	"scriptConstants": "constants.json",
-	"scriptParams": "parameters.json"
+	"scriptParams": "parameters.json",
+	"imageUrl": null,
+	"imageUrlAnime": null,
+	"imageUrlCustom": null,
+	"emoteMode": 0,
+	"emotesDB": null
 }
