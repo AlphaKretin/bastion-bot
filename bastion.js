@@ -1539,17 +1539,19 @@ function getTypes(index, outLang) {
 
 function getCardText(index, outLang) {
 	let cardText = names[outLang][0].values[index][2];
-	let re = /\][\s\S]*?\n([\S\s]*?)\n[-=]/g;
-	let regx = re.exec(cardText);
-	if (regx === null) {
-		return [cardText];
-	} else {
-		let outArr = [];
-		outArr.push(regx[1]);
-		let re2 = /(?:r Effect|xt) ?\]\R*([\S\s]*)/g;
-		outArr.push(re2.exec(cardText)[1]);
-		return outArr;
+	let lines = cardText.split("\r\n");
+	if (lines.length > 1) {
+		let ind;
+		lines.forEach(function(key, index) {
+			if (lines[index].indexOf("---") > -1) {
+				ind = index;
+			}
+		});
+		if (ind) {
+			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n")];
+		}
 	}
+	return [cardText];
 }
 
 function randFilterCheck(code, args, outLang) {
