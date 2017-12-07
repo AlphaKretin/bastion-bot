@@ -204,7 +204,9 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 
 ### Emotes  
 By default, the setcode file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the names, with minimal exceptions.
+
 thumbsdown can be null or a string since this is the reaction that is used when you get the answer wrong for trivia.
+
 Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `<:Emote:nnnnnnn`, cutting off the last `>` since it causes an error.
 
 ```json  
