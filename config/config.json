@@ -20,5 +20,6 @@
 	"imageUrlAnime": null,
 	"imageUrlCustom": null,
 	"emoteMode": 0,
-	"emotesDB": null
+	"emotesDB": null,
+	"pingMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."
 }
