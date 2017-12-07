@@ -422,6 +422,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			}
 		} while (regx2 !== null);
 	}
+
 	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
@@ -715,7 +716,11 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						typesStr = arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
 					}
 					out += "**Type**: " + typesStr + " **Attribute**: " + AddEmote(getAtt(index, outLang),"|")[emotemode] + "\n";
-					out += "**Level**: " + getLevelScales(index, outLang)[0] + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
+					out += "**Level**: " + getLevelScales(index, outLang)[0];
+					if (emotemode>0) {
+						out += " " + emoteDB["Level"];
+					}
+					out += " " + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
 					out += "**Type**: " + typeemote[emotemode] + "\n";
 				}
@@ -1015,7 +1020,11 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 					}
 				} else {
 					if (checkTrapMonster(index, "en")) { //is trap monster
-						out = "**Level**: " + getLevelScales(index, "en")[0] + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]);
+						out = "**Level**: " + getLevelScales(index, "en")[0];
+						if (emotemode>0) {
+							out += " " + emoteDB["Level"];
+						}
+						out += " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]);
 					}
 				}
 				break;
@@ -1623,9 +1632,6 @@ function aliasCheck(index, outLang) {
 	return getOT(index, outLang) !== getOT(alIndex, outLang);
 }
 
-function sliceBetween(str, cha1, cha2) {
-	return str.slice(str.indexOf(cha1) + cha1.length, str.indexOf(cha2));
-}
 function getIncInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
