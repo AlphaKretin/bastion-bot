@@ -14,7 +14,6 @@ let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
 let triviaLocks = {};
-//0 - no emotes, 1 - emotes only, 2 - both
 let emotemode = 0;
 let emoteDB;
 let thumbsup="👍";
@@ -423,7 +422,6 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			}
 		} while (regx2 !== null);
 	}
-
 	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
@@ -1625,6 +1623,9 @@ function aliasCheck(index, outLang) {
 	return getOT(index, outLang) !== getOT(alIndex, outLang);
 }
 
+function sliceBetween(str, cha1, cha2) {
+	return str.slice(str.indexOf(cha1) + cha1.length, str.indexOf(cha2));
+}
 function getIncInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
