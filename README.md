@@ -121,7 +121,10 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"botOwner": "169299769695535105",  
 	"scriptFunctions": "functions.json",  
 	"scriptConstants": "constants.json",  
-	"scriptParams": "parameters.json"  
+	"scriptParams": "parameters.json",  
+	"emoteMode": 0,  
+	"emotesDB": null,  
+	"pingMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -165,6 +168,12 @@ By default, the configuration file is called `config.json`, and is expected to b
 `scriptConstants` is the name of the JSON file Bastion will load containing information about the YGOPro API's constants - details on this file below. This field is optional - if it is missing, searching for constants will be disabled.  
   
 `scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
+
+`emoteMode` is the mode of using emotes in Bastion, which can be set to 0, 1 or 2. 0 means it won't be using emotes, 1 means it would be using emotes whenever possible (this includes Spell/Trap types, Monster Types, Attributes, etc.). 2 means it will use both words and emotes.
+  
+`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or Trivia Reacting. This won't be loaded if emoteMode is set to 0.
+  
+``pingMessage`` is what your bot will say when pinged/mentioned.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -190,6 +199,21 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 {  
 	"0x1": "Ally of Justice",  
 	"0x2": "Genex"  
+}  
+```  
+
+### Emotes  
+By default, the setcode file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the names, with minimal exceptions.
+thumbsdown can be null or a string since this is the reaction that is used when you get the answer wrong for trivia.
+Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `<:Emote:nnnnnnn`, cutting off the last `>` since it causes an error.
+
+```json  
+{  
+	"LIGHT": "",  
+	"Aqua": "",  
+	"thumbsup": "",  
+	"thumbsdown": null,  
+	"Equip": ""
 }  
 ```  
   
