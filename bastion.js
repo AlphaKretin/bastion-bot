@@ -59,21 +59,23 @@ if (config.imageUrl) {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
 }
 
-let emotemode = 0;
+let emoteMode = 0;
 let emoteDB;
 let thumbsup = "👍";
 let thumbsdown;
 
-if (config.emoteMode > 0 && config.emotesDB) {
-	emotemode = config.emoteMode;
+if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
+	emoteMode = config.emoteMode;
 	let path = "config/" + config.emotesDB;
 	emoteDB = JSON.parse(fs.readFileSync(path, "utf-8"));
 	thumbsup = emoteDB["thumbsup"];
 	if (emoteDB["thumbsdown"]) {
 		thumbsdown = emoteDB["thumbsdown"];
 	}
-} else if (!config.emotesDB) {
+} else if (config.emoteMode && config.emoteMode > 0) {
 	console.log("Emote database not found at config.emotesDB! Emotes display will be disabled.");
+} else if (config.emoteMode === undefined || config.emoteMode === null) {
+	console.log("Emote mode specification not found at config.emoteMode! Defaulting to " + emoteMode + "!");
 }
 
 let scriptsEnabled = false;
@@ -641,8 +643,12 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						avgs.push(price.price_data.data.prices.average);
 					}
 				}
-				let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-				out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				if (avgs.length > 0) {
+					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+					out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				} else {
+					out += "**Status**: " + stat + "\n";
+				}
 			} else {
 				out += "**Status**: " + stat + "\n";
 			}
@@ -650,13 +656,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 			if (types.indexOf("Monster") > -1) {
 				let arrace = addEmote(getRace(index, outLang), "|");
 				let typesStr;
-				if (emotemode < 2) {
-					typesStr = types.toString().replace("Monster", arrace[emotemode]).replace(/,/g, "/");
+				if (emoteMode < 2) {
+					typesStr = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
 				} else {
 					typesStr = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
 					typesStr += " " + arrace[1];
 				}
-				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emotemode] + "\n";
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
 				let lvName = "Level";
 				let lv = getLevelScales(index, outLang);
 				let def = true;
@@ -667,7 +673,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					def = false;
 				}
 				out += "**" + lvName + "**: " + lv[0] + " ";
-				if (emotemode > 0) {
+				if (emoteMode > 0) {
 					out += emoteDB[lvName] + " ";
 				}
 				out += "**ATK**: " + convertStat(card[5]) + " ";
@@ -678,7 +684,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 				if (types.indexOf("Pendulum") > -1) {
 					out += " **Pendulum Scale**: "
-					if (emotemode > 0) {
+					if (emoteMode > 0) {
 						out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
 					} else {
 						out += lv[1] + "/" + lv[2];
@@ -700,26 +706,26 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 			} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
 				let typeemote = addEmote(types, "/");
-				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emotemode > 0) {
+				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
 					typeemote[1] += emoteDB["NormalST"];
 					typeemote[2] += emoteDB["NormalST"];
 				}
 				if (checkTrapMonster(index, outLang)) { //is trap monster
 					let arrace = addEmote(getRace(index, outLang), "|");
 					let typesStr;
-					if (emotemode < 2) {
-						typesStr = arrace[emotemode] + "/" + typeemote[emotemode];
+					if (emoteMode < 2) {
+						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
 					} else {
 						typesStr = arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
 					}
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emotemode] + "\n";
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
 					out += "**Level**: " + getLevelScales(index, outLang)[0];
-					if (emotemode > 0) {
+					if (emoteMode > 0) {
 						out += " " + emoteDB["Level"];
 					}
 					out += " " + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
-					out += "**Type**: " + typeemote[emotemode] + "\n";
+					out += "**Type**: " + typeemote[emoteMode] + "\n";
 				}
 				out += "**Effect**: " + name[2].replace(/\n/g, "\n");
 			} else {
@@ -961,8 +967,8 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				let types = getTypes(index, "en");
 				if (types.indexOf("Monster") > -1) {
 					let arrace = addEmote(getRace(index, "en"), "|");
-					if (emotemode < 2) {
-						out = types.toString().replace("Monster", arrace[emotemode]).replace(/,/g, "/");
+					if (emoteMode < 2) {
+						out = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
 					} else {
 						out = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
 						out += " " + arrace[1];
@@ -970,13 +976,13 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				} else {
 					if (checkTrapMonster(index, "en")) { //is trap monster
 						let typeemote = addEmote(types, "/");
-						if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emotemode > 0) {
+						if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
 							typeemote[1] += emoteDB["NormalST"];
 							typeemote[2] += emoteDB["NormalST"];
 						}
 						let arrace = addEmote(getRace(index, "en"), "|");
-						if (emotemode < 2) {
-							out += arrace[emotemode] + "/" + typeemote[emotemode];
+						if (emoteMode < 2) {
+							out += arrace[emoteMode] + "/" + typeemote[emoteMode];
 						} else {
 							out += arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
 						}
@@ -1351,7 +1357,7 @@ function getOT(index, outLang) {
 function addEmote(args, symbol) {
 	let str = args.join(symbol)
 	let emotes = "";
-	if (emotemode > 0) {
+	if (emoteMode > 0) {
 		let len = args.length;
 		for (let i = 0; i < len; i++) {
 			emotes += emoteDB[args[i]]
