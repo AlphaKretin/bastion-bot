@@ -168,10 +168,10 @@ By default, the configuration file is called `config.json`, and is expected to b
 `scriptConstants` is the name of the JSON file Bastion will load containing information about the YGOPro API's constants - details on this file below. This field is optional - if it is missing, searching for constants will be disabled.  
   
 `scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
-
-`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons.
   
-`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0.
+`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons.  
+  
+`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0.  
   
 ``helpMessage`` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
   
@@ -201,21 +201,21 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 	"0x2": "Genex"  
 }  
 ```  
-
+  
 ### Emotes  
-By default, the setcode file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the names, with minimal exceptions.
-
-thumbsdown can be null or a string since this is the reaction that is used when you get the answer wrong for trivia.
-
-Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `<:Emote:nnnnnnn`, cutting off the last `>` since it causes an error.
-
+By default, the setcode file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the names, with minimal exceptions.  
+  
+thumbsdown can be null or a string since this is the reaction that is used when you get the answer wrong for trivia.  
+  
+Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `<:Emote:nnnnnnn`, cutting off the last `>` since it causes an error.  
+  
 ```json  
 {  
 	"LIGHT": "",  
 	"Aqua": "",  
 	"thumbsup": "",  
 	"thumbsdown": null,  
-	"Equip": ""
+	"Equip": ""  
 }  
 ```  
   
@@ -235,7 +235,11 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 ```  
 ### Database  
   
-Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:  
+Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually.  
+  
+A small note - Bastion detects if it needs to display monster stats for a Trap Card by checking for the TRAP_MONSTER type, 0x100, which not all simulators include in their databases - you may need to add this yourself.  
+  
+The schema for a card database is as follows:  
 ```sql  
 CREATE TABLE IF NOT EXISTS "datas" (  
 	`id`	integer,  
