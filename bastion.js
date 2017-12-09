@@ -1349,11 +1349,11 @@ function getOT(index, outLang) {
 }
 
 function addEmote(args, symbol) {
-	var str = args.join(symbol)
-	var emotes = "";
+	let str = args.join(symbol)
+	let emotes = "";
 	if (emotemode > 0) {
-		var len = args.length;
-		for (var i = 0; i < len; i++) {
+		let len = args.length;
+		for (let i = 0; i < len; i++) {
 			emotes += emoteDB[args[i]]
 		}
 	}
