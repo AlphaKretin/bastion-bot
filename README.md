@@ -124,7 +124,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"scriptParams": "parameters.json",  
 	"emoteMode": 0,  
 	"emotesDB": null,  
-	"pingMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."  
+	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website."  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -169,11 +169,11 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
 
-`emoteMode` is the mode of using emotes in Bastion, which can be set to 0, 1 or 2. 0 means it won't be using emotes, 1 means it would be using emotes whenever possible (this includes Spell/Trap types, Monster Types, Attributes, etc.). 2 means it will use both words and emotes.
+`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons.
   
-`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or Trivia Reacting. This won't be loaded if emoteMode is set to 0.
+`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0.
   
-``pingMessage`` is what your bot will say when pinged/mentioned.  
+``helpMessage`` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
