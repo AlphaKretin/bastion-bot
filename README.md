@@ -203,11 +203,7 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 ```  
   
 ### Emotes  
-By default, the setcode file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the names, with minimal exceptions.  
-  
-thumbsdown can be null or a string since this is the reaction that is used when you get the answer wrong for trivia.  
-  
-Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `<:Emote:nnnnnnn`, cutting off the last `>` since it causes an error.  
+By default, the emote file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the values, with minimal exceptions.  
   
 ```json  
 {  
@@ -218,6 +214,20 @@ Also, for thumbsup and thumbsdown, if using a Custom Emote, the format must be `
 	"Equip": ""  
 }  
 ```  
+Keys are what the emotes are used to represent, and the values are the emote to use - either a literal emoji, or the Discord code for a custom emote in a server the bot will be in. You can get this by typing a backslash before the emote in Discord.  
+Besides all monster types and attributes, and Spell/Trap subtypes, the following emotes are expected:  
+`???`, used when Bastion fails to load a type or attribute.  
+`thumbsup`, a positive reaction used when a correct answer is given in Trivia.  
+`thumbsdown`, a negate reaction used when a wrong answer is given in Trivia. This can be left null to reduce spam/clutter.  
+`NormalST`, representing a Normal Spell/Trap.  
+`Level`, a Level star.  
+`Rank`, a Rank star.  
+`NLevel`, a Negative Level star, for anime Dark Synchros.  
+`Link`, a symbol representing Link Rating.  
+`L.Scale`, the left Pendulum Scale.  
+`R.Scale`, the right Pendulum Scale.  
+  
+If using a custom emote for `thumbsup` or `thumbsdown`, leave out the `>` on the end.  
   
 ### Banlist  
 By default, the banlist file is called `lflist.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/lflist.json`. The script expects `lflist.json` to contain a object, with statuses (e.g. "TCG", "OCG") as the keys, and the values are further objects, with card IDs as keys and how many copies you are allowed in your deck as the value. If a card is not in the list, it is assumed to be unlimited.  
@@ -337,4 +347,4 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 - Add comparison between different versions of scripts between repos --Bonus  
 - Add ruling page lookup --Bonus  
 - Auto CDB update --Bonus  
-- Grab DBs (and whatever else) from online *or* local
+- Grab DBs (and whatever else) from online *or* local  
