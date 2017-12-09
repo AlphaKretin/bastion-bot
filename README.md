@@ -121,7 +121,10 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"botOwner": "169299769695535105",  
 	"scriptFunctions": "functions.json",  
 	"scriptConstants": "constants.json",  
-	"scriptParams": "parameters.json"  
+	"scriptParams": "parameters.json",  
+	"emoteMode": 0,  
+	"emotesDB": null,  
+	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website."  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -166,6 +169,12 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
   
+`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons.  
+  
+`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0.  
+  
+``helpMessage`` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
+  
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
 ```json  
@@ -193,6 +202,33 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 }  
 ```  
   
+### Emotes  
+By default, the emote file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the values, with minimal exceptions.  
+  
+```json  
+{  
+	"LIGHT": "",  
+	"Aqua": "",  
+	"thumbsup": "",  
+	"thumbsdown": null,  
+	"Equip": ""  
+}  
+```  
+Keys are what the emotes are used to represent, and the values are the emote to use - either a literal emoji, or the Discord code for a custom emote in a server the bot will be in. You can get this by typing a backslash before the emote in Discord.  
+Besides all monster types and attributes, and Spell/Trap subtypes, the following emotes are expected:  
+`???`, used when Bastion fails to load a type or attribute.  
+`thumbsup`, a positive reaction used when a correct answer is given in Trivia.  
+`thumbsdown`, a negate reaction used when a wrong answer is given in Trivia. This can be left null to reduce spam/clutter.  
+`NormalST`, representing a Normal Spell/Trap.  
+`Level`, a Level star.  
+`Rank`, a Rank star.  
+`NLevel`, a Negative Level star, for anime Dark Synchros.  
+`Link`, a symbol representing Link Rating.  
+`L.Scale`, the left Pendulum Scale.  
+`R.Scale`, the right Pendulum Scale.  
+  
+If using a custom emote for `thumbsup` or `thumbsdown`, leave out the `>` on the end.  
+  
 ### Banlist  
 By default, the banlist file is called `lflist.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/lflist.json`. The script expects `lflist.json` to contain a object, with statuses (e.g. "TCG", "OCG") as the keys, and the values are further objects, with card IDs as keys and how many copies you are allowed in your deck as the value. If a card is not in the list, it is assumed to be unlimited.  
 ```json  
@@ -209,7 +245,11 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 ```  
 ### Database  
   
-Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually. The schema for a card database is as follows:  
+Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually.  
+  
+A small note - Bastion detects if it needs to display monster stats for a Trap Card by checking for the TRAP_MONSTER type, 0x100, which not all simulators include in their databases - you may need to add this yourself.  
+  
+The schema for a card database is as follows:  
 ```sql  
 CREATE TABLE IF NOT EXISTS "datas" (  
 	`id`	integer,  
@@ -307,4 +347,4 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 - Add comparison between different versions of scripts between repos --Bonus  
 - Add ruling page lookup --Bonus  
 - Auto CDB update --Bonus  
-- Grab DBs (and whatever else) from online *or* local
+- Grab DBs (and whatever else) from online *or* local  

@@ -15,5 +15,11 @@
 	"triviaMaxRounds": 20,
 	"scriptFunctions": "functions.json",
 	"scriptConstants": "constants.json",
-	"scriptParams": "parameters.json"
+	"scriptParams": "parameters.json",
+	"imageUrl": null,
+	"imageUrlAnime": null,
+	"imageUrlCustom": null,
+	"emoteMode": 0,
+	"emotesDB": null,
+	"pingMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website."
 }

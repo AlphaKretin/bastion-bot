@@ -14,6 +14,7 @@ let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
 let triviaLocks = {};
+
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
@@ -57,6 +58,24 @@ if (config.imageUrl) {
 } else {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
 }
+
+let emotemode = 0;
+let emoteDB;
+let thumbsup = "👍";
+let thumbsdown;
+
+if (config.emoteMode > 0 && config.emotesDB) {
+	emotemode = config.emoteMode;
+	let path = "config/" + config.emotesDB;
+	emoteDB = JSON.parse(fs.readFileSync(path, "utf-8"));
+	thumbsup = emoteDB["thumbsup"];
+	if (emoteDB["thumbsdown"]) {
+		thumbsdown = emoteDB["thumbsdown"];
+	}
+} else if (!config.emotesDB) {
+	console.log("Emote database not found at config.emotesDB! Emotes display will be disabled.");
+}
+
 let scriptsEnabled = false;
 let scriptUrlMaster;
 let scriptUrlAnime;
@@ -98,6 +117,12 @@ if (config.longStr) {
 	longStr = config.longStr;
 } else {
 	console.log("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
+}
+let helpMessage = "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website.";
+if (config.helpMessage) {
+	helpMessage = config.helpMessage;
+} else {
+	console.log("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
 }
 let maxSearches = 3;
 if (config.maxSearches) {
@@ -419,7 +444,7 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) {
 function help(user, userID, channelID, message, event) {
 	bot.sendMessage({
 		to: channelID,
-		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."
+		message: helpMessage
 	});
 }
 
@@ -623,8 +648,15 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 			}
 			let types = getTypes(index, outLang);
 			if (types.indexOf("Monster") > -1) {
-				let typesStr = types.toString().replace("Monster", getRace(index, outLang).toString().replace(/,/g, "|")).replace(/,/g, "/");
-				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
+				let arrace = addEmote(getRace(index, outLang), "|");
+				let typesStr;
+				if (emotemode < 2) {
+					typesStr = types.toString().replace("Monster", arrace[emotemode]).replace(/,/g, "/");
+				} else {
+					typesStr = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+					typesStr += " " + arrace[1];
+				}
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emotemode] + "\n";
 				let lvName = "Level";
 				let lv = getLevelScales(index, outLang);
 				let def = true;
@@ -635,6 +667,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					def = false;
 				}
 				out += "**" + lvName + "**: " + lv[0] + " ";
+				if (emotemode > 0) {
+					out += emoteDB[lvName] + " ";
+				}
 				out += "**ATK**: " + convertStat(card[5]) + " ";
 				if (def) {
 					out += "**DEF**: " + convertStat(card[6]);
@@ -642,7 +677,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					out += "**Link Markers**: " + getMarkers(index, outLang);
 				}
 				if (types.indexOf("Pendulum") > -1) {
-					out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
+					out += " **Pendulum Scale**: "
+					if (emotemode > 0) {
+						out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
+					} else {
+						out += lv[1] + "/" + lv[2];
+					}
+					out += "\n"
 				} else {
 					out += "\n";
 				}
@@ -658,13 +699,27 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					out += "**" + textName + "**: " + cardText[0];
 				}
 			} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
-				let lv = getLevelScales(index, outLang)[0];
-				if (lv > 0) { //is trap monster
-					let typesStr = getRace(index, outLang).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
-					out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
+				let typeemote = addEmote(types, "/");
+				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emotemode > 0) {
+					typeemote[1] += emoteDB["NormalST"];
+					typeemote[2] += emoteDB["NormalST"];
+				}
+				if (checkTrapMonster(index, outLang)) { //is trap monster
+					let arrace = addEmote(getRace(index, outLang), "|");
+					let typesStr;
+					if (emotemode < 2) {
+						typesStr = arrace[emotemode] + "/" + typeemote[emotemode];
+					} else {
+						typesStr = arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
+					}
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emotemode] + "\n";
+					out += "**Level**: " + getLevelScales(index, outLang)[0];
+					if (emotemode > 0) {
+						out += " " + emoteDB["Level"];
+					}
+					out += " " + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
-					out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
+					out += "**Type**: " + typeemote[emotemode] + "\n";
 				}
 				out += "**Effect**: " + name[2].replace(/\n/g, "\n");
 			} else {
@@ -843,7 +898,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				out = names.en[0].values[index][1] + ": " + alIDs.toString().replace(/,/g, "|");
+				out = names.en[0].values[index][1] + ": " + alIDs.join("|");
 				break;
 			case "notext":
 				console.log("notext");
@@ -869,10 +924,10 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				out += "**ID**: " + alIs.toString().replace(/,/g, "|") + "\n";
+				out += "**ID**: " + alIs.join("|") + "\n";
 				let sets = setCodeCheck(index, "en", user, userID, channelID, message, event);
 				if (sets) {
-					out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
+					out += "**Archetype**: " + sets.join(", ") + "\n";
 				} else {
 					out += "\n";
 				}
@@ -905,37 +960,28 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				});
 				let types = getTypes(index, "en");
 				if (types.indexOf("Monster") > -1) {
-					let typesStr = types.toString().replace("Monster", getRace(index, "en").toString().replace(/,/g, "|")).replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
-					let lvName = "Level";
-					let lv = getLevelScales(index, "en");
-					let def = true;
-					if (types.indexOf("Xyz") > -1) {
-						lvName = "Rank";
-					} else if (types.indexOf("Link") > -1) {
-						lvName = "Link Rating";
-						def = false;
-					}
-					out += "**" + lvName + "**: " + lv[0] + " ";
-					out += "**ATK**: " + convertStat(card[5]) + " ";
-					if (def) {
-						out += "**DEF**: " + convertStat(card[6]);
+					let arrace = addEmote(getRace(index, "en"), "|");
+					if (emotemode < 2) {
+						out = types.toString().replace("Monster", arrace[emotemode]).replace(/,/g, "/");
 					} else {
-						out += "**Link Markers**: " + getMarkers(index, "en");
+						out = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+						out += " " + arrace[1];
 					}
-					if (types.indexOf("Pendulum") > -1) {
-						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
+				} else {
+					if (checkTrapMonster(index, "en")) { //is trap monster
+						let typeemote = addEmote(types, "/");
+						if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emotemode > 0) {
+							typeemote[1] += emoteDB["NormalST"];
+							typeemote[2] += emoteDB["NormalST"];
+						}
+						let arrace = addEmote(getRace(index, "en"), "|");
+						if (emotemode < 2) {
+							out += arrace[emotemode] + "/" + typeemote[emotemode];
+						} else {
+							out += arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
+						}
 					} else {
-						out += "\n";
-					}
-				} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
-					let lv = getLevelScales(index, "en")[0];
-					if (lv > 0) { //is trap monster
-						let typesStr = getRace(index, "en").toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-						out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
-						out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
-					} else {
-						out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
+						out += types.join("/");
 					}
 				}
 				break;
@@ -1116,7 +1162,7 @@ function matches(user, userID, channelID, message, event) {
 				outLang = ar;
 			}
 		}
-	}	
+	}
 	if (shortcuts.length > 0) {
 		let lineArr = arg.split(" ");
 		for (let i = 0; i < lineArr.length; i++) {
@@ -1128,7 +1174,7 @@ function matches(user, userID, channelID, message, event) {
 				}
 			}
 		}
-		arg = lineArr.toString().replace(/,/g, " ");
+		arg = lineArr.join(" ");
 	}
 	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
@@ -1233,7 +1279,7 @@ function nameCheck(line, inLang) {
 				}
 			}
 		}
-		let newLine = lineArr.toString().replace(/,/g, " ");
+		let newLine = lineArr.join(" ");
 		for (let i = 0; i < names[inLang][0].values.length; i++) { //check all entries for exact name
 			if (names[inLang][0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
 				return i;
@@ -1300,6 +1346,18 @@ function getOT(index, outLang) {
 		default:
 			return "Null OT";
 	}
+}
+
+function addEmote(args, symbol) {
+	let str = args.join(symbol)
+	let emotes = "";
+	if (emotemode > 0) {
+		let len = args.length;
+		for (let i = 0; i < len; i++) {
+			emotes += emoteDB[args[i]]
+		}
+	}
+	return [str, emotes, str + " " + emotes];
 }
 
 function getRace(index, outLang) {
@@ -1387,7 +1445,7 @@ function getRace(index, outLang) {
 		races.push("Charisma");
 	}
 	if (races.length === 0) {
-		return ["Null Race"];
+		return ["???"];
 	} else {
 		return races;
 	}
@@ -1421,7 +1479,7 @@ function getAtt(index, outLang) {
 		atts.push("LAUGH");
 	}
 	if (atts.length === 0) {
-		return ["Null Attribute"];
+		return ["???"];
 	} else {
 		return atts;
 	}
@@ -1455,6 +1513,10 @@ function getMarkers(index, outLang) {
 		out += "↗️";
 	}
 	return out;
+}
+
+function checkTrapMonster(index, outLang) {
+	return contents[outLang][0].values[index][4] & 0x100;
 }
 
 function getTypes(index, outLang) {
@@ -1908,7 +1970,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				}
 			});
 			if (winners.length > 1) {
-				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+				out += "It was a tie! The winners are <@" + winners.join(">, <@") + ">!";
 			} else {
 				out += "The winner is <@" + winners + ">!";
 			}
@@ -1955,7 +2017,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
-			reaction: "👍"
+			reaction: thumbsup
 		});
 		out = "<@" + userID + "> got it! The answer was **" + gameData[channelID].name + "**!\n";
 		if (gameData[channelID].score[userID]) {
@@ -1981,7 +2043,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 					}
 				});
 				if (winners.length > 1) {
-					out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+					out += "It was a tie! The winners are <@" + winners.join(">, <@") + ">!";
 				} else {
 					out += "The winner is <@" + winners + ">!";
 				}
@@ -1998,6 +2060,12 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			});
 			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 		}
+	} else if (thumbsdown) {
+		bot.addReaction({
+			channelID: channelID,
+			messageID: event.d.id,
+			reaction: thumbsdown
+		});
 	}
 }
 
@@ -2014,7 +2082,7 @@ function tlock(user, userID, channelID, message, event) {
 				}
 				bot.sendMessage({
 					to: channelID,
-					message: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+					message: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 				});
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2035,7 +2103,7 @@ function tlock(user, userID, channelID, message, event) {
 			}
 			bot.sendMessage({
 				to: channelID,
-				message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+				message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 			});
 			config.triviaLocks = triviaLocks;
 			fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2048,7 +2116,7 @@ function tlock(user, userID, channelID, message, event) {
 		}
 		bot.sendMessage({
 			to: channelID,
-			message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+			message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 		});
 		config.triviaLocks = triviaLocks;
 		fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
