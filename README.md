@@ -75,7 +75,7 @@ The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the
 ### Scripting Library  
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
   
-Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type o edit `.d[number]` to see a more detailed description of that entry, if available.  
+Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type or edit `.d[number]` to see a more detailed description of that entry, if available.  
   
 ### .skill  
 Usage: `.skill [name]`  
