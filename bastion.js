@@ -108,6 +108,7 @@ if (config.scriptUrl) {
 } else {
 	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
 }
+
 let pre = ".";
 if (config.prefix) {
 	pre = config.prefix;
@@ -180,6 +181,22 @@ if (config.scriptParams) {
 	libParamsEnabled = true;
 } else {
 	console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
+}
+
+let skillsEnabled = false;
+let skills = [];
+let skillNames = [];
+if (config.skillDB) {
+	let path = "dbs/" + config.skillDB;
+	skills = JSON.parse(fs.readFileSync(path, "utf-8"));
+	skillsEnabled = true;
+	for (let skill of skills) { //populatre array of objects containing names for the sake of fuse
+		skillNames.push({
+			name: skill.name,
+		});
+	}
+} else {
+	console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
 }
 
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
@@ -276,9 +293,14 @@ let options = {
 		"name"
 	]
 };
-let fuse = {}
+let fuse = {};
 for (let lang of langs) {
 	fuse[lang] = new Fuse(nameList[lang], options);
+}
+
+let skillFuse = {};
+if (skillsEnabled) {
+	skillFuse = new Fuse(skillNames, options);
 }
 
 let request = require('request');
@@ -361,6 +383,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
 		libDesc(user, userID, channelID, message, event);
+		return;
+	}
+	if (skillsEnabled && lowMessage.indexOf(pre + "skill") === 0) {
+		searchSkill(user, userID, channelID, message, event);
 		return;
 	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
@@ -2419,4 +2445,34 @@ function libDesc(user, userID, channelID, message, event) {
 		messageID: searchPage.message,
 		message: searchPage.content + "\n`" + desc + "`"
 	});
+}
+
+function searchSkill(user, userID, channelID, message, event) {
+	let arg = message.toLowerCase().slice((pre + "skill").length);
+	let index = -1;
+	skills.forEach(function(skill, ind) {
+		if (arg === skill.name.toLowerCase()) {
+			index = ind;
+		}
+	});
+	if (index < 0) {
+		let result = skillFuse.search(arg);
+		if (result.length > 0) {
+			skills.forEach(function(skill, ind) {
+				if (result[0].item.name.toLowerCase() === skill.name.toLowerCase()) {
+					index = ind;
+				}
+			});
+		}
+	}
+	if (index > -1) {
+		let skill = skills[index];
+		let out = "";
+		out += "__**" + skill.name + "**__\n";
+		out += "**Effect**: " + skill.desc + "\n";
+		out += "**Characters**: " + skill.chars;
+		sendLongMessage(out, user, userID, channelID, message, event);
+	} else {
+		console.log("No skill found for search '" + arg + "'!");
+	}
 }

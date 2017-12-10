@@ -68,7 +68,7 @@ As an example, `.set 0xba` returns the following output:
 ![.set output](/readme-images/set.png)  
   
 ### .deck  
-Usage `.deck [language]` and upload file  
+Usage: `.deck [language]` and upload file  
   
 The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the message, and sends a direct message to the user listing the contents of the deck in the specified language (English by default).  
   
@@ -76,6 +76,11 @@ The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
   
 Bastion can return information about YGOPro's Lua API with the above commands. All results that match your query will be displayed, in pages of 9. Type or edit `.p[page number]` to change pages. Entries will be displayed with a corresponding number - type o edit `.d[number]` to see a more detailed description of that entry, if available.  
+
+### .skill
+Usage: `.skill [name]`
+
+The `.skill` command searches for a character skill from Yu-Gi-Oh! Duel Links by name, and returns its name, the description of what it does, and which characters can obtain it and how.
   
 ### .trivia  
 Usage: `.trivia [options]`  
@@ -93,7 +98,7 @@ The `.tlock` command tells Bastion that on the server you use the command, he sh
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. If `npm install` fails, you might need to install [Git](https://git-scm.com/) before trying again (having GitHub Desktop isn't enough). To run the bot, the script expects some certain files - a configuration file, a banlist file, a shortcuts file, a setcodes file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. If `npm install` fails, you might need to install [Git](https://git-scm.com/) before trying again (having GitHub Desktop isn't enough). To run the bot, the script expects some certain files - a configuration file, a banlist file, a shortcuts file, a setcodes file, an emotes file, a skills file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
@@ -122,6 +127,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"scriptFunctions": "functions.json",  
 	"scriptConstants": "constants.json",  
 	"scriptParams": "parameters.json",  
+	"skillDB": "skills.json",
 	"emoteMode": 0,  
 	"emotesDB": null,  
 	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website."  
@@ -169,9 +175,11 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptParams` is the name of the JSON file Bastion will load containing information about the YGOPro API's parameters - details on this file below. This field is optional - if it is missing, searching for parameters will be disabled.  
   
-`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons.  
+`skillDB` is the name of the JSON file Bastion will load containing information about skills in Duel Links - details on this file below. This field is optional - if it is missing, searching for skills will be disabled.    
   
-`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0.  
+`emoteMode` determines if and how emotes will be used when displaying card data. If it is set to 0, emotes will not be used and Types, Attributes etc. will be displayed with text. If it is set to 1, emotes will be used exclusively, representing such properties with only icons. If it is set to 2, it will display both text and icons. This field is optional - if it is missing, it will default to what you see above.
+  
+`emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0. This field is optional - is can be ignored depending on `emoteMode`'s setting, and if it is expected but missing, displaying emotes will be disabled.
   
 ``helpMessage`` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
   
@@ -243,6 +251,25 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 	}  
 }  
 ```  
+
+### Skills
+By default, the skills file is called `skills.json`, and is expected to be found in a subfolder of the local directory called `dbs`, i.e. `dbs/skills.json`. The script expects `skills.json` to contain an array of objects, the format of which is described below.
+```json
+[
+	{
+		"name": "Aroma Strategy",
+		"desc": "You can look at the card at the very top of your Deck at any time.",
+		"chars": "Mai Valentine (Level 4)"
+	},
+	{
+		"name": "Baggy Sleeves",
+		"desc": "If one of your monsters of Level 5 or higher is destroyed in battle, in your next Draw Phase a normal draw gives you 2 cards.",
+		"chars": "Bandit Keith (Drop)"
+	}
+]
+```
+`name` is the name of the skill, `desc` is the skill's description, and `chars` is a list of characters that can obtain the skill, and how they do.
+
 ### Database  
   
 Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually.  
