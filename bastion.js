@@ -1,14 +1,16 @@
 let fs = require('fs');
 
 let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8'));
+//load data from JSON. Expected values can be inuited from console feedback or seen in the readme.
 if (!config.token) {
-	console.log("No Discord user token found at config.token! Exiting...");
+	console.log("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
 	exit();
 }
 let imagesEnabled = false;
 let imageUrlMaster;
 let imageUrlAnime;
 let imageUrlCustom;
+//these defaults are overwritten by what's in the config, if possible
 let imageSize = 100;
 let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
@@ -18,6 +20,7 @@ let triviaLocks = {};
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
+	//a bunch of stuff relies on images, and other config fields related to them only need to be checked if images exist
 	if (config.imageUrlAnime) {
 		imageUrlAnime = config.imageUrlAnime;
 	} else {
@@ -115,7 +118,7 @@ if (config.prefix) {
 } else {
 	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!")
 }
-let longStr = "...\n__Type \".long\" to be PMed the rest!__";
+let longStr = "...\n__Type `" + pre + "long` to be PMed the rest!__";
 if (config.longStr) {
 	longStr = config.longStr;
 } else {
@@ -190,7 +193,7 @@ if (config.skillDB) {
 	let path = "dbs/" + config.skillDB;
 	skills = JSON.parse(fs.readFileSync(path, "utf-8"));
 	skillsEnabled = true;
-	for (let skill of skills) { //populatre array of objects containing names for the sake of fuse
+	for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
 		skillNames.push({
 			name: skill.name,
 		});
@@ -199,22 +202,11 @@ if (config.skillDB) {
 	console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
 }
 
+//more config files, all explained in the readme
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
 let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
 let lflist = JSON.parse(fs.readFileSync('config/lflist.json', 'utf8'));
-/*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
-		[
-			"mst",
-			"Mystical Space Typhoon"
-		],
-		[
-			"...",
-			"...", //the arrays can have multiple shortcuts, only the last will be considered the full name
-			"..."
-		]
-	]
-if you don't care to include shortcuts, just make the contents of the JSON file a blank array, "[]"
-*/
+
 //discord setup
 let Discord = require('discord.io');
 
@@ -227,7 +219,7 @@ bot.on('ready', function() {
 	console.log('Logged in as %s - %s\n', bot.username, bot.id);
 });
 
-bot.on('disconnect', function() {
+bot.on('disconnect', function() { //Discord API occasionally disconnects bots for an unknown reason.
 	console.log("Disconnected. Reconnecting...");
 	bot.connect();
 });
@@ -243,7 +235,7 @@ let ids = {};
 let aliases = {};
 let nameList = {};
 let langs = [];
-for (let lang in dbs) {
+for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
 	console.log("loading " + lang + " database");
 	langs.push(lang);
 	let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
@@ -251,9 +243,9 @@ for (let lang in dbs) {
 	ids[lang] = [];
 	aliases[lang] = [];
 	nameList[lang] = [];
-	contents[lang] = db.exec("SELECT * FROM datas");
+	contents[lang] = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	names[lang] = db.exec("SELECT * FROM texts");
-	if (dbs[lang].length > 1) {
+	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
 		for (let i = 1; i < dbs[lang].length; i++) {
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
 			let newDB = new SQL.Database(newbuffer);
@@ -271,7 +263,7 @@ for (let lang in dbs) {
 		ids[lang].push(card[0]);
 		aliases[lang].push(card[2]);
 	}
-	for (let card of names[lang][0].values) { //populatre array of objects containing names for the sake of fuse
+	for (let card of names[lang][0].values) { //populate array of objects containing names for the sake of fuzzy search
 		nameList[lang].push({
 			name: card[1],
 			id: card[0]
@@ -309,15 +301,16 @@ let url = require('url');
 let jimp = require('jimp');
 let filetype = require('file-type');
 
+//these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
 let gameData = {};
-
 let searchPage = {
 	active: false
 };
 
+//command declaration
 bot.on('message', function(user, userID, channelID, message, event) {
-	if (userID === bot.id) {
+	if (userID === bot.id) { //ignores own messages to prevent loops
 		return;
 	}
 	let lowMessage = message.toLowerCase();
@@ -333,7 +326,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		trivia(user, userID, channelID, message, event);
 		return;
 	}
-	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) {
+	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
 		tlock(user, userID, channelID, message, event);
 		return;
 	}
@@ -394,7 +387,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.indexOf(pre + "help") === 0) {
-		help(user, userID, channelID, message, event);
+		//send help message
+		bot.sendMessage({
+			to: channelID,
+			message: helpMessage
+		});
 	}
 	if (longMsg.length > 0 && lowMessage.indexOf(pre + "long") === 0) {
 		bot.sendMessage({
@@ -404,7 +401,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		return;
 	}
 	if (channelID in gameData) {
-		switch (gameData[channelID].game) {
+		switch (gameData[channelID].game) { //switch statement where if would do to futureproof for adding more games
 			case "trivia":
 				answerTrivia(user, userID, channelID, message, event);
 				break;
@@ -413,25 +410,25 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	let re = /{(.*?)}/g;
+	let re = /{(.*?)}/g; //gets text between {}
 	let results = [];
 	let regx;
 	do {
 		regx = re.exec(message);
 		if (regx !== null) {
-			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) {
+			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
 				results.push(regx[1]);
 			}
 		}
 	} while (regx !== null);
 	let results2 = [];
 	if (imagesEnabled) {
-		let re2 = /<(.*?)>/g;
+		let re2 = /<(.*?)>/g; //gets text between <>
 		let regx2;
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 !== null) {
-				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) {
+				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
 					results2.push(regx2[1]);
 				}
 			}
@@ -443,6 +440,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			message: "You can only search up to " + maxSearches + " cards!"
 		});
 	} else {
+		//second parameter here is whether to display image or not
 		if (results.length > 0) {
 			for (let result of results) {
 				searchCard(result, false, user, userID, channelID, message, event);
@@ -456,8 +454,8 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 });
 
-bot.on('messageUpdate', function(oldMsg, newMsg, event) {
-	if (newMsg.author && newMsg.author.id === bot.id) {
+bot.on('messageUpdate', function(oldMsg, newMsg, event) { //a few commands can be met by edit
+	if (newMsg.author && newMsg.author.id === bot.id) { //have to check a lot of variables exist at all because for some stupid reason an embed being added also counts as editing a message. Dammit Discord
 		return;
 	}
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
@@ -469,18 +467,13 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) {
 	}
 });
 
-function help(user, userID, channelID, message, event) {
-	bot.sendMessage({
-		to: channelID,
-		message: helpMessage
-	});
-}
-
 function commands(user, userID, channelID, message, event) {
+	//obviously these don't all need to be seperate lines and I don't even need to define anything here but I like having each command on a new line of code.
 	let out = "Type a card name or ID between `{}` (or `<>` for images) to see its profile.\n";
 	out += "`" + pre + "randcard` displays a random card profile.\n";
 	out += "`" + pre + "script` displays the YGOPro script of the specified card.\n";
 	out += "`" + pre + "matches` displays the 10 card names Bastion thinks are most similar to the text you type after.\n";
+	out += "`" + pre + "skill` searches for a skill from Duel Links.\n";
 	out += "`" + pre + "set` translates between YGOPro setcodes and their name.\n";
 	out += "`" + pre + "f`, `" + pre + "c` and `" + pre + "p` search for the functions, constants and parameters respectively used for scripting in YGOPro.\n";
 	out += "`" + pre + "trivia` plays a game where you guess a card name from its image.\n";
@@ -491,7 +484,7 @@ function commands(user, userID, channelID, message, event) {
 	});
 }
 
-async function randomCard(user, userID, channelID, message, event) {
+async function randomCard(user, userID, channelID, message, event) { //anything that gets card data has to be async because getting the price involves a Promise
 	try {
 		let args = message.toLowerCase().split(" ");
 		let code;
@@ -504,8 +497,8 @@ async function randomCard(user, userID, channelID, message, event) {
 		}
 		if (args.length > 1) {
 			let matches = [];
-			for (let id of ids[outLang]) {
-				if (randFilterCheck(id, args, outLang)) {
+			for (let id of ids[outLang]) {//gets a list of all cards that meet specified critera, before getting a random one of those cards
+				if (randFilterCheck(id, args, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
 			}
@@ -516,21 +509,22 @@ async function randomCard(user, userID, channelID, message, event) {
 		} else {
 			code = ids[outLang][Math.floor(Math.random() * ids[outLang].length)];
 		}
-		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event);
+		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imagesEnabled && args.indexOf("image") > -1) {
-			postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
+			postImage(out[1], out[0], outLang, user, userID, channelID, message, event); //postImage also handles sending the message
 		} else {
-			sendLongMessage(out[0], user, userID, channelID, message, event);
+			sendLongMessage(out[0], user, userID, channelID, message, event); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 		}
 	} catch (e) {
 		console.log(e);
 	}
 }
 
+//from hereon out, some functions and logic will be re-used from randomCard() - I won't repeat myself, just check that.
 async function script(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "script ").length);
 	let inInt = parseInt(input);
-	let index = ids.en.indexOf(inInt)
+	let index = ids.en.indexOf(inInt);
 	if (index > -1) {
 		try {
 			let out = await getCardScript(index, user, userID, channelID, message, event);
@@ -539,10 +533,10 @@ async function script(user, userID, channelID, message, event) {
 			console.log("Error with search by ID:");
 			console.log(e);
 		}
-	} else {
+	} else { //if index doesn't exist it's probably because it was a name and not an ID
 		try {
-			let index = nameCheck(input, "en");
-			if (index > -1 && index in ids.en) {
+			let index = nameCheck(input, "en"); //this handles all the fuzzy search stuff
+			if (index > -1 && index in ids.en) { //other functions have variable language, this currently defaults to english. I'll probably change this later
 				let out = await getCardScript(index, user, userID, channelID, message, event);
 				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
@@ -558,7 +552,7 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let args = input.split(",");
-	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();
+	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();//expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
@@ -583,7 +577,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		try {
 			let index = nameCheck(input, inLang);
 			if (index > -1 && index in ids[inLang]) {
-				index = ids[outLang].indexOf(ids[inLang][index]);
+				index = ids[outLang].indexOf(ids[inLang][index]); //this is kind of messy - it takes the index nameCheck returned for the in language, and gets the index in the out language with the same ID.
 				if (index > -1 && index in ids[inLang]) {
 					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
 					if (hasImage) {
@@ -612,13 +606,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		console.log("Invalid card ID, please try again.");
 		return "Invalid card ID, please try again.";
 	}
-	let card = contents[outLang][0].values[index];
+	let card = contents[outLang][0].values[index]; //blame SQL.js
 	let name = names[outLang][0].values[index];
 	return new Promise(function(resolve, reject) {
-		let out = "__**" + name[1] + "**__\n";
+		let out = "__**" + name[1] + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
 		let alIDs = [code];
 		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
-			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) {
+			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something.
 				code = aliases[outLang][ids[outLang].indexOf(code)];
 				alIDs = [code];
 				for (let i = 0; i < aliases[outLang].length; i++) {
@@ -635,14 +629,14 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 			}
 		}
 		out += "**ID**: " + alIDs.join("|") + "\n";
-		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event);
-		if (sets) {
+		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event); //this handles all the archetype stuff
+		if (sets) { //returns false if part of no archetypes
 			out += "**Archetype**: " + sets.join(", ") + "\n";
 		} else {
 			out += "\n";
 		}
 		let stat = getOT(index, outLang);
-		Object.keys(lflist).forEach(function(key, index) {
+		Object.keys(lflist).forEach(function(key, index) { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.indexOf(key) > -1) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) {
