@@ -370,7 +370,6 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 ### To-do List  
 - Add pack opening simulation -- Feature simon has, but could be improved on  
 - Add OCG/Japanese prices if searching japanese language --Bonus  
-- Add duel links skills --Bonus  
 - Add comparison between different versions of scripts between repos --Bonus  
 - Add ruling page lookup --Bonus  
 - Auto CDB update --Bonus  
