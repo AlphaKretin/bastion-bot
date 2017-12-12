@@ -1387,6 +1387,8 @@ function getOT(index, outLang) {
 	console.log("Debug info:");
 	console.log("index: " + index);
 	console.log("outLang: " + outLang);
+	console.log("Card: " + nameList[outLang][index]);
+	console.log("Card ID: " + ids[outLang][index]);
 	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
 		case 1:
