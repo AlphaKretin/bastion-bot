@@ -1359,6 +1359,7 @@ function nameCheck(line, inLang) {
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
 					index = i;
+					console.log(result[0].score);
 				}
 			}
 			return index;
@@ -1739,7 +1740,7 @@ function setCodeCheck(index, outLang, user, userID, channelID, message, event) {
 	if (aliases[outLang][index] > 0) {
 		index = ids[outLang].indexOf(aliases[outLang][index]);
 	}
-	let code = contents[outLang][0].values[index][3].toString("16");
+	let code = contents[outLang][0].values[index][3].toString("16").padStart(16, "0");
 	if (code === "0") {
 		return false;
 	}
