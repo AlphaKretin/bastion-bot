@@ -992,9 +992,9 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				if (types.indexOf("Monster") > -1) {
 					let arrace = addEmote(getRace(index, "en"), "|");
 					if (emoteMode < 2) {
-						out = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
+						out += types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
 					} else {
-						out = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+						out += types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
 						out += " " + arrace[1];
 					}
 				} else {
