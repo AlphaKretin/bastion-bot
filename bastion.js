@@ -1,22 +1,26 @@
 let fs = require('fs');
 
 let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8'));
+//load data from JSON. Expected values can be inuited from console feedback or seen in the readme.
 if (!config.token) {
-	console.log("No Discord user token found at config.token! Exiting...");
+	console.log("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
 	exit();
 }
 let imagesEnabled = false;
 let imageUrlMaster;
 let imageUrlAnime;
 let imageUrlCustom;
+//these defaults are overwritten by what's in the config, if possible
 let imageSize = 100;
 let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
 let triviaLocks = {};
+
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
+	//a bunch of stuff relies on images, and other config fields related to them only need to be checked if images exist
 	if (config.imageUrlAnime) {
 		imageUrlAnime = config.imageUrlAnime;
 	} else {
@@ -57,6 +61,26 @@ if (config.imageUrl) {
 } else {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
 }
+
+let emoteMode = 0;
+let emoteDB;
+let thumbsup = "👍";
+let thumbsdown;
+
+if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
+	emoteMode = config.emoteMode;
+	let path = "config/" + config.emotesDB;
+	emoteDB = JSON.parse(fs.readFileSync(path, "utf-8"));
+	thumbsup = emoteDB["thumbsup"];
+	if (emoteDB["thumbsdown"]) {
+		thumbsdown = emoteDB["thumbsdown"];
+	}
+} else if (config.emoteMode && config.emoteMode > 0) {
+	console.log("Emote database not found at config.emotesDB! Emotes display will be disabled.");
+} else if (config.emoteMode === undefined || config.emoteMode === null) {
+	console.log("Emote mode specification not found at config.emoteMode! Defaulting to " + emoteMode + "!");
+}
+
 let scriptsEnabled = false;
 let scriptUrlMaster;
 let scriptUrlAnime;
@@ -87,17 +111,24 @@ if (config.scriptUrl) {
 } else {
 	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
 }
+
 let pre = ".";
 if (config.prefix) {
 	pre = config.prefix;
 } else {
 	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!")
 }
-let longStr = "...\n__Type \".long\" to be PMed the rest!__";
+let longStr = "...\n__Type `" + pre + "long` to be PMed the rest!__";
 if (config.longStr) {
 	longStr = config.longStr;
 } else {
 	console.log("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
+}
+let helpMessage = "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website.";
+if (config.helpMessage) {
+	helpMessage = config.helpMessage;
+} else {
+	console.log("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
 }
 let maxSearches = 3;
 if (config.maxSearches) {
@@ -155,22 +186,27 @@ if (config.scriptParams) {
 	console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
 }
 
+let skillsEnabled = false;
+let skills = [];
+let skillNames = [];
+if (config.skillDB) {
+	let path = "dbs/" + config.skillDB;
+	skills = JSON.parse(fs.readFileSync(path, "utf-8"));
+	skillsEnabled = true;
+	for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
+		skillNames.push({
+			name: skill.name,
+		});
+	}
+} else {
+	console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+}
+
+//more config files, all explained in the readme
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
 let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
 let lflist = JSON.parse(fs.readFileSync('config/lflist.json', 'utf8'));
-/*an array of arrays that contain shortcuts for typing card names eg MST -> Mystical Space Typhoon
-		[
-			"mst",
-			"Mystical Space Typhoon"
-		],
-		[
-			"...",
-			"...", //the arrays can have multiple shortcuts, only the last will be considered the full name
-			"..."
-		]
-	]
-if you don't care to include shortcuts, just make the contents of the JSON file a blank array, "[]"
-*/
+
 //discord setup
 let Discord = require('discord.io');
 
@@ -183,7 +219,7 @@ bot.on('ready', function() {
 	console.log('Logged in as %s - %s\n', bot.username, bot.id);
 });
 
-bot.on('disconnect', function() {
+bot.on('disconnect', function() { //Discord API occasionally disconnects bots for an unknown reason.
 	console.log("Disconnected. Reconnecting...");
 	bot.connect();
 });
@@ -199,7 +235,7 @@ let ids = {};
 let aliases = {};
 let nameList = {};
 let langs = [];
-for (let lang in dbs) {
+for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
 	console.log("loading " + lang + " database");
 	langs.push(lang);
 	let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
@@ -207,9 +243,9 @@ for (let lang in dbs) {
 	ids[lang] = [];
 	aliases[lang] = [];
 	nameList[lang] = [];
-	contents[lang] = db.exec("SELECT * FROM datas");
+	contents[lang] = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	names[lang] = db.exec("SELECT * FROM texts");
-	if (dbs[lang].length > 1) {
+	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
 		for (let i = 1; i < dbs[lang].length; i++) {
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
 			let newDB = new SQL.Database(newbuffer);
@@ -227,7 +263,7 @@ for (let lang in dbs) {
 		ids[lang].push(card[0]);
 		aliases[lang].push(card[2]);
 	}
-	for (let card of names[lang][0].values) { //populatre array of objects containing names for the sake of fuse
+	for (let card of names[lang][0].values) { //populate array of objects containing names for the sake of fuzzy search
 		nameList[lang].push({
 			name: card[1],
 			id: card[0]
@@ -249,9 +285,14 @@ let options = {
 		"name"
 	]
 };
-let fuse = {}
+let fuse = {};
 for (let lang of langs) {
 	fuse[lang] = new Fuse(nameList[lang], options);
+}
+
+let skillFuse = {};
+if (skillsEnabled) {
+	skillFuse = new Fuse(skillNames, options);
 }
 
 let request = require('request');
@@ -260,15 +301,16 @@ let url = require('url');
 let jimp = require('jimp');
 let filetype = require('file-type');
 
+//these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
 let gameData = {};
-
 let searchPage = {
 	active: false
 };
 
+//command declaration
 bot.on('message', function(user, userID, channelID, message, event) {
-	if (userID === bot.id) {
+	if (userID === bot.id) { //ignores own messages to prevent loops
 		return;
 	}
 	let lowMessage = message.toLowerCase();
@@ -284,7 +326,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		trivia(user, userID, channelID, message, event);
 		return;
 	}
-	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) {
+	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
 		tlock(user, userID, channelID, message, event);
 		return;
 	}
@@ -336,12 +378,20 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		libDesc(user, userID, channelID, message, event);
 		return;
 	}
+	if (skillsEnabled && lowMessage.indexOf(pre + "skill") === 0) {
+		searchSkill(user, userID, channelID, message, event);
+		return;
+	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
 		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.indexOf(pre + "help") === 0) {
-		help(user, userID, channelID, message, event);
+		//send help message
+		bot.sendMessage({
+			to: channelID,
+			message: helpMessage
+		});
 	}
 	if (longMsg.length > 0 && lowMessage.indexOf(pre + "long") === 0) {
 		bot.sendMessage({
@@ -351,7 +401,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		return;
 	}
 	if (channelID in gameData) {
-		switch (gameData[channelID].game) {
+		switch (gameData[channelID].game) { //switch statement where if would do to futureproof for adding more games
 			case "trivia":
 				answerTrivia(user, userID, channelID, message, event);
 				break;
@@ -360,37 +410,37 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	let re = /{(.*?)}/g;
+	let re = /{(.*?)}/g; //gets text between {}
 	let results = [];
 	let regx;
 	do {
 		regx = re.exec(message);
 		if (regx !== null) {
-			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1 && blockCheck(message, regx[1])) {
+			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
 				results.push(regx[1]);
 			}
 		}
 	} while (regx !== null);
 	let results2 = [];
 	if (imagesEnabled) {
-		let re2 = /<(.*?)>/g;
+		let re2 = /<(.*?)>/g; //gets text between <>
 		let regx2;
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 !== null) {
-				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1 && blockCheck(message, regx2[1])) {
+				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
 					results2.push(regx2[1]);
 				}
 			}
 		} while (regx2 !== null);
 	}
-
 	if (results.length + results2.length > maxSearches) {
 		bot.sendMessage({
 			to: channelID,
 			message: "You can only search up to " + maxSearches + " cards!"
 		});
 	} else {
+		//second parameter here is whether to display image or not
 		if (results.length > 0) {
 			for (let result of results) {
 				searchCard(result, false, user, userID, channelID, message, event);
@@ -404,8 +454,8 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 });
 
-bot.on('messageUpdate', function(oldMsg, newMsg, event) {
-	if (newMsg.author && newMsg.author.id === bot.id) {
+bot.on('messageUpdate', function(oldMsg, newMsg, event) { //a few commands can be met by edit
+	if (newMsg.author && newMsg.author.id === bot.id) { //have to check a lot of variables exist at all because for some stupid reason an embed being added also counts as editing a message. Dammit Discord
 		return;
 	}
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
@@ -417,18 +467,13 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) {
 	}
 });
 
-function help(user, userID, channelID, message, event) {
-	bot.sendMessage({
-		to: channelID,
-		message: "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website."
-	});
-}
-
 function commands(user, userID, channelID, message, event) {
+	//obviously these don't all need to be seperate lines and I don't even need to define anything here but I like having each command on a new line of code.
 	let out = "Type a card name or ID between `{}` (or `<>` for images) to see its profile.\n";
 	out += "`" + pre + "randcard` displays a random card profile.\n";
 	out += "`" + pre + "script` displays the YGOPro script of the specified card.\n";
 	out += "`" + pre + "matches` displays the 10 card names Bastion thinks are most similar to the text you type after.\n";
+	out += "`" + pre + "skill` searches for a skill from Duel Links.\n";
 	out += "`" + pre + "set` translates between YGOPro setcodes and their name.\n";
 	out += "`" + pre + "f`, `" + pre + "c` and `" + pre + "p` search for the functions, constants and parameters respectively used for scripting in YGOPro.\n";
 	out += "`" + pre + "trivia` plays a game where you guess a card name from its image.\n";
@@ -439,7 +484,7 @@ function commands(user, userID, channelID, message, event) {
 	});
 }
 
-async function randomCard(user, userID, channelID, message, event) {
+async function randomCard(user, userID, channelID, message, event) { //anything that gets card data has to be async because getting the price involves a Promise
 	try {
 		let args = message.toLowerCase().split(" ");
 		let code;
@@ -452,8 +497,8 @@ async function randomCard(user, userID, channelID, message, event) {
 		}
 		if (args.length > 1) {
 			let matches = [];
-			for (let id of ids[outLang]) {
-				if (randFilterCheck(id, args, outLang)) {
+			for (let id of ids[outLang]) {//gets a list of all cards that meet specified critera, before getting a random one of those cards
+				if (randFilterCheck(id, args, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
 			}
@@ -464,21 +509,22 @@ async function randomCard(user, userID, channelID, message, event) {
 		} else {
 			code = ids[outLang][Math.floor(Math.random() * ids[outLang].length)];
 		}
-		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event);
+		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imagesEnabled && args.indexOf("image") > -1) {
-			postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
+			postImage(out[1], out[0], outLang, user, userID, channelID, message, event); //postImage also handles sending the message
 		} else {
-			sendLongMessage(out[0], user, userID, channelID, message, event);
+			sendLongMessage(out[0], user, userID, channelID, message, event); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 		}
 	} catch (e) {
 		console.log(e);
 	}
 }
 
+//from hereon out, some functions and logic will be re-used from randomCard() - I won't repeat myself, just check that.
 async function script(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "script ").length);
 	let inInt = parseInt(input);
-	let index = ids.en.indexOf(inInt)
+	let index = ids.en.indexOf(inInt);
 	if (index > -1) {
 		try {
 			let out = await getCardScript(index, user, userID, channelID, message, event);
@@ -487,10 +533,10 @@ async function script(user, userID, channelID, message, event) {
 			console.log("Error with search by ID:");
 			console.log(e);
 		}
-	} else {
+	} else { //if index doesn't exist it's probably because it was a name and not an ID
 		try {
-			let index = nameCheck(input, "en");
-			if (index > -1 && index in ids.en) {
+			let index = nameCheck(input, "en"); //this handles all the fuzzy search stuff
+			if (index > -1 && index in ids.en) { //other functions have variable language, this currently defaults to english. I'll probably change this later
 				let out = await getCardScript(index, user, userID, channelID, message, event);
 				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
@@ -506,7 +552,7 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let args = input.split(",");
-	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();
+	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();//expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
@@ -531,7 +577,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		try {
 			let index = nameCheck(input, inLang);
 			if (index > -1 && index in ids[inLang]) {
-				index = ids[outLang].indexOf(ids[inLang][index]);
+				index = ids[outLang].indexOf(ids[inLang][index]); //this is kind of messy - it takes the index nameCheck returned for the in language, and gets the index in the out language with the same ID.
 				if (index > -1 && index in ids[inLang]) {
 					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
 					if (hasImage) {
@@ -560,13 +606,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		console.log("Invalid card ID, please try again.");
 		return "Invalid card ID, please try again.";
 	}
-	let card = contents[outLang][0].values[index];
+	let card = contents[outLang][0].values[index]; //blame SQL.js
 	let name = names[outLang][0].values[index];
 	return new Promise(function(resolve, reject) {
-		let out = "__**" + name[1] + "**__\n";
+		let out = "__**" + name[1] + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
 		let alIDs = [code];
 		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
-			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) {
+			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something.
 				code = aliases[outLang][ids[outLang].indexOf(code)];
 				alIDs = [code];
 				for (let i = 0; i < aliases[outLang].length; i++) {
@@ -583,14 +629,14 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 			}
 		}
 		out += "**ID**: " + alIDs.join("|") + "\n";
-		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event);
-		if (sets) {
+		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event); //this handles all the archetype stuff
+		if (sets) { //returns false if part of no archetypes
 			out += "**Archetype**: " + sets.join(", ") + "\n";
 		} else {
 			out += "\n";
 		}
 		let stat = getOT(index, outLang);
-		Object.keys(lflist).forEach(function(key, index) {
+		Object.keys(lflist).forEach(function(key, index) { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.indexOf(key) > -1) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) {
@@ -617,15 +663,26 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						avgs.push(price.price_data.data.prices.average);
 					}
 				}
-				let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-				out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				if (avgs.length > 0) {
+					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+					out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+				} else {
+					out += "**Status**: " + stat + "\n";
+				}
 			} else {
 				out += "**Status**: " + stat + "\n";
 			}
 			let types = getTypes(index, outLang);
 			if (types.indexOf("Monster") > -1) {
-				let typesStr = types.toString().replace("Monster", getRace(index, outLang).toString().replace(/,/g, "|")).replace(/,/g, "/");
-				out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
+				let arrace = addEmote(getRace(index, outLang), "|");
+				let typesStr;
+				if (emoteMode < 2) {
+					typesStr = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
+				} else {
+					typesStr = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+					typesStr += " " + arrace[1];
+				}
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
 				let lvName = "Level";
 				let lv = getLevelScales(index, outLang);
 				let def = true;
@@ -636,6 +693,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					def = false;
 				}
 				out += "**" + lvName + "**: " + lv[0] + " ";
+				if (emoteMode > 0) {
+					if (checkType(index, outLang, 0x1000000000)) { //is dark synchro
+						out += emoteDB["NLevel"] + " ";
+					} else {
+						out += emoteDB[lvName] + " ";
+					}
+				}
 				out += "**ATK**: " + convertStat(card[5]) + " ";
 				if (def) {
 					out += "**DEF**: " + convertStat(card[6]);
@@ -643,7 +707,13 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					out += "**Link Markers**: " + getMarkers(index, outLang);
 				}
 				if (types.indexOf("Pendulum") > -1) {
-					out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
+					out += " **Pendulum Scale**: "
+					if (emoteMode > 0) {
+						out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
+					} else {
+						out += lv[1] + "/" + lv[2];
+					}
+					out += "\n"
 				} else {
 					out += "\n";
 				}
@@ -659,13 +729,27 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					out += "**" + textName + "**: " + cardText[0];
 				}
 			} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
-				let lv = getLevelScales(index, outLang)[0];
-				if (lv > 0) { //is trap monster
-					let typesStr = getRace(index, outLang).toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, outLang).toString().replace(/,/g, "|") + "\n";
-					out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
+				let typeemote = addEmote(types, "/");
+				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
+					typeemote[1] += emoteDB["NormalST"];
+					typeemote[2] += emoteDB["NormalST"];
+				}
+				if (checkType(index, outLang, 0x100)) { //is trap monster
+					let arrace = addEmote(getRace(index, outLang), "|");
+					let typesStr;
+					if (emoteMode < 2) {
+						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
+					} else {
+						typesStr = arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
+					}
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
+					out += "**Level**: " + getLevelScales(index, outLang)[0];
+					if (emoteMode > 0) {
+						out += " " + emoteDB["Level"];
+					}
+					out += " " + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
 				} else {
-					out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
+					out += "**Type**: " + typeemote[emoteMode] + "\n";
 				}
 				out += "**Effect**: " + name[2].replace(/\n/g, "\n");
 			} else {
@@ -844,7 +928,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				out = names.en[0].values[index][1] + ": " + alIDs.toString().replace(/,/g, "|");
+				out = names.en[0].values[index][1] + ": " + alIDs.join("|");
 				break;
 			case "notext":
 				console.log("notext");
@@ -870,10 +954,10 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				out += "**ID**: " + alIs.toString().replace(/,/g, "|") + "\n";
+				out += "**ID**: " + alIs.join("|") + "\n";
 				let sets = setCodeCheck(index, "en", user, userID, channelID, message, event);
 				if (sets) {
-					out += "**Archetype**: " + sets.toString().replace(/,/g, ", ") + "\n";
+					out += "**Archetype**: " + sets.join(", ") + "\n";
 				} else {
 					out += "\n";
 				}
@@ -906,37 +990,28 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				});
 				let types = getTypes(index, "en");
 				if (types.indexOf("Monster") > -1) {
-					let typesStr = types.toString().replace("Monster", getRace(index, "en").toString().replace(/,/g, "|")).replace(/,/g, "/");
-					out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
-					let lvName = "Level";
-					let lv = getLevelScales(index, "en");
-					let def = true;
-					if (types.indexOf("Xyz") > -1) {
-						lvName = "Rank";
-					} else if (types.indexOf("Link") > -1) {
-						lvName = "Link Rating";
-						def = false;
-					}
-					out += "**" + lvName + "**: " + lv[0] + " ";
-					out += "**ATK**: " + convertStat(card[5]) + " ";
-					if (def) {
-						out += "**DEF**: " + convertStat(card[6]);
+					let arrace = addEmote(getRace(index, "en"), "|");
+					if (emoteMode < 2) {
+						out = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
 					} else {
-						out += "**Link Markers**: " + getMarkers(index, "en");
+						out = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+						out += " " + arrace[1];
 					}
-					if (types.indexOf("Pendulum") > -1) {
-						out += " **Pendulum Scale**: " + lv[1] + "/" + lv[2] + "\n";
+				} else {
+					if (checkType(index, "en", 0x100)) { //is trap monster
+						let typeemote = addEmote(types, "/");
+						if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
+							typeemote[1] += emoteDB["NormalST"];
+							typeemote[2] += emoteDB["NormalST"];
+						}
+						let arrace = addEmote(getRace(index, "en"), "|");
+						if (emoteMode < 2) {
+							out += arrace[emoteMode] + "/" + typeemote[emoteMode];
+						} else {
+							out += arrace[0] + "/" + typeemote[0] + " " + arrace[1] + typeemote[1];
+						}
 					} else {
-						out += "\n";
-					}
-				} else if (types.indexOf("Spell") > -1 || types.indexOf("Trap") > -1) {
-					let lv = getLevelScales(index, "en")[0];
-					if (lv > 0) { //is trap monster
-						let typesStr = getRace(index, "en").toString().replace(/,/g, "|") + "/" + types.toString().replace(/,/g, "/");
-						out += "**Type**: " + typesStr + " **Attribute**: " + getAtt(index, "en").toString().replace(/,/g, "|") + "\n";
-						out += "**Level**: " + lv + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
-					} else {
-						out += "**Type**: " + types.toString().replace(/,/g, "/") + "\n";
+						out += types.join("/");
 					}
 				}
 				break;
@@ -1117,7 +1192,7 @@ function matches(user, userID, channelID, message, event) {
 				outLang = ar;
 			}
 		}
-	}	
+	}
 	if (shortcuts.length > 0) {
 		let lineArr = arg.split(" ");
 		for (let i = 0; i < lineArr.length; i++) {
@@ -1129,7 +1204,7 @@ function matches(user, userID, channelID, message, event) {
 				}
 			}
 		}
-		arg = lineArr.toString().replace(/,/g, " ");
+		arg = lineArr.join(" ");
 	}
 	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
@@ -1214,6 +1289,14 @@ function sendLongMessage(out, user, userID, channelID, message, event) {
 	});
 }
 
+function compareFuseObj(a,b) {
+  if (a.score < b.score)
+    return -1;
+  if (a.score > b.score)
+    return 1;
+  return 0;
+}
+
 function nameCheck(line, inLang) {
 	if (langs.indexOf(inLang) === -1) {
 		inLang = "en";
@@ -1234,7 +1317,7 @@ function nameCheck(line, inLang) {
 				}
 			}
 		}
-		let newLine = lineArr.toString().replace(/,/g, " ");
+		let newLine = lineArr.join(" ");
 		for (let i = 0; i < names[inLang][0].values.length; i++) { //check all entries for exact name
 			if (names[inLang][0].values[i][1].toLowerCase() === newLine.toLowerCase()) {
 				return i;
@@ -1244,6 +1327,15 @@ function nameCheck(line, inLang) {
 		if (result.length < 1) {
 			return -1;
 		} else {
+			for (let res of result) {
+				let ot = getOT(ids[inLang].indexOf(res.item.id), inLang);
+				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
+					res.score = res.score * 2;
+				} else if (ot === "Custom") {
+					res.score = res.score * 3;
+				}
+			}
+			result.sort(compareFuseObj);
 			let index = -1;
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
@@ -1257,10 +1349,20 @@ function nameCheck(line, inLang) {
 		if (result.length < 1) {
 			return -1;
 		} else {
+			for (let res of result) {
+				let ot = getOT(ids[inLang].indexOf(res.id), inLang);
+				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
+					res.score = res.score * 2;
+				} else if (ot === "Custom") {
+					res.score = res.score * 3;
+				}
+			}
+			result.sort(compareFuseObj);
 			let index = -1;
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
 					index = i;
+					console.log(result[0].score);
 				}
 			}
 			return index;
@@ -1301,6 +1403,18 @@ function getOT(index, outLang) {
 		default:
 			return "Null OT";
 	}
+}
+
+function addEmote(args, symbol) {
+	let str = args.join(symbol)
+	let emotes = "";
+	if (emoteMode > 0) {
+		let len = args.length;
+		for (let i = 0; i < len; i++) {
+			emotes += emoteDB[args[i]]
+		}
+	}
+	return [str, emotes, str + " " + emotes];
 }
 
 function getRace(index, outLang) {
@@ -1384,11 +1498,16 @@ function getRace(index, outLang) {
 	if (race & 0x80000000) {
 		races.push("Yokai");
 	}
-	if (race === 0x100000000) {
-		races.push("Charisma");
+	if (race > 0xffffffff) {
+		race -= (race & 0xffffffff);
+		while (race>0xffffffff)
+			race -= 0xffffffff;
+		if (race & 0x1) {
+			races.push("Charisma");
+		}
 	}
 	if (races.length === 0) {
-		return ["Null Race"];
+		return ["???"];
 	} else {
 		return races;
 	}
@@ -1421,8 +1540,16 @@ function getAtt(index, outLang) {
 	if (att & 0x80) {
 		atts.push("LAUGH");
 	}
+	if (att > 0xffffffff) {
+		att -= (att & 0xffffffff);
+		while (att>0xffffffff)
+			att -= 0xffffffff;
+		/*if (att & 0x1) {
+			atts.push("No attribute yet");
+		}*/
+	}
 	if (atts.length === 0) {
-		return ["Null Attribute"];
+		return ["???"];
 	} else {
 		return atts;
 	}
@@ -1456,6 +1583,23 @@ function getMarkers(index, outLang) {
 		out += "↗️";
 	}
 	return out;
+}
+
+function checkType(index, outLang, tpe) {
+	var types = contents[outLang][0].values[index][4];
+	if (types & tpe) {
+		return true
+	}
+	if (types>=0x100000000 && tpe>=0x100000000) {
+		types -= (types & 0xffffffff);
+		while (types>0xffffffff)
+			types -= 0xffffffff;
+		var ttpe = tpe - (tpe & 0xffffffff)
+		while (ttpe>0xffffffff)
+			ttpe -= 0xffffffff;
+		return types & ttpe
+	}
+	return false
 }
 
 function getTypes(index, outLang) {
@@ -1625,7 +1769,7 @@ function setCodeCheck(index, outLang, user, userID, channelID, message, event) {
 	if (aliases[outLang][index] > 0) {
 		index = ids[outLang].indexOf(aliases[outLang][index]);
 	}
-	let code = contents[outLang][0].values[index][3].toString("16");
+	let code = contents[outLang][0].values[index][3].toString("16").padStart(16, "0");
 	if (code === "0") {
 		return false;
 	}
@@ -1652,32 +1796,8 @@ function aliasCheck(index, outLang) {
 	return getOT(index, outLang) !== getOT(alIndex, outLang);
 }
 
-function blockCheck(message, result) {
-	let arr = doubleSplit(message, "```", "`");
-	arr.forEach(function(key, index) {
-		if (arr[index].indexOf("{") > -1) {
-			arr[index] = sliceBetween(arr[index], "{", "}");
-		} else {
-			arr[index] = sliceBetween(arr[index], "<", ">");
-		}
-	});
-	return arr.indexOf(result) % 2 === 0;
-	//In an array split in this manner, text that's between ``` or `, i.e. in a code block, is at odd-numbered positions in the split array, hence its index mod 2 will be 1.
-}
-
 function sliceBetween(str, cha1, cha2) {
 	return str.slice(str.indexOf(cha1) + cha1.length, str.indexOf(cha2));
-}
-
-function doubleSplit(str, spl1, spl2) {
-	let arr = str.split(spl1);
-	let out = [];
-	for (let a of arr) {
-		for (let b of a.split(spl2)) {
-			out.push(b);
-		}
-	}
-	return out;
 }
 
 function getIncInt(min, max) {
@@ -1933,7 +2053,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				}
 			});
 			if (winners.length > 1) {
-				out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+				out += "It was a tie! The winners are <@" + winners.join(">, <@") + ">!";
 			} else {
 				out += "The winner is <@" + winners + ">!";
 			}
@@ -1980,7 +2100,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
-			reaction: "👍"
+			reaction: thumbsup
 		});
 		out = "<@" + userID + "> got it! The answer was **" + gameData[channelID].name + "**!\n";
 		if (gameData[channelID].score[userID]) {
@@ -2006,7 +2126,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 					}
 				});
 				if (winners.length > 1) {
-					out += "It was a tie! The winners are <@" + winners.toString().replace(/,/g, ">, <@") + ">!";
+					out += "It was a tie! The winners are <@" + winners.join(">, <@") + ">!";
 				} else {
 					out += "The winner is <@" + winners + ">!";
 				}
@@ -2023,6 +2143,12 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			});
 			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 		}
+	} else if (thumbsdown) {
+		bot.addReaction({
+			channelID: channelID,
+			messageID: event.d.id,
+			reaction: thumbsdown
+		});
 	}
 }
 
@@ -2039,7 +2165,7 @@ function tlock(user, userID, channelID, message, event) {
 				}
 				bot.sendMessage({
 					to: channelID,
-					message: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+					message: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 				});
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2060,7 +2186,7 @@ function tlock(user, userID, channelID, message, event) {
 			}
 			bot.sendMessage({
 				to: channelID,
-				message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+				message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 			});
 			config.triviaLocks = triviaLocks;
 			fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2073,7 +2199,7 @@ function tlock(user, userID, channelID, message, event) {
 		}
 		bot.sendMessage({
 			to: channelID,
-			message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.toString().replace(/,/g, ", ")
+			message: "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 		});
 		config.triviaLocks = triviaLocks;
 		fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2370,4 +2496,34 @@ function libDesc(user, userID, channelID, message, event) {
 		messageID: searchPage.message,
 		message: searchPage.content + "\n`" + desc + "`"
 	});
+}
+
+function searchSkill(user, userID, channelID, message, event) {
+	let arg = message.toLowerCase().slice((pre + "skill").length);
+	let index = -1;
+	skills.forEach(function(skill, ind) {
+		if (arg === skill.name.toLowerCase()) {
+			index = ind;
+		}
+	});
+	if (index < 0) {
+		let result = skillFuse.search(arg);
+		if (result.length > 0) {
+			skills.forEach(function(skill, ind) {
+				if (result[0].item.name.toLowerCase() === skill.name.toLowerCase()) {
+					index = ind;
+				}
+			});
+		}
+	}
+	if (index > -1) {
+		let skill = skills[index];
+		let out = "";
+		out += "__**" + skill.name + "**__\n";
+		out += "**Effect**: " + skill.desc + "\n";
+		out += "**Characters**: " + skill.chars;
+		sendLongMessage(out, user, userID, channelID, message, event);
+	} else {
+		console.log("No skill found for search '" + arg + "'!");
+	}
 }
