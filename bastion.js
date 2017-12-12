@@ -1332,7 +1332,6 @@ function nameCheck(line, inLang) {
 				}
 			}
 			result.sort(compareFuseObj);
-			console.dir(result)
 			let index = -1;
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
