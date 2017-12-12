@@ -112,6 +112,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"imageUrlAnime": "",  
 	"imageUrlCustom": "",  
 	"imageSize": 100,  
+	"imageExt": ".png",  
 	"scriptUrl": "",  
 	"scriptUrlAnime": "",  
 	"scriptUrlCustom": "",  
@@ -146,6 +147,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 `imageUrlAnime` is a link to a source for anime card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
   
 `imageUrlCustom` is a link to a source for custom card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
+  
+`imageExt` is the file type Bastion will expect your image source to contain, as a file extension starting with the `.`. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `scriptUrl` is a link to a source for card scripts - either official ones, or all of them. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, functions that require scripts will be disabled and the following fields will be ignored: `scriptUrlAnime`, and `scriptUrlCustom`.  
   

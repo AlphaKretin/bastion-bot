@@ -16,7 +16,7 @@ let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
 let triviaLocks = {};
-
+let imageExt = ".png";
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
@@ -57,6 +57,11 @@ if (config.imageUrl) {
 		triviaLocks = config.triviaLocks;
 	} else {
 		console.log("No specifications for channels to lock trivia to found at config.triviaLocks! Defaulting to nothing, configure with \".tlock\" command!");
+	}
+	if (config.imageExt) {
+		imageExt = config.imageExt;
+	} else {
+		console.log("No file extension for images found at config.imageExt! Defaulting to " + imageExt + "!");
 	}
 } else {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
@@ -772,8 +777,8 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 		if (code.length > 1) {
 			let pics = [];
 			for (let cod of code) {
-				let buffer = await downloadImage(imageUrl + cod + ".png", user, userID, channelID, message, event);
-				if (filetype(buffer) && filetype(buffer).ext === "png") {
+				let buffer = await downloadImage(imageUrl + cod + imageExt, user, userID, channelID, message, event);
+				if (filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")) {
 					pics.push(await new Promise(function(resolve, reject) {
 						jimp.read(buffer, function(err, image) {
 							if (err) {
@@ -838,17 +843,17 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			bot.uploadFile({
 				to: channelID,
 				file: buffer,
-				filename: code + ".png"
+				filename: code + imageExt
 			}, function(err, res) {
 				sendLongMessage(out, user, userID, channelID, message, event);
 			});
 		} else {
-			let buffer = await downloadImage(imageUrl + code[0] + ".png", user, userID, channelID, message, event);
+			let buffer = await downloadImage(imageUrl + code[0] + imageExt, user, userID, channelID, message, event);
 			if (buffer) {
 				bot.uploadFile({
 					to: channelID,
 					file: buffer,
-					filename: code[0] + ".png"
+					filename: code[0] + imageExt
 				}, function(err, res) {
 					sendLongMessage(out, user, userID, channelID, message, event);
 				});
@@ -871,7 +876,7 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 				data.push(chunk);
 			}).on('end', function() {
 				let buffer = Buffer.concat(data);
-				if (filetype(buffer) && filetype(buffer).ext === "png") {
+				if (filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")) {
 					jimp.read(buffer, function(err, image) {
 						if (err) {
 							reject(err)
@@ -1875,7 +1880,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
-				https.get(url.parse(imageUrl + code + ".png"), function(response) {
+				https.get(url.parse(imageUrl + code + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
 						data.push(chunk);
@@ -1885,7 +1890,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 				});
 			});
 		}
-	} while (ot.indexOf(getOT(index, outLang)) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === "png"));
+	} while (ot.indexOf(getOT(index, outLang)) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")));
 	let hintIs = [];
 	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
 	let nameArr = name.split("");
@@ -1930,7 +1935,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 	bot.uploadFile({
 		to: channelID,
 		file: buffer,
-		filename: code + ".png"
+		filename: code + imageExt
 	}, function(err, res) {
 		if (err) {
 			console.log(err);
