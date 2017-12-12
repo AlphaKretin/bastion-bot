@@ -694,7 +694,11 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 				out += "**" + lvName + "**: " + lv[0] + " ";
 				if (emoteMode > 0) {
-					out += emoteDB[lvName] + " ";
+					if (checkType(index, outLang, 0x1000000000)) { //is dark synchro
+						out += emoteDB["NLevel"] + " ";
+					} else {
+						out += emoteDB[lvName] + " ";
+					}
 				}
 				out += "**ATK**: " + convertStat(card[5]) + " ";
 				if (def) {
@@ -730,7 +734,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					typeemote[1] += emoteDB["NormalST"];
 					typeemote[2] += emoteDB["NormalST"];
 				}
-				if (checkTrapMonster(index, outLang)) { //is trap monster
+				if (checkType(index, outLang, 0x100)) { //is trap monster
 					let arrace = addEmote(getRace(index, outLang), "|");
 					let typesStr;
 					if (emoteMode < 2) {
@@ -994,7 +998,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						out += " " + arrace[1];
 					}
 				} else {
-					if (checkTrapMonster(index, "en")) { //is trap monster
+					if (checkType(index, "en", 0x100)) { //is trap monster
 						let typeemote = addEmote(types, "/");
 						if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
 							typeemote[1] += emoteDB["NormalST"];
@@ -1494,8 +1498,13 @@ function getRace(index, outLang) {
 	if (race & 0x80000000) {
 		races.push("Yokai");
 	}
-	if (race === 0x100000000) {
-		races.push("Charisma");
+	if (race > 0xffffffff) {
+		race -= (race & 0xffffffff);
+		while (race>0xffffffff)
+			race -= 0xffffffff;
+		if (race & 0x1) {
+			races.push("Charisma");
+		}
 	}
 	if (races.length === 0) {
 		return ["???"];
@@ -1530,6 +1539,14 @@ function getAtt(index, outLang) {
 	}
 	if (att & 0x80) {
 		atts.push("LAUGH");
+	}
+	if (att > 0xffffffff) {
+		att -= (att & 0xffffffff);
+		while (att>0xffffffff)
+			att -= 0xffffffff;
+		/*if (att & 0x1) {
+			atts.push("No attribute yet");
+		}*/
 	}
 	if (atts.length === 0) {
 		return ["???"];
@@ -1568,8 +1585,21 @@ function getMarkers(index, outLang) {
 	return out;
 }
 
-function checkTrapMonster(index, outLang) {
-	return contents[outLang][0].values[index][4] & 0x100;
+function checkType(index, outLang, tpe) {
+	var types = contents[outLang][0].values[index][4];
+	if (types & tpe) { //this will usually be enough...
+		return true
+	}
+	if (types>=0x100000000 && tpe>=0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
+		types -= (types & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
+		while (types>0xffffffff)
+			types -= 0xffffffff;
+		var ttpe = tpe - (tpe & 0xffffffff)
+		while (ttpe>0xffffffff)
+			ttpe -= 0xffffffff;
+		return types & ttpe
+	}
+	return false
 }
 
 function getTypes(index, outLang) {
