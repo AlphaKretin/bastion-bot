@@ -2293,6 +2293,9 @@ function servers(user, userID, channelID, message, event) {
 //scripting lib 
 function searchFunctions(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "f ").length);
+	if (!arg || !(/\S/.test(arg))) { //if null or empty
+		return;
+	}
 	let searched = [];
 	let len = 0;
 	for (let func of libFunctions) {
@@ -2342,6 +2345,9 @@ function searchFunctions(user, userID, channelID, message, event) {
 
 function searchConstants(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "c ").length);
+	if (!arg || !(/\S/.test(arg))) { //if null or empty
+		return;
+	}
 	let searched = [];
 	let len = 0;
 	for (let con of libConstants) {
@@ -2391,6 +2397,9 @@ function searchConstants(user, userID, channelID, message, event) {
 
 function searchParams(user, userID, channelID, message, event) {
 	let arg = message.slice((pre + "param ").length);
+	if (!arg || !(/\S/.test(arg))) { //if null or empty
+		return;
+	}
 	let searched = [];
 	let len = 0;
 	for (let par of libParams) {
