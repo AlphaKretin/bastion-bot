@@ -1587,11 +1587,11 @@ function getMarkers(index, outLang) {
 
 function checkType(index, outLang, tpe) {
 	var types = contents[outLang][0].values[index][4];
-	if (types & tpe) {
+	if (types & tpe) { //this will usually be enough...
 		return true
 	}
-	if (types>=0x100000000 && tpe>=0x100000000) {
-		types -= (types & 0xffffffff);
+	if (types>=0x100000000 && tpe>=0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
+		types -= (types & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
 		while (types>0xffffffff)
 			types -= 0xffffffff;
 		var ttpe = tpe - (tpe & 0xffffffff)
