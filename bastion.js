@@ -1285,6 +1285,14 @@ function sendLongMessage(out, user, userID, channelID, message, event) {
 	});
 }
 
+function compareFuseObj(a,b) {
+  if (a.score < b.score)
+    return -1;
+  if (a.score > b.score)
+    return 1;
+  return 0;
+}
+
 function nameCheck(line, inLang) {
 	if (langs.indexOf(inLang) === -1) {
 		inLang = "en";
@@ -1315,6 +1323,16 @@ function nameCheck(line, inLang) {
 		if (result.length < 1) {
 			return -1;
 		} else {
+			for (let res of result) {
+				let ot = getOT(ids[inLang].indexOf(res.item.id), inLang);
+				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
+					res.score = res.score * 2;
+				} else if (ot === "Custom") {
+					res.score = res.score * 3;
+				}
+			}
+			result.sort(compareFuseObj);
+			console.dir(result)
 			let index = -1;
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
@@ -1328,6 +1346,15 @@ function nameCheck(line, inLang) {
 		if (result.length < 1) {
 			return -1;
 		} else {
+			for (let res of result) {
+				let ot = getOT(ids[inLang].indexOf(res.id), inLang);
+				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
+					res.score = res.score * 2;
+				} else if (ot === "Custom") {
+					res.score = res.score * 3;
+				}
+			}
+			result.sort(compareFuseObj);
 			let index = -1;
 			for (let i = 0; i < names[inLang][0].values.length; i++) {
 				if (names[inLang][0].values[i][1].toLowerCase() === result[0].item.name.toLowerCase()) {
