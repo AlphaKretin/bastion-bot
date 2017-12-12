@@ -1384,6 +1384,9 @@ function getLevelScales(index, outLang) {
 }
 
 function getOT(index, outLang) {
+	console.log("Debug info:");
+	console.log("index: " + index);
+	console.log("outLang: " + outLang);
 	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
 		case 1:
