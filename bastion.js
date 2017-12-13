@@ -651,9 +651,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				stat = stat.replace(re, key + ": " + lim)
 			}
 		});
-		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
+		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
 			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
-				let data = JSON.parse(body);
+				let data = JSON.parse(body); 
 				let low = 9999999999;
 				let hi = 0;
 				let avgs = [];
@@ -682,9 +682,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				let arrace = addEmote(getRace(index, outLang), "|");
 				let typesStr;
 				if (emoteMode < 2) {
-					typesStr = types.toString().replace("Monster", arrace[emoteMode]).replace(/,/g, "/");
+					typesStr = types.join("/").replace("Monster", arrace[emoteMode]);
 				} else {
-					typesStr = types.toString().replace("Monster", arrace[0]).replace(/,/g, "/");
+					typesStr = types.join("/").replace("Monster", arrace[0]);
 					typesStr += " " + arrace[1];
 				}
 				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
@@ -718,7 +718,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					} else {
 						out += lv[1] + "/" + lv[2];
 					}
-					out += "\n"
+					out += "\n";
 				} else {
 					out += "\n";
 				}
@@ -793,12 +793,12 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			let imgSize = pics[0].bitmap.width;
 			let a = [];
 			let b = [];
-			while (pics.length) {
+			while (pics.length) { //split array of images into groups of 4
 				a.push(pics.splice(0, 4));
 			}
 			for (let pic of a) {
 				let tempImg = pic[0];
-				for (let i = 1; i < pic.length; i++) {
+				for (let i = 1; i < pic.length; i++) { //in each group, composite the 4 images side by side
 					await new Promise(function(resolve, reject) {
 						new jimp(imgSize + tempImg.bitmap.width, imageSize, function(err, image) {
 							if (err) {
@@ -816,7 +816,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			}
 			let outImg = b[0];
 			if (b.length > 1) {
-				for (let i = 1; i < b.length; i++) {
+				for (let i = 1; i < b.length; i++) { //composite each group vertically
 					await new Promise(function(resolve, reject) {
 						new jimp(outImg.bitmap.width, outImg.bitmap.height + imageSize, function(err, image) {
 							if (err) {
@@ -894,13 +894,13 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 				} else {
 					resolve(false);
 				}
-
 			});
 		});
 	});
 
 }
 
+//see getCardInfo for much of the functionality here
 async function getSingleProp(prop, user, userID, channelID, message, event) {
 	let input = message.slice((pre + prop + " ").length);
 	let inInt = parseInt(input);
@@ -1106,7 +1106,7 @@ function deck(user, userID, channelID, message, event) {
 			}
 			let out = "";
 			if (mainArr.length > 0) {
-				let mainCount = arrayCount(mainArr);
+				let mainCount = arrayCount(mainArr); //gets an object with array properties and the number of times that property appears
 				out += "**Main Deck**\n";
 				Object.keys(mainCount).forEach(function(key, index) {
 					out += mainCount[key] + " " + key + "\n";
@@ -1127,7 +1127,7 @@ function deck(user, userID, channelID, message, event) {
 				});
 			}
 			if (out.length > 0) {
-				let outArr = out.match(/[\s\S]{1,2000}/g);
+				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
 				for (let msg of outArr) {
 					bot.sendMessage({
 						to: userID,
@@ -1174,9 +1174,9 @@ function getCardScript(index, user, userID, channelID, message, event) {
 				let scriptArr = script.split("\n");
 				script = "";
 				scriptArr.forEach(function(key, index) {
-					script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n";
+					script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n"; //appends properly space-padded line numbers at start of lines
 				});
-				if (script.length + "```lua\n```\n".length + fullUrl.length > 2000) {
+				if (script.length + "```lua\n```\n".length + fullUrl.length > 2000) { //display script if it fits, otherwise just link to it
 					resolve(fullUrl);
 				} else {
 					resolve("```lua\n" + script + "```\n" + fullUrl);
@@ -1260,7 +1260,7 @@ function set(user, userID, channelID, message, event) {
 }
 
 //utility functions
-function sendLongMessage(out, user, userID, channelID, message, event) {
+function sendLongMessage(out, user, userID, channelID, message, event) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
 	return new Promise(function(resolve, reject) {
 		try {
 			if (out.length > 2000) {
@@ -1294,7 +1294,7 @@ function sendLongMessage(out, user, userID, channelID, message, event) {
 	});
 }
 
-function compareFuseObj(a,b) {
+function compareFuseObj(a,b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
   if (a.score < b.score)
     return -1;
   if (a.score > b.score)
@@ -1302,7 +1302,7 @@ function compareFuseObj(a,b) {
   return 0;
 }
 
-function nameCheck(line, inLang) {
+function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
 	if (langs.indexOf(inLang) === -1) {
 		inLang = "en";
 	}
@@ -1335,7 +1335,7 @@ function nameCheck(line, inLang) {
 			for (let res of result) {
 				let ot = getOT(ids[inLang].indexOf(res.item.id), inLang);
 				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
-					res.score = res.score * 2;
+					res.score = res.score * 2; //weights score by status. Lower is better so increasing it makes official take priority.
 				} else if (ot === "Custom") {
 					res.score = res.score * 3;
 				}
@@ -1376,7 +1376,7 @@ function nameCheck(line, inLang) {
 }
 
 function convertStat(stat) {
-	if (stat === -2) {
+	if (stat === -2) { //? stats is -2 in the DB.
 		return "?";
 	} else {
 		return stat;
@@ -1385,10 +1385,11 @@ function convertStat(stat) {
 
 function getLevelScales(index, outLang) {
 	let level = contents[outLang][0].values[index][7];
-	return [level & 0xff, (level & 0xf000000) >> 24, (level & 0xf0000) >> 16];
+	return [level & 0xff, (level & 0xf000000) >> 24, (level & 0xf0000) >> 16]; //P scales are bitmasked into the level field, check MLD's database tutorial
 }
 
 function getOT(index, outLang) {
+	//leaving debug info here until it stops causing crashes
 	console.log("Debug info:");
 	console.log("index: " + index);
 	console.log("outLang: " + outLang);
@@ -1508,9 +1509,9 @@ function getRace(index, outLang) {
 	if (race & 0x80000000) {
 		races.push("Yokai");
 	}
-	if (race > 0xffffffff) {
+	if (race > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		race -= (race & 0xffffffff);
-		while (race>0xffffffff)
+		while (race > 0xffffffff)
 			race -= 0xffffffff;
 		if (race & 0x1) {
 			races.push("Charisma");
@@ -1550,7 +1551,7 @@ function getAtt(index, outLang) {
 	if (att & 0x80) {
 		atts.push("LAUGH");
 	}
-	if (att > 0xffffffff) {
+	if (att > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		att -= (att & 0xffffffff);
 		while (att>0xffffffff)
 			att -= 0xffffffff;
@@ -1707,12 +1708,12 @@ function getCardText(index, outLang) {
 	if (lines.length > 1) {
 		let ind;
 		lines.forEach(function(key, index) {
-			if (lines[index].indexOf("---") > -1) {
+			if (lines[index].indexOf("---") > -1) { //pendulum cards have two "sections" split by a row of "-"
 				ind = index;
 			}
 		});
 		if (ind) {
-			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n")];
+			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n")]; //a few lines are skipped because each section has headings
 		}
 	}
 	return [cardText];
@@ -1784,7 +1785,7 @@ function setCodeCheck(index, outLang, user, userID, channelID, message, event) {
 		return false;
 	}
 	let sets = [];
-	let codes = ["0x" + code.slice(0, 4).replace(/^[0]+/g, ""), "0x" + code.slice(4, 8).replace(/^[0]+/g, ""), "0x" + code.slice(8, 12).replace(/^[0]+/g, ""), "0x" + code.slice(12, 16).replace(/^[0]+/g, "")];
+	let codes = ["0x" + code.slice(0, 4).replace(/^[0]+/g, ""), "0x" + code.slice(4, 8).replace(/^[0]+/g, ""), "0x" + code.slice(8, 12).replace(/^[0]+/g, ""), "0x" + code.slice(12, 16).replace(/^[0]+/g, "")]; //setcodes are 4 concatenated hex values, we could use bitshifting to get them except JS doesn't support bitwise ops on numbers over 32 bit
 	for (let co of codes) {
 		if (co in setcodes) {
 			sets.push(setcodes[co]);
@@ -1797,7 +1798,7 @@ function setCodeCheck(index, outLang, user, userID, channelID, message, event) {
 	}
 }
 
-function aliasCheck(index, outLang) {
+function aliasCheck(index, outLang) { //called when getting alt arts, checks if an aliased card has the same OT as the original
 	let alias = aliases[outLang][index];
 	if (alias === 0) {
 		return true;
@@ -1810,7 +1811,7 @@ function sliceBetween(str, cha1, cha2) {
 	return str.slice(str.indexOf(cha1) + cha1.length, str.indexOf(cha2));
 }
 
-function getIncInt(min, max) {
+function getIncInt(min, max) { //get random inclusive integer
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
