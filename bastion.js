@@ -16,7 +16,7 @@ let triviaTimeLimit = 30000;
 let triviaHintTime = 10000;
 let triviaMaxRounds = 20;
 let triviaLocks = {};
-let imageExt = ".png";
+let imageExt = "png";
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
@@ -777,8 +777,8 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 		if (code.length > 1) {
 			let pics = [];
 			for (let cod of code) {
-				let buffer = await downloadImage(imageUrl + cod + imageExt, user, userID, channelID, message, event);
-				if (filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")) {
+				let buffer = await downloadImage(imageUrl + cod + "." + imageExt, user, userID, channelID, message, event);
+				if (filetype(buffer) && filetype(buffer).ext === imageExt) {
 					pics.push(await new Promise(function(resolve, reject) {
 						jimp.read(buffer, function(err, image) {
 							if (err) {
@@ -843,17 +843,17 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			bot.uploadFile({
 				to: channelID,
 				file: buffer,
-				filename: code + imageExt
+				filename: code + "." + imageExt
 			}, function(err, res) {
 				sendLongMessage(out, user, userID, channelID, message, event);
 			});
 		} else {
-			let buffer = await downloadImage(imageUrl + code[0] + imageExt, user, userID, channelID, message, event);
+			let buffer = await downloadImage(imageUrl + code[0] + "." + imageExt, user, userID, channelID, message, event);
 			if (buffer) {
 				bot.uploadFile({
 					to: channelID,
 					file: buffer,
-					filename: code[0] + imageExt
+					filename: code[0] + "." + imageExt
 				}, function(err, res) {
 					sendLongMessage(out, user, userID, channelID, message, event);
 				});
@@ -876,7 +876,7 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 				data.push(chunk);
 			}).on('end', function() {
 				let buffer = Buffer.concat(data);
-				if (filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")) {
+				if (filetype(buffer) && filetype(buffer).ext === imageExt) {
 					jimp.read(buffer, function(err, image) {
 						if (err) {
 							reject(err)
@@ -1393,7 +1393,7 @@ function getOT(index, outLang) {
 	console.log("Debug info:");
 	console.log("index: " + index);
 	console.log("outLang: " + outLang);
-	console.log("Card: " + nameList[outLang][index]);
+	console.log("Card: " + nameList[outLang][index].name);
 	console.log("Card ID: " + ids[outLang][index]);
 	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
@@ -1881,7 +1881,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
-				https.get(url.parse(imageUrl + code + imageExt), function(response) {
+				https.get(url.parse(imageUrl + code + "." + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
 						data.push(chunk);
@@ -1936,7 +1936,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 	bot.uploadFile({
 		to: channelID,
 		file: buffer,
-		filename: code + imageExt
+		filename: code + "." + imageExt
 	}, function(err, res) {
 		if (err) {
 			console.log(err);

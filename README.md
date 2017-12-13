@@ -112,7 +112,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"imageUrlAnime": "",  
 	"imageUrlCustom": "",  
 	"imageSize": 100,  
-	"imageExt": ".png",  
+	"imageExt": "png",  
 	"scriptUrl": "",  
 	"scriptUrlAnime": "",  
 	"scriptUrlCustom": "",  
@@ -142,11 +142,11 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `maxSearches` is the number of different cards Bastion will allow a user to search at once - if a message contains more queries, Bastion won't search anything, instead returning an error message. This field is optional - if it is missing, Bastion will default to what you see above.  
   
-`imageUrl` is a link to a source for card images - either official ones, or all of them. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, functions that require images will be disabled and the following fields will be ignored: `imageUrlAnime`, `imageUrlCustom`, `imageSize`, `triviaTimeLimit`, `triviaHintTime`, `triviaMaxRounds` and `triviaLocks`.  
+`imageUrl` is a link to a source for card images - either official ones, or all of them. Bastion will append the ID of the card, then ".", then `imageExt`. This field is optional - if it is missing, functions that require images will be disabled and the following fields will be ignored: `imageUrlAnime`, `imageUrlCustom`, `imageSize`, `triviaTimeLimit`, `triviaHintTime`, `triviaMaxRounds` and `triviaLocks`.  
   
-`imageUrlAnime` is a link to a source for anime card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
+`imageUrlAnime` is a link to a source for anime card images. Bastion will append the ID of the card, hen ".", then `imageExt`. This field is optional - if it is missing, Bastion will default to `imageUrl`.  
   
-`imageUrlCustom` is a link to a source for custom card images. Bastion will append the ID of the card, then ".png". This field is optional - if it is missing, Bastion will default to `imageUrl`.  
+`imageUrlCustom` is a link to a source for custom card images. Bastion will append the ID of the card, hen ".", then `imageExt`. This field is optional - if it is missing, Bastion will default to `imageUrl`.  
   
 `imageExt` is the file type Bastion will expect your image source to contain, as a file extension starting with the `.`. This field is optional - if it is missing, Bastion will default to what you see above.  
   
