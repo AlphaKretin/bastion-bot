@@ -502,7 +502,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		}
 		if (args.length > 1) {
 			let matches = [];
-			for (let id of ids[outLang]) {//gets a list of all cards that meet specified critera, before getting a random one of those cards
+			for (let id of ids[outLang]) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
 				if (randFilterCheck(id, args, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
@@ -557,7 +557,7 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let args = input.split(",");
-	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();//expecting cardname,lang,lang
+	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
@@ -653,7 +653,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		});
 		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
 			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
-				let data = JSON.parse(body); 
+				let data = JSON.parse(body);
 				let low = 9999999999;
 				let hi = 0;
 				let avgs = [];
@@ -1298,12 +1298,12 @@ function sendLongMessage(out, user, userID, channelID, message, event) { //calle
 	});
 }
 
-function compareFuseObj(a,b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
-  if (a.score < b.score)
-    return -1;
-  if (a.score > b.score)
-    return 1;
-  return 0;
+function compareFuseObj(a, b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
+	if (a.score < b.score)
+		return -1;
+	if (a.score > b.score)
+		return 1;
+	return 0;
 }
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
@@ -1557,7 +1557,7 @@ function getAtt(index, outLang) {
 	}
 	if (att > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		att -= (att & 0xffffffff);
-		while (att>0xffffffff)
+		while (att > 0xffffffff)
 			att -= 0xffffffff;
 		/*if (att & 0x1) {
 			atts.push("No attribute yet");
@@ -1605,12 +1605,12 @@ function checkType(index, outLang, tpe) {
 	if (types & tpe) { //this will usually be enough...
 		return true
 	}
-	if (types>=0x100000000 && tpe>=0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
+	if (types >= 0x100000000 && tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
 		types -= (types & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
-		while (types>0xffffffff)
+		while (types > 0xffffffff)
 			types -= 0xffffffff;
 		var ttpe = tpe - (tpe & 0xffffffff)
-		while (ttpe>0xffffffff)
+		while (ttpe > 0xffffffff)
 			ttpe -= 0xffffffff;
 		return types & ttpe
 	}
