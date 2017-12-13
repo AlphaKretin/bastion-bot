@@ -870,6 +870,8 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 
 function downloadImage(imageUrl, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
+		console.log("Debug Data: " + imageUrl)
+		console.dir(url.parse(imageUrl))
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1149,6 +1151,8 @@ function getCardScript(index, user, userID, channelID, message, event) {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
+		console.log("Debug data: " + fullUrl)
+		console.dir(url.parse(fullUrl))
 		https.get(url.parse(fullUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1881,6 +1885,8 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
+				console.log("Debug Data: " + imageUrl + code + "." + imageExt)
+				console.dir(url.parse(imageUrl + code + "." + imageExt))
 				https.get(url.parse(imageUrl + code + "." + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
@@ -1891,7 +1897,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 				});
 			});
 		}
-	} while (ot.indexOf(getOT(index, outLang)) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === imageExt.replace(/./g, "")));
+	} while (ot.indexOf(getOT(index, outLang)) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === imageExt));
 	let hintIs = [];
 	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
 	let nameArr = name.split("");
