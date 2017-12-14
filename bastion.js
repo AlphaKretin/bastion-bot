@@ -71,7 +71,7 @@ if (config.imageUrl) {
 
 let emoteMode = 0;
 let emoteDB;
-let thumbsup = "👍";
+let thumbsup = "ðŸ‘";
 let thumbsdown;
 
 if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
@@ -587,8 +587,6 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		}
 		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imagesEnabled && args.indexOf("image") > -1) {
-			if (checkType(index, outLang, 0x1000000000))
-				embCT = "Dark Synchro";
 			if (out[1].length == 1 && messageMode & 0x2)
 				sendLongMessage(out[0], user, userID, channelID, message, event, embCT, out[1][0]);
 			else
@@ -646,8 +644,6 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		try {
 			let out = await getCardInfo(inInt, outLang, user, userID, channelID, message, event);
 			if (hasImage) {
-				if (checkType(index, outLang, 0x1000000000))
-					embCT = "Dark Synchro";
 				if (out[1].length == 1 && messageMode & 0x2)
 					sendLongMessage(out[0], user, userID, channelID, message, event, embCT, out[1][0]);
 				else
@@ -667,8 +663,6 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				if (index > -1 && index in ids[inLang]) {
 					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
 					if (hasImage) {
-						if (checkType(index, outLang, 0x1000000000))
-							embCT = "Dark Synchro";
 						if (out[1].length == 1 && messageMode & 0x2)
 							sendLongMessage(out[0], user, userID, channelID, message, event, embCT,out[1][0]);
 						else
@@ -785,6 +779,8 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				out += stat + "\n";
 			}
 			let types = getTypes(index, outLang);
+			if (checkType(index, outLang, 0x1000000000))
+				embCT = "Dark Synchro";
 			if (types.indexOf("Monster") > -1) {
 				let arrace = addEmote(getRace(index, outLang), "|");
 				let typesStr;
@@ -815,9 +811,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				if (emoteMode > 0) {
 					if (messageMode & 0x1) {
 						if (lvName == "Level")
-							out += "✪";
+							out += "âœª";
 						else if (lvName == "Rank")
-							out += "⍟";
+							out += "âŸ";
 					} else {
 						if (checkType(index, outLang, 0x1000000000)) { //is dark synchro
 							out += emoteDB["NLevel"] + " ";
@@ -852,7 +848,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
 						if (messageMode & 0x1)
-							out += "←" + lv[1] + "/" + lv[2] + "→ ";
+							out += "â†" + lv[1] + "/" + lv[2] + "â†’ ";
 						else
 							out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
 					} else {
@@ -907,7 +903,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					}
 					if (emoteMode > 0) {
 						if (messageMode & 0x1)
-							out += "✪";
+							out += "âœª";
 						else
 							out += " " + emoteDB["Level"];
 					}
@@ -1179,6 +1175,8 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 					});
 				});
 				let types = getTypes(index, "en");
+				if (checkType(index, "en", 0x1000000000))
+					embCT = "Dark Synchro";
 				if (messageMode & 0x1)
 					out += " ";
 				if (types.indexOf("Monster") > -1) {
@@ -1219,6 +1217,8 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				let nam = names.en[0].values[index];
 				out += "__**" + quo + nam[1] + quo + "**__" + (messageMode & 0x1 && " " || "\n");
 				let typs = getTypes(index, "en");
+				if (checkType(index, "en", 0x1000000000))
+					embCT = "Dark Synchro";
 				if (typs.indexOf("Monster") > -1) {
 					let cardText = getCardText(index, "en");
 					let textName = "Monster Effect";
@@ -1898,28 +1898,28 @@ function getMarkers(index, outLang) {
 	let marks = contents[outLang][0].values[index][6];
 	let out = "";
 	if (marks & 0x001) {
-		out += "↙️";
+		out += "â†™ï¸";
 	}
 	if (marks & 0x002) {
-		out += "⬇️";
+		out += "â¬‡ï¸";
 	}
 	if (marks & 0x004) {
-		out += "↘️";
+		out += "â†˜ï¸";
 	}
 	if (marks & 0x008) {
-		out += "⬅️";
+		out += "â¬…ï¸";
 	}
 	if (marks & 0x020) {
-		out += "➡️";
+		out += "âž¡ï¸";
 	}
 	if (marks & 0x040) {
-		out += "↖️";
+		out += "â†–ï¸";
 	}
 	if (marks & 0x080) {
-		out += "⬆️";
+		out += "â¬†ï¸";
 	}
 	if (marks & 0x100) {
-		out += "↗️";
+		out += "â†—ï¸";
 	}
 	return out;
 }
