@@ -131,7 +131,10 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"skillDB": "skills.json",  
 	"emoteMode": 0,  
 	"emotesDB": null,  
-	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website."  
+	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website.",  
+	"messageMode": 0,  
+	"embedColor": 1,  
+	"embedColorDB": null  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -184,7 +187,13 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `emotesDB` is the name of the JSON file Bastion will load containing the emotes it will use for its card searches and/or reacting to trivia. This won't be loaded if emoteMode is set to 0. This field is optional - is can be ignored depending on `emoteMode`'s setting, and if it is expected but missing, displaying emotes will be disabled.  
   
-``helpMessage`` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
+`helpMessage` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
+
+`messageMode` determines how Bastion will send Messages. If it is set to 0, it will send messages in regular text format. If it is set to 1, it will send messages enclosed in quotes. If it is set to 2, it will send embedded messages. If it is set to 3, it will send messages enclosed in quotes which are also embedded. This field is optional - if it is missing, it will default to what you see above.  
+  
+`embedColor` is the default color of the bar of your embedded messages. This field is optional - is can be ignored depending on `messageMode`'s setting, and if it is expected but missing, the default color will be used. This is a decimal value converted from a hex color value.  
+
+`embedColorDB` is the name of the JSON file Bastion will load containing the color codes of your embedded messages. Currently, it only supports different colors depending on the card type of a searched card. This field is optional - if it is missing, all embedded messages will have the same color.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
