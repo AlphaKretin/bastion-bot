@@ -430,9 +430,6 @@ bot.on('message', function(user, userID, channelID, message, event) {
 				embed: {
 					color: embedColor,
 					description: helpMessage,
-					thumbnail: {
-						url: "https://raw.githubusercontent.com/Ygoproorg/Live-images-compressed/master/pics/511000002.jpg?token=AIIp7ZXUV2avsN8ndUZ3BYFWcPoZujFzks5aO1TDwA%3D%3D"
-					},
 				}
 			});
 		} else {
