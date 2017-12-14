@@ -71,7 +71,7 @@ if (config.imageUrl) {
 
 let emoteMode = 0;
 let emoteDB;
-let thumbsup = "ðŸ‘";
+let thumbsup = "👍";
 let thumbsdown;
 
 if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
@@ -430,6 +430,9 @@ bot.on('message', function(user, userID, channelID, message, event) {
 				embed: {
 					color: embedColor,
 					description: helpMessage,
+					thumbnail: {
+						url: "https://raw.githubusercontent.com/Ygoproorg/Live-images-compressed/master/pics/511000002.jpg?token=AIIp7ZXUV2avsN8ndUZ3BYFWcPoZujFzks5aO1TDwA%3D%3D"
+					},
 				}
 			});
 		} else {
@@ -811,9 +814,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				if (emoteMode > 0) {
 					if (messageMode & 0x1) {
 						if (lvName == "Level")
-							out += "âœª";
+							out += "✪";
 						else if (lvName == "Rank")
-							out += "âŸ";
+							out += "⍟";
 					} else {
 						if (checkType(index, outLang, 0x1000000000)) { //is dark synchro
 							out += emoteDB["NLevel"] + " ";
@@ -848,7 +851,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
 						if (messageMode & 0x1)
-							out += "â†" + lv[1] + "/" + lv[2] + "â†’ ";
+							out += "←" + lv[1] + "/" + lv[2] + "→ ";
 						else
 							out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
 					} else {
@@ -903,7 +906,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					}
 					if (emoteMode > 0) {
 						if (messageMode & 0x1)
-							out += "âœª";
+							out += "✪";
 						else
 							out += " " + emoteDB["Level"];
 					}
@@ -1898,28 +1901,28 @@ function getMarkers(index, outLang) {
 	let marks = contents[outLang][0].values[index][6];
 	let out = "";
 	if (marks & 0x001) {
-		out += "â†™ï¸";
+		out += "↙️";
 	}
 	if (marks & 0x002) {
-		out += "â¬‡ï¸";
+		out += "⬇️";
 	}
 	if (marks & 0x004) {
-		out += "â†˜ï¸";
+		out += "↘️";
 	}
 	if (marks & 0x008) {
-		out += "â¬…ï¸";
+		out += "⬅️";
 	}
 	if (marks & 0x020) {
-		out += "âž¡ï¸";
+		out += "➡️";
 	}
 	if (marks & 0x040) {
-		out += "â†–ï¸";
+		out += "↖️";
 	}
 	if (marks & 0x080) {
-		out += "â¬†ï¸";
+		out += "⬆️";
 	}
 	if (marks & 0x100) {
-		out += "â†—ï¸";
+		out += "↗️";
 	}
 	return out;
 }
