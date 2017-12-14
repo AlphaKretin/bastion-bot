@@ -19,7 +19,6 @@ let triviaLocks = {};
 let imageExt = "png";
 let markdownno = 0;
 let embCT;
-
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
 	imagesEnabled = true;
@@ -577,7 +576,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		}
 		if (args.length > 1) {
 			let matches = [];
-			for (let id of ids[outLang]) {//gets a list of all cards that meet specified critera, before getting a random one of those cards
+			for (let id of ids[outLang]) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
 				if (randFilterCheck(id, args, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
@@ -637,7 +636,7 @@ async function script(user, userID, channelID, message, event) {
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
 	let args = input.split(",");
-	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase();//expecting cardname,lang,lang
+	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
 	if (langs.indexOf(inLang) > -1 && langs.indexOf(inLang) > -1) {
 		input = args.splice(0, args.length - 2).toString();
@@ -1048,6 +1047,8 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 
 function downloadImage(imageUrl, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
+		console.log("Debug Data: " + imageUrl)
+		console.dir(url.parse(imageUrl))
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1385,6 +1386,8 @@ function getCardScript(index, user, userID, channelID, message, event) {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
+		console.log("Debug data: " + fullUrl)
+		console.dir(url.parse(fullUrl))
 		https.get(url.parse(fullUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1622,12 +1625,12 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 	});
 }
 
-function compareFuseObj(a,b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
-  if (a.score < b.score)
-    return -1;
-  if (a.score > b.score)
-    return 1;
-  return 0;
+function compareFuseObj(a, b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
+	if (a.score < b.score)
+		return -1;
+	if (a.score > b.score)
+		return 1;
+	return 0;
 }
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
@@ -1718,11 +1721,11 @@ function getLevelScales(index, outLang) {
 
 function getOT(index, outLang) {
 	//leaving debug info here until it stops causing crashes
-	//console.log("Debug info:");
-	//console.log("index: " + index);
-	//console.log("outLang: " + outLang);
-	//console.log("Card: " + nameList[outLang][index].name);
-	//console.log("Card ID: " + ids[outLang][index]);
+	console.log("Debug info:");
+	console.log("index: " + index);
+	console.log("outLang: " + outLang);
+	console.log("Card: " + nameList[outLang][index].name);
+	console.log("Card ID: " + ids[outLang][index]);
 	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
 		case 1:
@@ -1881,7 +1884,7 @@ function getAtt(index, outLang) {
 	}
 	if (att > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		att -= (att & 0xffffffff);
-		while (att>0xffffffff)
+		while (att > 0xffffffff)
 			att -= 0xffffffff;
 		/*if (att & 0x1) {
 			atts.push("No attribute yet");
@@ -1929,12 +1932,12 @@ function checkType(index, outLang, tpe) {
 	if (types & tpe) { //this will usually be enough...
 		return true
 	}
-	if (types>=0x100000000 && tpe>=0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
+	if (types >= 0x100000000 && tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
 		types -= (types & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
-		while (types>0xffffffff)
+		while (types > 0xffffffff)
 			types -= 0xffffffff;
 		var ttpe = tpe - (tpe & 0xffffffff)
-		while (ttpe>0xffffffff)
+		while (ttpe > 0xffffffff)
 			ttpe -= 0xffffffff;
 		return types & ttpe
 	}
@@ -2221,6 +2224,8 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
+				console.log("Debug Data: " + imageUrl + code + "." + imageExt)
+				console.dir(url.parse(imageUrl + code + "." + imageExt))
 				https.get(url.parse(imageUrl + code + "." + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
@@ -3128,6 +3133,16 @@ function libDesc(user, userID, channelID, message, event) {
 			message: searchPage.content + "\n`" + desc + "`"
 		});
 	}
+}
+
+function searchSkill(user, userID, channelID, message, event) {
+	let arg = message.toLowerCase().slice((pre + "skill").length);
+	let index = -1;
+	skills.forEach(function(skill, ind) {
+		if (arg === skill.name.toLowerCase()) {
+			index = ind;
+		}
+	});
 }
 
 function searchSkill(user, userID, channelID, message, event) {
