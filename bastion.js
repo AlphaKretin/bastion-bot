@@ -718,19 +718,21 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		let out = "__**" + quo + name[1] + quo + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
 		markdownno += quo.length * 2;
 		let alIDs = [code];
+		let ot = getOT(ids[outLang].indexOf(code), outLang);
 		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
-			if (getOT(ids[outLang].indexOf(code), outLang) === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something.
+			if (ot === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something.
 				code = aliases[outLang][ids[outLang].indexOf(code)];
+				ot = getOT(ids[outLang].indexOf(code), outLang);
 				alIDs = [code];
 				for (let i = 0; i < aliases[outLang].length; i++) {
-					if (aliases[outLang][i] === code && getOT(i, outLang) === getOT(ids[outLang].indexOf(code), outLang)) {
+					if (aliases[outLang][i] === code && getOT(i, outLang) === ot) {
 						alIDs.push(ids[outLang][i]);
 					}
 				}
 			}
 		} else if (aliases[outLang].indexOf(code) > 0) {
 			for (let i = 0; i < aliases[outLang].length; i++) {
-				if (aliases[outLang][i] === code && getOT(i, outLang) === getOT(ids[outLang].indexOf(code), outLang)) {
+				if (aliases[outLang][i] === code && getOT(i, outLang) === ot) {
 					alIDs.push(ids[outLang][i]);
 				}
 			}
@@ -979,10 +981,11 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 async function postImage(code, out, outLang, user, userID, channelID, message, event) {
 	try {
 		let imageUrl = imageUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids[outLang].indexOf(code[0]), outLang)) > -1) {
+		let ot = getOT(ids[outLang].indexOf(code[0]), outLang);
+		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
 			imageUrl = imageUrlAnime;
 		}
-		if (getOT(ids[outLang].indexOf(code[0]), outLang) === "Custom") {
+		if (ot === "Custom") {
 			imageUrl = imageUrlCustom;
 		}
 		if (code.length > 1) {
@@ -1129,19 +1132,21 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 			case "id":
 				let code = ids.en[index];
 				let alIDs = [code];
+				let ot = getOT(ids.en.indexOf(code), "en");
 				if (aliases.en[ids.en.indexOf(code)] > 0) {
-					if (getOT(ids.en.indexOf(code), "en") === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(code)]), "en")) {
+					if (ot === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(code)]), "en")) {
 						code = aliases.en[ids.en.indexOf(code)];
+						ot = getOT(ids.en.indexOf(code), "en");
 						alIDs = [code];
 						for (let i = 0; i < aliases.en.length; i++) {
-							if (aliases.en[i] === code && getOT(i, "en") === getOT(ids.en.indexOf(code), "en")) {
+							if (aliases.en[i] === code && getOT(i, "en") === ot) {
 								alIDs.push(ids.en[i]);
 							}
 						}
 					}
 				} else if (aliases.en.indexOf(code) > 0) {
 					for (let i = 0; i < aliases.en.length; i++) {
-						if (aliases.en[i] === code && getOT(i, "en") === getOT(ids.en.indexOf(code), "en")) {
+						if (aliases.en[i] === code && getOT(i, "en") === ot) {
 							alIDs.push(ids.en[i]);
 						}
 					}
@@ -1155,19 +1160,21 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				let cod = ids.en[index];
 				out += "__**" + quo + name[1] + quo + "**__\n";
 				let alIs = [cod];
+				let o = getOT(ids.en.indexOf(cod), "en")
 				if (aliases.en[ids.en.indexOf(cod)] > 0) {
-					if (getOT(ids.en.indexOf(cod), "en") === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(cod)]), "en")) {
+					if (o === getOT(ids.en.indexOf(aliases.en[ids.en.indexOf(cod)]), "en")) {
 						cod = aliases.en[ids.en.indexOf(cod)];
+						o = getOT(ids.en.indexOf(cod), "en");
 						alIs = [cod];
 						for (let i = 0; i < aliases.en.length; i++) {
-							if (aliases.en[i] === cod && getOT(i, "en") === getOT(ids.en.indexOf(cod), "en")) {
+							if (aliases.en[i] === cod && getOT(i, "en") === o) {
 								alIs.push(ids.en[i]);
 							}
 						}
 					}
 				} else if (aliases.en.indexOf(cod) > 0) {
 					for (let i = 0; i < aliases.en.length; i++) {
-						if (aliases.en[i] === cod && getOT(i, "en") === getOT(ids.en.indexOf(cod), "en")) {
+						if (aliases.en[i] === cod && getOT(i, "en") === o) {
 							alIs.push(ids.en[i]);
 						}
 					}
@@ -1187,6 +1194,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 					out += sets.join(", ") + "\n";
 				}
 				out += "\n";
+				let stat = getOT(index, "en");
 				out += await new Promise(function(resolve, reject) {
 					request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) {
 						if (error) {
@@ -1209,12 +1217,12 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 							}
 							let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
 							if (messageMode & 0x1) {
-								resolve("Status: " + getOT(index, "en") + " Price: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD" + quo + quo + quo);
+								resolve("Status: " + stat + " Price: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD" + quo + quo + quo);
 							} else {
-								resolve("**Status**: " + bo + quo + getOT(index, "en") + " **Price**: " + "$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+								resolve("**Status**: " + bo + quo + stat + " **Price**: " + "$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
 							}
 						} else {
-							resolve("**Status**: " + bo + quo + getOT(index, "en") + quo + bo + "\n");
+							resolve("**Status**: " + bo + quo + stat + quo + bo + "\n");
 						}
 					});
 				});
@@ -1423,10 +1431,11 @@ function deck(user, userID, channelID, message, event) {
 function getCardScript(index, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		let scriptUrl = scriptUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(index, "en")) > -1) {
+		let ot = getOT(index, "en");
+		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
 			scriptUrl = scriptUrlAnime;
 		}
-		if (getOT(index, "en") === "Custom") {
+		if (ot === "Custom") {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
@@ -1590,10 +1599,11 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 	var imgurl = "";
 	if (code) {
 		imgurl = imageUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids["en"].indexOf(code), "en")) > -1) {
+		let ot = getOT(ids["en"].indexOf(code), "en");
+		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
 			imgurl = imageUrlAnime;
 		}
-		if (getOT(ids["en"].indexOf(code), "en") === "Custom") {
+		if (ot === "Custom") {
 			imgurl = imageUrlCustom;
 		}
 		imgurl += code + "." + imageExt;
@@ -2268,10 +2278,11 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		code = ids[outLang][index];
 		name = names[outLang][0].values[index][1];
 		let imageUrl = imageUrlMaster;
-		if (["Anime", "Illegal", "Video Game"].indexOf(getOT(ids[outLang].indexOf(code), outLang)) > -1) {
+		let stat = getOT(ids[outLang].indexOf(code), outLang);
+		if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
 			imageUrl = imageUrlAnime;
 		}
-		if (getOT(ids[outLang].indexOf(code), outLang) === "Custom") {
+		if (stat === "Custom") {
 			imageUrl = imageUrlCustom;
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
