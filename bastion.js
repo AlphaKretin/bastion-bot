@@ -92,26 +92,27 @@ let messageMode = 0;
 let embedColor = 0x1;
 let embcDB;
 
-if (config.messageMode)
+if (config.messageMode) {
 	messageMode = config.messageMode;
-else
+} else {
 	console.log("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
-if (messageMode & 0x2 && config.embedColor)
+}
+if (messageMode & 0x2 && config.embedColor) {
 	embedColor = config.embedColor;
-else if (messageMode & 0x2)
+} else if (messageMode & 0x2) {
 	console.log("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
+}
 if (config.embedColorDB) {
 	let path = "config/" + config.embedColorDB;
 	embcDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-}
-else {
+} else {
 	console.log("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
 }
 
 let quo = messageMode & 0x1 && "`" || "";
 let bo = messageMode & 0x1 && "**" || "";
 let jvex = messageMode & 0x1 && "java\n" || "";
-	
+
 
 let scriptsEnabled = false;
 let scriptUrlMaster;
@@ -148,7 +149,7 @@ let pre = ".";
 if (config.prefix) {
 	pre = config.prefix;
 } else {
-	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!")
+	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!");
 }
 let longStr = "...\n__Type `" + pre + "long` to be PMed the rest!__";
 if (config.longStr) {
@@ -170,7 +171,7 @@ let maxSearches = 3;
 if (config.maxSearches) {
 	maxSearches = config.maxSearches;
 } else {
-	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!")
+	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
 }
 let dbs = {
 	"en": ["cards.cdb"]
@@ -587,10 +588,11 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		}
 		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imagesEnabled && args.indexOf("image") > -1) {
-			if (out[1].length == 1 && messageMode & 0x2)
+			if (out[1].length == 1 && messageMode & 0x2) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, embCT, out[1][0]);
-			else
+			} else {
 				postImage(out[1], out[0], outLang, user, userID, channelID, message, event); //postImage also handles sending the message
+			}
 		} else {
 			sendLongMessage(out[0], user, userID, channelID, message, event, embCT); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 		}
@@ -644,10 +646,11 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 		try {
 			let out = await getCardInfo(inInt, outLang, user, userID, channelID, message, event);
 			if (hasImage) {
-				if (out[1].length == 1 && messageMode & 0x2)
+				if (out[1].length == 1 && messageMode & 0x2) {
 					sendLongMessage(out[0], user, userID, channelID, message, event, embCT, out[1][0]);
-				else
+				} else {
 					postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
+				}
 			} else {
 				sendLongMessage(out[0], user, userID, channelID, message, event, embCT);
 			}
@@ -663,10 +666,11 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				if (index > -1 && index in ids[inLang]) {
 					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
 					if (hasImage) {
-						if (out[1].length == 1 && messageMode & 0x2)
-							sendLongMessage(out[0], user, userID, channelID, message, event, embCT,out[1][0]);
-						else
+						if (out[1].length == 1 && messageMode & 0x2) {
+							sendLongMessage(out[0], user, userID, channelID, message, event, embCT, out[1][0]);
+						} else {
 							postImage(out[1], out[0], outLang, user, userID, channelID, message, event);
+						}
 					} else {
 						sendLongMessage(out[0], user, userID, channelID, message, event, embCT);
 					}
@@ -715,18 +719,20 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 			}
 		}
-		if (messageMode & 0x1)
+		if (messageMode & 0x1) {
 			out += bo + quo + quo + quo + jvex + "ID: ";
-		else
+		} else {
 			out += "**ID**: ";
+		}
 		markdownno += quo.length * 3 + bo.length + jvex.length;
 		out += alIDs.join("|") + "\n";
 		let sets = setCodeCheck(index, outLang, user, userID, channelID, message, event); //this handles all the archetype stuff
 		if (sets) { //returns false if part of no archetypes
-			if (messageMode & 0x1)
+			if (messageMode & 0x1) {
 				out += "Archetype: ";
-			else
+			} else {
 				out += "**Archetype**: ";
+			}
 			out += sets.join(", ");
 		}
 		out += "\n";
@@ -738,12 +744,12 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					lim = lflist[key][code];
 				}
 				let re = new RegExp(key);
-				stat = stat.replace(re, key + ": " + lim)
+				stat = stat.replace(re, key + ": " + lim);
 			}
 		});
 		request('https://yugiohprices.com/api/get_card_prices/' + name[1], function(error, response, body) { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
 			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
-				let data = JSON.parse(body); 
+				let data = JSON.parse(body);
 				let low = 9999999999;
 				let hi = 0;
 				let avgs = [];
@@ -760,27 +766,31 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 				if (avgs.length > 0) {
 					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "Status: " + stat + " Price: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
-					else
+					} else {
 						out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+					}
 				} else {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "Status: ";
-					else
+					} else {
 						out += "**Status**: ";
+					}
 					out += stat + "\n";
 				}
 			} else {
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += "Status: ";
-				else
+				} else {
 					out += "**Status**: ";
+				}
 				out += stat + "\n";
 			}
 			let types = getTypes(index, outLang);
-			if (checkType(index, outLang, 0x1000000000))
+			if (checkType(index, outLang, 0x1000000000)) {
 				embCT = "Dark Synchro";
+			}
 			if (types.indexOf("Monster") > -1) {
 				let arrace = addEmote(getRace(index, outLang), "|");
 				let typesStr;
@@ -788,13 +798,15 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					typesStr = types.join("/").replace("Monster", arrace[emoteMode]);
 				} else {
 					typesStr = types.join("/").replace("Monster", arrace[0]);
-					if (messageMode != 1)
+					if (messageMode != 1) {
 						typesStr += " " + arrace[1];
+					}
 				}
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += "Type: " + typesStr + " Attribute: " + addEmote(getAtt(index, outLang), "|")[0] + "\n";
-				else
+				} else {
 					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(getAtt(index, outLang), "|")[emoteMode] + "\n";
+				}
 				let lvName = "Level";
 				let lv = getLevelScales(index, outLang);
 				let def = true;
@@ -804,16 +816,18 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					lvName = "Link Rating";
 					def = false;
 				}
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += lvName + ": " + lv[0];
-				else
+				} else {
 					out += "**" + lvName + "**: " + lv[0] + " ";
+				}
 				if (emoteMode > 0) {
 					if (messageMode & 0x1) {
-						if (lvName == "Level")
+						if (lvName == "Level") {
 							out += "✪";
-						else if (lvName == "Rank")
+						} else if (lvName == "Rank") {
 							out += "⍟";
+						}
 					} else {
 						if (checkType(index, outLang, 0x1000000000)) { //is dark synchro
 							out += emoteDB["NLevel"] + " ";
@@ -823,34 +837,39 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 					}
 				}
 				out += " ";
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += "ATK: ";
-				else
+				} else {
 					out += "**ATK**: ";
+				}
 				out += convertStat(card[5]) + " ";
 				if (def) {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "DEF: ";
-					else
+					} else {
 						out += "**DEF**: ";
+					}
 					out += convertStat(card[6]);
 				} else {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "Link Markers: ";
-					else
+					} else {
 						out += "**Link Markers**: ";
+					}
 					out += getMarkers(index, outLang);
 				}
 				if (types.indexOf("Pendulum") > -1) {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += " Pendulum Scale: ";
-					else
+					} else {
 						out += " **Pendulum Scale**: ";
+					}
 					if (emoteMode > 0) {
-						if (messageMode & 0x1)
+						if (messageMode & 0x1) {
 							out += "←" + lv[1] + "/" + lv[2] + "→ ";
-						else
+						} else {
 							out += " " + lv[1] + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + lv[2] + " ";
+						}
 					} else {
 						out += lv[1] + "/" + lv[2];
 					}
@@ -891,8 +910,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
 					} else {
 						typesStr = arrace[0] + "/" + typeemote[0];
-						if (messageMode != 1) 
+						if (messageMode != 1) {
 							typesStr += " " + arrace[1] + typeemote[1];
+						}
 					}
 					if (messageMode & 0x1) {
 						out += "Type: " + typesStr + " Attribute: " + addEmote(getAtt(index, outLang), "|")[0] + "\n";
@@ -902,31 +922,36 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						out += "**Level**: " + getLevelScales(index, outLang)[0];
 					}
 					if (emoteMode > 0) {
-						if (messageMode & 0x1)
+						if (messageMode & 0x1) {
 							out += "✪";
-						else
+						} else {
 							out += " " + emoteDB["Level"];
+						}
 					}
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += " " + " ATK: " + convertStat(card[5]) + " DEF: " + convertStat(card[6]) + "\n";
-					else
+					} else {
 						out += " " + " **ATK**: " + convertStat(card[5]) + " **DEF**: " + convertStat(card[6]) + "\n";
+					}
 				} else {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "Type: " + typeemote[0] + "\n";
-					else
+					} else {
 						out += "**Type**: " + typeemote[emoteMode] + "\n";
+					}
 				}
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += "``````" + name[2].replace(/\n/g, "\n") + "``` ``Effect``\n";
-				else
+				} else {
 					out += "**Effect**: " + name[2].replace(/\n/g, "\n");
+				}
 				markdownno += quo.length * 3;
 			} else {
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += "``````" + name[2].replace(/\n/g, "\n") + "``` ``Card Text``";
-				else
+				} else {
 					out += "**Card Text**: " + name[2].replace(/\n/g, "\n");
+				}
 				markdownno += quo.length * 3;
 			}
 			out += bo;
@@ -1040,8 +1065,8 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 
 function downloadImage(imageUrl, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
-		console.log("Debug Data: " + imageUrl)
-		console.dir(url.parse(imageUrl))
+		console.log("Debug Data: " + imageUrl);
+		console.dir(url.parse(imageUrl));
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1051,7 +1076,7 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 				if (filetype(buffer) && filetype(buffer).ext === imageExt) {
 					jimp.read(buffer, function(err, image) {
 						if (err) {
-							reject(err)
+							reject(err);
 						} else {
 							image.resize(jimp.AUTO, imageSize);
 							image.getBuffer(jimp.AUTO, function(err, res) {
@@ -1131,16 +1156,18 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					}
 				}
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += bo + quo + quo + quo + jvex + "ID: " + alIs.join("|") + "\n";
-				else
+				} else {
 					out += "**ID**: " + alIs.join("|") + "\n";
+				}
 				let sets = setCodeCheck(index, "en", user, userID, channelID, message, event);
 				if (sets) {
-					if (messageMode & 0x1)
+					if (messageMode & 0x1) {
 						out += "Archetype: ";
-					else
+					} else {
 						out += "**Archetype**: ";
+					}
 					out += sets.join(", ") + "\n";
 				}
 				out += "\n";
@@ -1165,20 +1192,23 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 								}
 							}
 							let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-							if (messageMode & 0x1)
+							if (messageMode & 0x1) {
 								resolve("Status: " + getOT(index, "en") + " Price: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD" + quo + quo + quo);
-							else
+							} else {
 								resolve("**Status**: " + bo + quo + getOT(index, "en") + " **Price**: " + "$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+							}
 						} else {
 							resolve("**Status**: " + bo + quo + getOT(index, "en") + quo + bo + "\n");
 						}
 					});
 				});
 				let types = getTypes(index, "en");
-				if (checkType(index, "en", 0x1000000000))
+				if (checkType(index, "en", 0x1000000000)) {
 					embCT = "Dark Synchro";
-				if (messageMode & 0x1)
+				}
+				if (messageMode & 0x1) {
 					out += " ";
+				}
 				if (types.indexOf("Monster") > -1) {
 					let arrace = addEmote(getRace(index, "en"), "|");
 					if (emoteMode < 2) {
@@ -1217,8 +1247,9 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 				let nam = names.en[0].values[index];
 				out += "__**" + quo + nam[1] + quo + "**__" + (messageMode & 0x1 && " " || "\n");
 				let typs = getTypes(index, "en");
-				if (checkType(index, "en", 0x1000000000))
+				if (checkType(index, "en", 0x1000000000)) {
 					embCT = "Dark Synchro";
+				}
 				if (typs.indexOf("Monster") > -1) {
 					let cardText = getCardText(index, "en");
 					let textName = "Monster Effect";
@@ -1383,8 +1414,8 @@ function getCardScript(index, user, userID, channelID, message, event) {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
-		console.log("Debug data: " + fullUrl)
-		console.dir(url.parse(fullUrl))
+		console.log("Debug data: " + fullUrl);
+		console.dir(url.parse(fullUrl));
 		https.get(url.parse(fullUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1423,7 +1454,7 @@ function getCardScript(index, user, userID, channelID, message, event) {
 }
 
 function matches(user, userID, channelID, message, event) {
-	let a = message.toLowerCase().split("|")
+	let a = message.toLowerCase().split("|");
 	let arg = a[0].slice((pre + "matches ").length);
 	let args = a[1] && a[1].split(" ");
 	let outLang = "en";
@@ -1470,7 +1501,7 @@ function matches(user, userID, channelID, message, event) {
 		let outs = [];
 		let ot = getOT(ids[outLang].indexOf(results[0].item.id), outLang);
 		while (results[i] && outs.length < 10) {
-			let index = ids[outLang].indexOf(results[i].item.id)
+			let index = ids[outLang].indexOf(results[i].item.id);
 			if (aliasCheck(index, outLang) && (!args || randFilterCheck(results[i].item.id, args, outLang))) {
 				outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 			}
@@ -1567,22 +1598,22 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							},
 						}
 					}, function(err, res) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(res);
-							}
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
 					});
 				} else {
 					bot.sendMessage({
 						to: channelID,
 						message: outArr[0]
 					}, function(err, res) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(res);
-							}
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
 					});
 				}
 			} else {
@@ -1597,22 +1628,22 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							},
 						}
 					}, function(err, res) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(res);
-							}
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
 					});
 				} else {
 					bot.sendMessage({
 						to: channelID,
 						message: out
 					}, function(err, res) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(res);
-							}
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
 					});
 				}
 			}
@@ -1623,10 +1654,12 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 }
 
 function compareFuseObj(a, b) { //called in card searching by name to resort the array of objects after its scores are weighted by hand
-	if (a.score < b.score)
+	if (a.score < b.score) {
 		return -1;
-	if (a.score > b.score)
+	}
+	if (a.score > b.score) {
 		return 1;
+	}
 	return 0;
 }
 
@@ -1745,7 +1778,7 @@ function getOT(index, outLang) {
 }
 
 function addEmote(args, symbol) {
-	let str = args.join(symbol)
+	let str = args.join(symbol);
 	let emotes = "";
 	if (emoteMode > 0) {
 		let len = args.length;
@@ -1839,8 +1872,9 @@ function getRace(index, outLang) {
 	}
 	if (race > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		race -= (race & 0xffffffff);
-		while (race > 0xffffffff)
+		while (race > 0xffffffff) {
 			race -= 0xffffffff;
+		}
 		if (race & 0x1) {
 			races.push("Charisma");
 		}
@@ -1881,8 +1915,9 @@ function getAtt(index, outLang) {
 	}
 	if (att > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
 		att -= (att & 0xffffffff);
-		while (att > 0xffffffff)
+		while (att > 0xffffffff) {
 			att -= 0xffffffff;
+		}
 		/*if (att & 0x1) {
 			atts.push("No attribute yet");
 		}*/
@@ -1931,11 +1966,13 @@ function checkType(index, outLang, tpe) {
 	}
 	if (types >= 0x100000000 && tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater htan 32-bit
 		types -= (types & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
-		while (types > 0xffffffff)
+		while (types > 0xffffffff) {
 			types -= 0xffffffff;
-		var ttpe = tpe - (tpe & 0xffffffff)
-		while (ttpe > 0xffffffff)
+		}
+		let ttpe = tpe - (tpe & 0xffffffff);
+		while (ttpe > 0xffffffff) {
 			ttpe -= 0xffffffff;
+		}
 		return types & ttpe
 	}
 	return false
@@ -2031,13 +2068,15 @@ function getTypes(index, outLang) {
 	}
 	if (type & 0x10) {
 		types.push("Normal");
-		if (!embCT)
+		if (!embCT) {
 			embCT = "Normal";
+		}
 	}
 	if (type & 0x20) {
 		types.push("Effect");
-		if (!embCT)
+		if (!embCT) {
 			embCT = "Effect";
+		}
 	}
 	return types;
 }
@@ -2221,8 +2260,8 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
-				console.log("Debug Data: " + imageUrl + code + "." + imageExt)
-				console.dir(url.parse(imageUrl + code + "." + imageExt))
+				console.log("Debug Data: " + imageUrl + code + "." + imageExt);
+				console.dir(url.parse(imageUrl + code + "." + imageExt));
 				https.get(url.parse(imageUrl + code + "." + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
@@ -2291,71 +2330,71 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 						description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo,
 					}
 				}, function(err, res) {
-						if (err) {
-							console.log(err);
-						} else {
-							let messageID = res.id;
-							let i = triviaTimeLimit / 1000 - 1;
-							//let tempcolor = parseInt("0x" + red + green + "00")
-							gameData[channelID].IN = setInterval(function() {
-								let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
-								let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
-								let tempcolor = parseInt("0x" + red + green + "00");
-								if (messageMode & 0x2) {
-									bot.editMessage({
-										channelID: channelID,
-										messageID: messageID,
-										embed: {
-											color: tempcolor,
-											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
-										}
-									});
-									tempcolor += 0x300 - 0x1000
-								} else {
-									bot.editMessage({
-										channelID: channelID,
-										messageID: messageID,
-										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-									});
-								}
-								i--;
-							}, 1000);
-						}
+					if (err) {
+						console.log(err);
+					} else {
+						let messageID = res.id;
+						let i = triviaTimeLimit / 1000 - 1;
+						//let tempcolor = parseInt("0x" + red + green + "00");
+						gameData[channelID].IN = setInterval(function() {
+							let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
+							let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
+							let tempcolor = parseInt("0x" + red + green + "00");
+							if (messageMode & 0x2) {
+								bot.editMessage({
+									channelID: channelID,
+									messageID: messageID,
+									embed: {
+										color: tempcolor,
+										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
+									}
+								});
+								tempcolor += 0x300 - 0x1000
+							} else {
+								bot.editMessage({
+									channelID: channelID,
+									messageID: messageID,
+									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+								});
+							}
+							i--;
+						}, 1000);
+					}
 				});
 			} else {
 				bot.sendMessage({
 					to: channelID,
 					message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo
 				}, function(err, res) {
-						if (err) {
-							console.log(err);
-						} else {
-							let messageID = res.id;
-							let i = triviaTimeLimit / 1000 - 1;
-							//let tempcolor = 0x6AFF3D;
-							gameData[channelID].IN = setInterval(function() {
-								if (messageMode & 0x2) {
-									let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
-									let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
-									let tempcolor = parseInt("0x" + red + green + "00");
-									bot.editMessage({
-										channelID: channelID,
-										messageID: messageID,
-										embed: {
-											color: tempcolor,
-											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-										}
-									});
-								} else {
-									bot.editMessage({
-										channelID: channelID,
-										messageID: messageID,
-										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-									});
-								}
-								i--;
-							}, 1000);
-						}
+					if (err) {
+						console.log(err);
+					} else {
+						let messageID = res.id;
+						let i = triviaTimeLimit / 1000 - 1;
+						//let tempcolor = 0x6AFF3D;
+						gameData[channelID].IN = setInterval(function() {
+							if (messageMode & 0x2) {
+								let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
+								let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
+								let tempcolor = parseInt("0x" + red + green + "00");
+								bot.editMessage({
+									channelID: channelID,
+									messageID: messageID,
+									embed: {
+										color: tempcolor,
+										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+									}
+								});
+							} else {
+								bot.editMessage({
+									channelID: channelID,
+									messageID: messageID,
+									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+								});
+							}
+							i--;
+						}, 1000);
+					}
 				});
 			}
 			gameData[channelID].TO1 = setTimeout(function() {
@@ -2480,7 +2519,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
 					winners = [key];
 				} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
-					winners.push(key)
+					winners.push(key);
 				}
 			});
 			if (winners.length > 1) {
@@ -2568,8 +2607,9 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			out += quo + quo + quo + bo;
 		}
 		if (gameData[channelID].round === 1) {
-			if (messageMode & 0x1)
+			if (messageMode & 0x1) {
 				out += " ";
+			}
 			out += bo + quo + "The game is over! " + quo + bo;
 			if (Object.keys(gameData[channelID].score).length > 0) {
 				let winners = [];
@@ -2577,11 +2617,12 @@ async function answerTrivia(user, userID, channelID, message, event) {
 					if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
 						winners = [key];
 					} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
-						winners.push(key)
+						winners.push(key);
 					}
 				});
-				if (messageMode & 0x1)
+				if (messageMode & 0x1) {
 					out += " ";
+				}
 				if (winners.length > 1) {
 					out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
 				} else {
@@ -2645,7 +2686,7 @@ function tlock(user, userID, channelID, message, event) {
 						to: channelID,
 						embed: {
 							color: embedColor,
-							description: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "),
+							description: "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")
 						}
 					});
 				} else {
@@ -2670,7 +2711,7 @@ function tlock(user, userID, channelID, message, event) {
 					bot.sendMessage({
 						to: channelID,
 						message: "Trivia no longer locked to any channel on this server!"
-					})
+					});
 				}
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync('config/config.json', JSON.stringify(config), 'utf8');
@@ -2728,12 +2769,13 @@ function _getPermissionArray(number) {
 	let permissions = [];
 	let binary = (number >>> 0).toString(2).split('');
 	binary.forEach(function(bit, index) {
-		if (bit == 0)
+		if (bit == 0) {
 			return;
-
+		}
 		Object.keys(Discord.Permissions).forEach(function(p) {
-			if (Discord.Permissions[p] == (binary.length - index - 1))
+			if (Discord.Permissions[p] == (binary.length - index - 1)) {
 				permissions.push(p);
+			}
 		});
 	});
 	return permissions;
@@ -2746,8 +2788,9 @@ function getPermissions(userID, channelID) {
 
 	bot.servers[serverID].members[userID].roles.concat([serverID]).forEach(function(roleID) {
 		_getPermissionArray(bot.servers[serverID].roles[roleID].permissions).forEach(function(perm) {
-			if (permissions.indexOf(perm) < 0)
+			if (permissions.indexOf(perm) < 0) {
 				permissions.push(perm);
+			}
 		});
 	});
 
@@ -2852,40 +2895,40 @@ function searchFunctions(user, userID, channelID, message, event) {
 				description: out,
 			}
 		}, function(err, res) {
-				if (err) {
-					console.log(err);
-				} else {
-					searchPage = {
-						pages: pages,
-						index: 0,
-						user: userID,
-						channel: channelID,
-						search: "f",
-						message: res.id,
-						content: out,
-						active: true
-					};
-				}
+			if (err) {
+				console.log(err);
+			} else {
+				searchPage = {
+					pages: pages,
+					index: 0,
+					user: userID,
+					channel: channelID,
+					search: "f",
+					message: res.id,
+					content: out,
+					active: true
+				};
+			}
 		});
 	} else {
 		bot.sendMessage({
 			to: channelID,
 			message: out
 		}, function(err, res) {
-				if (err) {
-					console.log(err);
-				} else {
-					searchPage = {
-						pages: pages,
-						index: 0,
-						user: userID,
-						channel: channelID,
-						search: "f",
-						message: res.id,
-						content: out,
-						active: true
-					};
-				}
+			if (err) {
+				console.log(err);
+			} else {
+				searchPage = {
+					pages: pages,
+					index: 0,
+					user: userID,
+					channel: channelID,
+					search: "f",
+					message: res.id,
+					content: out,
+					active: true
+				};
+			}
 		});
 	}
 }
@@ -3006,10 +3049,10 @@ function searchParams(user, userID, channelID, message, event) {
 				description: out,
 			}
 		}, function(err, res) {
-				if (err) {
-					console.log(err);
-				} else {
-					searchPage = {
+			if (err) {
+				console.log(err);
+			} else {
+				searchPage = {
 					pages: pages,
 					index: 0,
 					user: userID,
@@ -3026,10 +3069,10 @@ function searchParams(user, userID, channelID, message, event) {
 			to: channelID,
 			message: out
 		}, function(err, res) {
-				if (err) {
-					console.log(err);
-				} else {
-					searchPage = {
+			if (err) {
+				console.log(err);
+			} else {
+				searchPage = {
 					pages: pages,
 					index: 0,
 					user: userID,
@@ -3042,7 +3085,7 @@ function searchParams(user, userID, channelID, message, event) {
 			}
 		});
 	}
-	
+
 }
 
 function libPage(user, userID, channelID, message, event) {
