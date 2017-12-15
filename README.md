@@ -161,7 +161,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
   
-`dbs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language codes. This field is optional - if it is missing, Bastion will default to what you see above.  
+`dbs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language codes. If two DBs have an entry with the same ID, for example because of "fix" DBs, the latest occurence in the array will be the final version of the entry that overwrites the others. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `dbMemory` is the size allocated in memory for Bastion to load card database, in bytes. If you get the error "Cannot adjust memory arrays" in the middle of loading databases, you need to increase this. This field is optional - if it is missing, Bastion will default to what you see above.  
   
