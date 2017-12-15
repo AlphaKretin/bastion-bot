@@ -282,6 +282,9 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 	nameList[lang] = [];
 	contents[lang] = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	names[lang] = db.exec("SELECT * FROM texts");
+	for (let card of contents[lang][0].values) { //temporary ID list for the sake of overwrites
+		ids[lang].push(card[0]);
+	}
 	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
 		for (let i = 1; i < dbs[lang].length; i++) {
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
@@ -289,13 +292,26 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			let newContents = newDB.exec("SELECT * FROM datas");
 			let newNames = newDB.exec("SELECT * FROM texts");
 			for (let card of newContents[0].values) {
-				contents[lang][0].values.push(card);
+				let ind = ids[lang].indexOf(card[0]);
+				if (ind > -1) { //if the ID is the same (NOT to be confused with aliases, where alt arts etc. reference another ID), it's a fix entry and should overwrite the original.
+					contents[lang][0].values[ind] = card;
+				} else {
+					contents[lang][0].values.push(card);
+					ids[lang].push(card[0]);
+				}
+				
 			}
 			for (let card of newNames[0].values) {
-				names[lang][0].values.push(card);
+				let ind = ids[lang].indexOf(card[0]);
+				if (ind > -1) {
+					names[lang][0].values[ind] = card;
+				} else {
+					names[lang][0].values.push(card);
+				}
 			}
 		}
 	}
+	ids[lang] = []; //reset array to repopulate after overwrites and additions
 	for (let card of contents[lang][0].values) { //populate ID list for easy checking of card validity
 		ids[lang].push(card[0]);
 		aliases[lang].push(card[2]);
@@ -1696,9 +1712,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 			for (let res of result) {
 				let ot = getOT(ids[inLang].indexOf(res.item.id), inLang);
 				if (["Anime", "Video Game", "Illegal"].indexOf(ot) > -1) {
-					res.score = res.score * 2; //weights score by status. Lower is better so increasing it makes official take priority.
+					res.score = res.score * 1.5; //weights score by status. Lower is better so increasing it makes official take priority.
 				} else if (ot === "Custom") {
-					res.score = res.score * 3;
+					res.score = res.score * 2;
 				}
 			}
 			result.sort(compareFuseObj);
