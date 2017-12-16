@@ -805,6 +805,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				}
 				out += stat + "\n";
 			}
+			embCT = null;
 			let types = getTypes(index, outLang);
 			if (checkType(index, outLang, 0x1000000000)) {
 				embCT = "Dark Synchro";
@@ -1226,6 +1227,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 						}
 					});
 				});
+				embCT = null;
 				let types = getTypes(index, "en");
 				if (checkType(index, "en", 0x1000000000)) {
 					embCT = "Dark Synchro";
@@ -1270,6 +1272,7 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 			case "effect":
 				let nam = names.en[0].values[index];
 				out += "__**" + quo + nam[1] + quo + "**__" + (messageMode & 0x1 && " " || "\n");
+				embCT = null;
 				let typs = getTypes(index, "en");
 				if (checkType(index, "en", 0x1000000000)) {
 					embCT = "Dark Synchro";
