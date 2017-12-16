@@ -1575,19 +1575,19 @@ function set(user, userID, channelID, message, event) {
 		}
 	} else {
 		Object.keys(setcodes).forEach(function(key, index) {
-			if (setcodes[key].toLowerCase() == arg.toLowerCase()) {
+			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
 				if (messageMode & 0x2) {
 					bot.sendMessage({
 						to: channelID,
 						embed: {
 							color: embedColor,
-							description: bo + quo + quo + quo + jvex + setcodes[arg] + ": " + arg + quo + quo + quo + bo,
+							description: bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo,
 						}
 					});
 				} else {
 					bot.sendMessage({
 						to: channelID,
-						message: bo + quo + quo + quo + jvex + setcodes[arg] + ": " + arg + quo + quo + quo + bo
+						message: bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo
 					});
 				}
 				return;
