@@ -403,7 +403,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		getSingleProp("effect", user, userID, channelID, message, event);
 		return;
 	}
-	if (lowMessage.indexOf(pre + "deck") === 0) {
+	if (lowMessage.indexOf(pre + "strings") === 0) {
+		strings(user, userID, channelID, message, event);
+		return;
+	}
+	if (lowMessage.startsWith(pre + "deck")) {
 		deck(user, userID, channelID, message, event);
 		return;
 	}
@@ -411,11 +415,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		commands(user, userID, channelID, message, event);
 		return;
 	}
-	if (libFuncEnabled && lowMessage.indexOf(pre + "f") === 0) {
+	if (libFuncEnabled && (lowMessage.indexOf(pre + "f") === 0 || lowMessage.indexOf(pre + "function") === 0)) {
 		searchFunctions(user, userID, channelID, message, event);
 		return;
 	}
-	if (libConstEnabled && lowMessage.indexOf(pre + "c") === 0) {
+	if (libConstEnabled && (lowMessage.indexOf(pre + "c") === 0 || lowMessage.indexOf(pre + "constant") === 0)) {
 		searchConstants(user, userID, channelID, message, event);
 		return;
 	}
@@ -1564,7 +1568,7 @@ function set(user, userID, channelID, message, event) {
 				to: channelID,
 				embed: {
 					color: embedColor,
-					description: bo + quo + quo + quo + jvex + setcodes[arg] + ": " + arg + quo + quo + quo + bo,
+					description: bo + quo + quo + quo + jvex + setcodes[arg] + ": " + arg + quo + quo + quo + bo
 				}
 			});
 		} else {
@@ -1581,7 +1585,7 @@ function set(user, userID, channelID, message, event) {
 						to: channelID,
 						embed: {
 							color: embedColor,
-							description: bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo,
+							description: bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo
 						}
 					});
 				} else {
@@ -1593,6 +1597,104 @@ function set(user, userID, channelID, message, event) {
 				return;
 			}
 		});
+	}
+}
+
+function searchSkill(user, userID, channelID, message, event) {
+	let arg = message.toLowerCase().slice((pre + "skill").length);
+	let index = -1;
+	skills.forEach(function(skill, ind) {
+		if (arg === skill.name.toLowerCase()) {
+			index = ind;
+		}
+	});
+	if (index < 0) {
+		let result = skillFuse.search(arg);
+		if (result.length > 0) {
+			skills.forEach(function(skill, ind) {
+				if (result[0].item.name.toLowerCase() === skill.name.toLowerCase()) {
+					index = ind;
+				}
+			});
+		}
+	}
+	if (index > -1) {
+		let skill = skills[index];
+		let out = "";
+		out += "__**" + quo + skill.name + quo + "**__" + (messageMode & 0x1 && " " || "\n");
+		if (messageMode & 0x1) {
+			out += "**```http\n" + skill.desc + "``` ``Effect`` ```css\n" + skill.chars + "``` ``Characters``**";
+		} else {
+			out += "**Effect**: " + skill.desc + "\n";
+			out += "**Characters**: " + skill.chars;
+		}
+		sendLongMessage(out, user, userID, channelID, message, event);
+	} else {
+		console.log("No skill found for search '" + arg + "'!");
+	}
+}
+
+function strings(user, userID, channelID, message, event) {
+	let input = message.slice((pre + "strings ").length);
+	let inInt = parseInt(input);
+	let index = 0;
+	if (ids.en.indexOf(inInt) > -1) {
+		index = ids.en.indexOf(inInt);
+	} else {
+		index = nameCheck(input, "en");
+	}
+	if (index > -1 && index in ids.en) {
+		if (aliases.en[index] > 0) {
+			index = ids.en.indexOf(aliases.en[index]);
+		}
+		let strs = names.en[0].values[index];
+		let outs = {};
+		let re = /\S/;
+		for (let i = 3; i < 19; i++) {
+			if (re.test(strs[i])) {
+				outs[i - 3] = strs[i];
+			}
+		}
+		if (Object.keys(outs).length > 0) {
+			let out = "__**" + strs[1] + "**__\n";
+			Object.keys(outs).forEach(function(key, index) {
+				if (messageMode & 0x1) {
+					out += key + ": " + outs[key] + "\n";
+				} else {
+					out += key + ": `" + outs[key] + "`\n";
+				}
+			});
+			if (messageMode & 0x2) {
+				bot.sendMessage({
+					to: channelID,
+					embed: {
+						color: embedColor,
+						description: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+					}
+				});
+			} else {
+				bot.sendMessage({
+					to: channelID,
+					message: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+				});
+			}
+		} else {
+			let out = "No strings found for " + strs[1] + "!";
+			if (messageMode & 0x2) {
+				bot.sendMessage({
+					to: channelID,
+					embed: {
+						color: embedColor,
+						description: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+					}
+				});
+			} else {
+				bot.sendMessage({
+					to: channelID,
+					message: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+				});
+			}
+		}
 	}
 }
 
@@ -3202,49 +3304,5 @@ function libDesc(user, userID, channelID, message, event) {
 			messageID: searchPage.message,
 			message: searchPage.content + "\n`" + desc + "`"
 		});
-	}
-}
-
-function searchSkill(user, userID, channelID, message, event) {
-	let arg = message.toLowerCase().slice((pre + "skill").length);
-	let index = -1;
-	skills.forEach(function(skill, ind) {
-		if (arg === skill.name.toLowerCase()) {
-			index = ind;
-		}
-	});
-}
-
-function searchSkill(user, userID, channelID, message, event) {
-	let arg = message.toLowerCase().slice((pre + "skill").length);
-	let index = -1;
-	skills.forEach(function(skill, ind) {
-		if (arg === skill.name.toLowerCase()) {
-			index = ind;
-		}
-	});
-	if (index < 0) {
-		let result = skillFuse.search(arg);
-		if (result.length > 0) {
-			skills.forEach(function(skill, ind) {
-				if (result[0].item.name.toLowerCase() === skill.name.toLowerCase()) {
-					index = ind;
-				}
-			});
-		}
-	}
-	if (index > -1) {
-		let skill = skills[index];
-		let out = "";
-		out += "__**" + quo + skill.name + quo + "**__" + (messageMode & 0x1 && " " || "\n");
-		if (messageMode & 0x1) {
-			out += "**```http\n" + skill.desc + "``` ``Effect`` ```css\n" + skill.chars + "``` ``Characters``**";
-		} else {
-			out += "**Effect**: " + skill.desc + "\n";
-			out += "**Characters**: " + skill.chars;
-		}
-		sendLongMessage(out, user, userID, channelID, message, event);
-	} else {
-		console.log("No skill found for search '" + arg + "'!");
 	}
 }
