@@ -907,12 +907,12 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				if (types.indexOf("Normal") > -1) {
 					textName = "Flavour Text";
 				}
-				if (cardText.length === 2) {
+				if (cardText.length === 4) {
 					if (messageMode & 0x1) {
-						out += cardText[0] + "``` ``Pendulum Effect``\n" + "```" + cardText[1] + "`````" + textName + "``";
+						out += cardText[0] + "``` ``" + cardText[2] + "``\n" + "```" + cardText[1] + "`````" + cardText[3] + "``";
 					} else {
-						out += "**Pendulum Effect**: " + cardText[0] + "\n";
-						out += "**" + textName + "**: " + cardText[1];
+						out += "**" + cardText[2] + "**: " + cardText[0] + "\n";
+						out += "**" + cardText[3] + "**: " + cardText[1];
 					}
 				} else {
 					if (messageMode & 0x1) {
@@ -1289,12 +1289,12 @@ async function getSingleProp(prop, user, userID, channelID, message, event) {
 					if (typs.indexOf("Normal") > -1) {
 						textName = "Flavour Text";
 					}
-					if (cardText.length === 2) {
+					if (cardText.length === 4) {
 						if (messageMode & 0x1) {
-							out += "**```" + cardText[0] + "``` ``Pendulum Effect``\n" + "```" + cardText[1] + "`````" + textName + "``**";
+							out += "**```" + cardText[0] + "``` ``" + cardText[2] + "``\n" + "```" + cardText[1] + "`````" + cardText[3] + "``**";
 						} else {
-							out += "**Pendulum Effect**: " + cardText[0] + "\n";
-							out += "**" + textName + "**: " + cardText[1];
+							out += "**" + cardText[2] + "**: " + cardText[0] + "\n";
+							out += "**" + cardText[3] + "**: " + cardText[1];
 						}
 					} else {
 						if (messageMode & 0x1) {
@@ -2225,7 +2225,11 @@ function getCardText(index, outLang) {
 			}
 		});
 		if (ind) {
-			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n")]; //a few lines are skipped because each section has headings
+			var head1 = lines.slice(0, 1)[0];
+			var head2 = lines.slice(ind + 1, ind + 2)[0];
+			head1 = head1.slice(2,head1.length-2);
+			head2 = head2.slice(2,head2.length-2);
+			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n"), head1, head2]; //a few lines are skipped because each section has headings
 		}
 	}
 	return [cardText];
