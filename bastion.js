@@ -487,6 +487,8 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
+	let blockRe = /`{1,3}[\s\S\r\n]*?[\s\S\r\n][\s\S\r\n]*?`{1,3}/g; //gets all text between ``, to remove them, so they're not searched
+	message = message.replace(blockRe, "");
 	let re = /{(.*?)}/g; //gets text between {}
 	let results = [];
 	let regx;
