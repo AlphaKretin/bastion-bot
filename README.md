@@ -232,6 +232,8 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 }  
 ```  
   
+This file can be generated with the `setcodes2json.js` file. Simply run it as a node app in the same folder as a YGOPro `strings.conf` file, and it will output a `setcodes.json` that should be properly formatted.  
+  
 ### Emotes  
 By default, the emote file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the values, with minimal exceptions.  
   
@@ -273,6 +275,8 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 	}  
 }  
 ```  
+  
+This file can be generated with the `lflist2json.js` file. Simply run it as a node app in the same folder as a YGOPro `lflist.conf` file, and it will output an `lflist.json` that should be properly formatted. Note that it assumes the headings of each seperate banlist are in the format of "[date] [name]", i.e. it takes the word after the first space. If your `lflist.conf` is formatted differently, you can just go into the JSON and change the name of the key.  
   
 ### Skills  
 By default, the skills file is called `skills.json`, and is expected to be found in a subfolder of the local directory called `dbs`, i.e. `dbs/skills.json`. The script expects `skills.json` to contain an array of objects, the format of which is described below.  
