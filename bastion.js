@@ -720,29 +720,30 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 	}
 	let card = contents[outLang][0].values[index]; //blame SQL.js
 	let name = names[outLang][0].values[index];
-	return new Promise(function(resolve, reject) {
-		let out = "__**" + quo + name[1] + quo + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
-		markdownno += quo.length * 2;
-		let alIDs = [code];
-		let ot = getOT(ids[outLang].indexOf(code), outLang);
-		if (aliases[outLang][ids[outLang].indexOf(code)] > 0) {
-			if (ot === getOT(ids[outLang].indexOf(aliases[outLang][ids[outLang].indexOf(code)]), outLang)) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something.
-				code = aliases[outLang][ids[outLang].indexOf(code)];
-				ot = getOT(ids[outLang].indexOf(code), outLang);
-				alIDs = [code];
-				for (let i = 0; i < aliases[outLang].length; i++) {
-					if (aliases[outLang][i] === code && getOT(i, outLang) === ot) {
-						alIDs.push(ids[outLang][i]);
-					}
-				}
-			}
-		} else if (aliases[outLang].indexOf(code) > 0) {
+	let alIDs = [code];
+	let ot = getOT(ids[outLang].indexOf(code), outLang);
+	if (aliases[outLang][index] > 0) { //if the card has an alias, e.g. IS the alt art
+		if (ot === getOT(ids[outLang].indexOf(aliases[outLang][index]), outLang) && name[1] === names[outLang][0].values[ids[outLang].indexOf(aliases[outLang][index])][1]) { //*goes cross-eyed* If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+			code = aliases[outLang][index];
+			ot = getOT(index, outLang);
+			alIDs = [code];
 			for (let i = 0; i < aliases[outLang].length; i++) {
 				if (aliases[outLang][i] === code && getOT(i, outLang) === ot) {
 					alIDs.push(ids[outLang][i]);
 				}
 			}
 		}
+	} else if (aliases[outLang].indexOf(code) > 0) { //checks other cards aliases for this card, e.g. this is the original that HAS alt arts
+		for (let i = 0; i < aliases[outLang].length; i++) {
+			if (aliases[outLang][i] === code && getOT(i, outLang) === ot && name[1] == names[outLang][0].values[i][1]) {
+				alIDs.push(ids[outLang][i]);
+			}
+		}
+	}
+	return new Promise(function(resolve, reject) {
+		let out = "__**" + quo + name[1] + quo + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
+		markdownno += quo.length * 2;
+		
 		if (messageMode & 0x1) {
 			out += bo + quo + quo + quo + jvex + "ID: ";
 		} else {
