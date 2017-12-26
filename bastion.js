@@ -249,6 +249,12 @@ if (config.debugOutput) {
 let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
 let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
 let lflist = JSON.parse(fs.readFileSync('config/lflist.json', 'utf8'));
+let stats = JSON.parse(fs.readFileSync('config/stats.json', 'utf8'));
+
+setInterval(function() {
+	fs.writeFileSync("config/stats.json", JSON.stringify(stats), "utf8");
+	console.log("Stats saved!");
+}, 300000); //5 minutes
 
 //discord setup
 let Discord = require('discord.io');
@@ -305,7 +311,6 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 					contents[lang][0].values.push(card);
 					ids[lang].push(card[0]);
 				}
-				
 			}
 			for (let card of newNames[0].values) {
 				let ind = ids[lang].indexOf(card[0]);
@@ -375,78 +380,182 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	let lowMessage = message.toLowerCase();
 	if (lowMessage.indexOf(pre + "randcard") === 0) {
 		randomCard(user, userID, channelID, message, event);
+		if (stats.cmdRankings.randcard) {
+			stats.cmdRankings.randcard++;
+		} else {
+			stats.cmdRankings.randcard = 1;
+		}
 		return;
 	}
 	if (scriptsEnabled && lowMessage.indexOf(pre + "script") === 0) {
 		script(user, userID, channelID, message, event);
+		if (stats.cmdRankings.script) {
+			stats.cmdRankings.script++;
+		} else {
+			stats.cmdRankings.script = 1;
+		}
 		return;
 	}
 	if (imagesEnabled && lowMessage.indexOf(pre + "trivia") === 0) {
 		trivia(user, userID, channelID, message, event);
+		if (stats.cmdRankings.trivia) {
+			stats.cmdRankings.trivia++;
+		} else {
+			stats.cmdRankings.trivia = 1;
+		}
 		return;
 	}
 	if (imagesEnabled && lowMessage.indexOf(pre + "tlock") === 0 && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
 		tlock(user, userID, channelID, message, event);
+		if (stats.cmdRankings.tlock) {
+			stats.cmdRankings.tlock++;
+		} else {
+			stats.cmdRankings.tlock = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "matches") === 0) {
 		matches(user, userID, channelID, message, event);
+		if (stats.cmdRankings.matches) {
+			stats.cmdRankings.matches++;
+		} else {
+			stats.cmdRankings.matches = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "set") === 0) {
 		set(user, userID, channelID, message, event);
+		if (stats.cmdRankings.set) {
+			stats.cmdRankings.set++;
+		} else {
+			stats.cmdRankings.set = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "id") === 0) {
 		getSingleProp("id", user, userID, channelID, message, event);
+		if (stats.cmdRankings.id) {
+			stats.cmdRankings.id++;
+		} else {
+			stats.cmdRankings.id = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "notext") === 0) {
 		getSingleProp("notext", user, userID, channelID, message, event);
+		if (stats.cmdRankings.notext) {
+			stats.cmdRankings.notext++;
+		} else {
+			stats.cmdRankings.notext = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "effect") === 0) {
 		getSingleProp("effect", user, userID, channelID, message, event);
+		if (stats.cmdRankings.effect) {
+			stats.cmdRankings.effect++;
+		} else {
+			stats.cmdRankings.effect = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "strings") === 0) {
 		strings(user, userID, channelID, message, event);
+		if (stats.cmdRankings.strings) {
+			stats.cmdRankings.strings++;
+		} else {
+			stats.cmdRankings.strings = 1;
+		}
 		return;
 	}
 	if (lowMessage.startsWith(pre + "deck")) {
 		deck(user, userID, channelID, message, event);
+		if (stats.cmdRankings.deck) {
+			stats.cmdRankings.deck++;
+		} else {
+			stats.cmdRankings.deck = 1;
+		}
 		return;
 	}
 	if (lowMessage.indexOf(pre + "commands") === 0) {
+		if (stats.cmdRankings.commands) {
+			stats.cmdRankings.commands++;
+		} else {
+			stats.cmdRankings.commands = 1;
+		}
 		commands(user, userID, channelID, message, event);
 		return;
 	}
 	if (langs.indexOf("ja") > -1 && lowMessage.indexOf(pre + "rulings") === 0) { //ruling search relies on Japanese DB
 		rulings(user, userID, channelID, message, event);
+		if (stats.cmdRankings.rulings) {
+			stats.cmdRankings.rulings++;
+		} else {
+			stats.cmdRankings.rulings = 1;
+		}
+		return;
+	}
+	if (lowMessage.indexOf(pre + "top") === 0) {
+		rankings(user, userID, channelID, message, event);
+		if (stats.cmdRankings["top"]) {
+			stats.cmdRankings["top"]++;
+		} else {
+			stats.cmdRankings["top"] = 1;
+		}
 		return;
 	}
 	if (libFuncEnabled && (lowMessage.indexOf(pre + "f") === 0 || lowMessage.indexOf(pre + "function") === 0)) {
 		searchFunctions(user, userID, channelID, message, event);
+		if (stats.cmdRankings["function"]) {
+			stats.cmdRankings["function"]++;
+		} else {
+			stats.cmdRankings["function"] = 1;
+		}
 		return;
 	}
 	if (libConstEnabled && (lowMessage.indexOf(pre + "c") === 0 || lowMessage.indexOf(pre + "constant") === 0)) {
 		searchConstants(user, userID, channelID, message, event);
+		if (stats.cmdRankings.constant) {
+			stats.cmdRankings.constant++;
+		} else {
+			stats.cmdRankings.constant = 1;
+		}
 		return;
 	}
 	if (libParamsEnabled && lowMessage.indexOf(pre + "param") === 0) {
 		searchParams(user, userID, channelID, message, event);
+		if (stats.cmdRankings.param) {
+			stats.cmdRankings.param++;
+		} else {
+			stats.cmdRankings.param = 1;
+		}
 		return;
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "p") === 0 && lowMessage.indexOf("param") === -1) {
 		libPage(user, userID, channelID, message, event);
+		if (stats.cmdRankings.p) {
+			stats.cmdRankings.p++;
+		} else {
+			stats.cmdRankings.p = 1;
+		}
 		return;
 	}
 	if (searchPage.active && lowMessage.indexOf(pre + "d") === 0) {
 		libDesc(user, userID, channelID, message, event);
+		if (stats.cmdRankings.d) {
+			stats.cmdRankings.d++;
+		} else {
+			stats.cmdRankings.d = 1;
+		}
 		return;
 	}
 	if (skillsEnabled && lowMessage.indexOf(pre + "skill") === 0) {
 		searchSkill(user, userID, channelID, message, event);
+		if (stats.cmdRankings.skill) {
+			stats.cmdRankings.skill++;
+		} else {
+			stats.cmdRankings.skill = 1;
+		}
 		return;
 	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
@@ -469,6 +578,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 				message: helpMessage
 			});
 		}
+		if (stats.cmdRankings.help) {
+			stats.cmdRankings.help++;
+		} else {
+			stats.cmdRankings.help = 1;
+		}
 	}
 	if (longMsg.length > 0 && lowMessage.indexOf(pre + "long") === 0) {
 		if (messageMode & 0x2) {
@@ -484,6 +598,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 				to: userID,
 				message: bo + quo + quo + quo + longMsg
 			});
+		}
+		if (stats.cmdRankings["long"]) {
+			stats.cmdRankings["long"]++;
+		} else {
+			stats.cmdRankings["long"] = 1;
 		}
 		return;
 	}
@@ -543,11 +662,21 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		if (results.length > 0) {
 			for (let result of results) {
 				searchCard(result, false, user, userID, channelID, message, event);
+				if (stats.cmdRankings["search (no image)"]) {
+					stats.cmdRankings["search (no image)"]++;
+				} else {
+					stats.cmdRankings["search (no image)"] = 1;
+				}
 			}
 		}
 		if (results2.length > 0) {
 			for (let result of results2) {
 				searchCard(result, true, user, userID, channelID, message, event);
+				if (stats.cmdRankings["search (with image)"]) {
+					stats.cmdRankings["search (with image)"]++;
+				} else {
+					stats.cmdRankings["search (with image)"] = 1;
+				}
 			}
 		}
 	}
@@ -664,6 +793,11 @@ async function script(user, userID, channelID, message, event) {
 }
 
 async function searchCard(input, hasImage, user, userID, channelID, message, event) {
+	if (stats.inputRankings[input]) {
+		stats.inputRankings[input]++;
+	} else {
+		stats.inputRankings[input] = 1;
+	}
 	let args = input.split(",");
 	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
@@ -676,6 +810,14 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	let inInt = parseInt(input);
 	if (ids[outLang].indexOf(inInt) > -1) {
 		try {
+			let alID = getBaseID(ids[outLang].indexOf(inInt), outLang); //determines if the card should be tracked by its own ID, or its alias, and returns the appropriate ID.
+			if (alID > -1) {
+				if (stats.searchRankings[alID]) {
+					stats.searchRankings[alID]++;
+				} else {
+					stats.searchRankings[alID] = 1;
+				}
+			}
 			let out = await getCardInfo(inInt, outLang, user, userID, channelID, message, event);
 			if (hasImage) {
 				if (out[1].length == 1 && messageMode & 0x2) {
@@ -695,7 +837,15 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 			let index = nameCheck(input, inLang);
 			if (index > -1 && index in ids[inLang]) {
 				index = ids[outLang].indexOf(ids[inLang][index]); //this is kind of messy - it takes the index nameCheck returned for the in language, and gets the index in the out language with the same ID.
-				if (index > -1 && index in ids[inLang]) {
+				if (index > -1 && index in ids[outLang]) {
+					let alID = getBaseID(index, outLang);
+					if (alID > -1) {
+						if (stats.searchRankings[alID]) {
+							stats.searchRankings[alID]++;
+						} else {
+							stats.searchRankings[ids[outLang][index]] = 1;
+						}
+					}
 					let out = await getCardInfo(ids[outLang][index], outLang, user, userID, channelID, message, event);
 					if (hasImage) {
 						if (out[1].length == 1 && messageMode & 0x2) {
@@ -753,7 +903,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
 		let out = "__**" + quo + name[1] + quo + "**__\n"; //within the SQL.js results, calls like this refer to columns of the SQL table in order, in this case it's the actual name. See readme for SQL schema.
 		markdownno += quo.length * 2;
-		
+
 		if (messageMode & 0x1) {
 			out += bo + quo + quo + quo + jvex + "ID: ";
 		} else {
@@ -1092,7 +1242,6 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			} else {
 				sendLongMessage(out, user, userID, channelID, message, event, embCT);
 			}
-
 		}
 	} catch (e) {
 		console.log(e);
@@ -1715,12 +1864,12 @@ function strings(user, userID, channelID, message, event) {
 	}
 }
 
-async function rulings(user, userID, channelID, message, event) {
+function rulings(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "rulings ").length);
 	let inInt = parseInt(input);
 	let index = ids.en.indexOf(inInt);
 	if (index < 0) {
-		index = nameCheck(input, "en"); 
+		index = nameCheck(input, "en");
 		if (index < 0 || !(index in ids.en)) {
 			return;
 		}
@@ -1748,6 +1897,105 @@ async function rulings(user, userID, channelID, message, event) {
 			to: channelID,
 			message: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
 		});
+	}
+}
+
+function rankings(user, userID, channelID, message, event) {
+	let args = message.split(" ");
+	let term = "cards";
+	let validTerms = ["cards", "inputs", "commands"];
+	let numToGet = -1;
+	for (let arg of args) {
+		if (parseInt(arg) > numToGet) {
+			numToGet = parseInt(arg);
+		}
+		if (validTerms.indexOf(arg.toLowerCase()) > -1) {
+			term = arg.toLowerCase();
+		}
+	}
+	if (numToGet === -1) {
+		numToGet = 10;
+	}
+	let statsKey;
+	let outStr;
+	switch (term) {
+		case "inputs":
+			statsKey = "inputRankings";
+			outStr = "most common search inputs";
+			break;
+		case "commands":
+			statsKey = "cmdRankings";
+			outStr = "most popular commands";
+			break;
+		case "cards":
+		default:
+			statsKey = "searchRankings";
+			outStr = "most searched cards";
+	}
+	let tempRanks = JSON.parse(JSON.stringify(stats[statsKey])); //this creates a copy of the current state of the rankings - we'll be removing elements as we go, we don't want to mess up the rankings
+	let results = [];
+	let ranks = [];
+	let i = 1;
+	let out = "__**" + numToGet + " " + outStr + "**__\n";
+	while (i <= numToGet && Object.keys(tempRanks).length > 0) { //keeps going until we have equal or more results (ties will push multiple results at once and put us over) or we're out of rankings
+		let keys = Object.keys(tempRanks);
+		let largest = Math.max.apply(null, keys.map(x => tempRanks[x])); //gets the highest value in the object
+		let result = keys.reduce((result, key) => {
+			if (tempRanks[key] === largest) {
+				result.push(key);
+			}
+			return result;
+		}, []);
+		for (let r of result) {
+			results.push(r);
+			ranks.push(i);
+			delete tempRanks[r];
+		}
+		i++;
+	}
+	if (results.length > 0) {
+		results.forEach(function(value, index) {
+			switch (term) {
+				case "terms":
+					let tempOut = ranks[index] + ". `" + value + "` (" + stats[statsKey][value] + " times)\n";
+					if (out.length + tempOut.length < 2000) {
+						out += tempOut;
+					}
+					break;
+				case "commands":
+					let tempVal = value;
+					if (tempVal.indexOf("search") < 0) {
+						tempVal = "`" + pre + tempVal + "`";
+					}
+					let temOut = ranks[index] + ". " + tempVal + " (" + stats[statsKey][value] + " times)\n";
+					if (out.length + temOut.length < 2000) {
+						out += temOut;
+					}
+					break;
+				case "cards":
+				default:
+					let titInd = ids.en.indexOf(parseInt(value));
+					let title = names.en[0].values[titInd] && names.en[0].values[titInd][1] || value;
+					let teOut = ranks[index] + ". " + title + " (" + stats[statsKey][value] + " times)\n";
+					if (out.length + teOut.length < 2000) {
+						out += teOut;
+					}
+			}
+		});
+		if (messageMode & 0x2) {
+			bot.sendMessage({
+				to: channelID,
+				embed: {
+					color: embedColor,
+					description: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+				}
+			});
+		} else {
+			bot.sendMessage({
+				to: channelID,
+				message: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+			});
+		}
 	}
 }
 
@@ -2279,8 +2527,8 @@ function getCardText(index, outLang) {
 		if (ind) {
 			var head1 = lines.slice(0, 1)[0];
 			var head2 = lines.slice(ind + 1, ind + 2)[0];
-			head1 = head1.slice(2,head1.length-2);
-			head2 = head2.slice(2,head2.length-2);
+			head1 = head1.slice(2, head1.length - 2);
+			head2 = head2.slice(2, head2.length - 2);
 			return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n"), head1, head2]; //a few lines are skipped because each section has headings
 		}
 	}
@@ -2373,6 +2621,21 @@ function aliasCheck(index, outLang) { //called when getting alt arts, checks if 
 	}
 	let alIndex = ids[outLang].indexOf(alias);
 	return getOT(index, outLang) !== getOT(alIndex, outLang);
+}
+
+function getBaseID(index, outLang) {
+	let alias = aliases[outLang][index];
+	let alCode = contents[outLang][0].values[index][0]
+	if (alias === 0) {
+		return alCode;
+	}
+	let baseCode = ids[outLang][ids[outLang].indexOf(alias)];
+	let baseIndex = ids[outLang].indexOf(baseCode);
+	if (getOT(index, outLang) === getOT(baseIndex, outLang) && names[outLang][0].values[index][1] == names[outLang][0].values[baseIndex][1]) {
+		return baseCode;
+	} else {
+		return alCode;
+	}
 }
 
 function sliceBetween(str, cha1, cha2) {
@@ -3277,7 +3540,6 @@ function searchParams(user, userID, channelID, message, event) {
 			}
 		});
 	}
-
 }
 
 function libPage(user, userID, channelID, message, event) {
