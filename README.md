@@ -409,7 +409,7 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 		"name": "any msg",  
 		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"  
 	},  
-	{  Upda
+	{  
 		"type": "bool",  
 		"name": "cancel",  
 		"desc": "Determines if it's cancelled or not"  
