@@ -113,7 +113,6 @@ let quo = messageMode & 0x1 && "`" || "";
 let bo = messageMode & 0x1 && "**" || "";
 let jvex = messageMode & 0x1 && "java\n" || "";
 
-
 let scriptsEnabled = false;
 let scriptUrlMaster;
 let scriptUrlAnime;
@@ -237,6 +236,13 @@ if (config.skillDB) {
 	}
 } else {
 	console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+}
+
+let debugOutput = false;
+if (config.debugOutput) {
+	debugOutput = config.debugOutput;
+} else {
+	console.log("Choice whether to display debug information not found at config.debugOutput! Defaulting to not displaying it.");
 }
 
 //more config files, all explained in the readme
@@ -413,6 +419,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (lowMessage.indexOf(pre + "commands") === 0) {
 		commands(user, userID, channelID, message, event);
+		return;
+	}
+	if (langs.indexOf("ja") > -1 && lowMessage.indexOf(pre + "rulings") === 0) { //ruling search relies on Japanese DB
+		rulings(user, userID, channelID, message, event);
 		return;
 	}
 	if (libFuncEnabled && (lowMessage.indexOf(pre + "f") === 0 || lowMessage.indexOf(pre + "function") === 0)) {
@@ -623,7 +633,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 	}
 }
 
-//from hereon out, some functions and logic will be re-used from randomCard() - I won't repeat myself, just check that.
+//from hereon out, some functions and logic will be re-used from earlier functions - I won't repeat myself, just check that.
 async function script(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "script ").length);
 	let inInt = parseInt(input);
@@ -1092,8 +1102,10 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 
 function downloadImage(imageUrl, user, userID, channelID, message, event) {
 	return new Promise(function(resolve, reject) {
-		console.log("Debug Data: " + imageUrl);
-		console.dir(url.parse(imageUrl));
+		if (debugOutput) {
+			console.log("Debug Data: " + imageUrl);
+			console.dir(url.parse(imageUrl));
+		}
 		https.get(url.parse(imageUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1449,8 +1461,10 @@ function getCardScript(index, user, userID, channelID, message, event) {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + ids.en[index] + ".lua";
-		console.log("Debug data: " + fullUrl);
-		console.dir(url.parse(fullUrl));
+		if (debugOutput) {
+			console.log("Debug data: " + fullUrl);
+			console.dir(url.parse(fullUrl));
+		}
 		https.get(url.parse(fullUrl), function(response) {
 			let data = [];
 			response.on('data', function(chunk) {
@@ -1701,6 +1715,42 @@ function strings(user, userID, channelID, message, event) {
 	}
 }
 
+async function rulings(user, userID, channelID, message, event) {
+	let input = message.slice((pre + "rulings ").length);
+	let inInt = parseInt(input);
+	let index = ids.en.indexOf(inInt);
+	if (index < 0) {
+		index = nameCheck(input, "en"); 
+		if (index < 0 || !(index in ids.en)) {
+			return;
+		}
+	}
+	let enName = names.en[0].values[index][1];
+	jIndex = ids.ja.indexOf(ids.en[index]);
+	let out = "";
+	if (jIndex < 0) {
+		out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!"
+	} else {
+		let jaName = names.ja[0].values[jIndex][1];
+		let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2";
+		out = "Rulings for `" + enName + "`: <" + jUrl + ">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\"";
+	}
+	if (messageMode & 0x2) {
+		bot.sendMessage({
+			to: channelID,
+			embed: {
+				color: embedColor,
+				description: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+			}
+		});
+	} else {
+		bot.sendMessage({
+			to: channelID,
+			message: bo + quo + quo + quo + jvex + out + quo + quo + quo + bo
+		});
+	}
+}
+
 //utility functions
 function sendLongMessage(out, user, userID, channelID, message, event, typecolor, code) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
 	var tempcolor = embcDB && typecolor && embcDB[typecolor] || embedColor
@@ -1884,12 +1934,13 @@ function getLevelScales(index, outLang) {
 }
 
 function getOT(index, outLang) {
-	//leaving debug info here until it stops causing crashes
-	console.log("Debug info:");
-	console.log("index: " + index);
-	console.log("outLang: " + outLang);
-	console.log("Card: " + nameList[outLang][index].name);
-	console.log("Card ID: " + ids[outLang][index]);
+	if (debugOutput) {
+		console.log("Debug info:");
+		console.log("index: " + index);
+		console.log("outLang: " + outLang);
+		console.log("Card: " + nameList[outLang][index].name);
+		console.log("Card ID: " + ids[outLang][index]);
+	}
 	let ot = contents[outLang][0].values[index][1];
 	switch (ot) {
 		case 1:
@@ -2399,8 +2450,10 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		}
 		if (ot.indexOf(getOT(index, outLang)) > -1 && name.indexOf("(Anime)") === -1) {
 			buffer = await new Promise(function(resolve, reject) {
-				console.log("Debug Data: " + imageUrl + code + "." + imageExt);
-				console.dir(url.parse(imageUrl + code + "." + imageExt));
+				if (debugOutput) {
+					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
+					console.dir(url.parse(imageUrl + code + "." + imageExt));
+				}
 				https.get(url.parse(imageUrl + code + "." + imageExt), function(response) {
 					let data = [];
 					response.on('data', function(chunk) {
