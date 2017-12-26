@@ -81,6 +81,15 @@ The `.strings` command searches for a card by name or YGOPro ID, and returns the
 Usage: `.skill [skill name]`  
   
 The `.skill` command searches for a Skill, from Yu-Gi-Oh! Duel Links, and returns its name, description, and a list of which characters can obtain the Skill and how.  
+
+### .top
+Usage: `.top [number] [stat]`
+
+The `.top` command looks up the rankings for a given statistic, and returns the most common, up to the given amount. The available options are:
+`cards`, which will look up the most commonly searched cards.
+`inputs`, which will look up the most commonly entered search terms when searching for cards.
+`commands`, which will look up the most commonly used commands of the bot.
+If not all the parameters are specified, it will default to the top 10 cards.
   
 ### Scripting Library  
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
@@ -108,7 +117,7 @@ The `.tlock` command tells Bastion that on the server you use the command, he sh
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
-All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. If `npm install` fails, you might need to install [Git](https://git-scm.com/) before trying again (having GitHub Desktop isn't enough). To run the bot, the script expects some certain files - a configuration file, a banlist file, a shortcuts file, a setcodes file, an emotes file, a skills file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
+All of Bastion's dependencies are properly documented in the package.json, so you can just download that, put it in a folder, and run `npm install`. If `npm install` fails, you might need to install [Git](https://git-scm.com/) before trying again (having GitHub Desktop isn't enough). To run the bot, the script expects some certain files - a configuration file, a banlist file, a shortcuts file, a setcodes file, an emotes file, a skills file, a stats file, any number of SQLite databases containing card data, in the format YGOPro uses, and optionally 3 files with information about YGOPro's API with a customizable name. Once it's setup, you can use `node bastion.js` to run it once, or on Windows, use `autorun.bat` to have it automatically restart upon a crash.  
   
 ### Configuration  
 By default, the configuration file is called `config.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/config.json`. The script expects `config.json` to contain a JSON object with the following properties:  
@@ -299,6 +308,17 @@ By default, the skills file is called `skills.json`, and is expected to be found
 ```  
 `name` is the name of the skill, `desc` is the skill's description, and `chars` is a list of characters that can obtain the skill, and how they do.  
   
+### Stats
+By default, the stats file is called `stats.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/stats.json`. The script expects `stats.json` to contain an object, with certain keys described below, the value of each being its own object, which can be empty.
+```json
+{
+	"searchRankings": {},
+	"inputRankings": {},
+	"cmdRankings": {}
+}
+```  
+Each of these objects will be populated by Bastion and saved every 5 minutes of run-time, there is no need to modify it further yourself. For reference, `searchRankings` tracks how many times each card is looked up, `inputRankings` keeps track of all the different things people input to search for cards, and `cmdRankings` tracks how many times each command of the bot is used.
+  
 ### Database  
   
 Bastion reads card databases from SQLite databases formatted the same way as those YGOPro uses. Because of this similarity, you can copy databases from YGOPro or edit them with programs like [DataEditorX](https://github.com/247321453/DataEditorX), so it should not be necessary to document the format here. If you do want to learn more about it, you can read [MichaelLawrenceDee's tutorial](https://www.ygopro.co/Forum/tabid/95/g/posts/t/16781/Scripting-Tutorial--CURRENTLY-INCOMPLETE#post88202) on custom card creation for YGOPro, which covers making Card Databases manually.  
@@ -389,7 +409,7 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 		"name": "any msg",  
 		"desc": "A string in parantheses (can also include variables: 'Debug.Message(\"string1\"..var1..\"string2\")')"  
 	},  
-	{  
+	{  Upda
 		"type": "bool",  
 		"name": "cancel",  
 		"desc": "Determines if it's cancelled or not"  
