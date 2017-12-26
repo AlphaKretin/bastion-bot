@@ -144,7 +144,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website.",  
 	"messageMode": 0,  
 	"embedColor": 1,  
-	"embedColorDB": null  
+	"embedColorDB": null,  
+	"debugOutput": false  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -204,6 +205,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 `embedColor` is the default color of the bar of your embedded messages. This field is optional - is can be ignored depending on `messageMode`'s setting, and if it is expected but missing, the default color will be used. This is a decimal value converted from a hex color value.  
   
 `embedColorDB` is the name of the JSON file Bastion will load containing the color codes of your embedded messages. Currently, it only supports different colors depending on the card type of a searched card. This field is optional - if it is missing, all embedded messages will have the same color.  
+  
+`debugOutput` is a boolean that determines if Bastion will log large amounts of data to the console, in situations that have caused unexplained crashes before. However, such a crash has not occured since I added such logs, and it is a large amount of logging, so it is recommended to disable this. This field is optional - if it is missing, it will default to what you see above.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
