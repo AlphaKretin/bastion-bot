@@ -9,9 +9,9 @@ Bastion's primary purpose is a database of card information. Basic knowledge abo
 A few general notes on card searching: My copy of Bastion references a card database with official cards, including recently revealed unreleased cards, anime cards from YGOPro Percy, and custom cards from the [G2 YGO Custom Server](https://discordapp.com/invite/Vv5NnCq). Bastion will search for the nearest guess if you don't type an exact name. Bastion has a system for hardcoded shortcuts - if you type a common abbreviation for a card name, it will try to convert it to the full name. Price data comes from the [http://yugiohprices.com](http://yugiohprices.com) API. "Status" is a term I use for what YGOPro developers call "OT" - a designation that reflects whether a card is legal in the OCG, TCG, both, or other options for unofficial cards like Anime, Illegal and Custom.  
   
 ### Help  
-Usage: `@Bastion#3599`  
+Usage: `@Bastion#3599|.help`  
   
-Mentioning Bastion will provide a link to this readme.  
+Mentioning Bastion or typing `.help` will provide a link to this readme.  
   
 ### Card Lookup  
 Usage: `{card name|ID[,lang,lang]}`  
