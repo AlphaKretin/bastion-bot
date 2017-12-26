@@ -417,9 +417,8 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 ]  
 ```  
 ### To-do List  
-- Add pack opening simulation -- Feature simon has, but could be improved on  
-- Add OCG/Japanese prices if searching japanese language --Bonus  
-- Add comparison between different versions of scripts between repos --Bonus  
-- Add ruling page lookup --Bonus  
+- Add pack opening simulation --Feature simon has, but could be improved on  
 - Auto CDB update --Bonus  
-- Grab DBs (and whatever else) from online *or* local  
+- Grab DBs (and whatever else) from online *or* local --Bonus  
+- Improve ruling page lookup --questionably possible, requires formulaic way to determine OCG database ID from card data  
+- Add OCG/Japanese prices if searching japanese language --questionably possible, requires source with API
