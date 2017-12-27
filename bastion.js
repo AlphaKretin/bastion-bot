@@ -1881,7 +1881,7 @@ function rulings(user, userID, channelID, message, event) {
 		out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!"
 	} else {
 		let jaName = names.ja[0].values[jIndex][1];
-		let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2";
+		let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2&request_locale=ja";
 		out = "Rulings for `" + enName + "`: <" + jUrl + ">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\"";
 	}
 	if (messageMode & 0x2) {
