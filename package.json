@@ -27,6 +27,6 @@
     "request": "^2.83.0",
     "sql.js": "^0.4.0",
     "url": "^0.11.0",
-	"google-spreadsheet-to-json": "^1.0.0"
+    "google-spreadsheet-to-json": "^1.0.0"
   }
 }
