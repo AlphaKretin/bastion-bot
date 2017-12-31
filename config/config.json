@@ -3,17 +3,35 @@
 	"prefix": ".",
 	"longStr": "...\n__Type \".long\" to be PMed the rest!__",
 	"maxSearches": 3,
+	"imageUrl": null,
+	"imageUrlAnime": null,
+	"imageUrlCustom": null,
 	"imageSize": 100,
+	"imageExt": "png",
+	"scriptUrl": null,
+	"scriptUrlAnime": null,
+	"scriptUrlCustom": null,
+	"scriptUrlBackup": null,
 	"dbs": {
 		"en": [
-			"cards.cdb"
+			"cards.cdb",
 		]
 	},
 	"dbMemory": 33554432,
 	"triviaTimeLimit": 30000,
 	"triviaHintTime": 10000,
 	"triviaMaxRounds": 20,
+	"triviaLocks": {},
+	"botOwner": "169299769695535105",
 	"scriptFunctions": "functions.json",
 	"scriptConstants": "constants.json",
-	"scriptParams": "parameters.json"
+	"scriptParams": "parameters.json",
+	"skillDB": "skills.json",
+	"emoteMode": 0,
+	"emotesDB": null,
+	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website.",
+	"messageMode": 0,
+	"embedColor": 1,
+	"embedColorDB": null,
+	"debugOutput": false
 }
