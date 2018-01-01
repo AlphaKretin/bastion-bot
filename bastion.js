@@ -1,7 +1,7 @@
 let fs = require('fs');
 
 let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8'));
-//load data from JSON. Expected values can be inuited from console feedback or seen in the readme.
+//load data from JSON. Expected values can be intuited from console feedback or seen in the readme.
 if (!config.token) {
 	console.log("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
 	exit();
@@ -187,9 +187,9 @@ if (config.dbMemory) {
 	console.log("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
 }
 let owner;
-let servLogEnabled = false;
+let ownerCmdsEnabled = false;
 if (config.botOwner) {
-	servLogEnabled = true;
+	ownerCmdsEnabled = true;
 	owner = config.botOwner;
 } else {
 	console.log("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
@@ -577,11 +577,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
+	if (ownerCmdsEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
 		return;
 	}
-	if (sheetsDB && userID === owner && lowMessage.indexOf(pre + "updatejson") === 0) {
+	if (ownerCmdsEnabled && sheetsDB && userID === owner && lowMessage.indexOf(pre + "updatejson") === 0) {
 		updatejson(user, userID, channelID, message, event);
 		return;
 	}
@@ -681,10 +681,9 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			});
 		}
 	} else {
-		//second parameter here is whether to display image or not
 		if (results.length > 0) {
 			for (let result of results) {
-				searchCard(result, false, user, userID, channelID, message, event);
+				searchCard(result, false, user, userID, channelID, message, event); //second parameter here is whether to display image or not
 				if (stats.cmdRankings["search (no image)"]) {
 					stats.cmdRankings["search (no image)"]++;
 				} else {
@@ -2054,7 +2053,28 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						}
 					}, function(err, res) {
 						if (err) {
-							reject(err);
+							if (err.response && err.response.retry_after) {
+								setTimeout(function() {
+									bot.sendMessage({
+										to: channelID,
+										embed: {
+											color: tempcolor,
+											description: out,
+											thumbnail: {
+												url: imgurl
+											},
+										}
+									}, function(err, res) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(res);
+										}
+									});
+								}, err.response.retry_after + 1)
+							} else {
+								reject(err);
+							}
 						} else {
 							resolve(res);
 						}
@@ -2065,7 +2085,22 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						message: outArr[0]
 					}, function(err, res) {
 						if (err) {
-							reject(err);
+							if (err.response && err.response.retry_after) {
+								setTimeout(function() {
+									bot.sendMessage({
+										to: channelID,
+										message: out
+									}, function(err, res) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(res);
+										}
+									});
+								}, err.response.retry_after + 1)
+							} else {
+								reject(err);
+							}
 						} else {
 							resolve(res);
 						}
@@ -2084,7 +2119,28 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						}
 					}, function(err, res) {
 						if (err) {
-							reject(err);
+							if (err.response && err.response.retry_after) {
+								setTimeout(function() {
+									bot.sendMessage({
+										to: channelID,
+										embed: {
+											color: tempcolor,
+											description: out,
+											thumbnail: {
+												url: imgurl
+											},
+										}
+									}, function(err, res) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(res);
+										}
+									});
+								}, err.response.retry_after + 1)
+							} else {
+								reject(err);
+							}
 						} else {
 							resolve(res);
 						}
@@ -2095,7 +2151,22 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						message: out
 					}, function(err, res) {
 						if (err) {
-							reject(err);
+							if (err.response && err.response.retry_after) {
+								setTimeout(function() {
+									bot.sendMessage({
+										to: channelID,
+										message: out
+									}, function(err, res) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(res);
+										}
+									});
+								}, err.response.retry_after + 1)
+							} else {
+								reject(err);
+							}
 						} else {
 							resolve(res);
 						}
