@@ -200,42 +200,61 @@ let libConstEnabled = false;
 let libConstants;
 let libParamsEnabled = false;
 let libParams;
-if (config.scriptFunctions) {
-	let path = "dbs/" + config.scriptFunctions;
-	libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
-	libFuncEnabled = true;
-} else {
-	console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
-}
-if (config.scriptConstants) {
-	let path = "dbs/" + config.scriptConstants;
-	libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
-	libConstEnabled = true;
-} else {
-	console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
-}
-if (config.scriptParams) {
-	let path = "dbs/" + config.scriptParams;
-	libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
-	libParamsEnabled = true;
-} else {
-	console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
-}
 
 let skillsEnabled = false;
 let skills = [];
 let skillNames = [];
-if (config.skillDB) {
-	let path = "dbs/" + config.skillDB;
-	skills = JSON.parse(fs.readFileSync(path, "utf-8"));
-	skillsEnabled = true;
-	for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
-		skillNames.push({
-			name: skill.name,
-		});
+
+function setJSON() { //this is a function because it needs to be repeated when it's updated
+	if (config.scriptFunctions) {
+		let path = "dbs/" + config.scriptFunctions;
+		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libFuncEnabled = true;
+	} else {
+		console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
 	}
+	if (config.scriptConstants) {
+		let path = "dbs/" + config.scriptConstants;
+		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libConstEnabled = true;
+	} else {
+		console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
+	}
+	if (config.scriptParams) {
+		let path = "dbs/" + config.scriptParams;
+		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libParamsEnabled = true;
+	} else {
+		console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
+	}
+	
+	if (config.skillDB) {
+		let path = "dbs/" + config.skillDB;
+		skills = JSON.parse(fs.readFileSync(path, "utf-8"));
+		skillsEnabled = true;
+		skillNames = [];
+		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
+			skillNames.push({
+				name: skill.name,
+			});
+		}
+	} else {
+		console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+	}
+}
+
+setJSON();
+
+let sheetsDB;
+let gstojson = require('google-spreadsheet-to-json');
+
+if (owner && config.sheetsDB) {
+	let path = "config/" + config.sheetsDB;
+	sheetsDB = JSON.parse(fs.readFileSync(path, "utf-8"));
+} else if (!owner) {
+	console.log("Bot owner's ID not set up!  JSON updating commands will be disabled.");
 } else {
-	console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+	console.log("Sheets database not found at config.sheetsDB! JSON updating commands will be disabled.");
 }
 
 let debugOutput = false;
@@ -560,6 +579,10 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	}
 	if (servLogEnabled && userID === owner && lowMessage.indexOf(pre + "servers") === 0) {
 		servers(user, userID, channelID, message, event);
+		return;
+	}
+	if (sheetsDB && userID === owner && lowMessage.indexOf(pre + "updatejson") === 0) {
+		updatejson(user, userID, channelID, message, event);
 		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.indexOf(pre + "help") === 0) {
@@ -3308,6 +3331,40 @@ function servers(user, userID, channelID, message, event) {
 			message: out
 		});
 	}
+}
+
+function updatejson(user, userID, channelID, message, event) {
+	let arg = message.slice((pre + "updatejson ").length);
+	let sheetID = sheetsDB[arg];
+	if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
+		if (!sheetID)
+			console.log(arg + ".json is not mapped.");
+		return;
+	}
+	gstojson({
+		spreadsheetId: sheetID,
+	})
+	.then(function(result) {
+		fs.writeFileSync('dbs/' + arg + '.json', JSON.stringify(result), 'utf8');
+		if (messageMode & 0x2) {
+			bot.sendMessage({
+				to: channelID,
+				embed: {
+					color: embedColor,
+					description: bo + quo + arg + ".json updated successfully." + quo + bo,
+				}
+			});
+		} else {
+			bot.sendMessage({
+				to: channelID,
+				message: bo + quo + arg + ".json updated successfully." + quo + bo
+			});
+		}
+		setJSON();
+	})
+	.catch(function(err) {
+		console.log(err.message);
+	});			
 }
 
 //scripting lib 

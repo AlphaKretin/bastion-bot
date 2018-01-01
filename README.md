@@ -114,6 +114,11 @@ You can end the game prematurely by typing ".tq", or pass a round by typing ".ts
 Usage: `.tlock`  
 The `.tlock` command tells Bastion that on the server you use the command, he should only allow `.trivia` in the channels in which you've used the command. Only users with the "Manage Messages" permission can use the command. You can use the command in multiple channels to allow trivia in multiple channels. Using the command in a channel already registered will remove it from the list. If there are no channels in the list, trivia will be allowed anywhere.  
   
+### .updatejson  
+Usage: `.updatejson [json name]`  
+  
+The `.updatejson` command is a bot owner-only command which allows you to update the json file of your jsons in `dbs/` folder. The mapping of the json name will be set up in `sheetsDB` and the bot will reply if successful in updating, otherwise, the error will be recorded in the console.  
+  
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  
   
@@ -154,7 +159,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"messageMode": 0,  
 	"embedColor": 1,  
 	"embedColorDB": null,  
-	"debugOutput": false  
+	"debugOutput": false,  
+	"sheetsDB": "sheets.json"  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -216,6 +222,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 `embedColorDB` is the name of the JSON file Bastion will load containing the color codes of your embedded messages. Currently, it only supports different colors depending on the card type of a searched card. This field is optional - if it is missing, all embedded messages will have the same color.  
   
 `debugOutput` is a boolean that determines if Bastion will log large amounts of data to the console, in situations that have caused unexplained crashes before. However, such a crash has not occured since I added such logs, and it is a large amount of logging, so it is recommended to disable this. This field is optional - if it is missing, it will default to what you see above.  
+  
+`sheetsDB` is the name of the JSON file Bastion will load containing the Google Spreadsheet IDs that will be loaded to update your JSONs. This field is optional - if it is missing, the corresponding command will be disabled.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -318,6 +326,15 @@ By default, the stats file is called `stats.json`, and is expected to be found i
 }
 ```  
 Each of these objects will be populated by Bastion and saved every 5 minutes of run-time, there is no need to modify it further yourself. For reference, `searchRankings` tracks how many times each card is looked up, `inputRankings` keeps track of all the different things people input to search for cards, and `cmdRankings` tracks how many times each command of the bot is used.
+  
+### Sheets  
+By default, the sheets file is called `sheets.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/sheets.json`. The script expects `sheets.json` to contain an object, with keys which is your json name, the value of each being the Spreadsheet ID which is between `spreadsheets/d/` and `/edit` from your URL.  
+```json
+	"constants": "",
+	"functions": "",
+	"parameters": "",
+	"skills": ""
+```  
   
 ### Database  
   
