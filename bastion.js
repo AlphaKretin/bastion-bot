@@ -205,6 +205,44 @@ let skillsEnabled = false;
 let skills = [];
 let skillNames = [];
 
+function setJSON() { //this is a function because it needs to be repeated when it's updated
+	if (config.scriptFunctions) {
+		let path = "dbs/" + config.scriptFunctions;
+		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libFuncEnabled = true;
+	} else {
+		console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
+	}
+	if (config.scriptConstants) {
+		let path = "dbs/" + config.scriptConstants;
+		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libConstEnabled = true;
+	} else {
+		console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
+	}
+	if (config.scriptParams) {
+		let path = "dbs/" + config.scriptParams;
+		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libParamsEnabled = true;
+	} else {
+		console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
+	}
+	
+	if (config.skillDB) {
+		let path = "dbs/" + config.skillDB;
+		skills = JSON.parse(fs.readFileSync(path, "utf-8"));
+		skillsEnabled = true;
+		skillNames = [];
+		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
+			skillNames.push({
+				name: skill.name,
+			});
+		}
+	} else {
+		console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+	}
+}
+
 setJSON();
 
 let sheetsDB;
@@ -1232,43 +1270,6 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 		console.log(e);
 	}
 
-}
-
-function setJSON() {
-	if (config.scriptFunctions) {
-		let path = "dbs/" + config.scriptFunctions;
-		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libFuncEnabled = true;
-	} else {
-		console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
-	}
-	if (config.scriptConstants) {
-		let path = "dbs/" + config.scriptConstants;
-		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libConstEnabled = true;
-	} else {
-		console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
-	}
-	if (config.scriptParams) {
-		let path = "dbs/" + config.scriptParams;
-		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libParamsEnabled = true;
-	} else {
-		console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
-	}
-	
-	if (config.skillDB) {
-		let path = "dbs/" + config.skillDB;
-		skills = JSON.parse(fs.readFileSync(path, "utf-8"));
-		skillsEnabled = true;
-		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
-			skillNames.push({
-				name: skill.name,
-			});
-		}
-	} else {
-		console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
-	}
 }
 
 function downloadImage(imageUrl, user, userID, channelID, message, event) {
