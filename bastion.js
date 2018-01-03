@@ -288,42 +288,9 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 	let db = new SQL.Database(filebuffer);
 	nameList[lang] = [];
 	cards[lang] = {};
-	let contents = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
-	let names = db.exec("SELECT * FROM texts");
-	for (let i = 0; i < contents[0].values.length; i++) {
-		let card = contents[0].values[i];
-		let name = names[0].values[i];
-		let car = new Card(
-			card[0], //code
-			card[1], //ot
-			card[2], //alias
-			card[3], //setcode
-			card[4], //type
-			card[5], //atk
-			card[6], //def
-			card[7], //level
-			card[8], //race
-			card[9], //attribute
-			card[10], //category
-			name[1], //name
-			name[2], //card text
-			name[3], //string 1..
-			name[4], //2
-			name[5], //3
-			name[6], //4
-			name[7], //5
-			name[8], //6
-			name[9], //7
-			name[10], //8
-			name[11], //9
-			name[12], //10
-			name[13], //11
-			name[14], //12
-			name[15], //13
-			name[16], //14
-			name[17], //15
-			name[18], //16
-		);
+	let contents = db.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
+	for (let card of contents[0].values) {
+		let car = new Card(card);
 		cards[lang][car.code] = car;
 	}
 	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
@@ -332,42 +299,9 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
 			console.log("loading " + dbs[lang][i]);
 			let newDB = new SQL.Database(newbuffer);
-			let newContents = newDB.exec("SELECT * FROM datas");
-			let newNames = newDB.exec("SELECT * FROM texts");
-			for (let i = 0; i < newContents[0].values.length; i++) {
-				let newCard = newContents[0].values[i];
-				let newName = newNames[0].values[i];
-				let newCar = new Card(
-					newCard[0], //code
-					newCard[1], //ot
-					newCard[2], //alias
-					newCard[3], //setcode
-					newCard[4], //type
-					newCard[5], //atk
-					newCard[6], //def
-					newCard[7], //level
-					newCard[8], //race
-					newCard[9], //attribute
-					newCard[10], //category
-					newName[1], //name
-					newName[2], //card text
-					newName[3], //string 1..
-					newName[4], //2
-					newName[5], //3
-					newName[6], //4
-					newName[7], //5
-					newName[8], //6
-					newName[9], //7
-					newName[10], //8
-					newName[11], //9
-					newName[12], //10
-					newName[13], //11
-					newName[14], //12
-					newName[15], //13
-					newName[16], //14
-					newName[17], //15
-					newName[18], //16
-				);
+			let newContents = newDB.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id");
+			for (let newCard of newContents[0].values) {
+				let newCar = new Card(newCard);
 				cards[lang][newCar.code] = newCar;
 			}
 		}
