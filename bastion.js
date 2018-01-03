@@ -3134,13 +3134,9 @@ function searchFunctions(user, userID, channelID, message, event) {
 		return;
 	}
 	let searched = [];
-	let len = 0;
 	for (let func of libFunctions) {
 		if (func.name.toLowerCase().split("(")[0].indexOf(arg.toLowerCase()) > -1) {
 			searched.push(func);
-			if (func.sig.length > len) {
-				len = func.sig.length;
-			}
 		}
 	}
 	let pages = [];
@@ -3151,12 +3147,15 @@ function searchFunctions(user, userID, channelID, message, event) {
 		return;
 	}
 	let out = "```cs\n";
+	let len = 0;
+	for (let i = 0; i < pages[0].length; i++) {
+		if (pages[0][i].sig.length > len) {
+			len = pages[0][i].sig.length;
+		}
+	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		while (line.sig.length < len) {
-			line.sig = " " + line.sig;
-		}
-		out += "[" + (i + 1) + "] " + line.sig + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.sig.padStart(len, " ") + " | " + line.name + "\n"
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	if (messageMode & 0x2) {
@@ -3211,13 +3210,9 @@ function searchConstants(user, userID, channelID, message, event) {
 		return;
 	}
 	let searched = [];
-	let len = 0;
 	for (let con of libConstants) {
 		if (con.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
 			searched.push(con);
-			if (con.val.length > len) {
-				len = con.val.length;
-			}
 		}
 	}
 	let pages = [];
@@ -3228,12 +3223,15 @@ function searchConstants(user, userID, channelID, message, event) {
 		return;
 	}
 	let out = "```cs\n";
+	let len = 0;
+	for (let i = 0; i < pages[0].length; i++) {
+		if (pages[0][i].val.length > len) {
+			len = pages[0][i].val.length;
+		}
+	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		while (line.val.length < len) {
-			line.val = " " + line.val;
-		}
-		out += "[" + (i + 1) + "] " + line.val + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.val.padStart(len, " ") + " | " + line.name + "\n"
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	if (messageMode & 0x2) {
@@ -3288,13 +3286,9 @@ function searchParams(user, userID, channelID, message, event) {
 		return;
 	}
 	let searched = [];
-	let len = 0;
 	for (let par of libParams) {
 		if (par.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
 			searched.push(par);
-			if (par.type.length > len) {
-				len = par.type.length;
-			}
 		}
 	}
 	let pages = [];
@@ -3305,12 +3299,15 @@ function searchParams(user, userID, channelID, message, event) {
 		return;
 	}
 	let out = "```cs\n";
+	let len = 0;
+	for (let i = 0; i < pages[0].length; i++) {
+		if (pages[0][i].type.length > len) {
+			len = pages[0][i].type.length;
+		}
+	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		while (line.type.length < len) {
-			line.type = " " + line.type;
-		}
-		out += "[" + (i + 1) + "] " + line.type + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.type.padStart(len, " ") + " | " + line.name + "\n"
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	if (messageMode & 0x2) {
