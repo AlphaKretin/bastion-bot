@@ -1,6 +1,6 @@
 {
   "name": "bastion",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A Discord bot for Yu-Gi-Oh! card information.",
   "main": "bastion.js",
   "scripts": {

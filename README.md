@@ -14,7 +14,7 @@ Usage: `@Bastion#3599|.help`
 Mentioning Bastion or typing `.help` will provide a link to this readme.  
   
 ### Card Lookup  
-Usage: `{card name|ID[,lang,lang]}`  
+Usage: `{card name/ID[,lang,lang]}`  
   
 This command searches for a card by the name or YGOPro ID specified in the brackets and returns the card's name, all of its IDs in YGOPro, any archetypes its a member of, its status, its lowest, average, and highest prices if available, its types, its attribute if it's a monster, any stats, and its card text. If you enter two valid language codes (e.g. "en", "ja", "es"), Bastion will search by the first language and output in the second.  
   
@@ -22,7 +22,7 @@ As an example, `{dark magician}` returns the following output:
 ![card output](/readme-images/card.png)  
   
 ### Card With Image  
-Usage: `<card name|ID[,lang,lang]>`  
+Usage: `<card name/ID[,lang,lang]>`  
   
 This command works the same way as the above command, but also displays an image of the card's artwork.  
   
@@ -30,7 +30,7 @@ As an example, `<stardust dragon>` returns the following output:
 ![card image output](/readme-images/card-image.png)  
   
 ### Individual Property Lookup  
-Usage: `.id [card name|ID]`, `.notext [card name|ID]`, `.effect [card name|ID]`  
+Usage: `.id [card name/ID]`, `.notext [card name/ID]`, `.effect [card name/ID]`  
   
 Using these commands, you can search like the above two, but it will return only the card IDs, just the stats etc. without card text, or only card text respectively. None of these options display the image.  
   
@@ -43,9 +43,9 @@ As an example, `.randcard tcg/ocg 4 image` returns the following output:
 ![.randcard output](/readme-images/randcard.png)  
   
 ### .script  
-Usage: `.script [name|id]`  
+Usage: `.script [name/id]|[lang]`  
   
-The `.script` command searches for a card by name or YGOPro ID and returns a link to its script for YGOPro, as well as embedding it if short enough.  
+The `.script` command searches for a card by name or YGOPro ID and returns a link to its script for YGOPro, as well as embedding it if short enough. If a language is specified, it will look for a card with a name like you typed in that language.  
   
 As an example, `.script macro cosmos` returns the following output:  
 ![.script output](/readme-images/script1.png)  
@@ -73,9 +73,9 @@ Usage: `.deck [language]` and upload file
 The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the message, and sends a direct message to the user listing the contents of the deck in the specified language (English by default).  
   
 ### .strings  
-Usage: `.strings [card name|ID]`  
+Usage: `.strings [card name/ID]|[lang]`  
   
-The `.strings` command searches for a card by name or YGOPro ID, and returns the database strings for that card - i.e., the customs messages assigned to it that a script can call on for effect descriptions or dialog boxes.  
+The `.strings` command searches for a card by name or YGOPro ID, and returns the database strings for that card - i.e., the customs messages assigned to it that a script can call on for effect descriptions or dialog boxes. If a language is specified, it will look for a card with a name like you typed in that language.  
   
 ### .skill  
 Usage: `.skill [skill name]`  
@@ -83,13 +83,13 @@ Usage: `.skill [skill name]`
 The `.skill` command searches for a Skill, from Yu-Gi-Oh! Duel Links, and returns its name, description, and a list of which characters can obtain the Skill and how.  
 
 ### .top
-Usage: `.top [number] [stat]`
+Usage: `.top [number] [stat] [lang]`
 
 The `.top` command looks up the rankings for a given statistic, and returns the most common, up to the given amount. The available options are:
 `cards`, which will look up the most commonly searched cards.
 `inputs`, which will look up the most commonly entered search terms when searching for cards.
 `commands`, which will look up the most commonly used commands of the bot.
-If not all the parameters are specified, it will default to the top 10 cards.
+If not all the parameters are specified, it will default to the top 10 cards in English. If a language is specified, it will look for a card with a name like you typed in that language.
   
 ### Scripting Library  
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
