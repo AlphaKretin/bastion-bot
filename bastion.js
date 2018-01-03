@@ -330,11 +330,8 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
 			console.log("loading " + dbs[lang][i]);
 			let newDB = new SQL.Database(newbuffer);
-			let newContents = newDB.exec("SELECT * FROM datas");
-			let newNames = newDB.exec("SELECT * FROM texts");
-			for (let i = 0; i < newContents[0].values.length; i++) {
-				let newCard = newContents[0].values[i];
-				let newName = newNames[0].values[i];
+			let newContents = newDB.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id");
+			for (let newCard of newContents[0].values) {
 				let newCar = new Card(
 					newCard[0], //code
 					newCard[1], //ot
@@ -347,24 +344,24 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 					newCard[8], //race
 					newCard[9], //attribute
 					newCard[10], //category
-					newName[1], //name
-					newName[2], //card text
-					newName[3], //string 1..
-					newName[4], //2
-					newName[5], //3
-					newName[6], //4
-					newName[7], //5
-					newName[8], //6
-					newName[9], //7
-					newName[10], //8
-					newName[11], //9
-					newName[12], //10
-					newName[13], //11
-					newName[14], //12
-					newName[15], //13
-					newName[16], //14
-					newName[17], //15
-					newName[18], //16
+					newCard[12], //name
+					newCard[13], //card text
+					newCard[14], //string 1..
+					newCard[15], //2
+					newCard[16], //3
+					newCard[17], //4
+					newCard[18], //5
+					newCard[19], //6
+					newCard[20], //7
+					newCard[21], //8
+					newCard[22], //9
+					newCard[23], //10
+					newCard[24], //11
+					newCard[25], //12
+					newCard[26], //13
+					newCard[27], //14
+					newCard[28], //15
+					newCard[29], //16
 				);
 				cards[lang][newCar.code] = newCar;
 			}
