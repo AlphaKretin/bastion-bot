@@ -14,7 +14,7 @@
 	"scriptUrlBackup": null,
 	"dbs": {
 		"en": [
-			"cards.cdb",
+			"cards.cdb"
 		]
 	},
 	"dbMemory": 33554432,
