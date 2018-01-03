@@ -288,11 +288,8 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 	let db = new SQL.Database(filebuffer);
 	nameList[lang] = [];
 	cards[lang] = {};
-	let contents = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
-	let names = db.exec("SELECT * FROM texts");
-	for (let i = 0; i < contents[0].values.length; i++) {
-		let card = contents[0].values[i];
-		let name = names[0].values[i];
+	let contents = db.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
+	for (let card of contents[0].values) {
 		let car = new Card(
 			card[0], //code
 			card[1], //ot
@@ -305,24 +302,25 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			card[8], //race
 			card[9], //attribute
 			card[10], //category
-			name[1], //name
-			name[2], //card text
-			name[3], //string 1..
-			name[4], //2
-			name[5], //3
-			name[6], //4
-			name[7], //5
-			name[8], //6
-			name[9], //7
-			name[10], //8
-			name[11], //9
-			name[12], //10
-			name[13], //11
-			name[14], //12
-			name[15], //13
-			name[16], //14
-			name[17], //15
-			name[18], //16
+			//card[11] is skipped because it is the duplicate id from the datas table
+			card[12], //name
+			card[13], //card text
+			card[14], //string 1..
+			card[15], //2
+			card[16], //3
+			card[17], //4
+			card[18], //5
+			card[19], //6
+			card[20], //7
+			card[21], //8
+			card[22], //9
+			card[23], //10
+			card[24], //11
+			card[25], //12
+			card[26], //13
+			card[27], //14
+			card[28], //15
+			card[29], //16
 		);
 		cards[lang][car.code] = car;
 	}
