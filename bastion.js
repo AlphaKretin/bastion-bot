@@ -283,42 +283,13 @@ let SQL = require('sql.js');
 let cards = {};
 let nameList = {};
 for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
-	console.log("loading " + lang + " databases");
+	console.log("loading " + lang + " database");
 	let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
 	let db = new SQL.Database(filebuffer);
-	let ids = [];
 	nameList[lang] = [];
 	cards[lang] = {};
 	let contents = db.exec("SELECT * FROM datas"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	let names = db.exec("SELECT * FROM texts");
-	for (let card of contents[0].values) { //temporary ID list for the sake of overwrites
-		ids.push(card[0]);
-	}
-	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
-		for (let i = 1; i < dbs[lang].length; i++) {
-			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
-			let newDB = new SQL.Database(newbuffer);
-			let newContents = newDB.exec("SELECT * FROM datas");
-			let newNames = newDB.exec("SELECT * FROM texts");
-			for (let card of newContents[0].values) {
-				let ind = ids.indexOf(card[0]);
-				if (ind > -1) { //if the ID is the same (NOT to be confused with an alias, where alt arts etc. reference another ID), it's a fix entry and should overwrite the original.
-					contents[0].values[ind] = card;
-				} else {
-					contents[0].values.push(card);
-					ids.push(card[0]);
-				}
-			}
-			for (let card of newNames[0].values) {
-				let ind = ids.indexOf(card[0]);
-				if (ind > -1) {
-					names[0].values[ind] = card;
-				} else {
-					names[0].values.push(card);
-				}
-			}
-		}
-	}
 	for (let i = 0; i < contents[0].values.length; i++) {
 		let card = contents[0].values[i];
 		let name = names[0].values[i];
@@ -354,11 +325,59 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			name[18], //16
 		);
 		cards[lang][car.code] = car;
-		nameList[lang].push({
-			name: car.name,
-			id: car.code
-		});
 	}
+	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
+		console.log("loading additional " + lang + " databases");
+		for (let i = 1; i < dbs[lang].length; i++) {
+			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
+			console.log("loading " + dbs[lang][i]);
+			let newDB = new SQL.Database(newbuffer);
+			let newContents = newDB.exec("SELECT * FROM datas");
+			let newNames = newDB.exec("SELECT * FROM texts");
+			for (let i = 0; i < newContents[0].values.length; i++) {
+				let newCard = newContents[0].values[i];
+				let newName = newNames[0].values[i];
+				let newCar = new Card(
+					newCard[0], //code
+					newCard[1], //ot
+					newCard[2], //alias
+					newCard[3], //setcode
+					newCard[4], //type
+					newCard[5], //atk
+					newCard[6], //def
+					newCard[7], //level
+					newCard[8], //race
+					newCard[9], //attribute
+					newCard[10], //category
+					newName[1], //name
+					newName[2], //card text
+					newName[3], //string 1..
+					newName[4], //2
+					newName[5], //3
+					newName[6], //4
+					newName[7], //5
+					newName[8], //6
+					newName[9], //7
+					newName[10], //8
+					newName[11], //9
+					newName[12], //10
+					newName[13], //11
+					newName[14], //12
+					newName[15], //13
+					newName[16], //14
+					newName[17], //15
+					newName[18], //16
+				);
+				cards[lang][newCar.code] = newCar;
+			}
+		}
+	}
+	Object.keys(cards[lang]).forEach(function(key, index) {
+		nameList[lang].push({
+			name: cards[lang][key].name,
+			id: cards[lang][key].code
+		});
+	});
 }
 
 //fuse setup
