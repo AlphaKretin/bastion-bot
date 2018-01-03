@@ -6,7 +6,7 @@ if (!config.token) {
 	console.log("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
 	return;
 }
-let imagesEnabled = false;
+
 let imageUrlMaster;
 let imageUrlAnime;
 let imageUrlCustom;
@@ -19,7 +19,6 @@ let triviaLocks = {};
 let imageExt = "png";
 if (config.imageUrl) {
 	imageUrlMaster = config.imageUrl;
-	imagesEnabled = true;
 	//a bunch of stuff relies on images, and other config fields related to them only need to be checked if images exist
 	if (config.imageUrlAnime) {
 		imageUrlAnime = config.imageUrlAnime;
@@ -111,15 +110,12 @@ let quo = messageMode & 0x1 && "`" || "";
 let bo = messageMode & 0x1 && "**" || "";
 let jvex = messageMode & 0x1 && "java\n" || "";
 
-let scriptsEnabled = false;
 let scriptUrlMaster;
 let scriptUrlAnime;
 let scriptUrlCustom;
-let scriptBackupEnabled = false;
 let scriptUrlBackup;
 if (config.scriptUrl) {
 	scriptUrlMaster = config.scriptUrl;
-	scriptsEnabled = true;
 	if (config.scriptUrlAnime) {
 		scriptUrlAnime = config.scriptUrlAnime;
 	} else {
@@ -134,7 +130,6 @@ if (config.scriptUrl) {
 	}
 	if (config.scriptUrlBackup) {
 		scriptUrlBackup = config.scriptUrlBackup;
-		scriptBackupEnabled = true;
 	} else {
 		console.log("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
 	}
@@ -170,13 +165,27 @@ if (config.maxSearches) {
 } else {
 	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
 }
-let dbs = {
-	"en": ["cards.cdb"]
-};
+
+let defaultLang = defaultLang;
+if (config.defaultLanguage) {
+	defaultLang = config.defaultLanguage;
+} else {
+	console.log("Default language not found at config.defaultLanguage! Defaulting to " + defaultLang + "!");
+}
+
+let rulingLang;
+if (config.rulingLanguage) {
+	rulingLang = config.rulingLanguage;
+} else {
+	console.log("Japanese language for rulings not found at config.rulingLanguage! Ruling search will be disabled.");
+}
+
+let dbs = {};
+dbs[defaultLang] = ["cards.cdb"];
 if (config.dbs) {
 	dbs = config.dbs;
 } else {
-	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs.en[0] + ".");
+	console.log("List of card databases not found at config.dbs! Defaulting to one database named " + dbs[defaultLang][0] + ".");
 }
 let dbMemory = 33554432;
 if (config.dbMemory) {
@@ -185,21 +194,16 @@ if (config.dbMemory) {
 	console.log("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
 }
 let owner;
-let ownerCmdsEnabled = false;
 if (config.botOwner) {
-	ownerCmdsEnabled = true;
 	owner = config.botOwner;
 } else {
 	console.log("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
 }
-let libFuncEnabled = false;
+
 let libFunctions;
-let libConstEnabled = false;
 let libConstants;
-let libParamsEnabled = false;
 let libParams;
 
-let skillsEnabled = false;
 let skills = [];
 let skillNames = [];
 
@@ -207,21 +211,18 @@ function setJSON() { //this is a function because it needs to be repeated when i
 	if (config.scriptFunctions) {
 		let path = "dbs/" + config.scriptFunctions;
 		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libFuncEnabled = true;
 	} else {
 		console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
 	}
 	if (config.scriptConstants) {
 		let path = "dbs/" + config.scriptConstants;
 		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libConstEnabled = true;
 	} else {
 		console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
 	}
 	if (config.scriptParams) {
 		let path = "dbs/" + config.scriptParams;
 		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libParamsEnabled = true;
 	} else {
 		console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
 	}
@@ -229,7 +230,6 @@ function setJSON() { //this is a function because it needs to be repeated when i
 	if (config.skillDB) {
 		let path = "dbs/" + config.skillDB;
 		skills = JSON.parse(fs.readFileSync(path, "utf-8"));
-		skillsEnabled = true;
 		skillNames = [];
 		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
 			skillNames.push({
@@ -245,28 +245,55 @@ setJSON();
 
 let sheetsDB;
 let gstojson = require('google-spreadsheet-to-json');
-
 if (owner && config.sheetsDB) {
 	let path = "config/" + config.sheetsDB;
 	sheetsDB = JSON.parse(fs.readFileSync(path, "utf-8"));
 } else if (!owner) {
-	console.log("Bot owner's ID not set up!  JSON updating commands will be disabled.");
+	console.log("Bot owner's ID not set up! JSON updating commands will be disabled.");
 } else {
 	console.log("Sheets database not found at config.sheetsDB! JSON updating commands will be disabled.");
 }
 
 let debugOutput = false;
-if (config.debugOutput) {
+if (config.debugOutput || config.debugOutput === false) {
 	debugOutput = config.debugOutput;
 } else {
 	console.log("Choice whether to display debug information not found at config.debugOutput! Defaulting to not displaying it.");
 }
 
+let shortsDB = "shortcuts.json";
+if (config.shortcutDB) {
+	shortsDB = config.shortcutDB;
+} else {
+	console.log("Filename for shortcuts file not found at config.shortcutDB! Defaulting to " + shortsDB + ".");
+}
+
+let setsDB = "setcodes.json";
+if (config.setcodesDB) {
+	setsDB = config.setcodesDB;
+} else {
+	console.log("Filename for setcodes file not found at config.setcodesDB! Defaulting to " + setsDB + ".");
+}
+
+let banDB = "lflist.json";
+if (config.lflistDB) {
+	banDB = config.lflistDB;
+} else {
+	console.log("Filename for banlist file not found at config.lflistDB! Defaulting to " + banDB + ".");
+}
+
+let statsDB = "stats.json";
+if (config.statsDB) {
+	statsDB = config.statsDB;
+} else {
+	console.log("Filename for stats file not found at config.statsDB! Defaulting to " + statsDB + ".");
+}
+
 //more config files, all explained in the readme
-let shortcuts = JSON.parse(fs.readFileSync('config/shortcuts.json', 'utf8'));
-let setcodes = JSON.parse(fs.readFileSync('config/setcodes.json', 'utf8'));
-let lflist = JSON.parse(fs.readFileSync('config/lflist.json', 'utf8'));
-let stats = JSON.parse(fs.readFileSync('config/stats.json', 'utf8'));
+let shortcuts = JSON.parse(fs.readFileSync('config/' + shortsDB, 'utf8'));
+let setcodes = JSON.parse(fs.readFileSync('config/' + setsDB, 'utf8'));
+let lflist = JSON.parse(fs.readFileSync('config/' + banDB, 'utf8'));
+let stats = JSON.parse(fs.readFileSync('config/' + statsDB, 'utf8'));
 
 let Card = require('./card.js')(setcodes); //initialises a "Card" Class, takes setcodes as an argument for handling archetypes as a class function
 
@@ -334,7 +361,7 @@ for (let lang in dbs) {
 }
 
 let skillFuse = {};
-if (skillsEnabled) {
+if (skillNames.length > 0) {
 	skillFuse = new Fuse(skillNames, options);
 }
 
@@ -383,7 +410,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (scriptsEnabled && lowMessage.startsWith(pre + "script")) {
+	if (scriptUrlMaster && lowMessage.startsWith(pre + "script")) {
 		script(user, userID, channelID, message, event);
 		if (stats.cmdRankings.script) {
 			stats.cmdRankings.script++;
@@ -392,7 +419,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (imagesEnabled && lowMessage.startsWith(pre + "trivia")) {
+	if (imageUrlMaster && lowMessage.startsWith(pre + "trivia")) {
 		trivia(user, userID, channelID, message, event);
 		if (stats.cmdRankings.trivia) {
 			stats.cmdRankings.trivia++;
@@ -401,7 +428,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (imagesEnabled && lowMessage.startsWith(pre + "tlock") && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
+	if (imageUrlMaster && lowMessage.startsWith(pre + "tlock") && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
 		tlock(user, userID, channelID, message, event);
 		if (stats.cmdRankings.tlock) {
 			stats.cmdRankings.tlock++;
@@ -482,7 +509,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		commands(user, userID, channelID, message, event);
 		return;
 	}
-	if ("ja" in dbs && lowMessage.startsWith(pre + "rulings")) { //ruling search relies on Japanese DB
+	if (rulingLang && lowMessage.startsWith(pre + "rulings")) { //ruling search relies on Japanese DB
 		rulings(user, userID, channelID, message, event);
 		if (stats.cmdRankings.rulings) {
 			stats.cmdRankings.rulings++;
@@ -500,7 +527,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (libFuncEnabled && (lowMessage.startsWith(pre + "f") || lowMessage.startsWith(pre + "function"))) {
+	if (libFunctions && (lowMessage.startsWith(pre + "f") || lowMessage.startsWith(pre + "function"))) {
 		searchFunctions(user, userID, channelID, message, event);
 		if (stats.cmdRankings["function"]) {
 			stats.cmdRankings["function"]++;
@@ -509,7 +536,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (libConstEnabled && (lowMessage.startsWith(pre + "c") || lowMessage.startsWith(pre + "constant"))) {
+	if (libConstants && (lowMessage.startsWith(pre + "c") || lowMessage.startsWith(pre + "constant"))) {
 		searchConstants(user, userID, channelID, message, event);
 		if (stats.cmdRankings.constant) {
 			stats.cmdRankings.constant++;
@@ -518,7 +545,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (libParamsEnabled && lowMessage.startsWith(pre + "param")) {
+	if (libParams && lowMessage.startsWith(pre + "param")) {
 		searchParams(user, userID, channelID, message, event);
 		if (stats.cmdRankings.param) {
 			stats.cmdRankings.param++;
@@ -545,7 +572,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (skillsEnabled && lowMessage.startsWith(pre + "skill")) {
+	if (skills.length > 0 && lowMessage.startsWith(pre + "skill")) {
 		searchSkill(user, userID, channelID, message, event);
 		if (stats.cmdRankings.skill) {
 			stats.cmdRankings.skill++;
@@ -554,11 +581,11 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 		return;
 	}
-	if (ownerCmdsEnabled && userID === owner && lowMessage.startsWith(pre + "servers")) {
+	if (owner && owner.indexOf(userID) > -1 && lowMessage.startsWith(pre + "servers")) {
 		servers(user, userID, channelID, message, event);
 		return;
 	}
-	if (ownerCmdsEnabled && sheetsDB && userID === owner && lowMessage.startsWith(pre + "updatejson")) {
+	if (owner && sheetsDB && owner.indexOf(userID) > -1 && lowMessage.startsWith(pre + "updatejson")) {
 		updatejson(user, userID, channelID, message, event);
 		return;
 	}
@@ -630,7 +657,7 @@ bot.on('message', function(user, userID, channelID, message, event) {
 		}
 	} while (regx !== null);
 	let results2 = [];
-	if (imagesEnabled) {
+	if (imageUrlMaster) {
 		let re2 = /<(.*?)>/g; //gets text between <>
 		let regx2;
 		do {
@@ -726,7 +753,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		let args = message.toLowerCase().split(" ");
 		let code;
 		let i = 0;
-		let outLang = "en";
+		let outLang = defaultLang;
 		for (let arg of args) {
 			if (arg in dbs) {
 				outLang = arg;
@@ -748,7 +775,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 			code = ids[Math.floor(Math.random() * ids.length)];
 		}
 		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
-		if (imagesEnabled && args.indexOf("image") > -1) {
+		if (imageUrlMaster && args.indexOf("image") > -1) {
 			if (out[1].length == 1 && messageMode & 0x2) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 			} else {
@@ -766,7 +793,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 async function script(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "script ").length);
 	let args = input.split("|");
-	let inLang = "en";
+	let inLang = defaultLang;
 	if (args.length > 1) {
 		input = args[0];
 		if (args[1] in dbs)
@@ -810,8 +837,8 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	if (inLang in dbs && outLang in dbs) {
 		input = args.splice(0, args.length - 2).join(",");
 	} else {
-		inLang = "en";
-		outLang = "en";
+		inLang = defaultLang;
+		outLang = defaultLang;
 	}
 	let inInt = parseInt(input);
 	if (inInt in cards[inLang]) {
@@ -1279,7 +1306,7 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 async function getSingleProp(prop, user, userID, channelID, message, event) {
 	let input = message.slice((pre + prop + " ").length);
 	let args = input.split("|");
-	let outLang = "en";
+	let outLang = defaultLang;
 	if (args.length > 1) {
 		input = args[0];
 		if (args[1] in dbs)
@@ -1563,7 +1590,7 @@ function deck(user, userID, channelID, message, event) {
 		return;
 	}
 	let args = message.toLowerCase().split(" ");
-	let outLang = "en";
+	let outLang = defaultLang;
 	for (let arg of args) {
 		if (arg in dbs) {
 			outLang = arg;
@@ -1675,7 +1702,7 @@ function getCardScript(card, user, userID, channelID, message, event) {
 			}).on('end', async function() {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
-				if (script === "404: Not Found\n" && scriptBackupEnabled) {
+				if (script === "404: Not Found\n" && scriptUrlBackup) {
 					script = await new Promise(function(resolve, reject) {
 						fullUrl = scriptUrlBackup + "c" + card.code + ".lua";
 						https.get(url.parse(fullUrl), function(response) {
@@ -1709,7 +1736,7 @@ function matches(user, userID, channelID, message, event) {
 	let a = message.toLowerCase().split("|");
 	let arg = a[0].slice((pre + "matches ").length);
 	let args = a[1] && a[1].split(" ");
-	let outLang = "en";
+	let outLang = defaultLang;
 	if (args) {
 		for (let ar of args) {
 			if (ar in dbs) {
@@ -1858,7 +1885,7 @@ function searchSkill(user, userID, channelID, message, event) {
 function strings(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "strings ").length);
 	let args = input.split("|");
-	let inLang = "en";
+	let inLang = defaultLang;
 	if (args.length > 1) {
 		input = args[0];
 		if (args[1] in dbs)
@@ -1923,7 +1950,7 @@ function strings(user, userID, channelID, message, event) {
 function rulings(user, userID, channelID, message, event) {
 	let input = message.slice((pre + "rulings ").length);
 	let args = input.split("|");
-	let inLang = "en";
+	let inLang = defaultLang;
 	if (args.length > 1) {
 		input = args[0];
 		if (args[1] in dbs)
@@ -1940,9 +1967,9 @@ function rulings(user, userID, channelID, message, event) {
 		return;
 	let enCard = cards[inLang][code];
 	let jaCard;
-	Object.keys(cards.ja).forEach(function(key, index) {
-		if (cards.ja[key].code === code) {
-			jaCard = cards.ja[key];
+	Object.keys(cards[rulingLang]).forEach(function(key, index) {
+		if (cards[rulingLang][key].code === code) {
+			jaCard = cards[rulingLang][key];
 		}
 	});
 	let enName = enCard.name;
@@ -1975,7 +2002,7 @@ function rankings(user, userID, channelID, message, event) {
 	let term = "cards";
 	let validTerms = ["cards", "inputs", "commands"];
 	let numToGet = -1;
-	let outLang = "en";
+	let outLang = defaultLang;
 	for (let arg of args) {
 		if (parseInt(arg) > numToGet) {
 			numToGet = parseInt(arg);
@@ -2259,7 +2286,7 @@ function getEmbCT(card) {
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
 	if (!inLang in dbs) {
-		inLang = "en";
+		inLang = defaultLang;
 	}
 	for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
 		if (cards[inLang][key].name.toLowerCase() === line.toLowerCase()) {
@@ -2454,7 +2481,7 @@ function trivia(user, userID, channelID, message, event) {
 		} else if (args.indexOf("custom") > -1) {
 			ot = ["Custom"];
 		}
-		let outLang = "en";
+		let outLang = defaultLang;
 		for (let arg of args) {
 			if (arg in dbs) {
 				outLang = arg;

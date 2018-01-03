@@ -33,5 +33,12 @@
 	"messageMode": 0,
 	"embedColor": 1,
 	"embedColorDB": null,
-	"debugOutput": false
+	"debugOutput": false,
+	"sheetsDB": "sheets.json",
+	"defaultLanguage": "en",
+	"rulingLanguage": null,
+	"shortcutsDB": "shortcuts.json",
+	"setcodesDB": "setcodes.json",
+	"lflistDB": "lflist.json",
+	"statsDB": "stats.json",
 }

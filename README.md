@@ -81,15 +81,15 @@ The `.strings` command searches for a card by name or YGOPro ID, and returns the
 Usage: `.skill [skill name]`  
   
 The `.skill` command searches for a Skill, from Yu-Gi-Oh! Duel Links, and returns its name, description, and a list of which characters can obtain the Skill and how.  
-
-### .top
-Usage: `.top [number] [stat] [lang]`
-
-The `.top` command looks up the rankings for a given statistic, and returns the most common, up to the given amount. The available options are:
-`cards`, which will look up the most commonly searched cards.
-`inputs`, which will look up the most commonly entered search terms when searching for cards.
-`commands`, which will look up the most commonly used commands of the bot.
-If not all the parameters are specified, it will default to the top 10 cards in English. If a language is specified, it will look for a card with a name like you typed in that language.
+  
+### .top  
+Usage: `.top [number] [stat] [lang]`  
+  
+The `.top` command looks up the rankings for a given statistic, and returns the most common, up to the given amount. The available options are:  
+`cards`, which will look up the most commonly searched cards.  
+`inputs`, which will look up the most commonly entered search terms when searching for cards.  
+`commands`, which will look up the most commonly used commands of the bot.  
+If not all the parameters are specified, it will default to the top 10 cards in English. If a language is specified, it will look for a card with a name like you typed in that language.  
   
 ### Scripting Library  
 Usage: `.f [function name]`, `.c [constant name]`, `.param [parameter name]`  
@@ -160,7 +160,12 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"embedColor": 1,  
 	"embedColorDB": null,  
 	"debugOutput": false,  
-	"sheetsDB": "sheets.json"  
+	"sheetsDB": "sheets.json",  
+	"defaultLanguage": "en",  
+	"shortcutsDB": "shortcuts.json",  
+	"setcodesDB": "setcodes.json",  
+	"lflistDB": "lflist.json",  
+	"statsDB": "stats.json",  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -224,6 +229,18 @@ By default, the configuration file is called `config.json`, and is expected to b
 `debugOutput` is a boolean that determines if Bastion will log large amounts of data to the console, in situations that have caused unexplained crashes before. However, such a crash has not occured since I added such logs, and it is a large amount of logging, so it is recommended to disable this. This field is optional - if it is missing, it will default to what you see above.  
   
 `sheetsDB` is the name of the JSON file Bastion will load containing the Google Spreadsheet IDs that will be loaded to update your JSONs. This field is optional - if it is missing, the corresponding command will be disabled.  
+  
+`defaultLanguage` should be a key from `dbs` that you consider to represent the "main" language you'll be using with Bastion, to be defaulted to when a language is not specified. This field is optional - if it is missing, it will default to what you see above.  
+  
+`rulingLanguage` should be a key from `dbs` that represents Japanese, for use with looking up rulings on the official OCG database. This field is optional - if it is missing, the corresponding command will be disabled.  
+  
+`shortcutsDB` is the name of the JSON file containing shortcut data, as detailed below. This field is optional - if it is missing, it will default to what you see above.  
+  
+`setcodesDB` is the name of the JSON file containing archetype data, as detailed below. This field is optional - if it is missing, it will default to what you see above.  
+  
+`lflistDB` is the name of the JSON file containing banlist data, as detailed below. This field is optional - if it is missing, it will default to what you see above.  
+  
+`statsDB` is the name of the JSON file that will store stat data. This field is optional - if it is missing, it will default to what you see above.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -316,24 +333,24 @@ By default, the skills file is called `skills.json`, and is expected to be found
 ```  
 `name` is the name of the skill, `desc` is the skill's description, and `chars` is a list of characters that can obtain the skill, and how they do.  
   
-### Stats
-By default, the stats file is called `stats.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/stats.json`. The script expects `stats.json` to contain an object, with certain keys described below, the value of each being its own object, which can be empty.
-```json
-{
-	"searchRankings": {},
-	"inputRankings": {},
-	"cmdRankings": {}
-}
+### Stats  
+By default, the stats file is called `stats.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/stats.json`. The script expects `stats.json` to contain an object, with certain keys described below, the value of each being its own object, which can be empty.  
+```json  
+{  
+	"searchRankings": {},  
+	"inputRankings": {},  
+	"cmdRankings": {}  
+}  
 ```  
-Each of these objects will be populated by Bastion and saved every 5 minutes of run-time, there is no need to modify it further yourself. For reference, `searchRankings` tracks how many times each card is looked up, `inputRankings` keeps track of all the different things people input to search for cards, and `cmdRankings` tracks how many times each command of the bot is used.
+Each of these objects will be populated by Bastion and saved every 5 minutes of run-time, there is no need to modify it further yourself. For reference, `searchRankings` tracks how many times each card is looked up, `inputRankings` keeps track of all the different things people input to search for cards, and `cmdRankings` tracks how many times each command of the bot is used.  
   
 ### Sheets  
 By default, the sheets file is called `sheets.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/sheets.json`. The script expects `sheets.json` to contain an object, with keys which is your json name, the value of each being the Spreadsheet ID which is between `spreadsheets/d/` and `/edit` from your URL.  
-```json
-	"constants": "",
-	"functions": "",
-	"parameters": "",
-	"skills": ""
+```json  
+	"constants": "",  
+	"functions": "",  
+	"parameters": "",  
+	"skills": ""  
 ```  
   
 ### Database  
@@ -438,4 +455,4 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 - Auto CDB update --Bonus  
 - Grab DBs (and whatever else) from online *or* local --Bonus  
 - Improve ruling page lookup --questionably possible, requires formulaic way to determine OCG database ID from card data  
-- Add OCG/Japanese prices if searching japanese language --questionably possible, requires source with API
+- Add OCG/Japanese prices if searching japanese language --questionably possible, requires source with API  
