@@ -257,20 +257,15 @@ module.exports = function(setcodes) {
 		}
 
 		isType(tpe) {
-			if (this._type & tpe) { //this will usually be enough...
+			if ((this._type & tpe) === tpe) { //this will usually be enough...
 				return true
 			}
-			let tempType = this._type;
-			if (tempType >= 0x100000000 && tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater than 32-bit
-				tempType -= (tempType & 0xffffffff); //so MLD wrote this magic function to replicate & for this use case
-				while (tempType > 0xffffffff) {
-					tempType -= 0xffffffff;
-				}
-				let ttpe = tpe - (tpe & 0xffffffff);
-				while (ttpe > 0xffffffff) {
-					ttpe -= 0xffffffff;
-				}
-				return tempType & ttpe;
+			if (this._type >= 0x100000000 || tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater than 32-bit
+				let tempType1 = Math.floor(this._type / 0x100000000);
+				let tempType2 = this._type & 0xffffffff;
+				let ttpe1 = Math.floor(tpe / 0x100000000);
+				let ttpe2 = tpe & 0xffffffff;
+				return (tempType1 & ttpe1) === ttpe1 && (tempType2 & ttpe2) === ttpe2
 			}
 			return false
 		}
@@ -392,15 +387,10 @@ module.exports = function(setcodes) {
 			if (this._race & 0x80000000) {
 				races.push("Yokai");
 			}
-			if (this._race > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
-				let tempRace = _race
-				tempRace -= (tempRace & 0xffffffff);
-				while (tempRace > 0xffffffff) {
-					tempRace -= 0xffffffff;
-				}
-				if (tempRace & 0x1) {
-					races.push("Charisma");
-				}
+			//over 32-bit JS suddenly can't handle bitwise operations, so edo9300 worked some magic
+			let tempRace = Math.floor(this._race / 0x100000000);
+			if (tempRace & 0x1) {
+				races.push("Charisma");
 			}
 			if (races.length === 0) {
 				return ["???"];
@@ -435,16 +425,11 @@ module.exports = function(setcodes) {
 			if (this._attribute & 0x80) {
 				atts.push("LAUGH");
 			}
-			if (this._attribute > 0xffffffff) { //over 32-bit JS suddenly can't handle bitwise operations, so MLD worked some magic
-				let tempAtt = this._attribute
-				tempAtt -= (tempAtt & 0xffffffff);
-				while (tempAtt > 0xffffffff) {
-					tempAtt -= 0xffffffff;
-				}
-				/*if (tempAtt & 0x1) {
-					atts.push("No attribute yet");
-				}*/
-			}
+			//over 32-bit JS suddenly can't handle bitwise operations, so edo9300 worked some magic
+			let tempAtt = Math.floor(this._attribute / 0x100000000);
+			/*if (tempAtt & 0x1) {
+				atts.push("No attribute yet");
+			}*/
 			if (atts.length === 0) {
 				return ["???"];
 			} else {
