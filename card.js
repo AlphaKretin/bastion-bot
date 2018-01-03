@@ -1,53 +1,53 @@
 module.exports = function(setcodes) {
 	return class Card {
-		constructor(code, ot, alias, setcode, type, atk, def, level, race, attribute, category, name, desc, str1, str2, str3, str4, str5, str6, str7, str8, str9, str10, str11, str12, str13, str14, str15, str16) {
-			this._code = code;
-			this._ot = ot;
-			this._alias = alias;
-			this._setcode = setcode;
-			this._type = type;
-			this._atk = atk;
-			this._def = def;
-			this._level = level;
-			this._race = race;
-			this._attribute = attribute;
-			this._category = category;
-			this._name = name;
-			this._desc = desc;
+		constructor(datas) {
+			this._code = datas[0];
+			this._ot = datas[1];
+			this._alias = datas[2];
+			this._setcode = datas[3];
+			this._type = datas[4];
+			this._atk = datas[5];
+			this._def = datas[6];
+			this._level = datas[7];
+			this._race = datas[8];
+			this._attribute = datas[9];
+			this._category = datas[10];
+			this._name = datas[12];
+			this._desc = datas[13];
 			this._strings = {}; //is an object instead of an array so we can get a value's real index if one before it is skipped
 			let re = /\S/;
-			if (re.test(str1))
-				this._strings[1] = str1;
-			if (re.test(str2))
-				this._strings[2] = str2;
-			if (re.test(str3))
-				this._strings[3] = str3;
-			if (re.test(str4))
-				this._strings[4] = str4;
-			if (re.test(str5))
-				this._strings[5] = str5;
-			if (re.test(str6))
-				this._strings[6] = str6;
-			if (re.test(str7))
-				this._strings[7] = str7;
-			if (re.test(str8))
-				this._strings[8] = str8;
-			if (re.test(str9))
-				this._strings[9] = str9;
-			if (re.test(str10))
-				this._strings[10] = str10;
-			if (re.test(str11))
-				this._strings[11] = str11;
-			if (re.test(str12))
-				this._strings[12] = str12;
-			if (re.test(str13))
-				this._strings[13] = str13;
-			if (re.test(str14))
-				this._strings[14] = str14;
-			if (re.test(str15))
-				this._strings[15] = str15;
-			if (re.test(str16))
-				this._strings[16] = str16;
+			if (re.test(datas[14]))
+				this._strings[1] = datas[14];
+			if (re.test(datas[15]))
+				this._strings[2] = datas[15];
+			if (re.test(datas[16]))
+				this._strings[3] = datas[16];
+			if (re.test(datas[17]))
+				this._strings[4] = datas[17];
+			if (re.test(datas[18]))
+				this._strings[5] = datas[18];
+			if (re.test(datas[19]))
+				this._strings[6] = datas[19];
+			if (re.test(datas[20]))
+				this._strings[7] = datas[20];
+			if (re.test(datas[21]))
+				this._strings[8] = datas[21];
+			if (re.test(datas[22]))
+				this._strings[9] = datas[22];
+			if (re.test(datas[23]))
+				this._strings[10] = datas[23];
+			if (re.test(datas[24]))
+				this._strings[11] = datas[24];
+			if (re.test(datas[25]))
+				this._strings[12] = datas[25];
+			if (re.test(datas[26]))
+				this._strings[13] = datas[26];
+			if (re.test(datas[27]))
+				this._strings[14] = datas[27];
+			if (re.test(datas[28]))
+				this._strings[15] = datas[28];
+			if (re.test(datas[29]))
+				this._strings[16] = datas[29];
 		}
 
 		//Getters

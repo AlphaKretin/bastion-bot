@@ -290,38 +290,7 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 	cards[lang] = {};
 	let contents = db.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	for (let card of contents[0].values) {
-		let car = new Card(
-			card[0], //code
-			card[1], //ot
-			card[2], //alias
-			card[3], //setcode
-			card[4], //type
-			card[5], //atk
-			card[6], //def
-			card[7], //level
-			card[8], //race
-			card[9], //attribute
-			card[10], //category
-			//card[11] is skipped because it is the duplicate id from the datas table
-			card[12], //name
-			card[13], //card text
-			card[14], //string 1..
-			card[15], //2
-			card[16], //3
-			card[17], //4
-			card[18], //5
-			card[19], //6
-			card[20], //7
-			card[21], //8
-			card[22], //9
-			card[23], //10
-			card[24], //11
-			card[25], //12
-			card[26], //13
-			card[27], //14
-			card[28], //15
-			card[29], //16
-		);
+		let car = new Card(card);
 		cards[lang][car.code] = car;
 	}
 	if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
@@ -332,37 +301,7 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			let newDB = new SQL.Database(newbuffer);
 			let newContents = newDB.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id");
 			for (let newCard of newContents[0].values) {
-				let newCar = new Card(
-					newCard[0], //code
-					newCard[1], //ot
-					newCard[2], //alias
-					newCard[3], //setcode
-					newCard[4], //type
-					newCard[5], //atk
-					newCard[6], //def
-					newCard[7], //level
-					newCard[8], //race
-					newCard[9], //attribute
-					newCard[10], //category
-					newCard[12], //name
-					newCard[13], //card text
-					newCard[14], //string 1..
-					newCard[15], //2
-					newCard[16], //3
-					newCard[17], //4
-					newCard[18], //5
-					newCard[19], //6
-					newCard[20], //7
-					newCard[21], //8
-					newCard[22], //9
-					newCard[23], //10
-					newCard[24], //11
-					newCard[25], //12
-					newCard[26], //13
-					newCard[27], //14
-					newCard[28], //15
-					newCard[29], //16
-				);
+				let newCar = new Card(newCard);
 				cards[lang][newCar.code] = newCar;
 			}
 		}
