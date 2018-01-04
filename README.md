@@ -7,7 +7,7 @@ You can install a copy of Bastion yourself, more information on how below, but i
 
 ### Patrons  
 Thank you very much to my 10 and 20 dollar Patreon backers:  
- - Nemoma  
+ - Nemo "冴月麟" Ma  
   
 ### Contributors
 Thank you to the following users for their work on Bastion:
