@@ -396,198 +396,176 @@ bot.on('disconnect', function() { //Discord API occasionally disconnects bots fo
 });
 
 //command declaration
+let commandList = [
+	{
+		names: ["randcard", "randomcard"],
+		func: randomCard
+	},
+	{
+		names: ["script"],
+		func: script,
+		chk: function() {
+			return scriptUrlMaster;
+		}
+	},
+	{
+		names: ["trivia"],
+		func: trivia,
+		chk: function() {
+			return imageUrlMaster;
+		}
+	},
+	{
+		names: ["tlock"],
+		func: tlock,
+		chk: function(user, userID, channelID) {
+			return imageUrlMaster && checkForPermissions(userID, channelID, [8192]); //User must have manage message permission
+		}
+	},
+	{
+		names: ["matches", "match"],
+		func: matches
+	},
+	{
+		names: ["set", "setcode", "archetype", "setname", "sets"],
+		func: set
+	},
+	{
+		names: ["id"],
+		func: getSingleProp
+	},
+	{
+		names: ["notext", "stats"],
+		func: getSingleProp
+	},
+	{
+		names: ["effect", "cardtext"],
+		func: getSingleProp
+	},
+	{
+		names: ["strings"],
+		func: strings
+	},
+	{
+		names: ["deck"],
+		func: deck
+	},
+	{
+		names: ["commands"],
+		func: commands
+	},
+	{
+		names: ["rulings"],
+		func: rulings,
+		chk: function() {
+			return rulingLang; //ruling search relies on Japanese DB
+		}
+	},
+	{
+		names: ["top", "rankings", "rank"],
+		func: rankings
+	},
+	{
+		names: ["function", "func", "f"],
+		func: searchFunctions,
+		chk: function() {
+			return libFunctions;
+		}
+	},
+	{
+		names: ["constant", "const", "c"],
+		func: searchConstants,
+		chk: function() {
+			return libConstants;
+		}
+	},
+	{
+		names: ["param", "parameter"],
+		func: searchParams,
+		chk: function() {
+			return libParams;
+		}
+	},
+	{
+		names: ["p", "page"], //must be after param to avoid double-post
+		func: libPage,
+		chk: function() {
+			return searchPage.active;
+		}
+	},
+	{
+		names: ["d", "desc", "description"],
+		func: libDesc,
+		chk: function() {
+			return searchPage.active;
+		}
+	},
+	{
+		names: ["skill"],
+		func: searchSkill,
+		chk: function() {
+			return skills.length > 0;
+		}
+	},
+	{
+		names: ["servers", "serverlist"],
+		func: servers,
+		chk: function(user, userID) {
+			return owner && owner.indexOf(userID) > -1;
+		},
+		noTrack: true
+	},
+	{
+		names: ["updatejson"],
+		func: updatejson,
+		chk: function(user, userID) {
+			return owner && sheetsDB && owner.indexOf(userID) > -1;
+		},
+		noTrack: true
+	},
+	{
+		names: ["long"],
+		func: function(user, userID) {
+			if (messageMode & 0x2) {
+				bot.sendMessage({
+					to: userID,
+					embed: {
+						color: embedColor,
+						description: bo + quo + quo + quo + longMsg,
+					}
+				});
+			} else {
+				bot.sendMessage({
+					to: userID,
+					message: bo + quo + quo + quo + longMsg
+				});
+			}
+		},
+		chk: function() {
+			return longMsg.length > 0;
+		}
+	}
+];
+
 bot.on('message', function(user, userID, channelID, message, event) {
 	if (userID === bot.id || (bot.users[userID] && bot.users[userID].bot)) { //ignores own messages to prevent loops, and those of other bots just in case
 		return;
 	}
 	let lowMessage = message.toLowerCase();
-	if (lowMessage.startsWith(pre + "randcard")) {
-		randomCard(user, userID, channelID, message, event);
-		if (stats.cmdRankings.randcard) {
-			stats.cmdRankings.randcard++;
-		} else {
-			stats.cmdRankings.randcard = 1;
+	for (let cmd of commandList) {
+		for (let name of cmd.names) {
+			if (lowMessage.startsWith(pre + name) && (!cmd.chk || cmd.chk(user, userID, channelID, message, event))) {
+				cmd.func(user, userID, channelID, message, event, name, cmd.names[0]);
+				if (!cmd.noTrack) {
+					if (stats.cmdRankings[cmd.names[0]]) {
+						stats.cmdRankings[cmd.names[0]]++;
+					} else {
+						stats.cmdRankings[cmd.names[0]] = 1;
+					}
+				}
+				return;
+			}
 		}
-		return;
-	}
-	if (scriptUrlMaster && lowMessage.startsWith(pre + "script")) {
-		script(user, userID, channelID, message, event);
-		if (stats.cmdRankings.script) {
-			stats.cmdRankings.script++;
-		} else {
-			stats.cmdRankings.script = 1;
-		}
-		return;
-	}
-	if (imageUrlMaster && lowMessage.startsWith(pre + "trivia")) {
-		trivia(user, userID, channelID, message, event);
-		if (stats.cmdRankings.trivia) {
-			stats.cmdRankings.trivia++;
-		} else {
-			stats.cmdRankings.trivia = 1;
-		}
-		return;
-	}
-	if (imageUrlMaster && lowMessage.startsWith(pre + "tlock") && checkForPermissions(userID, channelID, [8192])) { //user must have Manage Message permission to use this command
-		tlock(user, userID, channelID, message, event);
-		if (stats.cmdRankings.tlock) {
-			stats.cmdRankings.tlock++;
-		} else {
-			stats.cmdRankings.tlock = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "matches")) {
-		matches(user, userID, channelID, message, event);
-		if (stats.cmdRankings.matches) {
-			stats.cmdRankings.matches++;
-		} else {
-			stats.cmdRankings.matches = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "set")) {
-		set(user, userID, channelID, message, event);
-		if (stats.cmdRankings.set) {
-			stats.cmdRankings.set++;
-		} else {
-			stats.cmdRankings.set = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "id")) {
-		getSingleProp("id", user, userID, channelID, message, event);
-		if (stats.cmdRankings.id) {
-			stats.cmdRankings.id++;
-		} else {
-			stats.cmdRankings.id = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "notext")) {
-		getSingleProp("notext", user, userID, channelID, message, event);
-		if (stats.cmdRankings.notext) {
-			stats.cmdRankings.notext++;
-		} else {
-			stats.cmdRankings.notext = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "effect")) {
-		getSingleProp("effect", user, userID, channelID, message, event);
-		if (stats.cmdRankings.effect) {
-			stats.cmdRankings.effect++;
-		} else {
-			stats.cmdRankings.effect = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "strings")) {
-		strings(user, userID, channelID, message, event);
-		if (stats.cmdRankings.strings) {
-			stats.cmdRankings.strings++;
-		} else {
-			stats.cmdRankings.strings = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "deck")) {
-		deck(user, userID, channelID, message, event);
-		if (stats.cmdRankings.deck) {
-			stats.cmdRankings.deck++;
-		} else {
-			stats.cmdRankings.deck = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "commands")) {
-		if (stats.cmdRankings.commands) {
-			stats.cmdRankings.commands++;
-		} else {
-			stats.cmdRankings.commands = 1;
-		}
-		commands(user, userID, channelID, message, event);
-		return;
-	}
-	if (rulingLang && lowMessage.startsWith(pre + "rulings")) { //ruling search relies on Japanese DB
-		rulings(user, userID, channelID, message, event);
-		if (stats.cmdRankings.rulings) {
-			stats.cmdRankings.rulings++;
-		} else {
-			stats.cmdRankings.rulings = 1;
-		}
-		return;
-	}
-	if (lowMessage.startsWith(pre + "top")) {
-		rankings(user, userID, channelID, message, event);
-		if (stats.cmdRankings["top"]) {
-			stats.cmdRankings["top"]++;
-		} else {
-			stats.cmdRankings["top"] = 1;
-		}
-		return;
-	}
-	if (libFunctions && (lowMessage.startsWith(pre + "f") || lowMessage.startsWith(pre + "function"))) {
-		searchFunctions(user, userID, channelID, message, event);
-		if (stats.cmdRankings["function"]) {
-			stats.cmdRankings["function"]++;
-		} else {
-			stats.cmdRankings["function"] = 1;
-		}
-		return;
-	}
-	if (libConstants && (lowMessage.startsWith(pre + "c") || lowMessage.startsWith(pre + "constant"))) {
-		searchConstants(user, userID, channelID, message, event);
-		if (stats.cmdRankings.constant) {
-			stats.cmdRankings.constant++;
-		} else {
-			stats.cmdRankings.constant = 1;
-		}
-		return;
-	}
-	if (libParams && lowMessage.startsWith(pre + "param")) {
-		searchParams(user, userID, channelID, message, event);
-		if (stats.cmdRankings.param) {
-			stats.cmdRankings.param++;
-		} else {
-			stats.cmdRankings.param = 1;
-		}
-		return;
-	}
-	if (searchPage.active && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
-		libPage(user, userID, channelID, message, event);
-		if (stats.cmdRankings.p) {
-			stats.cmdRankings.p++;
-		} else {
-			stats.cmdRankings.p = 1;
-		}
-		return;
-	}
-	if (searchPage.active && lowMessage.startsWith(pre + "d")) {
-		libDesc(user, userID, channelID, message, event);
-		if (stats.cmdRankings.d) {
-			stats.cmdRankings.d++;
-		} else {
-			stats.cmdRankings.d = 1;
-		}
-		return;
-	}
-	if (skills.length > 0 && lowMessage.startsWith(pre + "skill")) {
-		searchSkill(user, userID, channelID, message, event);
-		if (stats.cmdRankings.skill) {
-			stats.cmdRankings.skill++;
-		} else {
-			stats.cmdRankings.skill = 1;
-		}
-		return;
-	}
-	if (owner && owner.indexOf(userID) > -1 && lowMessage.startsWith(pre + "servers")) {
-		servers(user, userID, channelID, message, event);
-		return;
-	}
-	if (owner && sheetsDB && owner.indexOf(userID) > -1 && lowMessage.startsWith(pre + "updatejson")) {
-		updatejson(user, userID, channelID, message, event);
-		return;
 	}
 	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.startsWith(pre + "help")) {
 		//send help message
@@ -611,28 +589,6 @@ bot.on('message', function(user, userID, channelID, message, event) {
 			stats.cmdRankings.help = 1;
 		}
 	}
-	if (longMsg.length > 0 && lowMessage.startsWith(pre + "long")) {
-		if (messageMode & 0x2) {
-			bot.sendMessage({
-				to: userID,
-				embed: {
-					color: embedColor,
-					description: bo + quo + quo + quo + longMsg,
-				}
-			});
-		} else {
-			bot.sendMessage({
-				to: userID,
-				message: bo + quo + quo + quo + longMsg
-			});
-		}
-		if (stats.cmdRankings["long"]) {
-			stats.cmdRankings["long"]++;
-		} else {
-			stats.cmdRankings["long"] = 1;
-		}
-		return;
-	}
 	if (channelID in gameData) {
 		switch (gameData[channelID].game) { //switch statement where if would do to futureproof for adding more games
 			case "trivia":
@@ -650,24 +606,20 @@ bot.on('message', function(user, userID, channelID, message, event) {
 	let regx;
 	do {
 		regx = re.exec(message);
-		if (regx !== null) {
-			if (regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
-				results.push(regx[1]);
-			}
+		if (regx && regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
+			results.push(regx[1]);
 		}
-	} while (regx !== null);
+	} while (regx);
 	let results2 = [];
 	if (imageUrlMaster) {
 		let re2 = /<(.*?)>/g; //gets text between <>
 		let regx2;
 		do {
 			regx2 = re2.exec(message);
-			if (regx2 !== null) {
-				if (regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
-					results2.push(regx2[1]);
-				}
+			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
+				results2.push(regx2[1]);
 			}
-		} while (regx2 !== null);
+		} while (regx2);
 	}
 	if (results.length + results2.length > maxSearches) {
 		if (messageMode & 0x2) {
@@ -714,10 +666,19 @@ bot.on('messageUpdate', function(oldMsg, newMsg, event) { //a few commands can b
 	}
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
 	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
-		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
+		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "p");
+	}
+	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "page") && lowMessage.indexOf("param") === -1) {
+		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "page");
 	}
 	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "d")) {
-		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event);
+		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "d");
+	}
+	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "desc")) {
+		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "desc");
+	}
+	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "description")) {
+		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "description");
 	}
 });
 
@@ -790,8 +751,8 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 }
 
 //from hereon out, some functions and logic will be re-used from earlier functions - I won't repeat myself, just check that.
-async function script(user, userID, channelID, message, event) {
-	let input = message.slice((pre + "script ").length);
+async function script(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
 	let args = input.split("|");
 	let inLang = defaultLang;
 	if (args.length > 1) {
@@ -1303,8 +1264,8 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 }
 
 //see getCardInfo for much of the functionality here
-async function getSingleProp(prop, user, userID, channelID, message, event) {
-	let input = message.slice((pre + prop + " ").length);
+async function getSingleProp(user, userID, channelID, message, event, name, prop) {
+	let input = message.slice((pre + name + " ").length);
 	let args = input.split("|");
 	let outLang = defaultLang;
 	if (args.length > 1) {
@@ -1732,9 +1693,9 @@ function getCardScript(card, user, userID, channelID, message, event) {
 	});
 }
 
-function matches(user, userID, channelID, message, event) {
+function matches(user, userID, channelID, message, event, name) {
 	let a = message.toLowerCase().split("|");
-	let arg = a[0].slice((pre + "matches ").length);
+	let arg = a[0].slice((pre + name + " ").length);
 	let args = a[1] && a[1].split(" ");
 	let outLang = defaultLang;
 	if (args) {
@@ -1808,8 +1769,8 @@ function matches(user, userID, channelID, message, event) {
 	}
 }
 
-function set(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "set ").length);
+function set(user, userID, channelID, message, event, name) {
+	let arg = message.slice((pre + name + " ").length);
 	if (arg.toLowerCase() in setcodes) {
 		if (messageMode & 0x2) {
 			bot.sendMessage({
@@ -1848,8 +1809,8 @@ function set(user, userID, channelID, message, event) {
 	}
 }
 
-function searchSkill(user, userID, channelID, message, event) {
-	let arg = message.toLowerCase().slice((pre + "skill").length);
+function searchSkill(user, userID, channelID, message, event, name) {
+	let arg = message.toLowerCase().slice((pre + name + " ").length);
 	let index = -1;
 	skills.forEach(function(skill, ind) {
 		if (arg === skill.name.toLowerCase()) {
@@ -1882,8 +1843,8 @@ function searchSkill(user, userID, channelID, message, event) {
 	}
 }
 
-function strings(user, userID, channelID, message, event) {
-	let input = message.slice((pre + "strings ").length);
+function strings(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
 	let args = input.split("|");
 	let inLang = defaultLang;
 	if (args.length > 1) {
@@ -1947,8 +1908,8 @@ function strings(user, userID, channelID, message, event) {
 	}
 }
 
-function rulings(user, userID, channelID, message, event) {
-	let input = message.slice((pre + "rulings ").length);
+function rulings(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
 	let args = input.split("|");
 	let inLang = defaultLang;
 	if (args.length > 1) {
@@ -3120,8 +3081,8 @@ function servers(user, userID, channelID, message, event) {
 	}
 }
 
-function updatejson(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "updatejson ").length);
+function updatejson(user, userID, channelID, message, event, name) {
+	let arg = message.slice((pre + name + " ").length);
 	let sheetID = sheetsDB[arg];
 	if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
 		if (!sheetID)
@@ -3155,8 +3116,8 @@ function updatejson(user, userID, channelID, message, event) {
 }
 
 //scripting lib 
-function searchFunctions(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "f ").length);
+function searchFunctions(user, userID, channelID, message, event, name) {
+	let arg = message.slice((pre + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3231,8 +3192,8 @@ function searchFunctions(user, userID, channelID, message, event) {
 	}
 }
 
-function searchConstants(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "c ").length);
+function searchConstants(user, userID, channelID, message, event, name) {
+	let arg = message.slice((pre + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3307,8 +3268,8 @@ function searchConstants(user, userID, channelID, message, event) {
 	}
 }
 
-function searchParams(user, userID, channelID, message, event) {
-	let arg = message.slice((pre + "param ").length);
+function searchParams(user, userID, channelID, message, event, name) {
+	let arg = message.slice((pre + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3383,8 +3344,8 @@ function searchParams(user, userID, channelID, message, event) {
 	}
 }
 
-function libPage(user, userID, channelID, message, event) {
-	let arg = parseInt(message.slice((pre + "p").length));
+function libPage(user, userID, channelID, message, event, name) {
+	let arg = parseInt(message.slice((pre + name).length));
 	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages.length) {
 		return;
 	}
@@ -3439,8 +3400,8 @@ function libPage(user, userID, channelID, message, event) {
 	}
 }
 
-function libDesc(user, userID, channelID, message, event) {
-	let arg = parseInt(message.slice((pre + "d").length));
+function libDesc(user, userID, channelID, message, event, name) {
+	let arg = parseInt(message.slice((pre + name).length));
 	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages[searchPage.index].length) {
 		return;
 	}
