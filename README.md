@@ -3,6 +3,18 @@ Bastion is a [Discord](https://discordapp.com/) bot written in the NodeJS module
   
 You can install a copy of Bastion yourself, more information on how below, but if you'd rather just use my copy, [here's](https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=3072) the invite link. For support and feedback, my Discord server is [here](https://discordapp.com/invite/GrMGspZ), and you can support me on Patreon [here]( https://www.patreon.com/alphakretinbots).  
   
+## Credits
+
+### Patrons  
+Thank you very much to my 10 and 20 dollar Patreon backers:  
+ - Nemoma  
+  
+### Contributors
+Thank you to the following users for their work on Bastion:
+ - MichaelLawrenceDee: For features including emotes and output display modes.  
+ - edo9300: For features including multiple languages and improving database loading.  
+ - Gideon: For hosting the public copy of the bot  
+ 
 ## Commands  
 Bastion's primary purpose is a database of card information. Basic knowledge about relevant terms will be assumed in this section and the next. Note that Bastion's prefix is customisable - more information on that in the configuration section - this section assumes the default prefix of ".".  
   
