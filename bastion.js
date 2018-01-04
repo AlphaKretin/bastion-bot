@@ -89,7 +89,7 @@ let messageMode = 0;
 let embedColor = 0x1;
 let embcDB;
 
-if (config.messageMode) {
+if (config.messageMode || config.messageMode === 0) {
 	messageMode = config.messageMode;
 } else {
 	console.log("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
@@ -99,10 +99,10 @@ if (messageMode & 0x2 && config.embedColor) {
 } else if (messageMode & 0x2) {
 	console.log("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
 }
-if (config.embedColorDB) {
+if (messageMode & 0x2 && config.embedColorDB) {
 	let path = "config/" + config.embedColorDB;
 	embcDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-} else {
+} else if (messageMode & 0x2) {
 	console.log("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
 }
 
@@ -236,12 +236,15 @@ function setJSON() { //this is a function because it needs to be repeated when i
 				name: skill.name,
 			});
 		}
+		if (skillNames.length > 0) {
+			skillFuse = new Fuse(skillNames, options);
+		}
 	} else {
 		console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
 	}
 }
 
-setJSON();
+
 
 let sheetsDB;
 let gstojson = require('google-spreadsheet-to-json');
@@ -361,9 +364,7 @@ for (let lang in dbs) {
 }
 
 let skillFuse = {};
-if (skillNames.length > 0) {
-	skillFuse = new Fuse(skillNames, options);
-}
+setJSON();
 
 let request = require('request');
 let https = require('https');
