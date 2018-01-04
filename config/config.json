@@ -22,7 +22,7 @@
 	"triviaHintTime": 10000,
 	"triviaMaxRounds": 20,
 	"triviaLocks": {},
-	"botOwner": "169299769695535105",
+	"botOwner": ["169299769695535105"],
 	"scriptFunctions": "functions.json",
 	"scriptConstants": "constants.json",
 	"scriptParams": "parameters.json",

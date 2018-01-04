@@ -166,7 +166,7 @@ if (config.maxSearches) {
 	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
 }
 
-let defaultLang = defaultLang;
+let defaultLang = "en";
 if (config.defaultLanguage) {
 	defaultLang = config.defaultLanguage;
 } else {
@@ -3106,7 +3106,7 @@ function servers(user, userID, channelID, message, event) {
 	out += "```";
 	if (messageMode & 0x2) {
 		bot.sendMessage({
-			to: owner,
+			to: userID,
 			embed: {
 				color: embedColor,
 				description: out,
@@ -3114,7 +3114,7 @@ function servers(user, userID, channelID, message, event) {
 		});
 	} else {
 		bot.sendMessage({
-			to: owner,
+			to: userID,
 			message: out
 		});
 	}

@@ -148,7 +148,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"triviaHintTime": 10000,  
 	"triviaMaxRounds": 20,  
 	"triviaLocks": {},  
-	"botOwner": "169299769695535105",  
+	"botOwner": ["169299769695535105"],  
 	"scriptFunctions": "functions.json",  
 	"scriptConstants": "constants.json",  
 	"scriptParams": "parameters.json",  
@@ -204,7 +204,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `triviaLocks` is an object with server IDs as keys and an array of channel IDs as the properties. If a server is in the object, the trivia game can only be player in the channels listed in the array. This field is optional - if it is missing, Bastion will default to what you see above, and you can configure it through Bastion even if you don't run the copy using the `.tlock` command.  
   
-`botOwner` is the Discord user ID of the user you consider to own the bot, likely yourself, for the sake of administrative functions. This field is optional - if it is missing, such functions will be disabled.  
+`botOwner` is an array of Discord user IDs of the users you consider to own the bot, likely including yourself, for the sake of administrative functions. This field is optional - if it is missing, such functions will be disabled.  
   
 `scriptFunctions` is the name of the JSON file Bastion will load containing information about the YGOPro API's functions - details on this file below. This field is optional - if it is missing, searching for functions will be disabled.  
   
