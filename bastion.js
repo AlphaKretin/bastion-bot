@@ -2074,7 +2074,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 				if (["Anime", "Illegal", "Video Game"].indexOf(card.ot) > -1) {
 					imgurl = imageUrlAnime;
 				}
-				if (ot === "Custom") {
+				if (card.ot === "Custom") {
 					imgurl = imageUrlCustom;
 				}
 				imgurl += code + "." + imageExt;
