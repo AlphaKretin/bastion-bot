@@ -3220,7 +3220,7 @@ function searchConstants(user, userID, channelID, message, event, name) {
 	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		out += "[" + (i + 1) + "] " + line.val.padStart(len, " ") + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.val.toString().padStart(len, " ") + " | " + line.name + "\n"
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	if (messageMode & 0x2) {
@@ -3375,10 +3375,7 @@ function libPage(user, userID, channelID, message, event, name) {
 	let out = "```cs\n";
 	for (let i = 0; i < pages[index].length; i++) {
 		let line = pages[index][i];
-		while (line[n].length < len) {
-			line[n] = " " + line[n];
-		}
-		out += "[" + (i + 1) + "] " + line[n] + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line[n].toString().padStart(len, " ") + " | " + line.name + "\n"
 	}
 	out += "````Page: " + arg + "/" + pages.length + "`";
 	searchPage.index = index;
