@@ -1317,14 +1317,14 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 						alIs = [code];
 						Object.keys(cards[outLang]).forEach(function(key, index) {
 							if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
-								alIDs.push(cards[outLang][key].code);
+								alIs.push(cards[outLang][key].code);
 							}
 						});
 					}
 				} else {
 					Object.keys(cards[outLang]).forEach(function(key, index) {
 						if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot && cards[outLang][key].name === card.name) {
-							alIDs.push(cards[outLang][key].code);
+							alIs.push(cards[outLang][key].code);
 						}
 					});
 				}
