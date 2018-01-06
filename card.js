@@ -262,7 +262,7 @@ module.exports = function(setcodes) {
 			}
 			if (this._type >= 0x100000000 || tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater than 32-bit
 				let tempType1 = Math.floor(this._type / 0x100000000);
-				let tempType2 = this._type - tempType1 * 0x100000000);
+				let tempType2 = this._type - tempType1 * 0x100000000;
 				let ttpe1 = Math.floor(tpe / 0x100000000);
 				let ttpe2 = tpe - ttpe1 * 0x100000000;
 				return (tempType1 & ttpe1) === ttpe1 && (tempType2 & ttpe2) === ttpe2
