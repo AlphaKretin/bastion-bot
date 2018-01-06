@@ -2348,22 +2348,22 @@ function randFilterCheck(code, args, outLang) {
 		}
 	}
 	for (let type of Card.typeList) {
-		if (args.indexOf(type) > -1) {
+		if (args.indexOf(" " + type + " ") > -1) {
 			typeFilters.push(type);
 		}
 	}
 	for (let race of Card.raceList) {
-		if (args.indexOf(race) > -1) {
+		if (args.indexOf(" " + race + " ") > -1) {
 			raceFilters.push(race);
 		}
 	}
 	for (let att of Card.attributeList) {
-		if (args.indexOf(att > -1) {
+		if (args.indexOf(" " + att + " ") > -1) {
 			attFilters.push(att);
 		}
 	}
 	for (let set of Card.setList) {
-		if (args.indexOf(set > -1) {
+		if (args.indexOf(" " + set + " ") > -1) {
 			setFilters.push(set);
 		}
 	}
