@@ -381,6 +381,11 @@ module.exports = function (setcodes) {
     Object.keys(Card.attributes).forEach(function (key, index) {
         Card.attributeList.push(key.toLowerCase());
     });
+    
+    Card.setList = [];
+    Object.keys(setcodes).forEach(function(key, index) {
+    	Card.setList.push(setcodes[key].toLowerCase());
+    });
 
     return Card;
 }

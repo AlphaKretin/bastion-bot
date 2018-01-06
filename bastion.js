@@ -2341,6 +2341,7 @@ function randFilterCheck(code, args, outLang) {
 	let atkFilters = [];
 	let defFilters = [];
 	let numFilters = [];
+	let setFilters = [];
 	for (let status of Card.otList) {
 		if (args.indexOf(" " + status + " ") > -1) {
 			otFilters.push(status);
@@ -2361,6 +2362,11 @@ function randFilterCheck(code, args, outLang) {
 			attFilters.push(att);
 		}
 	}
+	for (let set of Card.setList) {
+		if (args.indexOf(set > -1) {
+			setFilters.push(set);
+		}
+	}
 	for (let arg of args) {
 		let argNum = parseInt(arg.split(":")[1]);
 		if (arg.startsWith("level:") && !isNaN(argNum)) {
@@ -2379,7 +2385,7 @@ function randFilterCheck(code, args, outLang) {
 			numFilters.push(argNum);
 		} 
 	}
-	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + numFilters.length === 0) {
+	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + numFilters.length + setFilters.length === 0) {
 		return true;
 	} else {
 		let card = cards[outLang][code];
@@ -2409,6 +2415,15 @@ function randFilterCheck(code, args, outLang) {
 			let subBoo = false;
 			for (let att of card.attributes) {
 				if (attFilters.indexOf(att.toLowerCase()) > -1) {
+					subBoo = true;
+				}
+			}
+			boo = subBoo;
+		}
+		if (setFilters.length > 0) {
+			let subBoo = false;
+			for (let set of card.sets) {
+				if (setFilters.indexOf(set.toLowerCase()) > -1) {
 					subBoo = true;
 				}
 			}
