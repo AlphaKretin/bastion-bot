@@ -49,9 +49,18 @@ Using these commands, you can search like the above two, but it will return only
 ### .randcard  
 Usage: `.randcard [opts]`  
   
-The `.randcard` command will select a random card and display its information as if you searched it. The command accepts options that allow you to specify the status, level, type, or attribute of the card, as well as optionally display an image by including "image" or display cards in different languages by including the language code for that language.  
+The `.randcard` command will select a random card and display its information as if you searched it. The command accepts the following options, with a value after the prefix (with no space):  
+ - `status:` or `ot:` allow you to specify the status of the card.  
+ - `type:` allows you to specify the card type - as in "Monster", "Spell", "Xyz" or "Field".  
+ - `race:` or `mtype:` specifies the monster type of the card - as in "Spellcaster" or "Dragon".  
+ - `attribute:` or `att:` specifies the attribute.  
+ - `set:` or `archetype:` specifies the archetype.  
+ - `level:` specifies the level.  
+ - `lscale:` and `rscale:` specify the left and right Pendulum scale specifically, or `scale:` specifies either.  
+ - `atk:` and `def:` specify the ATK and DEF stats.  
+In addition, you can type `image` or a language, with no prefix, to make it display the image and specify the language it'll return.  
   
-As an example, `.randcard tcg/ocg 4 image` returns the following output:  
+As an example, `.randcard ot:tcg/ocg level:4 image` returns the following output:  
 ![.randcard output](/readme-images/randcard.png)  
   
 ### .script  
@@ -116,8 +125,8 @@ The `.skill` command searches for a character skill from Yu-Gi-Oh! Duel Links by
 ### .trivia  
 Usage: `.trivia [options]`  
 For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. The command accepts any number of the following options:  
-**Status**: By default, the game will display TCG/OCG cards, but you can specify `OCG`, `TCG`, `Anime` (which will include Video Game and Illegal cards), and `Custom`.  
-**Rounds**: If you include a number as an option, the game will run that many times and track the total scores of each player over the course of the game.  
+**Options**: These are the same options as `.randcard`.
+**Rounds**: If you include a number as an option (without a prefix), the game will run that many times and track the total scores of each player over the course of the game.  
 **Hard Mode**: If you include `hard` as an option, Bastion will display only a quarter of the card image, for added difficulty.  
 **Language**: If you include a language code as an option, Bastion will use that language for the card name.  
 You can end the game prematurely by typing ".tq", or pass a round by typing ".tskip".  

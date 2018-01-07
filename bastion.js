@@ -397,8 +397,7 @@ bot.on('disconnect', function() { //Discord API occasionally disconnects bots fo
 });
 
 //command declaration
-let commandList = [
-	{
+let commandList = [{
 		names: ["randcard", "randomcard"],
 		func: randomCard
 	},
@@ -2335,28 +2334,89 @@ function randFilterCheck(code, args, outLang) {
 	let raceFilters = [];
 	let attFilters = [];
 	let lvFilters = [];
-	for (let arg of args) {
-		if (["ocg", "tcg", "tcg/ocg", "anime", "illegal", "video", "game", "custom"].indexOf(arg) > -1) {
-			if (arg === "video" || arg === "game") {
-				otFilters.push("video game");
-			} else {
-				otFilters.push(arg);
-			}
-		}
-		if (["monster", "spell", "trap", "fusion", "ritual", "spirit", "union", "gemini", "tuner", "synchro", "token", "quick-play", "continuous", "equip", "field", "counter", "flip", "toon", "xyz", "pendulum", "special summon", "link", "armor", "plus", "minus", "normal", "effect"].indexOf(arg) > -1) {
-			typeFilters.push(arg);
-		}
-		if (["warrior", "spellcaster", "fairy", "fiend", "zombie", "machine", "aqua", "pyro", "rock", "winged beast", "plant", "insect", "thunder", "dragon", "beast", "beast-warrior", "dinosaur", "fish", "sea serpent", "reptile", "psychic", "divine-beast", "creator god", "wyrm", "cyberse", "yokai", "charisma"].indexOf(arg) > -1) {
-			raceFilters.push(arg);
-		}
-		if (["earth", "wind", "water", "fire", "light", "dark", "divine", "laugh"].indexOf(arg) > -1) {
-			attFilters.push(arg);
-		}
-		if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].indexOf(arg) > -1) {
-			lvFilters.push(arg);
+	let lscaleFilters = [];
+	let rscaleFilters = [];
+	let scaleFilters = [];
+	let atkFilters = [];
+	let defFilters = [];
+	let numFilters = [];
+	let setFilters = [];
+	let argStr = args.join(" ");
+	for (let status of Card.otList) {
+		if (argStr.indexOf("status:" + status) > -1 || argStr.indexOf("ot:" + status) > -1) {
+			otFilters.push(status);
 		}
 	}
-	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length === 0) {
+	for (let type of Card.typeList) {
+		if (argStr.indexOf("type:" + type) > -1) {
+			typeFilters.push(type);
+		}
+	}
+	for (let race of Card.raceList) { //this is all weird to distinguish between Beast and Beast-Warrior -.-
+		let r1 = "race:" + race;
+		let r2 = "mtype:" + race;
+		let indicies = [];
+		for (let i = 0; i < argStr.length; i++) {
+			if (argStr.slice(i, i + r1.length) === r1) {
+				if (Card.raceConflicts[race]) {
+					let c = "race:" + Card.raceConflicts[race];
+					if (!(argStr.slice(i, i + c.length) === c)) {
+						indicies.push(i);
+					}
+				} else {
+					indicies.push(i);
+				}
+			} else if (argStr.slice(i, i + r2.length) === r2) {
+				if (Card.raceConflicts[race]) {
+					let c = "mtype:" + Card.raceConflicts[race];
+					if (!(argStr.slice(i, i + c.length) === c)) {
+						indicies.push(i);
+					}
+				} else {
+					indicies.push(i);
+				}
+			}
+		}
+		if (indicies.length > 0) {
+			raceFilters.push(race);
+		}
+	}
+	for (let att of Card.attributeList) {
+		if (argStr.indexOf("attribute:" + att) > -1 || argStr.indexOf("att:" + att) > -1) {
+			attFilters.push(att);
+		}
+	}
+	for (let set of Card.setList) {
+		if (argStr.indexOf("set:" + set) > -1 || argStr.indexOf("archetype:" + set) > -1) {
+			setFilters.push(set);
+		}
+	}
+	for (let arg of args) {
+		let argTxt = arg.split(":")[1]
+		let argNum = parseInt(argTxt);
+		if (isNaN(argNum)) {
+			if (arg.startsWith("atk:") && argTxt === "?") {
+				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
+			} else if (arg.startsWith("def:") && argTxt === "?") {
+				defFilters.push(argTxt);
+			}
+		} else {
+			if (arg.startsWith("level:")) {
+				lvFilters.push(argNum);
+			} else if (arg.startsWith("lscale:")) {
+				lscaleFilters.push(argNum);
+			} else if (arg.startsWith("rscale:")) {
+				rscaleFilters.push(argNum);
+			} else if (arg.startsWith("scale:")) {
+				scaleFilters.push(argNum);
+			} else if (arg.startsWith("atk:")) {
+				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
+			} else if (arg.startsWith("def:")) {
+				defFilters.push(argTxt);
+			}
+		}
+	}
+	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + setFilters.length === 0) {
 		return true;
 	} else {
 		let card = cards[outLang][code];
@@ -2366,20 +2426,59 @@ function randFilterCheck(code, args, outLang) {
 		}
 		if (typeFilters.length > 0) {
 			let subBoo = false;
-			for (let type of card.types) {
+			for (let type of card.allTypes) {
 				if (typeFilters.indexOf(type.toLowerCase()) > -1) {
 					subBoo = true;
 				}
 			}
-			boo = subBoo;
+			boo = boo && subBoo;
 		}
-		if (raceFilters.length > 0 && raceFilters.indexOf(card.race[0].toLowerCase()) === -1) {
+		if (raceFilters.length > 0) {
+			let subBoo = false;
+			for (let rac of card.race) {
+				if (raceFilters.indexOf(rac.toLowerCase()) > -1) {
+					subBoo = true;
+				}
+			}
+			boo = boo && subBoo;
+		}
+		if (attFilters.length > 0) {
+			let subBoo = false;
+			for (let att of card.attribute) {
+				if (attFilters.indexOf(att.toLowerCase()) > -1) {
+					subBoo = true;
+				}
+			}
+			boo = boo && subBoo;
+		}
+		if (setFilters.length > 0) {
+			let subBoo = false;
+			if (card.sets) {
+				for (let set of card.sets) {
+					if (setFilters.indexOf(set.toLowerCase()) > -1) {
+						subBoo = true;
+					}
+				}
+			}
+
+			boo = boo && subBoo;
+		}
+		if (lvFilters.length > 0 && lvFilters.indexOf(card.level) === -1) {
 			boo = false;
 		}
-		if (attFilters.length > 0 && attFilters.indexOf(card.attribute[0].toLowerCase()) === -1) {
+		if (lscaleFilters.length > 0 && lscaleFilters.indexOf(card.lscale) === -1) {
 			boo = false;
 		}
-		if (lvFilters.length > 0 && lvFilters.indexOf(card.level.toString()) === -1) {
+		if (rscaleFilters.length > 0 && rscaleFilters.indexOf(card.rscale) === -1) {
+			boo = false;
+		}
+		if (scaleFilters.length > 0 && scaleFilters.indexOf(card.lscale) === -1 && scaleFilters.indexOf(card.rscale) === -1) {
+			boo = false;
+		}
+		if (atkFilters.length > 0 && atkFilters.indexOf(card.atk) === -1) {
+			boo = false;
+		}
+		if (defFilters.length > 0 && defFilters.indexOf(card.def) === -1) {
 			boo = false;
 		}
 		return boo;
@@ -2465,25 +2564,39 @@ function trivia(user, userID, channelID, message, event) {
 }
 
 async function startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event) {
-	//pick a random card
-	let code;
-	let buffer;
-	let name;
-	let card;
-	do {
-		let ids = Object.keys(cards[outLang])
-		code = ids[Math.floor(Math.random() * ids.length)];
-		card = cards[outLang][code]
-		name = card.name;
-		let imageUrl = imageUrlMaster;
-		let stat = card.ot;
-		if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
-			imageUrl = imageUrlAnime;
+	try {
+		//pick a random card
+		let code;
+		let buffer;
+		let name;
+		let card;
+		let args = message.toLowerCase().split(" ");
+		let ids = Object.keys(cards[outLang]);
+		let matches = [];
+		if (args.length > 1) {
+			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
+				if (randFilterCheck(id, args, outLang) && cards[outLang][id].name.indexOf("(Anime)") === -1) { //a number of filters can be specified in the command, and this checks that a card meets them
+					matches.push(id);
+				}
+			}
+			if (matches.length === 0) {
+				return;
+			}
+		} else {
+			matches = ids;
 		}
-		if (stat === "Custom") {
-			imageUrl = imageUrlCustom;
-		}
-		if (ot.indexOf(card.ot) > -1 && name.indexOf("(Anime)") === -1) {
+		do {
+			code = matches[Math.floor(Math.random() * matches.length)];
+			card = cards[outLang][code];
+			name = card.name;
+			let imageUrl = imageUrlMaster;
+			let stat = card.ot;
+			if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
+				imageUrl = imageUrlAnime;
+			}
+			if (stat === "Custom") {
+				imageUrl = imageUrlCustom;
+			}
 			buffer = await new Promise(function(resolve, reject) {
 				if (debugOutput) {
 					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
@@ -2498,182 +2611,184 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 					});
 				});
 			});
+		} while (!(filetype(buffer) && filetype(buffer).ext === imageExt));
+		let hintIs = [];
+		let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
+		let nameArr = name.split("");
+		for (let i = 0; i < times; i++) {
+			let ind;
+			do {
+				ind = getIncInt(0, name.length - 1);
+			} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
+			hintIs.push(ind);
 		}
-	} while (ot.indexOf(card.ot) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === imageExt));
-	let hintIs = [];
-	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
-	let nameArr = name.split("");
-	for (let i = 0; i < times; i++) {
-		let ind;
-		do {
-			ind = getIncInt(0, name.length - 1);
-		} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
-		hintIs.push(ind);
-	}
-	let hint = "";
-	nameArr.forEach(function(key, index) {
-		let letter = nameArr[index];
-		if (hintIs.indexOf(index) === -1 && letter !== " ") {
-			letter = "_";
-		}
-		hint += letter + " ";
-	});
-	if (channelID in gameData) {
-		//start game
-		gameData[channelID].name = name;
-		gameData[channelID].hint = hint;
-		gameData[channelID].round = round;
-		gameData[channelID].lock = false;
-	} else {
-		//start game
-		gameData[channelID] = {
-			"game": "trivia",
-			"name": name,
-			"hint": hint,
-			"round": round,
-			"ot": ot,
-			"score": {},
-			"hard": hard,
-			"lang": outLang,
-			"lock": false
-		}
-	}
-	if (hard) {
-		buffer = await hardCrop(buffer, user, userID, channelID, message, event);
-	}
-	bot.uploadFile({
-		to: channelID,
-		file: buffer,
-		filename: code + "." + imageExt
-	}, function(err, res) {
-		if (err) {
-			console.log(err);
+		let hint = "";
+		nameArr.forEach(function(key, index) {
+			let letter = nameArr[index];
+			if (hintIs.indexOf(index) === -1 && letter !== " ") {
+				letter = "_";
+			}
+			hint += letter + " ";
+		});
+		if (channelID in gameData) {
+			//start game
+			gameData[channelID].name = name;
+			gameData[channelID].hint = hint;
+			gameData[channelID].round = round;
+			gameData[channelID].lock = false;
 		} else {
-			if (messageMode & 0x2) {
-				bot.sendMessage({
-					to: channelID,
-					embed: {
-						color: 0x00ff00,
-						description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo,
-					}
-				}, function(err, res) {
-					if (err) {
-						console.log(err);
-					} else {
-						let messageID = res.id;
-						let i = triviaTimeLimit / 1000 - 1;
-						//let tempcolor = parseInt("0x" + red + green + "00");
-						gameData[channelID].IN = setInterval(function() {
-							let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
-							let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
-							let tempcolor = parseInt("0x" + red + green + "00");
-							if (messageMode & 0x2) {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									embed: {
-										color: tempcolor,
-										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
-									}
-								});
-								tempcolor += 0x300 - 0x1000
-							} else {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-								});
-							}
-							i--;
-						}, 1000);
-					}
-				});
+			//start game
+			gameData[channelID] = {
+				"game": "trivia",
+				"name": name,
+				"hint": hint,
+				"round": round,
+				"ot": ot,
+				"score": {},
+				"hard": hard,
+				"lang": outLang,
+				"lock": false
+			}
+		}
+		if (hard) {
+			buffer = await hardCrop(buffer, user, userID, channelID, message, event);
+		}
+		bot.uploadFile({
+			to: channelID,
+			file: buffer,
+			filename: code + "." + imageExt
+		}, function(err, res) {
+			if (err) {
+				console.log(err);
 			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo
-				}, function(err, res) {
-					if (err) {
-						console.log(err);
-					} else {
-						let messageID = res.id;
-						let i = triviaTimeLimit / 1000 - 1;
-						//let tempcolor = 0x6AFF3D;
-						gameData[channelID].IN = setInterval(function() {
-							if (messageMode & 0x2) {
+				if (messageMode & 0x2) {
+					bot.sendMessage({
+						to: channelID,
+						embed: {
+							color: 0x00ff00,
+							description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo,
+						}
+					}, function(err, res) {
+						if (err) {
+							console.log(err);
+						} else {
+							let messageID = res.id;
+							let i = triviaTimeLimit / 1000 - 1;
+							//let tempcolor = parseInt("0x" + red + green + "00");
+							gameData[channelID].IN = setInterval(function() {
 								let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 								let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
 								let tempcolor = parseInt("0x" + red + green + "00");
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									embed: {
-										color: tempcolor,
-										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-									}
-								});
-							} else {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-								});
+								if (messageMode & 0x2) {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										embed: {
+											color: tempcolor,
+											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
+										}
+									});
+									tempcolor += 0x300 - 0x1000
+								} else {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+									});
+								}
+								i--;
+							}, 1000);
+						}
+					});
+				} else {
+					bot.sendMessage({
+						to: channelID,
+						message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo
+					}, function(err, res) {
+						if (err) {
+							console.log(err);
+						} else {
+							let messageID = res.id;
+							let i = triviaTimeLimit / 1000 - 1;
+							//let tempcolor = 0x6AFF3D;
+							gameData[channelID].IN = setInterval(function() {
+								if (messageMode & 0x2) {
+									let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
+									let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
+									let tempcolor = parseInt("0x" + red + green + "00");
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										embed: {
+											color: tempcolor,
+											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+										}
+									});
+								} else {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+									});
+								}
+								i--;
+							}, 1000);
+						}
+					});
+				}
+				gameData[channelID].TO1 = setTimeout(function() {
+					if (messageMode & 0x2) {
+						bot.sendMessage({
+							to: channelID,
+							embed: {
+								color: embedColor,
+								description: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo,
 							}
-							i--;
-						}, 1000);
+						});
+					} else {
+						bot.sendMessage({
+							to: channelID,
+							message: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo
+						});
 					}
-				});
+				}, triviaHintTime);
+				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
+				if (Object.keys(gameData[channelID].score).length > 0) {
+					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
+					Object.keys(gameData[channelID].score).forEach(function(key, index) {
+						out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+					});
+					out += quo + quo + quo + bo;
+				}
+				gameData[channelID].TO2 = setTimeout(function() {
+					if (gameData[channelID.lock]) {
+						return;
+					}
+					gameData[channelID].lock = true;
+					if (messageMode & 0x2) {
+						bot.sendMessage({
+							to: channelID,
+							embed: {
+								color: embedColor,
+								description: out,
+							}
+						});
+					} else {
+						bot.sendMessage({
+							to: channelID,
+							message: out
+						});
+					}
+					if (gameData[channelID].IN) {
+						clearInterval(gameData[channelID].IN);
+					}
+					startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+				}, triviaTimeLimit);
 			}
-			gameData[channelID].TO1 = setTimeout(function() {
-				if (messageMode & 0x2) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: embedColor,
-							description: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo,
-						}
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo
-					});
-				}
-			}, triviaHintTime);
-			let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
-			if (Object.keys(gameData[channelID].score).length > 0) {
-				out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-				Object.keys(gameData[channelID].score).forEach(function(key, index) {
-					out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
-				});
-				out += quo + quo + quo + bo;
-			}
-			gameData[channelID].TO2 = setTimeout(function() {
-				if (gameData[channelID.lock]) {
-					return;
-				}
-				gameData[channelID].lock = true;
-				if (messageMode & 0x2) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: embedColor,
-							description: out,
-						}
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: out
-					});
-				}
-				if (gameData[channelID].IN) {
-					clearInterval(gameData[channelID].IN);
-				}
-				startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
-			}, triviaTimeLimit);
-		}
-	});
+		});
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 function hardCrop(buffer, user, userID, channelID, message, event) {
