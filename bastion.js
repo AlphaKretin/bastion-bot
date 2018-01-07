@@ -318,7 +318,7 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 	let db = new SQL.Database(filebuffer);
 	nameList[lang] = [];
 	cards[lang] = {};
-	let contents = db.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
+	let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 	for (let card of contents[0].values) {
 		let car = new Card(card);
 		cards[lang][car.code] = car;
@@ -329,7 +329,7 @@ for (let lang in dbs) { //this reads the keys of an object loaded above, which a
 			let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
 			console.log("loading " + dbs[lang][i]);
 			let newDB = new SQL.Database(newbuffer);
-			let newContents = newDB.exec("SELECT * FROM datas INNER JOIN texts ON texts.id = datas.id");
+			let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
 			for (let newCard of newContents[0].values) {
 				let newCar = new Card(newCard);
 				cards[lang][newCar.code] = newCar;
