@@ -2531,17 +2531,6 @@ function trivia(user, userID, channelID, message, event) {
 	if (channelID in gameData || (triviaLocks[serverID] && triviaLocks[serverID].indexOf(channelID) === -1)) {
 		return;
 	} else {
-		let ot = ["TCG", "OCG", "TCG/OCG"];
-		let args = message.toLowerCase().split(" ");
-		if (args.indexOf("tcg") > -1) {
-			ot = ["TCG"];
-		} else if (args.indexOf("ocg") > -1) {
-			ot = ["OCG"];
-		} else if (args.indexOf("anime") > -1) {
-			ot = ["Anime", "Video Game", "Illegal"];
-		} else if (args.indexOf("custom") > -1) {
-			ot = ["Custom"];
-		}
 		let outLang = defaultLang;
 		for (let arg of args) {
 			if (arg in dbs) {
@@ -2559,11 +2548,11 @@ function trivia(user, userID, channelID, message, event) {
 			}
 		}
 		let hard = (args.indexOf("hard") > -1);
-		startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event);
+		startTriviaRound(round, hard, outLang, user, userID, channelID, message, event);
 	}
 }
 
-async function startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event) {
+async function startTriviaRound(round, hard, outLang, user, userID, channelID, message, event) {
 	try {
 		//pick a random card
 		let code;
@@ -2571,6 +2560,16 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 		let name;
 		let card;
 		let args = message.toLowerCase().split(" ");
+		let argStr = args.join(" ");
+		let otFilters = [];
+		for (let status of Card.otList) {
+			if (argStr.indexOf("status:" + status) > -1 || argStr.indexOf("ot:" + status) > -1) {
+				otFilters.push(status);
+			}
+		}
+		if (otFilters.length === 0) {
+			args.push("ot:tcg/ocg");
+		}
 		let ids = Object.keys(cards[outLang]);
 		let matches = [];
 		if (args.length > 1) {
@@ -2782,7 +2781,7 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 					if (gameData[channelID].IN) {
 						clearInterval(gameData[channelID].IN);
 					}
-					startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+					startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 				}, triviaTimeLimit);
 			}
 		});
@@ -2918,7 +2917,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				message: out
 			});
 		}
-		startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
 		gameData[channelID].lock = true;
 		if (gameData[channelID].TO1) {
