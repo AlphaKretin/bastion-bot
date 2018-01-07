@@ -397,8 +397,7 @@ bot.on('disconnect', function() { //Discord API occasionally disconnects bots fo
 });
 
 //command declaration
-let commandList = [
-	{
+let commandList = [{
 		names: ["randcard", "randomcard"],
 		func: randomCard
 	},
@@ -2353,8 +2352,32 @@ function randFilterCheck(code, args, outLang) {
 			typeFilters.push(type);
 		}
 	}
-	for (let race of Card.raceList) {
-		if (argStr.indexOf("race:" + race) > -1 || argStr.indexOf("mtype:" + race) > -1) {
+	for (let race of Card.raceList) { //this is all weird to distinguish between Beast and Beast-Warrior -.-
+		let r1 = "race:" + race;
+		let r2 = "mtype:" + race;
+		let indicies = [];
+		for (let i = 0; i < argStr.length; i++) {
+			if (argStr.slice(i, i + r1.length) === r1) {
+				if (Card.raceConflicts[race]) {
+					let c = "race:" + Card.raceConflicts[race];
+					if (!(argStr.slice(i, i + c.length) === c)) {
+						indicies.push(i);
+					}
+				} else {
+					indicies.push(i);
+				}
+			} else if (argStr.slice(i, i + r2.length) === r2) {
+				if (Card.raceConflicts[race]) {
+					let c = "mtype:" + Card.raceConflicts[race];
+					if (!(argStr.slice(i, i + c.length) === c)) {
+						indicies.push(i);
+					}
+				} else {
+					indicies.push(i);
+				}
+			}
+		}
+		if (indicies.length > 0) {
 			raceFilters.push(race);
 		}
 	}
@@ -2437,7 +2460,7 @@ function randFilterCheck(code, args, outLang) {
 					}
 				}
 			}
-			
+
 			boo = boo && subBoo;
 		}
 		if (lvFilters.length > 0 && lvFilters.indexOf(card.level) === -1) {
@@ -2541,25 +2564,39 @@ function trivia(user, userID, channelID, message, event) {
 }
 
 async function startTriviaRound(ot, round, hard, outLang, user, userID, channelID, message, event) {
-	//pick a random card
-	let code;
-	let buffer;
-	let name;
-	let card;
-	do {
-		let ids = Object.keys(cards[outLang])
-		code = ids[Math.floor(Math.random() * ids.length)];
-		card = cards[outLang][code]
-		name = card.name;
-		let imageUrl = imageUrlMaster;
-		let stat = card.ot;
-		if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
-			imageUrl = imageUrlAnime;
+	try {
+		//pick a random card
+		let code;
+		let buffer;
+		let name;
+		let card;
+		let args = message.toLowerCase().split(" ");
+		let ids = Object.keys(cards[outLang]);
+		let matches = [];
+		if (args.length > 1) {
+			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
+				if (randFilterCheck(id, args, outLang) && cards[outLang][id].name.indexOf("(Anime)") === -1) { //a number of filters can be specified in the command, and this checks that a card meets them
+					matches.push(id);
+				}
+			}
+			if (matches.length === 0) {
+				return;
+			}
+		} else {
+			matches = ids;
 		}
-		if (stat === "Custom") {
-			imageUrl = imageUrlCustom;
-		}
-		if (ot.indexOf(card.ot) > -1 && name.indexOf("(Anime)") === -1) {
+		do {
+			code = matches[Math.floor(Math.random() * matches.length)];
+			card = cards[outLang][code];
+			name = card.name;
+			let imageUrl = imageUrlMaster;
+			let stat = card.ot;
+			if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
+				imageUrl = imageUrlAnime;
+			}
+			if (stat === "Custom") {
+				imageUrl = imageUrlCustom;
+			}
 			buffer = await new Promise(function(resolve, reject) {
 				if (debugOutput) {
 					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
@@ -2574,182 +2611,184 @@ async function startTriviaRound(ot, round, hard, outLang, user, userID, channelI
 					});
 				});
 			});
+		} while (!(filetype(buffer) && filetype(buffer).ext === imageExt));
+		let hintIs = [];
+		let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
+		let nameArr = name.split("");
+		for (let i = 0; i < times; i++) {
+			let ind;
+			do {
+				ind = getIncInt(0, name.length - 1);
+			} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
+			hintIs.push(ind);
 		}
-	} while (ot.indexOf(card.ot) === -1 || name.indexOf("(Anime)") > -1 || !(filetype(buffer) && filetype(buffer).ext === imageExt));
-	let hintIs = [];
-	let times = getIncInt(Math.ceil(name.length / 4), Math.floor(name.length / 2));
-	let nameArr = name.split("");
-	for (let i = 0; i < times; i++) {
-		let ind;
-		do {
-			ind = getIncInt(0, name.length - 1);
-		} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
-		hintIs.push(ind);
-	}
-	let hint = "";
-	nameArr.forEach(function(key, index) {
-		let letter = nameArr[index];
-		if (hintIs.indexOf(index) === -1 && letter !== " ") {
-			letter = "_";
-		}
-		hint += letter + " ";
-	});
-	if (channelID in gameData) {
-		//start game
-		gameData[channelID].name = name;
-		gameData[channelID].hint = hint;
-		gameData[channelID].round = round;
-		gameData[channelID].lock = false;
-	} else {
-		//start game
-		gameData[channelID] = {
-			"game": "trivia",
-			"name": name,
-			"hint": hint,
-			"round": round,
-			"ot": ot,
-			"score": {},
-			"hard": hard,
-			"lang": outLang,
-			"lock": false
-		}
-	}
-	if (hard) {
-		buffer = await hardCrop(buffer, user, userID, channelID, message, event);
-	}
-	bot.uploadFile({
-		to: channelID,
-		file: buffer,
-		filename: code + "." + imageExt
-	}, function(err, res) {
-		if (err) {
-			console.log(err);
+		let hint = "";
+		nameArr.forEach(function(key, index) {
+			let letter = nameArr[index];
+			if (hintIs.indexOf(index) === -1 && letter !== " ") {
+				letter = "_";
+			}
+			hint += letter + " ";
+		});
+		if (channelID in gameData) {
+			//start game
+			gameData[channelID].name = name;
+			gameData[channelID].hint = hint;
+			gameData[channelID].round = round;
+			gameData[channelID].lock = false;
 		} else {
-			if (messageMode & 0x2) {
-				bot.sendMessage({
-					to: channelID,
-					embed: {
-						color: 0x00ff00,
-						description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo,
-					}
-				}, function(err, res) {
-					if (err) {
-						console.log(err);
-					} else {
-						let messageID = res.id;
-						let i = triviaTimeLimit / 1000 - 1;
-						//let tempcolor = parseInt("0x" + red + green + "00");
-						gameData[channelID].IN = setInterval(function() {
-							let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
-							let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
-							let tempcolor = parseInt("0x" + red + green + "00");
-							if (messageMode & 0x2) {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									embed: {
-										color: tempcolor,
-										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
-									}
-								});
-								tempcolor += 0x300 - 0x1000
-							} else {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-								});
-							}
-							i--;
-						}, 1000);
-					}
-				});
+			//start game
+			gameData[channelID] = {
+				"game": "trivia",
+				"name": name,
+				"hint": hint,
+				"round": round,
+				"ot": ot,
+				"score": {},
+				"hard": hard,
+				"lang": outLang,
+				"lock": false
+			}
+		}
+		if (hard) {
+			buffer = await hardCrop(buffer, user, userID, channelID, message, event);
+		}
+		bot.uploadFile({
+			to: channelID,
+			file: buffer,
+			filename: code + "." + imageExt
+		}, function(err, res) {
+			if (err) {
+				console.log(err);
 			} else {
-				bot.sendMessage({
-					to: channelID,
-					message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo
-				}, function(err, res) {
-					if (err) {
-						console.log(err);
-					} else {
-						let messageID = res.id;
-						let i = triviaTimeLimit / 1000 - 1;
-						//let tempcolor = 0x6AFF3D;
-						gameData[channelID].IN = setInterval(function() {
-							if (messageMode & 0x2) {
+				if (messageMode & 0x2) {
+					bot.sendMessage({
+						to: channelID,
+						embed: {
+							color: 0x00ff00,
+							description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo,
+						}
+					}, function(err, res) {
+						if (err) {
+							console.log(err);
+						} else {
+							let messageID = res.id;
+							let i = triviaTimeLimit / 1000 - 1;
+							//let tempcolor = parseInt("0x" + red + green + "00");
+							gameData[channelID].IN = setInterval(function() {
 								let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 								let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
 								let tempcolor = parseInt("0x" + red + green + "00");
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									embed: {
-										color: tempcolor,
-										description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-									}
-								});
-							} else {
-								bot.editMessage({
-									channelID: channelID,
-									messageID: messageID,
-									message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
-								});
+								if (messageMode & 0x2) {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										embed: {
+											color: tempcolor,
+											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
+										}
+									});
+									tempcolor += 0x300 - 0x1000
+								} else {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+									});
+								}
+								i--;
+							}, 1000);
+						}
+					});
+				} else {
+					bot.sendMessage({
+						to: channelID,
+						message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo
+					}, function(err, res) {
+						if (err) {
+							console.log(err);
+						} else {
+							let messageID = res.id;
+							let i = triviaTimeLimit / 1000 - 1;
+							//let tempcolor = 0x6AFF3D;
+							gameData[channelID].IN = setInterval(function() {
+								if (messageMode & 0x2) {
+									let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
+									let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
+									let tempcolor = parseInt("0x" + red + green + "00");
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										embed: {
+											color: tempcolor,
+											description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+										}
+									});
+								} else {
+									bot.editMessage({
+										channelID: channelID,
+										messageID: messageID,
+										message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+									});
+								}
+								i--;
+							}, 1000);
+						}
+					});
+				}
+				gameData[channelID].TO1 = setTimeout(function() {
+					if (messageMode & 0x2) {
+						bot.sendMessage({
+							to: channelID,
+							embed: {
+								color: embedColor,
+								description: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo,
 							}
-							i--;
-						}, 1000);
+						});
+					} else {
+						bot.sendMessage({
+							to: channelID,
+							message: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo
+						});
 					}
-				});
+				}, triviaHintTime);
+				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
+				if (Object.keys(gameData[channelID].score).length > 0) {
+					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
+					Object.keys(gameData[channelID].score).forEach(function(key, index) {
+						out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+					});
+					out += quo + quo + quo + bo;
+				}
+				gameData[channelID].TO2 = setTimeout(function() {
+					if (gameData[channelID.lock]) {
+						return;
+					}
+					gameData[channelID].lock = true;
+					if (messageMode & 0x2) {
+						bot.sendMessage({
+							to: channelID,
+							embed: {
+								color: embedColor,
+								description: out,
+							}
+						});
+					} else {
+						bot.sendMessage({
+							to: channelID,
+							message: out
+						});
+					}
+					if (gameData[channelID].IN) {
+						clearInterval(gameData[channelID].IN);
+					}
+					startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+				}, triviaTimeLimit);
 			}
-			gameData[channelID].TO1 = setTimeout(function() {
-				if (messageMode & 0x2) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: embedColor,
-							description: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo,
-						}
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo
-					});
-				}
-			}, triviaHintTime);
-			let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
-			if (Object.keys(gameData[channelID].score).length > 0) {
-				out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-				Object.keys(gameData[channelID].score).forEach(function(key, index) {
-					out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
-				});
-				out += quo + quo + quo + bo;
-			}
-			gameData[channelID].TO2 = setTimeout(function() {
-				if (gameData[channelID.lock]) {
-					return;
-				}
-				gameData[channelID].lock = true;
-				if (messageMode & 0x2) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: embedColor,
-							description: out,
-						}
-					});
-				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: out
-					});
-				}
-				if (gameData[channelID].IN) {
-					clearInterval(gameData[channelID].IN);
-				}
-				startTriviaRound(gameData[channelID].ot, gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
-			}, triviaTimeLimit);
-		}
-	});
+		});
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 function hardCrop(buffer, user, userID, channelID, message, event) {
