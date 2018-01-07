@@ -2342,50 +2342,58 @@ function randFilterCheck(code, args, outLang) {
 	let defFilters = [];
 	let numFilters = [];
 	let setFilters = [];
+	let argStr = args.join(" ");
 	for (let status of Card.otList) {
-		if (args.indexOf(" " + status + " ") > -1) {
+		if (argStr.indexOf("status:" + status) > -1 || argStr.indexOf("ot:" + status) > -1) {
 			otFilters.push(status);
 		}
 	}
 	for (let type of Card.typeList) {
-		if (args.indexOf(" " + type + " ") > -1) {
+		if (argStr.indexOf("type:" + type) > -1) {
 			typeFilters.push(type);
 		}
 	}
 	for (let race of Card.raceList) {
-		if (args.indexOf(" " + race + " ") > -1) {
+		if (argStr.indexOf("race:" + race) > -1 || argStr.indexOf("mtype:" + race) > -1) {
 			raceFilters.push(race);
 		}
 	}
 	for (let att of Card.attributeList) {
-		if (args.indexOf(" " + att + " ") > -1) {
+		if (argStr.indexOf("attribute:" + att) > -1 || argStr.indexOf("att:" + att) > -1) {
 			attFilters.push(att);
 		}
 	}
 	for (let set of Card.setList) {
-		if (args.indexOf(" " + set + " ") > -1) {
+		if (argStr.indexOf("set:" + set) > -1 || argStr.indexOf("archetype:" + set) > -1) {
 			setFilters.push(set);
 		}
 	}
 	for (let arg of args) {
-		let argNum = parseInt(arg.split(":")[1]);
-		if (arg.startsWith("level:") && !isNaN(argNum)) {
-			lvFilters.push(argNum);
-		} else if (arg.startsWith("lscale:") && !isNaN(argNum)) {
-			lscaleFilters.push(argNum);
-		} else if (arg.startsWith("rscale:") && !isNaN(argNum)) {
-			rscaleFilters.push(argNum);
-		} else if (arg.startsWith("scale:") && !isNaN(argNum)) {
-			scaleFilters.push(argNum);
-		} else if (arg.startsWith("atk:") && !isNaN(argNum)) {
-			atkFilters.push(argNum);
-		} else if (arg.startsWith("def:") && !isNaN(argNum)) {
-			defFilters.push(argNum);
-		} else if (!isNaN(argNum)) {
-			numFilters.push(argNum);
-		} 
+		let argTxt = arg.split(":")[1]
+		let argNum = parseInt(argTxt);
+		if (isNaN(argNum)) {
+			if (arg.startsWith("atk:") && argTxt === "?") {
+				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
+			} else if (arg.startsWith("def:") && argTxt === "?") {
+				defFilters.push(argTxt);
+			}
+		} else {
+			if (arg.startsWith("level:")) {
+				lvFilters.push(argNum);
+			} else if (arg.startsWith("lscale:")) {
+				lscaleFilters.push(argNum);
+			} else if (arg.startsWith("rscale:")) {
+				rscaleFilters.push(argNum);
+			} else if (arg.startsWith("scale:")) {
+				scaleFilters.push(argNum);
+			} else if (arg.startsWith("atk:")) {
+				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
+			} else if (arg.startsWith("def:")) {
+				defFilters.push(argTxt);
+			}
+		}
 	}
-	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + numFilters.length + setFilters.length === 0) {
+	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + setFilters.length === 0) {
 		return true;
 	} else {
 		let card = cards[outLang][code];
@@ -2400,7 +2408,7 @@ function randFilterCheck(code, args, outLang) {
 					subBoo = true;
 				}
 			}
-			boo = subBoo;
+			boo = boo && subBoo;
 		}
 		if (raceFilters.length > 0) {
 			let subBoo = false;
@@ -2409,25 +2417,28 @@ function randFilterCheck(code, args, outLang) {
 					subBoo = true;
 				}
 			}
-			boo = subBoo;
+			boo = boo && subBoo;
 		}
 		if (attFilters.length > 0) {
 			let subBoo = false;
-			for (let att of card.attributes) {
+			for (let att of card.attribute) {
 				if (attFilters.indexOf(att.toLowerCase()) > -1) {
 					subBoo = true;
 				}
 			}
-			boo = subBoo;
+			boo = boo && subBoo;
 		}
 		if (setFilters.length > 0) {
 			let subBoo = false;
-			for (let set of card.sets) {
-				if (setFilters.indexOf(set.toLowerCase()) > -1) {
-					subBoo = true;
+			if (card.sets) {
+				for (let set of card.sets) {
+					if (setFilters.indexOf(set.toLowerCase()) > -1) {
+						subBoo = true;
+					}
 				}
 			}
-			boo = subBoo;
+			
+			boo = boo && subBoo;
 		}
 		if (lvFilters.length > 0 && lvFilters.indexOf(card.level) === -1) {
 			boo = false;
@@ -2438,16 +2449,13 @@ function randFilterCheck(code, args, outLang) {
 		if (rscaleFilters.length > 0 && rscaleFilters.indexOf(card.rscale) === -1) {
 			boo = false;
 		}
-		if (scaleFilters.length > 0 && lscaleFilters.indexOf(card.lscale) === -1 && rscaleFilters.indexOf(card.rscale) === -1) {
+		if (scaleFilters.length > 0 && scaleFilters.indexOf(card.lscale) === -1 && scaleFilters.indexOf(card.rscale) === -1) {
 			boo = false;
 		}
 		if (atkFilters.length > 0 && atkFilters.indexOf(card.atk) === -1) {
 			boo = false;
 		}
 		if (defFilters.length > 0 && defFilters.indexOf(card.def) === -1) {
-			boo = false;
-		}
-		if (numFilters.length > 0 && lvFilters.indexOf(card.level) === -1 && lscaleFilters.indexOf(card.lscale) === -1 && rscaleFilters.indexOf(card.rscale) === -1 && atkFilters.indexOf(card.atk) === -1 && defFilters.indexOf(card.def) === -1) {
 			boo = false;
 		}
 		return boo;

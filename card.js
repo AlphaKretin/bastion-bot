@@ -131,11 +131,11 @@ module.exports = function (setcodes) {
 
         //Methods
         convertOT() {
-            Object.keys(ots).forEach(function (key, index) {
-                if (this._ot === ots[key]) {
+            for (let key of Object.keys(Card.ots)) {
+                if (this._ot === Card.ots[key]) {
                     return key;
                 }
-            });
+            }
             return "Null OT";
         }
 
@@ -163,17 +163,17 @@ module.exports = function (setcodes) {
         convertType(delay, ignore) { //types in delay are put at the end
             let typs = [];
             let t = [];
-            Object.keys(typeObj).forEach(function (key, index) {
-                if ((this._type & typeObj[key]) && delay.indexOf(typeObj[key]) === -1 && ignore.indexOf(typeObj[key]) === -1) {
+            for (let key of Object.keys(Card.typeObj)) {
+                if ((this._type & Card.typeObj[key]) && delay.indexOf(Card.typeObj[key]) === -1 && ignore.indexOf(Card.typeObj[key]) === -1) {
                     typs.push(key)
                 }
-                t.push(typeObj[key]);
-            });
-            delay.forEach(function (key, index) {
-                if (t.indexOf(key) > -1 && (this._type & typeObj[key]) && ignore.indexOf(typeObj[key]) === -1) {
+                t.push(Card.typeObj[key]);
+            }
+            for (let key of delay) {
+                if (t.indexOf(key) > -1 && (this._type & Card.typeObj[key]) && ignore.indexOf(Card.typeObj[key]) === -1) {
                     typs.push(key)
                 }
-            });
+            }
             return typs;
         }
 
@@ -230,11 +230,11 @@ module.exports = function (setcodes) {
 
         convertRace() {
             let racs = [];
-            Object.keys(races).forEach(function (key, index) {
-                if (this._race & races[key] || Math.floor(this._race / 0x100000000) & Math.floor(races[key] / 0x100000000)) { //over 32-bit JS suddenly can't handle bitwise operations, so edo9300 worked some magic
+            for (let key of Object.keys(Card.races)) {
+                if (this._race & Card.races[key] || Math.floor(this._race / 0x100000000) & Math.floor(Card.races[key] / 0x100000000)) { //over 32-bit JS suddenly can't handle bitwise operations, so edo9300 worked some magic
                     racs.push(key);
                 }
-            });
+            }
             if (racs.length === 0) {
                 return ["???"];
             } else {
@@ -244,11 +244,11 @@ module.exports = function (setcodes) {
 
         convertAtt() {
             let atts = [];
-            Object.keys(attributes).forEach(function (key, index) {
-                if (this._attribute & key) {
-                    atts.push(attributes(key));
+            for (let key of Object.keys(Card.attributes)) {
+                if (this._attribute & Card.attributes[key]) {
+                    atts.push(key);
                 }
-            });
+            }
             if (atts.length === 0) {
                 return ["???"];
             } else {
