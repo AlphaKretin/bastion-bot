@@ -1092,9 +1092,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 						}
 					}
 					if (messageMode & 0x1) {
-						out += " " + " ATK: " + convertStat(card.atk) + " DEF: " + convertStat(card.def) + "\n";
+						out += " " + " ATK: " + card.atk + " DEF: " + card.def + "\n";
 					} else {
-						out += " " + " **ATK**: " + convertStat(card.atk) + " **DEF**: " + convertStat(card.def) + "\n";
+						out += " " + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 					}
 				} else {
 					if (messageMode & 0x1) {
