@@ -2532,6 +2532,7 @@ function trivia(user, userID, channelID, message, event) {
 		return;
 	} else {
 		let outLang = defaultLang;
+		let args = message.toLowerCase().split(" ");
 		for (let arg of args) {
 			if (arg in dbs) {
 				outLang = arg;
@@ -2642,7 +2643,6 @@ async function startTriviaRound(round, hard, outLang, user, userID, channelID, m
 				"name": name,
 				"hint": hint,
 				"round": round,
-				"ot": ot,
 				"score": {},
 				"hard": hard,
 				"lang": outLang,
