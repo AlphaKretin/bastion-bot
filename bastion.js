@@ -721,14 +721,19 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 			}
 		}
 		let ids = Object.keys(cards[outLang]);
-		if (args.length > 1) {
+		let argObj = parseFilterArgs(message.toLowerCase());
+		if (Object.keys(argObj).length > 0) {
 			let matches = [];
 			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
-				if (randFilterCheck(id, args, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
+				if (randFilterCheck(id, argObj, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
 			}
 			if (matches.length === 0) {
+				bot.sendMessage({
+					to: channelID,
+					message: "Sorry, no cards match the criteria specified!"
+				});
 				return;
 			}
 			code = matches[Math.floor(Math.random() * matches.length)];
@@ -1735,6 +1740,9 @@ function matches(user, userID, channelID, message, event, name) {
 			});
 		}
 	} else {
+		let argObj;
+		if (args)
+			argObj = parseFilterArgs(a[1]);
 		let out = bo + quo + "Top 10 card name matches for" + quo + bo + " **`" + arg + "`**:";
 		out += bo + quo + quo + quo;
 		let i = 0;
@@ -1742,7 +1750,7 @@ function matches(user, userID, channelID, message, event, name) {
 		while (results[i] && outs.length < 10) {
 			let card = cards[outLang][results[i].item.id];
 			if (card) {
-				if (aliasCheck(card, outLang) && (!args || randFilterCheck(results[i].item.id, args, outLang))) {
+				if (aliasCheck(card, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
 					outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 				}
 			}
@@ -2643,7 +2651,8 @@ function trivia(user, userID, channelID, message, event) {
 			}
 		}
 		let hard = (args.indexOf("hard") > -1);
-		startTriviaRound(round, hard, outLang, user, userID, channelID, message, event);
+		let argObj = parseFilterArgs(message.toLowerCase());
+		startTriviaRound(round, hard, outLang, argObj, user, userID, channelID, message, event);
 	}
 }
 
@@ -2654,22 +2663,14 @@ async function startTriviaRound(round, hard, outLang, user, userID, channelID, m
 		let buffer;
 		let name;
 		let card;
-		let args = message.toLowerCase().split(" ");
-		let argStr = args.join(" ");
-		let otFilters = [];
-		for (let status of Card.otList) {
-			if (argStr.indexOf("status:" + status) > -1 || argStr.indexOf("ot:" + status) > -1) {
-				otFilters.push(status);
-			}
-		}
-		if (otFilters.length === 0) {
-			args.push("ot:tcg/ocg");
-		}
 		let ids = Object.keys(cards[outLang]);
 		let matches = [];
-		if (args.length > 1) {
+		if (Object.keys(argObj).length > 0) {
+			argObj = { ot: [ "TCG/OCG" ] };
+		}
+		if (Object.keys(argObj).length > 0) {
 			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
-				if (randFilterCheck(id, args, outLang) && cards[outLang][id].name.indexOf("(Anime)") === -1) { //a number of filters can be specified in the command, and this checks that a card meets them
+				if (randFilterCheck(id, argObj, outLang) && cards[outLang][id].name.indexOf("(Anime)") === -1) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
 			}
@@ -2740,7 +2741,8 @@ async function startTriviaRound(round, hard, outLang, user, userID, channelID, m
 				"score": {},
 				"hard": hard,
 				"lang": outLang,
-				"lock": false
+				"lock": false,
+				"argObj": argObj
 			}
 		}
 		if (hard) {
@@ -2875,7 +2877,7 @@ async function startTriviaRound(round, hard, outLang, user, userID, channelID, m
 					if (gameData[channelID].IN) {
 						clearInterval(gameData[channelID].IN);
 					}
-					startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+					startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 				}, triviaTimeLimit);
 			}
 		});
@@ -3011,7 +3013,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 				message: out
 			});
 		}
-		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
 		gameData[channelID].lock = true;
 		if (gameData[channelID].TO1) {
@@ -3094,7 +3096,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 					message: out
 				});
 			}
-			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, user, userID, channelID, message, event);
+			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 		}
 	} else if (thumbsdown) {
 		bot.addReaction({
