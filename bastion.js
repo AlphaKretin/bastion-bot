@@ -2491,85 +2491,124 @@ function parseFilterArgs(input) {
 }
 
 function randFilterCheck(code, args, outLang) {
-	let otFilters = [];
-	let typeFilters = [];
-	let raceFilters = [];
-	let attFilters = [];
-	let lvFilters = [];
-	let lscaleFilters = [];
-	let rscaleFilters = [];
-	let scaleFilters = [];
-	let atkFilters = [];
-	let defFilters = [];
-	let numFilters = [];
-	let setFilters = [];
-	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + setFilters.length === 0) {
+	if (Object.keys(args).length === 0)
 		return true;
-	} else {
-		let card = cards[outLang][code];
-		let boo = true;
-		if (otFilters.length > 0 && otFilters.indexOf(card.ot.toLowerCase()) === -1) {
-			boo = false;
-		}
-		if (typeFilters.length > 0) {
-			let subBoo = false;
-			for (let type of card.allTypes) {
-				if (typeFilters.indexOf(type.toLowerCase()) > -1) {
-					subBoo = true;
-				}
-			}
-			boo = boo && subBoo;
-		}
-		if (raceFilters.length > 0) {
-			let subBoo = false;
-			for (let rac of card.race) {
-				if (raceFilters.indexOf(rac.toLowerCase()) > -1) {
-					subBoo = true;
-				}
-			}
-			boo = boo && subBoo;
-		}
-		if (attFilters.length > 0) {
-			let subBoo = false;
-			for (let att of card.attribute) {
-				if (attFilters.indexOf(att.toLowerCase()) > -1) {
-					subBoo = true;
-				}
-			}
-			boo = boo && subBoo;
-		}
-		if (setFilters.length > 0) {
-			let subBoo = false;
-			if (card.sets) {
-				for (let set of card.sets) {
-					if (setFilters.indexOf(set.toLowerCase()) > -1) {
+	let boo = true;
+	let card = cards[outLang][code];
+	for (let key of Object.keys(args)) {
+		let subBoo;
+		switch(key) {
+			case "ot":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.ot.toLowerCase() === either[0])
 						subBoo = true;
-					}
 				}
-			}
-
-			boo = boo && subBoo;
+				break;
+			case "type":
+				subBoo = false;
+				for (let either of args[key]) {
+					let subSubBoo = true;
+					let tempTypes = [];
+					for (let type of card.allTypes)
+						tempTypes.push(type.toLowerCase());
+					for (let also of either) {
+						if (tempTypes.indexOf(also) < 0)
+							subSubBoo = false;
+					}
+					subBoo = subBoo || subSubBoo;
+				}
+				break;
+			case "race":
+				subBoo = false;
+				for (let either of args[key]) {
+					let subSubBoo = true;
+					let tempRaces = [];
+					for (let race of card.race)
+						tempRaces.push(race.toLowerCase());
+					for (let also of either) {
+						if (tempRaces.indexOf(also) < 0)
+							subSubBoo = false;
+					}
+					subBoo = subBoo || subSubBoo;
+				}
+				break;
+			case "att":
+				subBoo = false;
+				for (let either of args[key]) {
+					let subSubBoo = true;
+					let tempAtts = [];
+					for (let att of card.attribute)
+						tempAtts.push(att.toLowerCase());
+					for (let also of either) {
+						if (tempAtts.indexOf(also) < 0)
+							subSubBoo = false;
+					}
+					subBoo = subBoo || subSubBoo;
+				}
+				break;
+			case "set":
+				subBoo = false;
+				for (let either of args[key]) {
+					let subSubBoo = true;
+					let tempSets = [];
+					for (let set of card.sets)
+						tempSets.push(set.toLowerCase());
+					for (let also of either) {
+						if (tempSets.indexOf(also) < 0)
+							subSubBoo = false;
+					}
+					subBoo = subBoo || subSubBoo;
+				}
+				break;
+			case: "level":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.level === either[0])
+						subBoo = true;
+				}
+				break;
+			case: "lscale":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.lscale === either[0])
+						subBoo = true;
+				}
+				break;
+			case: "rscale":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.rscale === either[0])
+						subBoo = true;
+				}
+				break;
+			case: "scale":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.lscale === either[0] || card.rscale === either[0])
+						subBoo = true;
+				}
+				break;
+			case: "atk":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.atk === either[0])
+						subBoo = true;
+				}
+				break;
+			case: "def":
+				subBoo = false;
+				for (let either of args[key]) {
+					if (card.def === either[0])
+						subBoo = true;
+				}
+				break;
 		}
-		if (lvFilters.length > 0 && lvFilters.indexOf(card.level) === -1) {
-			boo = false;
-		}
-		if (lscaleFilters.length > 0 && lscaleFilters.indexOf(card.lscale) === -1) {
-			boo = false;
-		}
-		if (rscaleFilters.length > 0 && rscaleFilters.indexOf(card.rscale) === -1) {
-			boo = false;
-		}
-		if (scaleFilters.length > 0 && scaleFilters.indexOf(card.lscale) === -1 && scaleFilters.indexOf(card.rscale) === -1) {
-			boo = false;
-		}
-		if (atkFilters.length > 0 && atkFilters.indexOf(card.atk) === -1) {
-			boo = false;
-		}
-		if (defFilters.length > 0 && defFilters.indexOf(card.def) === -1) {
-			boo = false;
-		}
-		return boo;
+		boo = boo && subBoo;
+		if (!boo) 
+			return boo;
 	}
+	return boo;
 }
 
 function aliasCheck(card, outLang) { //called when getting alt arts, checks if an aliased card has the same OT as the original
