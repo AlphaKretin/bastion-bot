@@ -2328,6 +2328,160 @@ function addEmote(args, symbol) {
 	return [str, emotes, str + " " + emotes];
 }
 
+function parseFilterArgs(input) {
+	if (Array.isArray(input)) {
+		input = input.join(" ");
+	}
+	input = input.toLowerCase();
+	let output = {};
+	let validFilters = {
+		"status": {
+			name: "ot",
+			func: function(arg) {
+				return Card.otList.indexOf(arg) > -1;
+			}
+		},
+		"ot": {
+			name: "ot",
+			func: function(arg) {
+				return Card.otList.indexOf(arg) > -1;
+			}
+		},
+		"type": {
+			name: "type",
+			func: function(arg) {
+				return Card.typeList.indexOf(arg) > -1;
+			}
+		},
+		"race": {
+			name: "race",
+			func: function(arg) {
+				return Card.raceList.indexOf(arg) > -1;
+			}
+		},
+		"mtype": {
+			name: "race",
+			func: function(arg) {
+				return Card.raceList.indexOf(arg) > -1;
+			}
+		},
+		"attribute": {
+			name: "att",
+			func: function(arg) {
+				return Card.attributeList.indexOf(arg) > -1;
+			}
+		},
+		"att": {
+			name: "att",
+			func: function(arg) {
+				return Card.attributeList.indexOf(arg) > -1;
+			}
+		},
+		"archetype": {
+			name: "set",
+			func: function(arg) {
+				return Card.setList.indexOf(arg) > -1;
+			}
+		},
+		"set": {
+			name: "set",
+			func: function(arg) {
+				return Card.setList.indexOf(arg) > -1;
+			}
+		},
+		"atk": {
+			name: "atk",
+			func: function(arg) {
+				return !isNaN(parseInt(arg)) || arg === "?";
+			}
+		},
+		"def": {
+			name: "def",
+			func: function(arg) {
+				return !isNaN(parseInt(arg)) || arg === "?";
+			}
+		},
+		"level": {
+			name: "level",
+			func: function(arg) {
+				return !isNaN(parseInt(arg));
+			},
+			convert: function(arg) {
+				return parseInt(arg);
+			}
+		},
+		"lscale": {
+			name: "lscale",
+			func: function(arg) {
+				return !isNaN(parseInt(arg));
+			},
+			convert: function(arg) {
+				return parseInt(arg);
+			}
+		},
+		"rscale": {
+			name: "lscale",
+			func: function(arg) {
+				return !isNaN(parseInt(arg));
+			},
+			convert: function(arg) {
+				return parseInt(arg);
+			}
+		},
+		"scale": {
+			name: "scale",
+			func: function(arg) {
+				return !isNaN(parseInt(arg));
+			},
+			convert: function(arg) {
+				return parseInt(arg);
+			}
+		}
+	};
+	let terms = [];
+	while (input.indexOf(":") > -1) {
+		let colonIndex = input.indexOf(":");
+		let startIndex = getLastIndexBefore(input, " ", colonIndex);
+		let nextColonIndex = getIndexAfter(input, ":", colonIndex);
+		if (nextColonIndex < 0)
+			nextColonIndex = input.length;
+		let endIndex = getLastIndexBefore(input, " ", nextColonIndex);
+		if (endIndex < 0 || endIndex === startIndex) {
+			endIndex = input.length;
+		}
+		terms.push(input.slice(startIndex + 1, endIndex));
+		input = input.slice(0, startIndex) + input.slice(endIndex);
+	}
+	for (let term of terms) {
+		let arr = term.split(":")
+		let name = arr[0];
+		let args = arr[1];
+		if (name in validFilters) {
+			name = validFilters[name].name;
+		} else {
+			continue;
+		}
+		let outArr = [];
+		let ors = args.split("/");
+		for (let arg of ors) {
+			let tempArr = [];
+			for (let plus of arg.split("+")) {
+				if (validFilters[name].func(plus)) {
+					if (validFilters[name].convert) {
+						tempArr.push(validFilters[name].convert(plus));
+					} else {
+						tempArr.push(plus);
+					}
+				}
+			}
+			if (tempArr.length > 0)
+				outArr.push(tempArr);
+		}
+		if (outArr.length > 0)
+			output[name] = outArr;
+	}
+}
+
 function randFilterCheck(code, args, outLang) {
 	let otFilters = [];
 	let typeFilters = [];
@@ -2341,81 +2495,6 @@ function randFilterCheck(code, args, outLang) {
 	let defFilters = [];
 	let numFilters = [];
 	let setFilters = [];
-	let argStr = args.join(" ");
-	for (let status of Card.otList) {
-		if (argStr.indexOf("status:" + status) > -1 || argStr.indexOf("ot:" + status) > -1) {
-			otFilters.push(status);
-		}
-	}
-	for (let type of Card.typeList) {
-		if (argStr.indexOf("type:" + type) > -1) {
-			typeFilters.push(type);
-		}
-	}
-	for (let race of Card.raceList) { //this is all weird to distinguish between Beast and Beast-Warrior -.-
-		let r1 = "race:" + race;
-		let r2 = "mtype:" + race;
-		let indicies = [];
-		for (let i = 0; i < argStr.length; i++) {
-			if (argStr.slice(i, i + r1.length) === r1) {
-				if (Card.raceConflicts[race]) {
-					let c = "race:" + Card.raceConflicts[race];
-					if (!(argStr.slice(i, i + c.length) === c)) {
-						indicies.push(i);
-					}
-				} else {
-					indicies.push(i);
-				}
-			} else if (argStr.slice(i, i + r2.length) === r2) {
-				if (Card.raceConflicts[race]) {
-					let c = "mtype:" + Card.raceConflicts[race];
-					if (!(argStr.slice(i, i + c.length) === c)) {
-						indicies.push(i);
-					}
-				} else {
-					indicies.push(i);
-				}
-			}
-		}
-		if (indicies.length > 0) {
-			raceFilters.push(race);
-		}
-	}
-	for (let att of Card.attributeList) {
-		if (argStr.indexOf("attribute:" + att) > -1 || argStr.indexOf("att:" + att) > -1) {
-			attFilters.push(att);
-		}
-	}
-	for (let set of Card.setList) {
-		if (argStr.indexOf("set:" + set) > -1 || argStr.indexOf("archetype:" + set) > -1) {
-			setFilters.push(set);
-		}
-	}
-	for (let arg of args) {
-		let argTxt = arg.split(":")[1]
-		let argNum = parseInt(argTxt);
-		if (isNaN(argNum)) {
-			if (arg.startsWith("atk:") && argTxt === "?") {
-				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
-			} else if (arg.startsWith("def:") && argTxt === "?") {
-				defFilters.push(argTxt);
-			}
-		} else {
-			if (arg.startsWith("level:")) {
-				lvFilters.push(argNum);
-			} else if (arg.startsWith("lscale:")) {
-				lscaleFilters.push(argNum);
-			} else if (arg.startsWith("rscale:")) {
-				rscaleFilters.push(argNum);
-			} else if (arg.startsWith("scale:")) {
-				scaleFilters.push(argNum);
-			} else if (arg.startsWith("atk:")) {
-				atkFilters.push(argTxt); //atk/def are strings for consistency because "?" is an option
-			} else if (arg.startsWith("def:")) {
-				defFilters.push(argTxt);
-			}
-		}
-	}
 	if (otFilters.length + typeFilters.length + raceFilters.length + attFilters.length + lvFilters.length + lscaleFilters.length + rscaleFilters.length + scaleFilters.length + atkFilters.length + defFilters.length + setFilters.length === 0) {
 		return true;
 	} else {
@@ -2523,6 +2602,21 @@ function arrayCount(arr) {
 		prev[cur] = (prev[cur] || 0) + 1;
 		return prev;
 	}, {});
+}
+
+function getLastIndexBefore(str, cha, ind) {
+	let tmpStr = str.slice(0, ind);
+	return tmpStr.lastIndexOf(cha);
+}
+
+function getIndexAfter(str, cha, ind) {
+	let tmpStr = str.slice(ind + 1);
+	let offset = str.length - tmpStr.length;
+	let i = tmpStr.indexOf(cha);
+	if (i > 0) {
+		return i + offset;
+	}
+	return i;
 }
 
 //games
