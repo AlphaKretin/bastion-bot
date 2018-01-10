@@ -365,16 +365,6 @@ module.exports = function (setcodes) {
     Object.keys(Card.races).forEach(function (key, index) {
         Card.raceList.push(key.toLowerCase());
     });
-	
-	Card.raceConflicts = {};
-
-	for (let race of Card.raceList) {
-		for (let r of Card.raceList) {
-			if (r !== race && race.startsWith(r)) {
-				Card.raceConflicts[r] = race;
-			}
-		}
-	}
 
     Card.attributes = {
         "EARTH": 0x1,

@@ -56,8 +56,10 @@ The `.randcard` command will select a random card and display its information as
  - `attribute:` or `att:` specifies the attribute.  
  - `set:` or `archetype:` specifies the archetype.  
  - `level:` specifies the level.  
- - `lscale:` and `rscale:` specify the left and right Pendulum scale specifically, or `scale:` specifies either.  
+ - `lscale:` and `rscale:` specify the left and right Pendulum scale alone, or `scale:` specifies either.  
  - `atk:` and `def:` specify the ATK and DEF stats.  
+For any of these options, you can specify multiple paramaters and tell Bastion if it needs all or one of them using "/" and "+". Rather than try in vain to explain, I'll use an example.  
+`.randcard type:spell+ritual/effect+monster` will return a card that is either both a spell and a ritual or an effect and a monster.  
 In addition, you can type `image` or a language, with no prefix, to make it display the image and specify the language it'll return.  
   
 As an example, `.randcard ot:tcg/ocg level:4 image` returns the following output:  
