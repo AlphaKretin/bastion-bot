@@ -366,14 +366,6 @@ module.exports = function (setcodes) {
         Card.raceList.push(key.toLowerCase());
     });
 
-	for (let race of Card.raceList) {
-		for (let r of Card.raceList) {
-			if (r !== race && race.startsWith(r)) {
-				Card.raceConflicts[r] = race;
-			}
-		}
-	}
-
     Card.attributes = {
         "EARTH": 0x1,
         "WATER": 0x2,
