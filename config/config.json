@@ -40,5 +40,5 @@
 	"shortcutsDB": "shortcuts.json",
 	"setcodesDB": "setcodes.json",
 	"lflistDB": "lflist.json",
-	"statsDB": "stats.json",
+	"statsDB": "stats.json"
 }
