@@ -12,7 +12,7 @@
 	"scriptUrlAnime": null,
 	"scriptUrlCustom": null,
 	"scriptUrlBackup": null,
-	"dbs": {
+	"staticDBs": {
 		"en": [
 			"cards.cdb"
 		]
@@ -40,5 +40,12 @@
 	"shortcutsDB": "shortcuts.json",
 	"setcodesDB": "setcodes.json",
 	"lflistDB": "lflist.json",
-	"statsDB": "stats.json"
+	"statsDB": "stats.json",
+	"updateRepos": {
+        "en": []
+    },
+    "liveDBs": {
+        "en": []
+    }
+    "deleteOldDBs": false
 }

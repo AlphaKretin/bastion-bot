@@ -163,7 +163,7 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"scriptUrl": "",  
 	"scriptUrlAnime": "",  
 	"scriptUrlCustom": "",  
-	"dbs": {  
+	"staticDBs": {  
 		"en": [ "cards.cdb" ]  
 	},  
 	"dbMemory": 33554432,  
@@ -189,6 +189,13 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"setcodesDB": "setcodes.json",  
 	"lflistDB": "lflist.json",  
 	"statsDB": "stats.json",  
+	"updateRepos": {  
+        "en": []  
+    },  
+    "liveDBs": {  
+        "en": []  
+    }  
+    "deleteOldDBs": false  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -215,7 +222,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
   
-`dbs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language codes. If two DBs have an entry with the same ID, for example because of "fix" DBs, the latest occurence in the array will be the final version of the entry that overwrites the others. This field is optional - if it is missing, Bastion will default to what you see above.  
+`staticDBs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language names. If two DBs have an entry with the same ID, for example because of "fix" DBs, the latest occurence in the array will be the final version of the entry that overwrites the others. This object is for base databases that should not be modified by the live update process - if you have anything stored in a GitHub repository, see below for fields that enable an automatic update process. This field is optional - if it is missing, Bastion will default to what you see above.  
   
 `dbMemory` is the size allocated in memory for Bastion to load card database, in bytes. If you get the error "Cannot adjust memory arrays" in the middle of loading databases, you need to increase this. This field is optional - if it is missing, Bastion will default to what you see above.  
   
@@ -264,6 +271,12 @@ By default, the configuration file is called `config.json`, and is expected to b
 `lflistDB` is the name of the JSON file containing banlist data, as detailed below. This field is optional - if it is missing, it will default to what you see above.  
   
 `statsDB` is the name of the JSON file that will store stat data. This field is optional - if it is missing, it will default to what you see above.  
+  
+`updateRepos` is an object with languages as keys, like `staticDBs`, but the values are arrays of names of GitHub repositories, in the format `Username/Repo`. These should be repositories that contain card databases in the given language (though they can contain other files, Bastion can tell them apart), that Bastion will automatically download both on launch and hourly, so any changes are automatically reflected in the bot. This field is optional - if it is left blank, the live update process will be disabled.  
+  
+`liveDBs` is an object with the same format as `staticDBs`, but it contains databases that *are* affected by the live update process, and its contents will change along with the contents of any `updateRepos`. You do not need to edit this field yourself - it will be populated during the live update process.  
+  
+`deleteOldDBs` is a boolean that determines if Bastion will delete a database from your hard drive that gets removed as part of the live update process (because it has been removed from the source repo). Note that even while enabled, you get a 10 second warning before files are deleted so that you can terminate the process if you decide you want to keep them. This field is optional - if it is left blank, that is equivalent to false.  
   
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
@@ -475,7 +488,6 @@ Bastion expects 3 files in the `dbs` folder containing JSON arrays of objects de
 ```  
 ### To-do List  
 - Add pack opening simulation --Feature simon has, but could be improved on  
-- Auto CDB update --Bonus  
-- Grab DBs (and whatever else) from online *or* local --Bonus  
+- Grab pics and other files from online *or* local --Bonus  
 - Improve ruling page lookup --questionably possible, requires formulaic way to determine OCG database ID from card data  
 - Add OCG/Japanese prices if searching japanese language --questionably possible, requires source with API  
