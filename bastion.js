@@ -471,11 +471,11 @@ if (config.updateRepos) {
 let skillFuse = {};
 setJSON();
 
-let request = require('request');
-let https = require('https');
-let url = require('url');
-let jimp = require('jimp');
-let filetype = require('file-type');
+const request = require('request');
+const https = require('https');
+const url = require('url');
+const jimp = require('jimp');
+const filetype = require('file-type');
 
 //these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
