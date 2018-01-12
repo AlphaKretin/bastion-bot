@@ -1,10 +1,10 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let config = JSON.parse(fs.readFileSync('config/config.json', 'utf8'));
+let config = JSON.parse(fs.readFileSync("config/config.json", "utf8"));
 //load data from JSON. Expected values can be intuited from console feedback or seen in the readme.
 if (!config.token) {
-	console.log("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
-	return;
+	console.error("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
+	process.exit();
 }
 
 let imageUrlMaster;
@@ -24,43 +24,43 @@ if (config.imageUrl) {
 		imageUrlAnime = config.imageUrlAnime;
 	} else {
 		imageUrlAnime = imageUrlMaster;
-		console.log("URL for anime image source not found at config.imageUrlAnime! Defaulting to same source as official cards, " + imageUrlMaster + "!");
+		console.warn("URL for anime image source not found at config.imageUrlAnime! Defaulting to same source as official cards, " + imageUrlMaster + "!");
 	}
 	if (config.imageUrlCustom) {
 		imageUrlCustom = config.imageUrlCustom;
 	} else {
 		imageUrlCustom = imageUrlMaster;
-		console.log("URL for custom image source not found at config.imageUrlCustom! Defaulting to same source as official cards, " + imageUrlMaster + "!");
+		console.warn("URL for custom image source not found at config.imageUrlCustom! Defaulting to same source as official cards, " + imageUrlMaster + "!");
 	}
 	if (config.imageSize) {
 		imageSize = config.imageSize;
 	} else {
-		console.log("Size for images not found at config.imageSize! Defaulting to " + imageSize + "!");
+		console.warn("Size for images not found at config.imageSize! Defaulting to " + imageSize + "!");
 	}
 	if (config.triviaTimeLimit) {
 		triviaTimeLimit = config.triviaTimeLimit;
 	} else {
-		console.log("No time limit for trivia found at config.triviaTimeLimit! Defaulting to " + triviaTimeLimit + "!");
+		console.warn("No time limit for trivia found at config.triviaTimeLimit! Defaulting to " + triviaTimeLimit + "!");
 	}
 	if (config.triviaHintTime) {
 		triviaHintTime = config.triviaHintTime;
 	} else {
-		console.log("No hint time for trivia found at config.triviaHintTime! Defaulting to " + triviaHintTime + "!");
+		console.warn("No hint time for trivia found at config.triviaHintTime! Defaulting to " + triviaHintTime + "!");
 	}
 	if (config.triviaMaxRounds) {
 		triviaMaxRounds = config.triviaMaxRounds;
 	} else {
-		console.log("No hint time for trivia found at config.triviaMaxRounds! Defaulting to " + triviaMaxRounds + "!");
+		console.warn("No hint time for trivia found at config.triviaMaxRounds! Defaulting to " + triviaMaxRounds + "!");
 	}
 	if (config.triviaLocks) {
 		triviaLocks = config.triviaLocks;
 	} else {
-		console.log("No specifications for channels to lock trivia to found at config.triviaLocks! Defaulting to nothing, configure with \".tlock\" command!");
+		console.warn("No specifications for channels to lock trivia to found at config.triviaLocks! Defaulting to nothing, configure with \".tlock\" command!");
 	}
 	if (config.imageExt) {
 		imageExt = config.imageExt;
 	} else {
-		console.log("No file extension for images found at config.imageExt! Defaulting to " + imageExt + "!");
+		console.warn("No file extension for images found at config.imageExt! Defaulting to " + imageExt + "!");
 	}
 } else {
 	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
@@ -80,9 +80,9 @@ if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
 		thumbsdown = emoteDB["thumbsdown"];
 	}
 } else if (config.emoteMode && config.emoteMode > 0) {
-	console.log("Emote database not found at config.emotesDB! Emotes display will be disabled.");
+	console.warn("Emote database not found at config.emotesDB! Emotes display will be disabled.");
 } else if (config.emoteMode === undefined || config.emoteMode === null) {
-	console.log("Emote mode specification not found at config.emoteMode! Defaulting to " + emoteMode + "!");
+	console.warn("Emote mode specification not found at config.emoteMode! Defaulting to " + emoteMode + "!");
 }
 
 let messageMode = 0;
@@ -92,18 +92,18 @@ let embcDB;
 if (config.messageMode || config.messageMode === 0) {
 	messageMode = config.messageMode;
 } else {
-	console.log("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
+	console.warn("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
 }
 if (messageMode & 0x2 && config.embedColor) {
 	embedColor = config.embedColor;
 } else if (messageMode & 0x2) {
-	console.log("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
+	console.warn("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
 }
 if (messageMode & 0x2 && config.embedColorDB) {
 	let path = "config/" + config.embedColorDB;
 	embcDB = JSON.parse(fs.readFileSync(path, "utf-8"));
 } else if (messageMode & 0x2) {
-	console.log("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
+	console.warn("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
 }
 
 let quo = messageMode & 0x1 && "`" || "";
@@ -120,18 +120,18 @@ if (config.scriptUrl) {
 		scriptUrlAnime = config.scriptUrlAnime;
 	} else {
 		scriptUrlAnime = scriptUrlMaster;
-		console.log("URL for anime script source not found at config.scriptUrlAnime! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
+		console.warn("URL for anime script source not found at config.scriptUrlAnime! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
 	}
 	if (config.scriptUrlCustom) {
 		scriptUrlCustom = config.scriptUrlCustom;
 	} else {
 		scriptUrlCustom = scriptUrlMaster;
-		console.log("URL for custom script source not found at config.scriptUrlCustom! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
+		console.warn("URL for custom script source not found at config.scriptUrlCustom! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
 	}
 	if (config.scriptUrlBackup) {
 		scriptUrlBackup = config.scriptUrlBackup;
 	} else {
-		console.log("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
+		console.warn("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
 	}
 } else {
 	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
@@ -141,19 +141,19 @@ let pre = ".";
 if (config.prefix) {
 	pre = config.prefix;
 } else {
-	console.log("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!");
+	console.warn("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!");
 }
 let longStr = "...\n__Type `" + pre + "long` to be PMed the rest!__";
 if (config.longStr) {
 	longStr = config.longStr;
 } else {
-	console.log("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
+	console.warn("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
 }
 let helpMessage = "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website.";
 if (config.helpMessage) {
 	helpMessage = config.helpMessage;
 } else {
-	console.log("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
+	console.warn("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
 }
 if (messageMode & 0x1) {
 	helpMessage = bo + quo + helpMessage + quo + bo;
@@ -163,24 +163,24 @@ let maxSearches = 3;
 if (config.maxSearches) {
 	maxSearches = config.maxSearches;
 } else {
-	console.log("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
+	console.warn("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
 }
 
 let defaultLang = "en";
 if (config.defaultLanguage) {
 	defaultLang = config.defaultLanguage;
 } else {
-	console.log("Default language not found at config.defaultLanguage! Defaulting to " + defaultLang + "!");
+	console.warn("Default language not found at config.defaultLanguage! Defaulting to " + defaultLang + "!");
 }
 
 let rulingLang;
 if (config.rulingLanguage) {
 	rulingLang = config.rulingLanguage;
 } else {
-	console.log("Japanese language for rulings not found at config.rulingLanguage! Ruling search will be disabled.");
+	console.warn("Japanese language for rulings not found at config.rulingLanguage! Ruling search will be disabled.");
 }
 
-const GitHubApi = require('github')
+const GitHubApi = require("github");
 let github = new GitHubApi({
 	debug: false
 });
@@ -193,7 +193,7 @@ if (config.staticDBs) {
 	staticDBs = config.staticDBs;
 	dbs = JSON.parse(JSON.stringify(config.staticDBs));
 	if (config.liveDBs) {
-		Object.keys(config.liveDBs).forEach((lang, index) => {
+		Object.keys(config.liveDBs).forEach((lang) => {
 			if (dbs[lang]) {
 				dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
 			} else {
@@ -201,23 +201,23 @@ if (config.staticDBs) {
 			}
 		});
 	} else {
-		console.log("List of live-updating databases not found at config.liveDBs! Defaulting to none, and live update will populate it if enabled!");
+		console.warn("List of live-updating databases not found at config.liveDBs! Defaulting to none, and live update will populate it if enabled!");
 		config.liveDBs = {};
 	}
 } else {
-	console.log("List of non-updating card databases not found at config.staticDBs! Defaulting to one database named " + staticDBs[defaultLang][0] + ".");
+	console.warn("List of non-updating card databases not found at config.staticDBs! Defaulting to one database named " + staticDBs[defaultLang][0] + ".");
 }
 let dbMemory = 33554432;
 if (config.dbMemory) {
 	dbMemory = config.dbMemory;
 } else {
-	console.log("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
+	console.warn("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
 }
 let owner;
 if (config.botOwner) {
 	owner = config.botOwner;
 } else {
-	console.log("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
+	console.warn("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
 }
 
 let libFunctions;
@@ -232,19 +232,19 @@ function setJSON() { //this is a function because it needs to be repeated when i
 		let path = "dbs/" + config.scriptFunctions;
 		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
 	} else {
-		console.log("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
+		console.warn("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
 	}
 	if (config.scriptConstants) {
 		let path = "dbs/" + config.scriptConstants;
 		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
 	} else {
-		console.log("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
+		console.warn("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
 	}
 	if (config.scriptParams) {
 		let path = "dbs/" + config.scriptParams;
 		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
 	} else {
-		console.log("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
+		console.warn("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
 	}
 
 	if (config.skillDB) {
@@ -260,70 +260,70 @@ function setJSON() { //this is a function because it needs to be repeated when i
 			skillFuse = new Fuse(skillNames, options);
 		}
 	} else {
-		console.log("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
+		console.warn("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
 	}
 }
 
 let sheetsDB;
-const gstojson = require('google-spreadsheet-to-json');
+const gstojson = require("google-spreadsheet-to-json");
 if (owner && config.sheetsDB) {
 	let path = "config/" + config.sheetsDB;
 	sheetsDB = JSON.parse(fs.readFileSync(path, "utf-8"));
 } else if (!owner) {
-	console.log("Bot owner's ID not set up! JSON updating commands will be disabled.");
+	console.warn("Bot owner's ID not set up! JSON updating commands will be disabled.");
 } else {
-	console.log("Sheets database not found at config.sheetsDB! JSON updating commands will be disabled.");
+	console.warn("Sheets database not found at config.sheetsDB! JSON updating commands will be disabled.");
 }
 
 let debugOutput = false;
 if (config.debugOutput || config.debugOutput === false) {
 	debugOutput = config.debugOutput;
 } else {
-	console.log("Choice whether to display debug information not found at config.debugOutput! Defaulting to not displaying it.");
+	console.warn("Choice whether to display debug information not found at config.debugOutput! Defaulting to not displaying it.");
 }
 
 let shortsDB = "shortcuts.json";
 if (config.shortcutDB) {
 	shortsDB = config.shortcutDB;
 } else {
-	console.log("Filename for shortcuts file not found at config.shortcutDB! Defaulting to " + shortsDB + ".");
+	console.warn("Filename for shortcuts file not found at config.shortcutDB! Defaulting to " + shortsDB + ".");
 }
 
 let setsDB = "setcodes.json";
 if (config.setcodesDB) {
 	setsDB = config.setcodesDB;
 } else {
-	console.log("Filename for setcodes file not found at config.setcodesDB! Defaulting to " + setsDB + ".");
+	console.warn("Filename for setcodes file not found at config.setcodesDB! Defaulting to " + setsDB + ".");
 }
 
 let banDB = "lflist.json";
 if (config.lflistDB) {
 	banDB = config.lflistDB;
 } else {
-	console.log("Filename for banlist file not found at config.lflistDB! Defaulting to " + banDB + ".");
+	console.warn("Filename for banlist file not found at config.lflistDB! Defaulting to " + banDB + ".");
 }
 
 let statsDB = "stats.json";
 if (config.statsDB) {
 	statsDB = config.statsDB;
 } else {
-	console.log("Filename for stats file not found at config.statsDB! Defaulting to " + statsDB + ".");
+	console.warn("Filename for stats file not found at config.statsDB! Defaulting to " + statsDB + ".");
 }
 
 let updateRepos;
 if (config.updateRepos) {
 	updateRepos = config.updateRepos;
 } else {
-	console.log("List of GitHub repositories to update from not found at config.updateRepos! Live database update will be disabled.");
+	console.warn("List of GitHub repositories to update from not found at config.updateRepos! Live database update will be disabled.");
 }
 
 //more config files, all explained in the readme
-let shortcuts = JSON.parse(fs.readFileSync('config/' + shortsDB, 'utf8'));
-let setcodes = JSON.parse(fs.readFileSync('config/' + setsDB, 'utf8'));
-let lflist = JSON.parse(fs.readFileSync('config/' + banDB, 'utf8'));
-let stats = JSON.parse(fs.readFileSync('config/' + statsDB, 'utf8'));
+let shortcuts = JSON.parse(fs.readFileSync("config/" + shortsDB, "utf8"));
+let setcodes = JSON.parse(fs.readFileSync("config/" + setsDB, "utf8"));
+let lflist = JSON.parse(fs.readFileSync("config/" + banDB, "utf8"));
+let stats = JSON.parse(fs.readFileSync("config/" + statsDB, "utf8"));
 
-let Card = require('./card.js')(setcodes); //initialises a "Card" Class, takes setcodes as an argument for handling archetypes as a class function
+let Card = require("./card.js")(setcodes); //initialises a "Card" Class, takes setcodes as an argument for handling archetypes as a class function
 
 setInterval(() => {
 	fs.writeFileSync("config/stats.json", JSON.stringify(stats), "utf8");
@@ -331,18 +331,18 @@ setInterval(() => {
 }, 300000); //5 minutes
 
 //discord setup 
-const Discord = require('discord.io');
+const Discord = require("discord.io");
 
 let bot = new Discord.Client({
 	token: config.token,
 	autorun: false //users can't interface with the bot until it's ready
 });
 
-bot.on('ready', () => {
-	console.log('Logged in as %s - %s\n', bot.username, bot.id);
+bot.on("ready", () => {
+	console.log("Logged in as %s - %s\n", bot.username, bot.id);
 });
 
-bot.on('disconnect', () => { //Discord API occasionally disconnects bots for an unknown reason.
+bot.on("disconnect", () => { //Discord API occasionally disconnects bots for an unknown reason.
 	console.log("Disconnected. Reconnecting...");
 	bot.connect();
 });
@@ -351,12 +351,12 @@ bot.on('disconnect', () => { //Discord API occasionally disconnects bots for an 
 Module = {
 	TOTAL_MEMORY: dbMemory
 };
-const SQL = require('sql.js');
+const SQL = require("sql.js");
 let cards = {};
 let nameList = {};
 
 //fuse setup
-const Fuse = require('fuse.js');
+const Fuse = require("fuse.js");
 let options = {
 	shouldSort: true,
 	includeScore: true,
@@ -398,7 +398,7 @@ function loadDBs() {
 				}
 			}
 		}
-		Object.keys(cards[lang]).forEach((key, index) => {
+		Object.keys(cards[lang]).forEach((key) => {
 			nameList[lang].push({
 				name: cards[lang][key].name,
 				id: cards[lang][key].code
@@ -430,13 +430,13 @@ async function dbUpdate() {
 				});
 				promises.push(prom);
 			} catch (e) {
-				console.log("Failed to download files from " + repo + "!");
-				console.log(e);
+				console.error("Failed to download files from " + repo + "!");
+				console.error(e);
 			}
 		}
 	}
 	Promise.all(promises).then(() => {
-		Object.keys(config.liveDBs).forEach((lang, index) => {
+		Object.keys(config.liveDBs).forEach((lang) => {
 			if (dbs[lang]) {
 				dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
 			} else {
@@ -471,11 +471,11 @@ if (config.updateRepos) {
 let skillFuse = {};
 setJSON();
 
-const request = require('request');
-const https = require('https');
-const url = require('url');
-const jimp = require('jimp');
-const filetype = require('file-type');
+const request = require("request");
+const https = require("https");
+const url = require("url");
+const jimp = require("jimp");
+const filetype = require("file-type");
 
 //these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
@@ -614,14 +614,14 @@ let commandList = [{
 {
 	names: ["long"],
 	func: (user, userID, channelID, message, event) => {
-		sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg)
+		sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg);
 	},
 	chk: () => {
 		return longMsg.length > 0;
 	}
 }];
 
-bot.on('message', (user, userID, channelID, message, event) => {
+bot.on("message", (user, userID, channelID, message, event) => {
 	if (userID === bot.id || (bot.users[userID] && bot.users[userID].bot)) { //ignores own messages to prevent loops, and those of other bots just in case
 		return;
 	}
@@ -708,7 +708,7 @@ bot.on('message', (user, userID, channelID, message, event) => {
 	}
 });
 
-bot.on('messageUpdate', (oldMsg, newMsg, event) => { //a few commands can be met by edit
+bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met by edit
 	if (newMsg.author && newMsg.author.id === bot.id) { //have to check a lot of variables exist at all because for some stupid reason an embed being added also counts as editing a message. Dammit Discord
 		return;
 	}
@@ -748,7 +748,6 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 	try {
 		let args = message.toLowerCase().split(" ");
 		let code;
-		let i = 0;
 		let outLang = defaultLang;
 		for (let arg of args) {
 			if (arg in dbs) {
@@ -786,7 +785,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 			sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 		}
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 	}
 }
 
@@ -807,7 +806,7 @@ async function script(user, userID, channelID, message, event, name) {
 			sendLongMessage(out, user, userID, channelID, message, event);
 		} catch (e) {
 			console.log("Error with search by ID:");
-			console.log(e);
+			console.error(e);
 		}
 	} else { //if it wasn't an ID, the only remaining valid option is that it's a name
 		try {
@@ -821,7 +820,7 @@ async function script(user, userID, channelID, message, event, name) {
 			}
 		} catch (e) {
 			console.log("Error with search by name:");
-			console.log(e);
+			console.error(e);
 		}
 	}
 }
@@ -864,7 +863,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 			}
 		} catch (e) {
 			console.log("Error with search by ID:");
-			console.log(e);
+			console.error(e);
 		}
 	} else {
 		try {
@@ -895,12 +894,12 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 			}
 		} catch (e) {
 			console.log("Error with search by name:");
-			console.log(e);
+			console.error(e);
 		}
 	}
 }
 
-function getCardInfo(code, outLang, user, userID, channelID, message, event) {
+function getCardInfo(code, outLang) {
 	return new Promise((resolve, reject) => {
 		let markdownno = 0;
 		if (!code || !cards[outLang][code]) {
@@ -910,18 +909,18 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		let card = cards[outLang][code];
 		let alIDs = [code];
 		if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
-			alCard = cards[outLang][card.alias];
+			let alCard = cards[outLang][card.alias];
 			if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
-				Object.keys(cards[outLang]).forEach((key, index) => {
+				Object.keys(cards[outLang]).forEach((key) => {
 					if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
 						alIDs.push(cards[outLang][key].code);
 					}
 				});
 			}
 		} else { //if other cards have this, the original, as an alias, they'll be noted here
-			Object.keys(cards[outLang]).forEach((key, index) => {
+			Object.keys(cards[outLang]).forEach((key) => {
 				if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot && cards[outLang][key].name === card.name) {
 					alIDs.push(cards[outLang][key].code);
 				}
@@ -946,7 +945,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 		}
 		out += "\n";
 		let stat = card.ot;
-		Object.keys(lflist).forEach((key, index) => { //keys of the banlist table are card IDs, values are number of copies allowed
+		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.indexOf(key) > -1) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
@@ -956,7 +955,7 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				stat = stat.replace(re, key + ": " + lim);
 			}
 		});
-		request('https://yugiohprices.com/api/get_card_prices/' + card.name, (error, response, body) => { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
+		request("https://yugiohprices.com/api/get_card_prices/" + card.name, (error, response, body) => { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
 			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
 				let data = JSON.parse(body);
 				let low;
@@ -1151,9 +1150,9 @@ function getCardInfo(code, outLang, user, userID, channelID, message, event) {
 				markdownno += quo.length * 3;
 			} else {
 				if (messageMode & 0x1) {
-					out += "``````" + name[2].replace(/\n/g, "\n") + "``` ``Card Text``";
+					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Card Text``";
 				} else {
-					out += "**Card Text**: " + name[2].replace(/\n/g, "\n");
+					out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
 				}
 				markdownno += quo.length * 3;
 			}
@@ -1244,7 +1243,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 				to: channelID,
 				file: buffer,
 				filename: code[0] + "." + imageExt
-			}, (err, res) => {
+			}, () => {
 				sendLongMessage(out, user, userID, channelID, message, event, embCT, markdownno);
 			});
 		} else {
@@ -1254,7 +1253,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 					to: channelID,
 					file: buffer,
 					filename: code[0] + "." + imageExt
-				}, (err, res) => {
+				}, () => {
 					sendLongMessage(out, user, userID, channelID, message, event, embCT, markdownno);
 				});
 			} else {
@@ -1262,12 +1261,12 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 			}
 		}
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 	}
 
 }
 
-function downloadImage(imageUrl, user, userID, channelID, message, event) {
+function downloadImage(imageUrl) {
 	return new Promise((resolve, reject) => {
 		if (debugOutput) {
 			console.log("Debug Data: " + imageUrl);
@@ -1275,9 +1274,9 @@ function downloadImage(imageUrl, user, userID, channelID, message, event) {
 		}
 		https.get(url.parse(imageUrl), (response) => {
 			let data = [];
-			response.on('data', (chunk) => {
+			response.on("data", (chunk) => {
 				data.push(chunk);
-			}).on('end', () => {
+			}).on("end", () => {
 				let buffer = Buffer.concat(data);
 				if (filetype(buffer) && filetype(buffer).ext === imageExt) {
 					jimp.read(buffer, (err, image) => {
@@ -1323,22 +1322,25 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 	if (code && code in cards[outLang]) {
 		let card = cards[outLang][code];
 		let out = "";
+		let alIDs;
+		let alCard;
+		let stat;
 		switch (prop) {
 		case "id":
-			let alIDs = [code];
+			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
 				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
-					Object.keys(cards[outLang]).forEach((key, index) => {
+					Object.keys(cards[outLang]).forEach((key) => {
 						if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
 							alIDs.push(cards[outLang][key].code);
 						}
 					});
 				}
 			} else {
-				Object.keys(cards[outLang]).forEach((key, index) => {
+				Object.keys(cards[outLang]).forEach((key) => {
 					if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot) {
 						alIDs.push(cards[outLang][key].code);
 					}
@@ -1348,29 +1350,29 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			break;
 		case "notext":
 			out += "__**" + quo + card.name + quo + "**__\n";
-			let alIs = [code];
+			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
 				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
-					alIs = [code];
-					Object.keys(cards[outLang]).forEach((key, index) => {
+					alIDs = [code];
+					Object.keys(cards[outLang]).forEach((key) => {
 						if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
-							alIs.push(cards[outLang][key].code);
+							alIDs.push(cards[outLang][key].code);
 						}
 					});
 				}
 			} else {
-				Object.keys(cards[outLang]).forEach((key, index) => {
+				Object.keys(cards[outLang]).forEach((key) => {
 					if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot && cards[outLang][key].name === card.name) {
-						alIs.push(cards[outLang][key].code);
+						alIDs.push(cards[outLang][key].code);
 					}
 				});
 			}
 			if (messageMode & 0x1) {
-				out += bo + quo + quo + quo + jvex + "ID: " + alIs.join("|") + "\n";
+				out += bo + quo + quo + quo + jvex + "ID: " + alIDs.join("|") + "\n";
 			} else {
-				out += "**ID**: " + alIs.join("|") + "\n";
+				out += "**ID**: " + alIDs.join("|") + "\n";
 			}
 			if (card.sets) {
 				if (messageMode & 0x1) {
@@ -1381,8 +1383,8 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				out += card.sets.join(", ");
 			}
 			out += "\n";
-			let stat = card.ot;
-			Object.keys(lflist).forEach((key, index) => { //keys of the banlist table are card IDs, values are number of copies allowed
+			stat = card.ot;
+			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 				if (stat.indexOf(key) > -1) {
 					let lim = 3;
 					if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
@@ -1512,9 +1514,9 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 						}
 					}
 					if (messageMode & 0x1) {
-						out += " " + " ATK: " + convertStat(card.atk) + " DEF: " + convertStat(card.def) + "\n";
+						out += " " + " ATK: " + card.atk + " DEF: " + card.def + "\n";
 					} else {
-						out += " " + " **ATK**: " + convertStat(card.atk) + " **DEF**: " + convertStat(card.def) + "\n";
+						out += " " + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 					}
 				} else {
 					if (messageMode & 0x1) {
@@ -1586,9 +1588,9 @@ function deck(user, userID, channelID, message, event) {
 	}
 	https.get(url.parse(deckUrl), (response) => {
 		let data = [];
-		response.on('data', (chunk) => {
+		response.on("data", (chunk) => {
 			data.push(chunk);
-		}).on('end', async () => {
+		}).on("end", async () => {
 			let buffer = Buffer.concat(data);
 			let deckString = buffer.toString();
 			let mainDeck = sliceBetween(deckString, "#main", "#extra").split("\r\n");
@@ -1624,7 +1626,7 @@ function deck(user, userID, channelID, message, event) {
 			if (mainArr.length > 0) {
 				let mainCount = arrayCount(mainArr); //gets an object with array properties and the number of times that property appears
 				out += "**" + quo + "Main Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(mainCount).forEach((key, index) => {
+				Object.keys(mainCount).forEach((key) => {
 					out += mainCount[key] + " " + key + "\n";
 				});
 				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
@@ -1632,7 +1634,7 @@ function deck(user, userID, channelID, message, event) {
 			if (extraArr.length > 0) {
 				let extraCount = arrayCount(extraArr);
 				out += "**" + quo + "Extra Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(extraCount).forEach((key, index) => {
+				Object.keys(extraCount).forEach((key) => {
 					out += extraCount[key] + " " + key + "\n";
 				});
 				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
@@ -1640,7 +1642,7 @@ function deck(user, userID, channelID, message, event) {
 			if (sideArr.length > 0) {
 				let sideCount = arrayCount(sideArr);
 				out += "**" + quo + "Side Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(sideCount).forEach((key, index) => {
+				Object.keys(sideCount).forEach((key) => {
 					out += sideCount[key] + " " + key + "\n";
 				});
 				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
@@ -1648,15 +1650,15 @@ function deck(user, userID, channelID, message, event) {
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
 				for (let msg of outArr) {
-					sendMessage(user, userID, channelID, message, event, out);
+					sendMessage(user, userID, channelID, message, event, msg );
 				}
 			}
 		});
 	});
 }
 
-function getCardScript(card, user, userID, channelID, message, event) {
-	return new Promise((resolve, reject) => {
+function getCardScript(card) {
+	return new Promise((resolve) => {
 		let scriptUrl = scriptUrlMaster;
 		let ot = card.ot;
 		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
@@ -1672,19 +1674,19 @@ function getCardScript(card, user, userID, channelID, message, event) {
 		}
 		https.get(url.parse(fullUrl), (response) => {
 			let data = [];
-			response.on('data', (chunk) => {
+			response.on("data", (chunk) => {
 				data.push(chunk);
-			}).on('end', async () => {
+			}).on("end", async () => {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
 				if (script === "404: Not Found\n" && scriptUrlBackup) {
-					script = await new Promise((resolve, reject) => {
+					script = await new Promise((resolve) => {
 						fullUrl = scriptUrlBackup + "c" + card.code + ".lua";
 						https.get(url.parse(fullUrl), (response) => {
 							let data2 = [];
-							response.on('data', (chunk) => {
+							response.on("data", (chunk) => {
 								data2.push(chunk);
-							}).on('end', async () => {
+							}).on("end", async () => {
 								let buffer2 = Buffer.concat(data2);
 								let script2 = buffer2.toString();
 								resolve(script2);
@@ -1766,7 +1768,7 @@ function set(user, userID, channelID, message, event, name) {
 	if (arg.toLowerCase() in setcodes) {
 		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[arg.toLowerCase()] + ": " + arg + quo + quo + quo + bo);
 	} else {
-		Object.keys(setcodes).forEach((key, index) => {
+		Object.keys(setcodes).forEach((key) => {
 			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
 				sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo);
 				return;
@@ -1833,7 +1835,7 @@ function strings(user, userID, channelID, message, event, name) {
 		let strs = card.strings;
 		if (strs && Object.keys(strs).length > 0) {
 			let out = "__**" + card.name + "**__\n";
-			Object.keys(strs).forEach((key, index) => {
+			Object.keys(strs).forEach((key) => {
 				if (messageMode & 0x1) {
 					out += key + ": " + strs[key] + "\n";
 				} else {
@@ -1868,7 +1870,7 @@ function rulings(user, userID, channelID, message, event, name) {
 		return;
 	let enCard = cards[inLang][code];
 	let jaCard;
-	Object.keys(cards[rulingLang]).forEach((key, index) => {
+	Object.keys(cards[rulingLang]).forEach((key) => {
 		if (cards[rulingLang][key].code === code) {
 			jaCard = cards[rulingLang][key];
 		}
@@ -1876,7 +1878,7 @@ function rulings(user, userID, channelID, message, event, name) {
 	let enName = enCard.name;
 	let out = "";
 	if (!jaCard) {
-		out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!"
+		out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!";
 	} else {
 		let jaName = jaCard.name;
 		let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2&request_locale=ja";
@@ -1944,30 +1946,34 @@ function rankings(user, userID, channelID, message, event) {
 	}
 	if (results.length > 0) {
 		results.forEach((value, index) => {
+			let tempOut;
+			let tempVal;
+			let card;
+			let title;
 			switch (term) {
 			case "terms":
-				let tempOut = ranks[index] + ". `" + value + "` (" + stats[statsKey][value] + " times)\n";
+				tempOut = ranks[index] + ". `" + value + "` (" + stats[statsKey][value] + " times)\n";
 				if (out.length + tempOut.length < 2000) {
 					out += tempOut;
 				}
 				break;
 			case "commands":
-				let tempVal = value;
+				tempVal = value;
 				if (tempVal.indexOf("search") < 0) {
 					tempVal = "`" + pre + tempVal + "`";
 				}
-				let temOut = ranks[index] + ". " + tempVal + " (" + stats[statsKey][value] + " times)\n";
-				if (out.length + temOut.length < 2000) {
-					out += temOut;
+				tempOut = ranks[index] + ". " + tempVal + " (" + stats[statsKey][value] + " times)\n";
+				if (out.length + tempOut.length < 2000) {
+					out += tempOut;
 				}
 				break;
 			case "cards":
 			default:
-				let card = cards[outLang][parseInt(value)];
-				let title = card && card.name || value;
-				let teOut = ranks[index] + ". " + title + " (" + stats[statsKey][value] + " times)\n";
-				if (out.length + teOut.length < 2000) {
-					out += teOut;
+				card = cards[outLang][parseInt(value)];
+				title = card && card.name || value;
+				tempOut = ranks[index] + ". " + title + " (" + stats[statsKey][value] + " times)\n";
+				if (out.length + tempOut.length < 2000) {
+					out += tempOut;
 				}
 			}
 		});
@@ -1983,7 +1989,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 			let imgurl = "";
 			if (code && outLang) {
 				imgurl = imageUrlMaster;
-				let card = cards[outLang][code]
+				let card = cards[outLang][code];
 				if (["Anime", "Illegal", "Video Game"].indexOf(card.ot) > -1) {
 					imgurl = imageUrlAnime;
 				}
@@ -2010,7 +2016,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
 									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
-								}, err.response.retry_after + 1)
+								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
 							}
@@ -2027,7 +2033,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
 									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
-								}, err.response.retry_after + 1)
+								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
 							}
@@ -2052,7 +2058,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
 									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
-								}, err.response.retry_after + 1)
+								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
 							}
@@ -2069,7 +2075,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
 									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
-								}, err.response.retry_after + 1)
+								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
 							}
@@ -2106,13 +2112,13 @@ function getEmbCT(card) {
 		}
 	}
 	if (card.isType(0x1000000000)) {
-		embCT = "Dark Synchro";
+		ct = "Dark Synchro";
 	}
 	return ct;
 }
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
-	if (!inLang in dbs) {
+	if (!(inLang in dbs)) {
 		inLang = defaultLang;
 	}
 	for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
@@ -2188,7 +2194,7 @@ function addEmote(args, symbol) {
 	let emotes = "";
 	if (emoteMode > 0) {
 		for (let i = 0; i < args.length; i++) {
-			emotes += emoteDB[args[i]]
+			emotes += emoteDB[args[i]];
 		}
 	}
 	return [str, emotes, str + " " + emotes];
@@ -2325,7 +2331,7 @@ function parseFilterArgs(input) {
 		input = input.slice(0, startIndex) + input.slice(endIndex);
 	}
 	for (let term of terms) {
-		let arr = term.split(":")
+		let arr = term.split(":");
 		let name = arr[0];
 		let args = arr[1];
 		if (name in validFilters) {
@@ -2505,7 +2511,7 @@ function getGHContents(owner, repo) {
 		github.repos.getContent({
 			owner: owner,
 			repo: repo,
-			path: ''
+			path: ""
 		}, (err, res) => {
 			if (err) {
 				reject(err);
@@ -2517,7 +2523,7 @@ function getGHContents(owner, repo) {
 					if (file.name.endsWith(".cdb")) {
 						console.log("Downloading " + file.name + ".");
 						try {
-							let prom = downloadDB(file)
+							let prom = downloadDB(file);
 							promises.push(prom);
 							filenames.push(file.name);
 						} catch (e) {
@@ -2526,7 +2532,7 @@ function getGHContents(owner, repo) {
 					}
 				}
 				Promise.all(promises).then(() => {
-					resolve(filenames)
+					resolve(filenames);
 				});
 			}
 		});
@@ -2534,12 +2540,12 @@ function getGHContents(owner, repo) {
 }
 
 function downloadDB(file) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		https.get(url.parse(file.download_url), (response) => {
 			let data = [];
-			response.on('data', (chunk) => {
+			response.on("data", (chunk) => {
 				data.push(chunk);
-			}).on('end', () => {
+			}).on("end", () => {
 				let buffer = Buffer.concat(data);
 				fs.writeFileSync("dbs/" + file.name, buffer, null);
 				resolve(file.name);
@@ -2564,7 +2570,7 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 					if (err.response && err.response.retry_after) {
 						setTimeout(() => {
 							sendMessage(user, userID, channelID, message, event, out, embColour);
-						}, err.response.retry_after + 1)
+						}, err.response.retry_after + 1);
 					} else {
 						reject(err);
 					}
@@ -2581,7 +2587,7 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 					if (err.response && err.response.retry_after) {
 						setTimeout(() => {
 							sendMessage(user, userID, channelID, message, event, out, embColour);
-						}, err.response.retry_after + 1)
+						}, err.response.retry_after + 1);
 					} else {
 						reject(err);
 					}
@@ -2692,16 +2698,16 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			if (stat === "Custom") {
 				imageUrl = imageUrlCustom;
 			}
-			buffer = await new Promise((resolve, reject) => {
+			buffer = await new Promise((resolve) => {
 				if (debugOutput) {
 					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
 					console.dir(url.parse(imageUrl + code + "." + imageExt));
 				}
 				https.get(url.parse(imageUrl + code + "." + imageExt), (response) => {
 					let data = [];
-					response.on('data', (chunk) => {
+					response.on("data", (chunk) => {
 						data.push(chunk);
-					}).on('end', async () => {
+					}).on("end", async () => {
 						resolve(Buffer.concat(data));
 					});
 				});
@@ -2743,7 +2749,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				"lang": outLang,
 				"lock": false,
 				"argObj": argObj
-			}
+			};
 		}
 		if (hard) {
 			buffer = await hardCrop(buffer, user, userID, channelID, message, event);
@@ -2752,9 +2758,9 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			to: channelID,
 			file: buffer,
 			filename: code + "." + imageExt
-		}, (err, res) => {
+		}, (err) => {
 			if (err) {
-				console.log(err);
+				console.error(err);
 			} else {
 				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then((res) => {
 					let messageID = res.id;
@@ -2773,7 +2779,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 									description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
 								}
 							});
-							tempcolor += 0x300 - 0x1000
+							tempcolor += 0x300 - 0x1000;
 						} else {
 							bot.editMessage({
 								channelID: channelID,
@@ -2790,7 +2796,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
 				if (Object.keys(gameData[channelID].score).length > 0) {
 					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-					Object.keys(gameData[channelID].score).forEach((key, index) => {
+					Object.keys(gameData[channelID].score).forEach((key) => {
 						out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
 					});
 					out += quo + quo + quo + bo;
@@ -2809,11 +2815,11 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			}
 		});
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 	}
 }
 
-function hardCrop(buffer, user, userID, channelID, message, event) {
+function hardCrop(buffer) {
 	return new Promise((resolve, reject) => {
 		jimp.read(buffer, (err, image) => {
 			if (err) {
@@ -2869,10 +2875,10 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		if (gameData[channelID].IN) {
 			clearInterval(gameData[channelID].IN);
 		}
-		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n"
+		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key, index) => {
+			Object.keys(gameData[channelID].score).forEach((key) => {
 				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
 			});
 			out += quo + quo + quo + bo;
@@ -2908,7 +2914,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key, index) => {
+			Object.keys(gameData[channelID].score).forEach((key) => {
 				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
 			});
 			out += quo + quo + quo + bo;
@@ -2939,7 +2945,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		}
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key, index) => {
+			Object.keys(gameData[channelID].score).forEach((key) => {
 				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
 			});
 			out += quo + quo + quo + bo;
@@ -2995,12 +3001,12 @@ function tlock(user, userID, channelID, message, event) {
 				}
 				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
 				config.triviaLocks = triviaLocks;
-				fs.writeFileSync('config/config.json', JSON.stringify(config, null, 4), 'utf8');
+				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			} else {
 				delete triviaLocks[serverID];
 				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to any channel on this server!");
 				config.triviaLocks = triviaLocks;
-				fs.writeFileSync('config/config.json', JSON.stringify(config, null, 4), 'utf8');
+				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			}
 		} else {
 			triviaLocks[serverID].push(channelID);
@@ -3010,7 +3016,7 @@ function tlock(user, userID, channelID, message, event) {
 			}
 			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
 			config.triviaLocks = triviaLocks;
-			fs.writeFileSync('config/config.json', JSON.stringify(config, null, 4), 'utf8');
+			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 		}
 	} else {
 		triviaLocks[serverID] = [channelID];
@@ -3020,14 +3026,14 @@ function tlock(user, userID, channelID, message, event) {
 		}
 		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
 		config.triviaLocks = triviaLocks;
-		fs.writeFileSync('config/config.json', JSON.stringify(config, null, 4), 'utf8');
+		fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 	}
 }
 
 //permission handling
 function _getPermissionArray(number) {
 	let permissions = [];
-	let binary = (number >>> 0).toString(2).split('');
+	let binary = (number >>> 0).toString(2).split("");
 	binary.forEach((bit, index) => {
 		if (bit == 0) {
 			return;
@@ -3055,8 +3061,8 @@ function getPermissions(userID, channelID) {
 	});
 
 	Object.keys(bot.channels[channelID].permissions).forEach((overwrite) => {
-		if ((overwrite.type == 'member' && overwrite.id == userID) ||
-			(overwrite.type == 'role' &&
+		if ((overwrite.type == "member" && overwrite.id == userID) ||
+			(overwrite.type == "role" &&
 				(bot.servers[serverID].members[userID].roles.indexOf(overwrite.id) > -1) ||
 				serverID == overwrite.id)) {
 			_getPermissionArray(overwrite.deny).forEach((denied) => {
@@ -3095,7 +3101,7 @@ function checkForPermissions(userID, channelID, permissionValues) {
 
 function servers(user, userID, channelID, message, event) {
 	let out = "```\n";
-	Object.keys(bot.servers).forEach((key, index) => {
+	Object.keys(bot.servers).forEach((key) => {
 		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
 	});
 	out += "```";
@@ -3111,10 +3117,10 @@ function updatejson(user, userID, channelID, message, event, name) {
 		return;
 	}
 	gstojson({
-			spreadsheetId: sheetID,
-		})
+		spreadsheetId: sheetID,
+	})
 		.then((result) => {
-			fs.writeFileSync('dbs/' + arg + '.json', JSON.stringify(result), 'utf8');
+			fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
 			sendMessage(user, userID, channelID, message, event, bo + quo + arg + ".json updated successfully." + quo + bo);
 			setJSON();
 		})
@@ -3151,7 +3157,7 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		out += "[" + (i + 1) + "] " + line.sig.padStart(len, " ") + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.sig.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
@@ -3195,7 +3201,7 @@ function searchConstants(user, userID, channelID, message, event, name) {
 	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		out += "[" + (i + 1) + "] " + line.val.toString().padStart(len, " ") + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.val.toString().padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
@@ -3239,7 +3245,7 @@ function searchParams(user, userID, channelID, message, event, name) {
 	}
 	for (let i = 0; i < pages[0].length; i++) {
 		let line = pages[0][i];
-		out += "[" + (i + 1) + "] " + line.type.padStart(len, " ") + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line.type.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
@@ -3286,7 +3292,7 @@ function libPage(user, userID, channelID, message, event, name) {
 	let out = "```cs\n";
 	for (let i = 0; i < pages[index].length; i++) {
 		let line = pages[index][i];
-		out += "[" + (i + 1) + "] " + line[n].toString().padStart(len, " ") + " | " + line.name + "\n"
+		out += "[" + (i + 1) + "] " + line[n].toString().padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: " + arg + "/" + pages.length + "`";
 	searchPage.index = index;

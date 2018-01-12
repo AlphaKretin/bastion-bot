@@ -165,13 +165,13 @@ module.exports = function (setcodes) {
 			let t = [];
 			for (let key of Object.keys(Card.typeObj)) {
 				if ((this._type & Card.typeObj[key]) && delay.indexOf(Card.typeObj[key]) === -1 && ignore.indexOf(Card.typeObj[key]) === -1) {
-					typs.push(key)
+					typs.push(key);
 				}
 				t.push(Card.typeObj[key]);
 			}
 			for (let key of delay) {
 				if (t.indexOf(key) > -1 && (this._type & Card.typeObj[key]) && ignore.indexOf(Card.typeObj[key]) === -1) {
-					typs.push(key)
+					typs.push(key);
 				}
 			}
 			return typs;
@@ -179,16 +179,16 @@ module.exports = function (setcodes) {
 
 		isType(tpe) {
 			if ((this._type & tpe) === tpe) { //this will usually be enough...
-				return true
+				return true;
 			}
 			if (this._type >= 0x100000000 || tpe >= 0x100000000) { //...except Javascript can't do bitwise operations on Numbers greater than 32-bit
 				let tempType1 = Math.floor(this._type / 0x100000000);
 				let tempType2 = this._type - tempType1 * 0x100000000;
 				let ttpe1 = Math.floor(tpe / 0x100000000);
 				let ttpe2 = tpe - ttpe1 * 0x100000000;
-				return (tempType1 & ttpe1) === ttpe1 && (tempType2 & ttpe2) === ttpe2
+				return (tempType1 & ttpe1) === ttpe1 && (tempType2 & ttpe2) === ttpe2;
 			}
-			return false
+			return false;
 		}
 
 		convertStat(stat) {
@@ -260,7 +260,7 @@ module.exports = function (setcodes) {
 			let lines = this._desc.split("\r\n");
 			if (lines.length > 1) {
 				let ind;
-				lines.forEach(function (key, index) {
+				lines.forEach((key, index) => {
 					if (lines[index].indexOf("---") > -1) { //pendulum cards have two "sections" split by a row of "-"
 						ind = index;
 					}
@@ -275,7 +275,7 @@ module.exports = function (setcodes) {
 			}
 			return [this._desc];
 		}
-	}
+	};
 	//Data - has to be defined outside the class because JS is weird, but hey it works
 	Card.ots = {
 		"OCG": 0x1,
@@ -289,7 +289,7 @@ module.exports = function (setcodes) {
 
 
 	Card.otList = [];
-	Object.keys(Card.ots).forEach(function (key, index) {
+	Object.keys(Card.ots).forEach((key) => {
 		Card.otList.push(key.toLowerCase());
 	});
 
@@ -326,7 +326,7 @@ module.exports = function (setcodes) {
 
 
 	Card.typeList = [];
-	Object.keys(Card.typeObj).forEach(function (key, index) {
+	Object.keys(Card.typeObj).forEach((key) => {
 		Card.typeList.push(key.toLowerCase());
 	});
 
@@ -362,7 +362,7 @@ module.exports = function (setcodes) {
 
 
 	Card.raceList = [];
-	Object.keys(Card.races).forEach(function (key, index) {
+	Object.keys(Card.races).forEach((key) => {
 		Card.raceList.push(key.toLowerCase());
 	});
 
@@ -378,14 +378,14 @@ module.exports = function (setcodes) {
 	};
 
 	Card.attributeList = [];
-	Object.keys(Card.attributes).forEach(function (key, index) {
+	Object.keys(Card.attributes).forEach((key) => {
 		Card.attributeList.push(key.toLowerCase());
 	});
 
 	Card.setList = [];
-	Object.keys(setcodes).forEach(function (key, index) {
+	Object.keys(setcodes).forEach((key) => {
 		Card.setList.push(setcodes[key].toLowerCase());
 	});
 
 	return Card;
-}
+};
