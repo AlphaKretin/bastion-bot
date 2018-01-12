@@ -445,7 +445,7 @@ async function dbUpdate() {
 			for (let db of config.liveDBs[lang]) {
 				oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
 			}
-			if (config.deleteOldDBs) {
+			if (config.deleteOldDBs && config.deleteOldDBs.length > 0) {
 				console.log("Deleting the following old databases in 10 seconds: ");
 				console.log(oldDbs[lang]);
 				setTimeout(function() {
@@ -2713,7 +2713,7 @@ function aliasCheck(card, outLang) { //called when getting alt arts, checks if a
 		return true;
 	}
 	let alCard = cards[outLang][alias];
-	return card.ot !== alCard.ot;
+	return alCard && card.ot !== alCard.ot;
 }
 
 function getBaseID(card, inLang) {
