@@ -445,7 +445,7 @@ async function dbUpdate() {
 			for (let db of config.liveDBs[lang]) {
 				oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
 			}
-			if (config.deleteOldDBs && config.deleteOldDBs.length > 0) {
+			if (config.deleteOldDBs && oldDbs[lang].length > 0) {
 				console.log("Deleting the following old databases in 10 seconds: ");
 				console.log(oldDbs[lang]);
 				setTimeout(function () {
