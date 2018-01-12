@@ -774,7 +774,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		} else {
 			code = ids[Math.floor(Math.random() * ids.length)];
 		}
-		let out = await getCardInfo(code, outLang, user, userID, channelID, message, event); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
+		let out = await getCardInfo(code, outLang); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imageUrlMaster && args.indexOf("image") > -1) {
 			if (out[1].length == 1 && messageMode & 0x2) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
@@ -802,7 +802,7 @@ async function script(user, userID, channelID, message, event, name) {
 	let inInt = parseInt(input);
 	if (inInt in cards[inLang]) {
 		try {
-			let out = await getCardScript(cards[inLang][inInt], user, userID, channelID, message, event);
+			let out = await getCardScript(cards[inLang][inInt]);
 			sendLongMessage(out, user, userID, channelID, message, event);
 		} catch (e) {
 			console.log("Error with search by ID:");
@@ -812,7 +812,7 @@ async function script(user, userID, channelID, message, event, name) {
 		try {
 			let code = nameCheck(input, inLang); //this handles all the fuzzy search stuff
 			if (code && code in cards[inLang]) {
-				let out = await getCardScript(cards[inLang][code], user, userID, channelID, message, event);
+				let out = await getCardScript(cards[inLang][code]);
 				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
 				console.log("Invalid card ID or name, please try again.");
@@ -851,7 +851,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 					stats.searchRankings[alID] = 1;
 				}
 			}
-			let out = await getCardInfo(inInt, outLang, user, userID, channelID, message, event);
+			let out = await getCardInfo(inInt, outLang);
 			if (hasImage) {
 				if (out[1].length == 1 && messageMode & 0x2) {
 					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
@@ -878,7 +878,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 						stats.searchRankings[alID] = 1;
 					}
 				}
-				let out = await getCardInfo(code, outLang, user, userID, channelID, message, event);
+				let out = await getCardInfo(code, outLang);
 				if (hasImage) {
 					if (out[1].length == 1 && messageMode & 0x2) {
 						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
