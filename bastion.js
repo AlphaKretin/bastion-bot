@@ -3258,7 +3258,7 @@ function searchParams(user, userID, channelID, message, event, name) {
 
 function libPage(user, userID, channelID, message, event, name) {
 	let arg = parseInt(message.slice((pre + name).length));
-	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages.length) {
+	if (userID !== searchPage.user || isNaN(arg) || arg > searchPage.pages.length) {
 		return;
 	}
 	let index = arg - 1;
@@ -3311,7 +3311,7 @@ function libPage(user, userID, channelID, message, event, name) {
 
 function libDesc(user, userID, channelID, message, event, name) {
 	let arg = parseInt(message.slice((pre + name).length));
-	if (userID !== searchPage.user || arg === NaN || arg > searchPage.pages[searchPage.index].length) {
+	if (userID !== searchPage.user || isNaN(arg) || arg > searchPage.pages[searchPage.index].length) {
 		return;
 	}
 	let index = arg - 1;
