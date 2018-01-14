@@ -398,10 +398,10 @@ function loadDBs() {
 				}
 			}
 		}
-		Object.keys(cards[lang]).forEach((key) => {
+		Object.values(cards[lang]).forEach((card) => {
 			nameList[lang].push({
-				name: cards[lang][key].name,
-				id: cards[lang][key].code
+				name: card.name,
+				id: card.code
 			});
 		});
 		fuse[lang] = new Fuse(nameList[lang], options);
@@ -913,16 +913,16 @@ function getCardInfo(code, outLang) {
 			if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
-				Object.keys(cards[outLang]).forEach((key) => {
-					if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
-						alIDs.push(cards[outLang][key].code);
+				Object.values(cards[outLang]).forEach((tempCard) => {
+					if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+						alIDs.push(tempCard.code);
 					}
 				});
 			}
 		} else { //if other cards have this, the original, as an alias, they'll be noted here
-			Object.keys(cards[outLang]).forEach((key) => {
-				if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot && cards[outLang][key].name === card.name) {
-					alIDs.push(cards[outLang][key].code);
+			Object.values(cards[outLang]).forEach((tempCard) => {
+				if (tempCard.alias === code && tempCard.ot === card.ot && tempCard.name === card.name) {
+					alIDs.push(tempCard.code);
 				}
 			});
 		}
@@ -1333,16 +1333,16 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
-					Object.keys(cards[outLang]).forEach((key) => {
-						if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
-							alIDs.push(cards[outLang][key].code);
+					Object.values(cards[outLang]).forEach((tempCard) => {
+						if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
-				Object.keys(cards[outLang]).forEach((key) => {
-					if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot) {
-						alIDs.push(cards[outLang][key].code);
+				Object.values(cards[outLang]).forEach((tempCard) => {
+					if (tempCard.alias === code && tempCard.ot === card.ot) {
+						alIDs.push(tempCard.code);
 					}
 				});
 			}
@@ -1356,16 +1356,16 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
-					Object.keys(cards[outLang]).forEach((key) => {
-						if (cards[outLang][key].alias === code && cards[outLang][key].ot === alCard.ot) {
-							alIDs.push(cards[outLang][key].code);
+					Object.values(cards[outLang]).forEach((tempCard) => {
+						if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
-				Object.keys(cards[outLang]).forEach((key) => {
-					if (cards[outLang][key].alias === code && cards[outLang][key].ot === card.ot && cards[outLang][key].name === card.name) {
-						alIDs.push(cards[outLang][key].code);
+				Object.values(cards[outLang]).forEach((tempCard) => {
+					if (tempCard.alias === code && tempCard.ot === card.ot) {
+						alIDs.push(tempCard.code);
 					}
 				});
 			}
@@ -1870,9 +1870,9 @@ function rulings(user, userID, channelID, message, event, name) {
 		return;
 	let enCard = cards[inLang][code];
 	let jaCard;
-	Object.keys(cards[rulingLang]).forEach((key) => {
-		if (cards[rulingLang][key].code === code) {
-			jaCard = cards[rulingLang][key];
+	Object.values(cards[rulingLang]).forEach((tempCard) => {
+		if (tempCard.code === code) {
+			jaCard = tempCard;
 		}
 	});
 	let enName = enCard.name;
@@ -2121,9 +2121,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 	if (!(inLang in dbs)) {
 		inLang = defaultLang;
 	}
-	for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
-		if (cards[inLang][key].name.toLowerCase() === line.toLowerCase()) {
-			return cards[inLang][key].code;
+	for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
+		if (tempCard.name.toLowerCase() === line.toLowerCase()) {
+			return tempCard.code;
 		}
 	}
 	if (shortcuts.length > 0) {
@@ -2138,9 +2138,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 			}
 		}
 		let newLine = lineArr.join(" ");
-		for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
-			if (cards[inLang][key].name.toLowerCase() === line.toLowerCase()) {
-				return cards[inLang][key].code;
+		for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
+			if (tempCard.name.toLowerCase() === line.toLowerCase()) {
+				return tempCard.code;
 			}
 		}
 		let result = fuse[inLang].search(newLine);
@@ -2157,9 +2157,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 			}
 			result.sort(compareFuseObj);
 			let outCode;
-			for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
-				if (cards[inLang][key].name.toLowerCase() === result[0].item.name.toLowerCase()) {
-					outCode = cards[inLang][key].code;
+			for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
+				if (tempCard.name.toLowerCase() === line.toLowerCase()) {
+					return tempCard.code;
 				}
 			}
 			return outCode;
@@ -2179,9 +2179,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 			}
 			result.sort(compareFuseObj);
 			let outCode;
-			for (let key of Object.keys(cards[inLang])) { //check all entries for exact name
-				if (cards[inLang][key].name.toLowerCase() === result[0].item.name.toLowerCase()) {
-					outCode = cards[inLang][key].code;
+			for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
+				if (tempCard.name.toLowerCase() === line.toLowerCase()) {
+					return tempCard.code;
 				}
 			}
 			return outCode;
@@ -2518,8 +2518,7 @@ function getGHContents(owner, repo) {
 			} else {
 				let filenames = [];
 				let promises = [];
-				for (let key of Object.keys(res.data)) {
-					let file = res.data[key];
+				for (let file of Object.values(res.data)) {
 					if (file.name.endsWith(".cdb")) {
 						console.log("Downloading " + file.name + ".");
 						try {
@@ -2796,8 +2795,8 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
 				if (Object.keys(gameData[channelID].score).length > 0) {
 					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-					Object.keys(gameData[channelID].score).forEach((key) => {
-						out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+					Object.keys(gameData[channelID].score).forEach((id) => {
+						out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 					});
 					out += quo + quo + quo + bo;
 				}
@@ -2878,18 +2877,18 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key) => {
-				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+			Object.keys(gameData[channelID].score).forEach((id) => {
+				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 			});
 			out += quo + quo + quo + bo;
 		}
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			let winners = [];
-			Object.keys(gameData[channelID].score).forEach((key, index) => {
-				if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
-					winners = [key];
-				} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
-					winners.push(key);
+			Object.keys(gameData[channelID].score).forEach((id, index) => {
+				if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
+					winners = [id];
+				} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
+					winners.push(id);
 				}
 			});
 			if (winners.length > 1) {
@@ -2914,8 +2913,8 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key) => {
-				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+			Object.keys(gameData[channelID].score).forEach((id) => {
+				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 			});
 			out += quo + quo + quo + bo;
 		}
@@ -2945,8 +2944,8 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		}
 		if (Object.keys(gameData[channelID].score).length > 0) {
 			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((key) => {
-				out += bot.users[key].username + ": " + gameData[channelID].score[key] + "\n";
+			Object.keys(gameData[channelID].score).forEach((id) => {
+				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 			});
 			out += quo + quo + quo + bo;
 		}
@@ -2957,11 +2956,11 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			out += bo + quo + "The game is over! " + quo + bo;
 			if (Object.keys(gameData[channelID].score).length > 0) {
 				let winners = [];
-				Object.keys(gameData[channelID].score).forEach((key, index) => {
-					if (index === 0 || gameData[channelID].score[key] > gameData[channelID].score[winners[0]]) {
-						winners = [key];
-					} else if (gameData[channelID].score[key] === gameData[channelID].score[winners[0]]) {
-						winners.push(key);
+				Object.keys(gameData[channelID].score).forEach((id, index) => {
+					if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
+						winners = [id];
+					} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
+						winners.push(id);
 					}
 				});
 				if (messageMode & 0x1) {
