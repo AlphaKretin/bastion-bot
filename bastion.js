@@ -2137,55 +2137,32 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 				}
 			}
 		}
-		let newLine = lineArr.join(" ");
+		line = lineArr.join(" ");
 		for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
 			if (tempCard.name.toLowerCase() === line.toLowerCase()) {
 				return tempCard.code;
 			}
 		}
-		let result = fuse[inLang].search(newLine);
-		if (result.length < 1) {
-			return -1;
-		} else {
-			for (let res of result) {
-				let card = cards[inLang][res.item.id];
-				if (["Anime", "Video Game", "Illegal"].indexOf(card.ot) > -1) {
-					res.score = res.score * 1.2; //weights score by status. Lower is better so increasing it makes official take priority.
-				} else if (card.ot === "Custom") {
-					res.score = res.score * 1.4;
-				}
-			}
-			result.sort(compareFuseObj);
-			let outCode;
-			for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
-				if (tempCard.name.toLowerCase() === line.toLowerCase()) {
-					return tempCard.code;
-				}
-			}
-			return outCode;
-		}
+	}
+	let result = fuse[inLang].search(line);
+	if (result.length < 1) {
+		return -1;
 	} else {
-		let result = fuse[inLang].search(line);
-		if (result.length < 1) {
-			return -1;
-		} else {
-			for (let res of result) {
-				let card = cards[inLang][res.item.id];
-				if (["Anime", "Video Game", "Illegal"].indexOf(card.ot) > -1) {
-					res.score = res.score * 1.2; //weights score by status. Lower is better so increasing it makes official take priority.
-				} else if (card.ot === "Custom") {
-					res.score = res.score * 1.4;
-				}
+		for (let res of result) {
+			let card = cards[inLang][res.item.id];
+			if (["Anime", "Video Game", "Illegal"].indexOf(card.ot) > -1) {
+				res.score = res.score * 1.2; //weights score by status. Lower is better so increasing it makes official take priority.
+			} else if (card.ot === "Custom") {
+				res.score = res.score * 1.4;
 			}
-			result.sort(compareFuseObj);
-			let outCode;
-			for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
-				if (tempCard.name.toLowerCase() === line.toLowerCase()) {
-					return tempCard.code;
-				}
-			}
-			return outCode;
 		}
+		result.sort(compareFuseObj);
+		for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
+			if (tempCard.name.toLowerCase() === result[0].item.name.toLowerCase()) {
+				return tempCard.code;
+			}
+		}
+		return -1;
 	}
 }
 
