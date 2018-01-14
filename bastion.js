@@ -2671,7 +2671,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 		let matches = [];
 		if (Object.keys(argObj).length === 0) {
 			argObj = {
-				ot: ["tcg/ocg"]
+				ot: [["tcg/ocg"]]
 			};
 		}
 		if (Object.keys(argObj).length > 0) {
