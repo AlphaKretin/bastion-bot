@@ -2852,28 +2852,8 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			clearInterval(gameData[channelID].IN);
 		}
 		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			let winners = [];
-			Object.keys(gameData[channelID].score).forEach((id, index) => {
-				if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
-					winners = [id];
-				} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
-					winners.push(id);
-				}
-			});
-			if (winners.length > 1) {
-				out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
-			} else {
-				out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
-			}
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
+		out = triviaWinners(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
@@ -2888,13 +2868,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			clearInterval(gameData[channelID].IN);
 		}
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
@@ -2919,36 +2893,13 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		} else {
 			gameData[channelID].score[userID] = 1;
 		}
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
 		if (gameData[channelID].round === 1) {
 			if (messageMode & 0x1) {
 				out += " ";
 			}
 			out += bo + quo + "The game is over! " + quo + bo;
-			if (Object.keys(gameData[channelID].score).length > 0) {
-				let winners = [];
-				Object.keys(gameData[channelID].score).forEach((id, index) => {
-					if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
-						winners = [id];
-					} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
-						winners.push(id);
-					}
-				});
-				if (messageMode & 0x1) {
-					out += " ";
-				}
-				if (winners.length > 1) {
-					out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
-				} else {
-					out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
-				}
-			}
+			out = triviaWinners(out, user, userID, channelID, message, event);
 			sendMessage(user, userID, channelID, message, event, out);
 			delete gameData[channelID];
 		} else {
@@ -2962,6 +2913,39 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			reaction: thumbsdown
 		});
 	}
+}
+
+function triviaScore(out, user, userID, channelID, message, event) {
+	if (Object.keys(gameData[channelID].score).length > 0) {
+		out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
+		Object.keys(gameData[channelID].score).forEach((id) => {
+			out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
+		});
+		out += quo + quo + quo + bo;
+	}
+	return out;
+}
+
+function triviaWinners(out, user, userID, channelID, message, event) {
+	if (Object.keys(gameData[channelID].score).length > 0) {
+		let winners = [];
+		Object.keys(gameData[channelID].score).forEach((id, index) => {
+			if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
+				winners = [id];
+			} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
+				winners.push(id);
+			}
+		});
+		if (messageMode & 0x1) {
+			out += " ";
+		}
+		if (winners.length > 1) {
+			out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
+		} else {
+			out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
+		}
+	}
+	return out;
 }
 
 function tlock(user, userID, channelID, message, event) {
