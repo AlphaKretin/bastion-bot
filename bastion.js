@@ -466,14 +466,20 @@ async function dbUpdate() {
 
 }
 
-if (config.updateRepos) {
-	dbUpdate();
-	setInterval(dbUpdate, 3.6 * Math.pow(10, 6));
-} else {
-	loadDBs();
-}
 let skillFuse = {};
 setJSON();
+if (config.updateRepos) {
+	dbUpdate();
+	setInterval(() => {
+		dbUpdate();
+		updatejson();
+	}, 3.6 * Math.pow(10, 6));
+} else {
+	loadDBs();
+	setInterval(() => {
+		updatejson();
+	}, 3.6 * Math.pow(10, 6));
+}
 
 const request = require("request");
 const https = require("https");
@@ -604,14 +610,6 @@ let commandList = [{
 	func: servers,
 	chk: (user, userID) => {
 		return owner && owner.indexOf(userID) > -1;
-	},
-	noTrack: true
-},
-{
-	names: ["updatejson"],
-	func: updatejson,
-	chk: (user, userID) => {
-		return owner && sheetsDB && owner.indexOf(userID) > -1;
 	},
 	noTrack: true
 },
@@ -884,7 +882,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				}
 				let out = await getCardInfo(code, outLang);
 				if (hasImage) {
-					if (out[1].length == 1 && messageMode & 0x2) {
+					if (out[1].length == 1 && messageMode & 0x2) { //if it's embed mode, sendLongMessage handles embedding one image
 						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 					} else {
 						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -952,7 +950,7 @@ function getCardInfo(code, outLang) {
 		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.indexOf(key) > -1) {
 				let lim = 3;
-				if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
+				if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 					lim = lflist[key][code];
 				}
 				let re = new RegExp(key);
@@ -1391,7 +1389,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 				if (stat.indexOf(key) > -1) {
 					let lim = 3;
-					if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
+					if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 						lim = lflist[key][code];
 					}
 					let re = new RegExp(key);
@@ -2618,14 +2616,11 @@ function trivia(user, userID, channelID, message, event) {
 		return;
 	} else {
 		let outLang = defaultLang;
+		let round = 1;
 		let args = message.toLowerCase().split(" ");
 		for (let arg of args) {
-			if (arg in dbs) {
+			if (arg in dbs)
 				outLang = arg;
-			}
-		}
-		let round = 1;
-		for (let arg of args) {
 			if (parseInt(arg) > round) {
 				if (parseInt(arg) > triviaMaxRounds) {
 					round = triviaMaxRounds;
@@ -2742,10 +2737,11 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			if (err) {
 				console.error(err);
 			} else {
+				if (!gameData[channelID])
+					return;
 				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then((res) => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
-					//let tempcolor = parseInt("0x" + red + green + "00");
 					gameData[channelID].IN = setInterval(() => {
 						let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 						let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
@@ -2844,74 +2840,38 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		return;
 	}
 	let out;
+	if (!message.toLowerCase().startsWith(pre + "tq") && !message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+		if (thumbsdown) {
+			bot.addReaction({
+				channelID: channelID,
+				messageID: event.d.id,
+				reaction: thumbsdown
+			});
+		}
+		return;
+	}
+	gameData[channelID].lock = true;
+	if (gameData[channelID].TO1) {
+		clearTimeout(gameData[channelID].TO1);
+	}
+	if (gameData[channelID].TO2) {
+		clearTimeout(gameData[channelID].TO2);
+	}
+	if (gameData[channelID].IN) {
+		clearInterval(gameData[channelID].IN);
+	}
 	if (message.toLowerCase().startsWith(pre + "tq")) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
 		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			let winners = [];
-			Object.keys(gameData[channelID].score).forEach((id, index) => {
-				if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
-					winners = [id];
-				} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
-					winners.push(id);
-				}
-			});
-			if (winners.length > 1) {
-				out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
-			} else {
-				out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
-			}
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
+		out = triviaWinners(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
-	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
+	} else if (message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
@@ -2923,49 +2883,53 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		} else {
 			gameData[channelID].score[userID] = 1;
 		}
-		if (Object.keys(gameData[channelID].score).length > 0) {
-			out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-			Object.keys(gameData[channelID].score).forEach((id) => {
-				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
-			});
-			out += quo + quo + quo + bo;
-		}
+		out = triviaScore(out, user, userID, channelID, message, event);
 		if (gameData[channelID].round === 1) {
 			if (messageMode & 0x1) {
 				out += " ";
 			}
 			out += bo + quo + "The game is over! " + quo + bo;
-			if (Object.keys(gameData[channelID].score).length > 0) {
-				let winners = [];
-				Object.keys(gameData[channelID].score).forEach((id, index) => {
-					if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
-						winners = [id];
-					} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
-						winners.push(id);
-					}
-				});
-				if (messageMode & 0x1) {
-					out += " ";
-				}
-				if (winners.length > 1) {
-					out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
-				} else {
-					out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
-				}
-			}
+			out = triviaWinners(out, user, userID, channelID, message, event);
 			sendMessage(user, userID, channelID, message, event, out);
 			delete gameData[channelID];
 		} else {
 			sendMessage(user, userID, channelID, message, event, out);
-			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
+			startTriviaRound(gameData[channelID].round - 1, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 		}
-	} else if (thumbsdown) {
-		bot.addReaction({
-			channelID: channelID,
-			messageID: event.d.id,
-			reaction: thumbsdown
-		});
 	}
+}
+
+function triviaScore(out, user, userID, channelID) {
+	if (Object.keys(gameData[channelID].score).length > 0) {
+		out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
+		Object.keys(gameData[channelID].score).forEach((id) => {
+			out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
+		});
+		out += quo + quo + quo + bo;
+	}
+	return out;
+}
+
+function triviaWinners(out, user, userID, channelID) {
+	if (Object.keys(gameData[channelID].score).length > 0) {
+		let winners = [];
+		Object.keys(gameData[channelID].score).forEach((id, index) => {
+			if (index === 0 || gameData[channelID].score[id] > gameData[channelID].score[winners[0]]) {
+				winners = [id];
+			} else if (gameData[channelID].score[id] === gameData[channelID].score[winners[0]]) {
+				winners.push(id);
+			}
+		});
+		if (messageMode & 0x1) {
+			out += " ";
+		}
+		if (winners.length > 1) {
+			out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
+		} else {
+			out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
+		}
+	}
+	return out;
 }
 
 function tlock(user, userID, channelID, message, event) {
@@ -3088,25 +3052,24 @@ function servers(user, userID, channelID, message, event) {
 	sendMessage(user, userID, channelID, message, event, out);
 }
 
-function updatejson(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
-	let sheetID = sheetsDB[arg];
-	if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
-		if (!sheetID)
-			console.log(arg + ".json is not mapped.");
-		return;
-	}
-	gstojson({
-		spreadsheetId: sheetID,
-	})
-		.then((result) => {
+function updatejson() {
+	for (let arg of Object.keys(sheetsDB)) {
+		let sheetID = sheetsDB[arg];
+		if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
+			if (!sheetID)
+				console.error(arg + ".json is not mapped.");
+			continue;
+		}
+		gstojson({
+			spreadsheetId: sheetID,
+		}).then((result) => {
 			fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
-			sendMessage(user, userID, channelID, message, event, bo + quo + arg + ".json updated successfully." + quo + bo);
-			setJSON();
-		})
-		.catch((err) => {
-			console.log(err.message);
+			console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
+		}).catch((err) => {
+			console.error(err.message);
 		});
+	}
+	setJSON();
 }
 
 //scripting lib 
