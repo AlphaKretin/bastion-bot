@@ -381,6 +381,7 @@ function loadDBs() {
 		nameList[lang] = [];
 		cards[lang] = {};
 		let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
+		db.close();
 		for (let card of contents[0].values) {
 			let car = new Card(card);
 			cards[lang][car.code] = car;
@@ -392,6 +393,7 @@ function loadDBs() {
 				console.log("loading " + dbs[lang][i]);
 				let newDB = new SQL.Database(newbuffer);
 				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
+				newDB.close();
 				for (let newCard of newContents[0].values) {
 					let newCar = new Card(newCard);
 					cards[lang][newCar.code] = newCar;
@@ -417,7 +419,8 @@ async function dbUpdate() {
 	dbs = JSON.parse(JSON.stringify(staticDBs));
 	let oldDbs = {};
 	for (let lang of Object.keys(updateRepos)) {
-		oldDbs[lang] = JSON.parse(JSON.stringify(config.liveDBs[lang]));
+		if (config.liveDBs[lang])
+			oldDbs[lang] = JSON.parse(JSON.stringify(config.liveDBs[lang]));
 		config.liveDBs[lang] = [];
 		for (let repo of updateRepos[lang]) {
 			let arr = repo.split("/");
@@ -443,7 +446,8 @@ async function dbUpdate() {
 				dbs[lang] = config.liveDBs[lang];
 			}
 			for (let db of config.liveDBs[lang]) {
-				oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
+				if (oldDbs[lang])
+					oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
 			}
 			if (config.deleteOldDBs && oldDbs[lang].length > 0) {
 				console.log("Deleting the following old databases in 10 seconds: ");
