@@ -654,7 +654,6 @@ bot.on("message", (user, userID, channelID, message, event) => {
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
-			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && !regx[1].includes("http")) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
 				results2.push(regx2[1]);
 			}
 		} while (regx2);
