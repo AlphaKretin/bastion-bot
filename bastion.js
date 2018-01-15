@@ -468,8 +468,6 @@ let updateFuncs = [];
 if (sheetsDB) {
 	updateFuncs.push(updatejson);
 	updatejson();
-} else {
-	setJSON();
 }
 if (config.updateRepos) {
 	updateFuncs.push(dbUpdate);
@@ -499,104 +497,126 @@ let searchPage = {
 //command declaration
 let commandList = [{
 	names: ["randcard", "randomcard"],
-	func: randomCard
+	func: randomCard,
+	desc: "Display the description of a random card. See the readme for how you can filter what kind of card it shows."
 },
 {
 	names: ["script"],
 	func: script,
-	chk: () => scriptUrlMaster
+	chk: () => scriptUrlMaster,
+	desc: "Displays the script of a card."
 },
 {
 	names: ["trivia"],
 	func: trivia,
-	chk: () => imageUrlMaster
+	chk: () => imageUrlMaster,
+	desc: "Plays a game where you guess the name of a card by its artwork."
 },
 {
 	names: ["tlock"],
 	func: tlock,
-	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, [8192]) //User must have manage message permission
+	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, [8192]), //User must have manage message permission
+	desc: "Adds the current channel to a list of which trivia can only be played in channels from."
 },
 {
 	names: ["matches", "match"],
-	func: matches
+	func: matches,
+	desc: "Returns the top 10 cards with names similar to the text entered."
 },
 {
 	names: ["set", "setcode", "archetype", "setname", "sets"],
-	func: set
+	func: set,
+	desc: "Converts between YGOPro setcodes and archetype names."
 },
 {
 	names: ["id"],
-	func: getSingleProp
+	func: getSingleProp,
+	desc: "Displays the ID of a card."
 },
 {
 	names: ["notext", "stats"],
-	func: getSingleProp
+	func: getSingleProp,
+	desc: "Displays the stats of a card, without its effect."
 },
 {
 	names: ["effect", "cardtext"],
-	func: getSingleProp
+	func: getSingleProp,
+	desc: "Displays the effect or text of a card, without its stats."
 },
 {
 	names: ["strings"],
-	func: strings
+	func: strings,
+	desc: "Displays the strings assinged to a card in YGOPro, such as descriptions of its effects or dialog boxes it may ask the player."
 },
 {
 	names: ["deck"],
-	func: deck
+	func: deck,
+	desc: "Converts an uploaded .ydk file to a list of cards contained within."
 },
 {
 	names: ["commands"],
-	func: commands
+	func: commands,
+	desc: "Displays a list of commands."
 },
 {
 	names: ["rulings"],
 	func: rulings,
-	chk: () => rulingLang //ruling search relies on Japanese DB
+	chk: () => rulingLang, //ruling search relies on Japanese DB
+	desc: "Returns a link to a card's ruling page on the OCG card database."
 },
 {
 	names: ["top", "rankings", "rank"],
-	func: rankings
+	func: rankings,
+	desc: "Displays the most popular card searches, search inputs, and bot commands."
 },
 {
 	names: ["function", "func", "f"],
 	func: searchFunctions,
-	chk: () => libFunctions
+	chk: () => libFunctions,
+	desc: "Searches for functions used in YGOPro scripting."
 },
 {
 	names: ["constant", "const", "c"],
 	func: searchConstants,
-	chk: () => libConstants
+	chk: () => libConstants,
+	desc: "Searches for constants used in YGOPro scripting."
 },
 {
 	names: ["param", "parameter"],
 	func: searchParams,
-	chk: () => libParams
+	chk: () => libParams,
+	desc: "Searches for parameters used in the description of functions used in YGOPro scripting."
 },
 {
 	names: ["p", "page"], //must be after param to avoid double-post
 	func: libPage,
-	chk: () => searchPage.active
+	chk: () => searchPage.active,
+	desc: "Changes the page of a function, constant or param search."
 },
 {
 	names: ["d", "desc", "description"],
 	func: libDesc,
-	chk: () => searchPage.active
+	chk: () => searchPage.active,
+	desc: "Displays the description of an entry in a function, constant or param search."
 },
 {
 	names: ["skill"],
 	func: searchSkill,
-	chk: () => skills.length > 0
+	chk: () => skills.length > 0,
+	desc: "Searches for a skill from Yu-Gi-Oh! Duel Links"
 },
 {
 	names: ["servers", "serverlist"],
 	func: servers,
 	chk: (user, userID) => owner && owner.includes(userID),
-	noTrack: true
+	noTrack: true,
+	desc: "Generates a list of servers the bot is in"
 },
 {
 	names: ["long"],
 	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg),
-	chk: () => longMsg.length > 0
+	chk: () => longMsg.length > 0,
+	desc: "Sends the remainder of a message split up due to length"
 }];
 
 bot.on("message", (user, userID, channelID, message, event) => {
@@ -705,16 +725,19 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 });
 
 function commands(user, userID, channelID, message, event) {
-	//obviously these don't all need to be seperate lines and I don't even need to define anything here but I like having each command on a new line of code.
-	let out = "Type a card name or ID between `{}` (or `<>` for images) to see its profile.\n";
-	out += "`" + pre + "randcard` displays a random card profile.\n";
-	out += "`" + pre + "script` displays the YGOPro script of the specified card.\n";
-	out += "`" + pre + "matches` displays the 10 card names Bastion thinks are most similar to the text you type after.\n";
-	out += "`" + pre + "skill` searches for a skill from Duel Links.\n";
-	out += "`" + pre + "set` translates between YGOPro setcodes and their name.\n";
-	out += "`" + pre + "f`, `" + pre + "c` and `" + pre + "p` search for the functions, constants and parameters respectively used for scripting in YGOPro.\n";
-	out += "`" + pre + "trivia` plays a game where you guess a card name from its image.\n";
-	out += "See the readme for details and other commands I skimmed over: <https://github.com/AlphaKretin/bastion-bot/>";
+	let out = "__**Command List**__\n";
+	out += "Type a card name or ID between `{}` (or `<>` to include images) to see its profile.\n";
+	for (let cmd of commandList) {
+		if (!cmd.chk || cmd.chk(user, userID, channelID, message, event)) {
+			out += "`" + pre + cmd.names[0] + "`"; 
+			if (cmd.desc)
+				out += ": " + cmd.desc;
+			if (cmd.names.length > 1)
+				out += " (Aliases: " + cmd.names.join(", ").replace(cmd.names[0] + ", ", "") + ")";
+			out += "\n";
+		}
+	}
+	out += "See the readme for details: <https://github.com/AlphaKretin/bastion-bot/>";
 	sendMessage(user, userID, userID, message, event, out);
 }
 
