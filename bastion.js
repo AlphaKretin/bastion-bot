@@ -884,7 +884,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				}
 				let out = await getCardInfo(code, outLang);
 				if (hasImage) {
-					if (out[1].length == 1 && messageMode & 0x2) {
+					if (out[1].length == 1 && messageMode & 0x2) { //if it's embed mode, sendLongMessage handles embedding one image
 						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 					} else {
 						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -952,7 +952,7 @@ function getCardInfo(code, outLang) {
 		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.indexOf(key) > -1) {
 				let lim = 3;
-				if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
+				if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 					lim = lflist[key][code];
 				}
 				let re = new RegExp(key);
@@ -1391,7 +1391,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 				if (stat.indexOf(key) > -1) {
 					let lim = 3;
-					if (lflist[key][code] || lflist[key][code] === 0) { //0 cast to a bool becomes false, so we need to check it explicitly. Ugh.
+					if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 						lim = lflist[key][code];
 					}
 					let re = new RegExp(key);
@@ -2618,14 +2618,11 @@ function trivia(user, userID, channelID, message, event) {
 		return;
 	} else {
 		let outLang = defaultLang;
+		let round = 1;
 		let args = message.toLowerCase().split(" ");
 		for (let arg of args) {
-			if (arg in dbs) {
+			if (arg in dbs)
 				outLang = arg;
-			}
-		}
-		let round = 1;
-		for (let arg of args) {
 			if (parseInt(arg) > round) {
 				if (parseInt(arg) > triviaMaxRounds) {
 					round = triviaMaxRounds;
@@ -2745,7 +2742,6 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then((res) => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
-					//let tempcolor = parseInt("0x" + red + green + "00");
 					gameData[channelID].IN = setInterval(() => {
 						let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 						let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
@@ -2901,7 +2897,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 	}
 }
 
-function triviaScore(out, user, userID, channelID, message, event) {
+function triviaScore(out, user, userID, channelID) {
 	if (Object.keys(gameData[channelID].score).length > 0) {
 		out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
 		Object.keys(gameData[channelID].score).forEach((id) => {
@@ -2912,7 +2908,7 @@ function triviaScore(out, user, userID, channelID, message, event) {
 	return out;
 }
 
-function triviaWinners(out, user, userID, channelID, message, event) {
+function triviaWinners(out, user, userID, channelID) {
 	if (Object.keys(gameData[channelID].score).length > 0) {
 		let winners = [];
 		Object.keys(gameData[channelID].score).forEach((id, index) => {
