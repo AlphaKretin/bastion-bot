@@ -502,23 +502,17 @@ let commandList = [{
 {
 	names: ["script"],
 	func: script,
-	chk: () => {
-		return scriptUrlMaster;
-	}
+	chk: () => scriptUrlMaster
 },
 {
 	names: ["trivia"],
 	func: trivia,
-	chk: () => {
-		return imageUrlMaster;
-	}
+	chk: () => imageUrlMaster
 },
 {
 	names: ["tlock"],
 	func: tlock,
-	chk: (user, userID, channelID) => {
-		return imageUrlMaster && checkForPermissions(userID, channelID, [8192]); //User must have manage message permission
-	}
+	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, [8192]) //User must have manage message permission
 },
 {
 	names: ["matches", "match"],
@@ -555,9 +549,7 @@ let commandList = [{
 {
 	names: ["rulings"],
 	func: rulings,
-	chk: () => {
-		return rulingLang; //ruling search relies on Japanese DB
-	}
+	chk: () => rulingLang //ruling search relies on Japanese DB
 },
 {
 	names: ["top", "rankings", "rank"],
@@ -566,61 +558,43 @@ let commandList = [{
 {
 	names: ["function", "func", "f"],
 	func: searchFunctions,
-	chk: () => {
-		return libFunctions;
-	}
+	chk: () => libFunctions
 },
 {
 	names: ["constant", "const", "c"],
 	func: searchConstants,
-	chk: () => {
-		return libConstants;
-	}
+	chk: () => libConstants
 },
 {
 	names: ["param", "parameter"],
 	func: searchParams,
-	chk: () => {
-		return libParams;
-	}
+	chk: () => libParams
 },
 {
 	names: ["p", "page"], //must be after param to avoid double-post
 	func: libPage,
-	chk: () => {
-		return searchPage.active;
-	}
+	chk: () => searchPage.active
 },
 {
 	names: ["d", "desc", "description"],
 	func: libDesc,
-	chk: () => {
-		return searchPage.active;
-	}
+	chk: () => searchPage.active
 },
 {
 	names: ["skill"],
 	func: searchSkill,
-	chk: () => {
-		return skills.length > 0;
-	}
+	chk: () => skills.length > 0
 },
 {
 	names: ["servers", "serverlist"],
 	func: servers,
-	chk: (user, userID) => {
-		return owner && owner.includes(userID);
-	},
+	chk: (user, userID) => owner && owner.includes(userID),
 	noTrack: true
 },
 {
 	names: ["long"],
-	func: (user, userID, channelID, message, event) => {
-		sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg);
-	},
-	chk: () => {
-		return longMsg.length > 0;
-	}
+	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg),
+	chk: () => longMsg.length > 0
 }];
 
 bot.on("message", (user, userID, channelID, message, event) => {
@@ -669,7 +643,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	let regx;
 	do {
 		regx = re.exec(message);
-		if (regx && regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && regx[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
+		if (regx && regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && !regx[1].includes("http")) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
 			results.push(regx[1]);
 		}
 	} while (regx);
@@ -680,6 +654,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 		do {
 			regx2 = re2.exec(message);
 			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
+			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && !regx[1].includes("http")) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
 				results2.push(regx2[1]);
 			}
 		} while (regx2);
@@ -687,24 +662,20 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	if (results.length + results2.length > maxSearches) {
 		sendMessage(user, userID, channelID, message, event, "You can only search up to " + maxSearches + " cards!");
 	} else {
-		if (results.length > 0) {
-			for (let result of results) {
-				searchCard(result, false, user, userID, channelID, message, event); //second parameter here is whether to display image or not
-				if (stats.cmdRankings["search (no image)"]) {
-					stats.cmdRankings["search (no image)"]++;
-				} else {
-					stats.cmdRankings["search (no image)"] = 1;
-				}
+		for (let result of results) {
+			searchCard(result, false, user, userID, channelID, message, event); //second parameter here is whether to display image or not
+			if (stats.cmdRankings["search (no image)"]) {
+				stats.cmdRankings["search (no image)"]++;
+			} else {
+				stats.cmdRankings["search (no image)"] = 1;
 			}
 		}
-		if (results2.length > 0) {
-			for (let result of results2) {
-				searchCard(result, true, user, userID, channelID, message, event);
-				if (stats.cmdRankings["search (with image)"]) {
-					stats.cmdRankings["search (with image)"]++;
-				} else {
-					stats.cmdRankings["search (with image)"] = 1;
-				}
+		for (let result of results2) {
+			searchCard(result, true, user, userID, channelID, message, event);
+			if (stats.cmdRankings["search (with image)"]) {
+				stats.cmdRankings["search (with image)"]++;
+			} else {
+				stats.cmdRankings["search (with image)"] = 1;
 			}
 		}
 	}
@@ -2188,105 +2159,67 @@ function parseFilterArgs(input) {
 	let validFilters = {
 		"status": {
 			name: "ot",
-			func: (arg) => {
-				return Card.otList.includes(arg);
-			}
+			func: (arg) => Card.otList.includes(arg)
 		},
 		"ot": {
 			name: "ot",
-			func: (arg) => {
-				return Card.otList.includes(arg);
-			}
+			func: (arg) => Card.otList.includes(arg)
 		},
 		"type": {
 			name: "type",
-			func: (arg) => {
-				return Card.typeList.includes(arg);
-			}
+			func: (arg) => Card.typeList.includes(arg)
 		},
 		"race": {
 			name: "race",
-			func: (arg) => {
-				return Card.raceList.includes(arg);
-			}
+			func: (arg) => Card.raceList.includes(arg)
 		},
 		"mtype": {
 			name: "race",
-			func: (arg) => {
-				return Card.raceList.includes(arg);
-			}
+			func: (arg) => Card.raceList.includes(arg)
 		},
 		"attribute": {
 			name: "att",
-			func: (arg) => {
-				return Card.attributeList.includes(arg);
-			}
+			func: (arg) => Card.attributeList.includes(arg)
 		},
 		"att": {
 			name: "att",
-			func: (arg) => {
-				return Card.attributeList.includes(arg);
-			}
+			func: (arg) => Card.attributeList.includes(arg)
 		},
 		"archetype": {
 			name: "set",
-			func: (arg) => {
-				return Card.setList.includes(arg);
-			}
+			func: (arg) => Card.setList.includes(arg)
 		},
 		"set": {
 			name: "set",
-			func: (arg) => {
-				return Card.setList.includes(arg);
-			}
+			func: (arg) => Card.setList.includes(arg)
 		},
 		"atk": {
 			name: "atk",
-			func: (arg) => {
-				return !isNaN(parseInt(arg)) || arg === "?";
-			}
+			func: (arg) => !isNaN(parseInt(arg)) || arg === "?"
 		},
 		"def": {
 			name: "def",
-			func: (arg) => {
-				return !isNaN(parseInt(arg)) || arg === "?";
-			}
+			func: (arg) => !isNaN(parseInt(arg)) || arg === "?"
 		},
 		"level": {
 			name: "level",
-			func: (arg) => {
-				return !isNaN(parseInt(arg));
-			},
-			convert: (arg) => {
-				return parseInt(arg);
-			}
+			func: (arg) => !isNaN(parseInt(arg)),
+			convert: (arg) => parseInt(arg)
 		},
 		"lscale": {
 			name: "lscale",
-			func: (arg) => {
-				return !isNaN(parseInt(arg));
-			},
-			convert: (arg) => {
-				return parseInt(arg);
-			}
+			func: (arg) => !isNaN(parseInt(arg)),
+			convert: (arg) => parseInt(arg)
 		},
 		"rscale": {
 			name: "lscale",
-			func: (arg) => {
-				return !isNaN(parseInt(arg));
-			},
-			convert: (arg) => {
-				return parseInt(arg);
-			}
+			func: (arg) => !isNaN(parseInt(arg)),
+			convert: (arg) => parseInt(arg)
 		},
 		"scale": {
 			name: "scale",
-			func: (arg) => {
-				return !isNaN(parseInt(arg));
-			},
-			convert: (arg) => {
-				return parseInt(arg);
-			}
+			func: (arg) => !isNaN(parseInt(arg)),
+			convert: (arg) => parseInt(arg)
 		}
 	};
 	let terms = [];
@@ -2402,8 +2335,10 @@ function randFilterCheck(code, args, outLang) {
 			for (let either of args[key]) {
 				let subSubBoo = true;
 				let tempSets = [];
-				for (let set of card.sets)
-					tempSets.push(set.toLowerCase());
+				if (card.sets) {
+					for (let set of card.sets)
+						tempSets.push(set.toLowerCase());
+				}
 				for (let also of either) {
 					if (tempSets.indexOf(also) < 0)
 						subSubBoo = false;
