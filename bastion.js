@@ -466,14 +466,20 @@ async function dbUpdate() {
 
 }
 
-if (config.updateRepos) {
-	dbUpdate();
-	setInterval(dbUpdate, 3.6 * Math.pow(10, 6));
-} else {
-	loadDBs();
-}
 let skillFuse = {};
 setJSON();
+if (config.updateRepos) {
+	dbUpdate();
+	setInterval(() => {
+		dbUpdate();
+		updatejson();
+	}, 3.6 * Math.pow(10, 6));
+} else {
+	loadDBs();
+	setInterval(() => {
+		updatejson();
+	}, 3.6 * Math.pow(10, 6));
+}
 
 const request = require("request");
 const https = require("https");
@@ -604,14 +610,6 @@ let commandList = [{
 	func: servers,
 	chk: (user, userID) => {
 		return owner && owner.indexOf(userID) > -1;
-	},
-	noTrack: true
-},
-{
-	names: ["updatejson"],
-	func: updatejson,
-	chk: (user, userID) => {
-		return owner && sheetsDB && owner.indexOf(userID) > -1;
 	},
 	noTrack: true
 },
@@ -3050,25 +3048,24 @@ function servers(user, userID, channelID, message, event) {
 	sendMessage(user, userID, channelID, message, event, out);
 }
 
-function updatejson(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
-	let sheetID = sheetsDB[arg];
-	if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
-		if (!sheetID)
-			console.log(arg + ".json is not mapped.");
-		return;
-	}
-	gstojson({
-		spreadsheetId: sheetID,
-	})
-		.then((result) => {
+function updatejson() {
+	Object.keys(sheetsDB).forEach((arg) => {
+		let sheetID = sheetsDB[arg];
+		if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
+			if (!sheetID)
+				console.log(arg + ".json is not mapped.");
+			continue;
+		}
+		gstojson({
+			spreadsheetId: sheetID,
+		}).then((result) => {
 			fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
-			sendMessage(user, userID, channelID, message, event, bo + quo + arg + ".json updated successfully." + quo + bo);
-			setJSON();
-		})
-		.catch((err) => {
-			console.log(err.message);
+			console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
+		}).catch((err) => {
+			console.error(err.message);
 		});
+	});
+	setJSON();
 }
 
 //scripting lib 
