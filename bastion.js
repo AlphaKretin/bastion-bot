@@ -609,7 +609,7 @@ let commandList = [{
 	names: ["servers", "serverlist"],
 	func: servers,
 	chk: (user, userID) => {
-		return owner && owner.indexOf(userID) > -1;
+		return owner && owner.includes(userID);
 	},
 	noTrack: true
 },
@@ -643,7 +643,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 			}
 		}
 	}
-	if (message.indexOf("<@" + bot.id + ">") > -1 || lowMessage.startsWith(pre + "help")) {
+	if (message.includes("<@" + bot.id + ">") || lowMessage.startsWith(pre + "help")) {
 		//send help message
 		sendMessage(user, userID, channelID, message, event, helpMessage);
 		if (stats.cmdRankings.help) {
@@ -777,7 +777,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 			code = ids[Math.floor(Math.random() * ids.length)];
 		}
 		let out = await getCardInfo(code, outLang); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
-		if (imageUrlMaster && args.indexOf("image") > -1) {
+		if (imageUrlMaster && args.includes("image")) {
 			if (out[1].length == 1 && messageMode & 0x2) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 			} else {
@@ -948,7 +948,7 @@ function getCardInfo(code, outLang) {
 		out += "\n";
 		let stat = card.ot;
 		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
-			if (stat.indexOf(key) > -1) {
+			if (stat.includes(key)) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 					lim = lflist[key][code];
@@ -998,7 +998,7 @@ function getCardInfo(code, outLang) {
 				out += stat + "\n";
 			}
 			let embCT = getEmbCT(card);
-			if (card.types.indexOf("Monster") > -1) {
+			if (card.types.includes("Monster")) {
 				let arrace = addEmote(card.race, "|");
 				let typesStr;
 				if (emoteMode < 2 && messageMode != 1) {
@@ -1015,9 +1015,9 @@ function getCardInfo(code, outLang) {
 					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
 				}
 				let lvName = "Level";
-				if (card.types.indexOf("Xyz") > -1) {
+				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
-				} else if (card.types.indexOf("Link") > -1) {
+				} else if (card.types.includes("Link")) {
 					lvName = "Link Rating";
 				}
 				if (messageMode & 0x1) {
@@ -1062,7 +1062,7 @@ function getCardInfo(code, outLang) {
 					}
 					out += card.markers;
 				}
-				if (card.types.indexOf("Pendulum") > -1) {
+				if (card.types.includes("Pendulum")) {
 					if (messageMode & 0x1) {
 						out += " Pendulum Scale: ";
 					} else {
@@ -1083,7 +1083,7 @@ function getCardInfo(code, outLang) {
 				markdownno += quo.length * 6;
 				let cardText = card.desc;
 				let textName = "Monster Effect";
-				if (card.types.indexOf("Normal") > -1) {
+				if (card.types.includes("Normal")) {
 					textName = "Flavour Text";
 				}
 				if (cardText.length === 4) {
@@ -1101,7 +1101,7 @@ function getCardInfo(code, outLang) {
 					}
 				}
 				markdownno += quo.length * 3;
-			} else if (card.types.indexOf("Spell") > -1 || card.types.indexOf("Trap") > -1) {
+			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				let typeemote = addEmote(card.types, "/");
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
 					typeemote[1] += emoteDB["NormalST"];
@@ -1169,7 +1169,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 		let imageUrl = imageUrlMaster;
 		let card = cards[outLang][code[0]];
 		let ot = card.ot;
-		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
+		if (["Anime", "Illegal", "Video Game"].includes(ot)) {
 			imageUrl = imageUrlAnime;
 		}
 		if (ot === "Custom") {
@@ -1387,7 +1387,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			out += "\n";
 			stat = card.ot;
 			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
-				if (stat.indexOf(key) > -1) {
+				if (stat.includes(key)) {
 					let lim = 3;
 					if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 						lim = lflist[key][code];
@@ -1402,7 +1402,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				out += "**Status**: ";
 			}
 			out += stat + "\n";
-			if (card.types.indexOf("Monster") > -1) {
+			if (card.types.includes("Monster")) {
 				let arrace = addEmote(card.race, "|");
 				let typesStr;
 				if (emoteMode < 2 && messageMode != 1) {
@@ -1419,9 +1419,9 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
 				}
 				let lvName = "Level";
-				if (card.types.indexOf("Xyz") > -1) {
+				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
-				} else if (card.types.indexOf("Link") > -1) {
+				} else if (card.types.includes("Link")) {
 					lvName = "Link Rating";
 				}
 				if (messageMode & 0x1) {
@@ -1466,7 +1466,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					}
 					out += card.markers;
 				}
-				if (card.types.indexOf("Pendulum") > -1) {
+				if (card.types.includes("Pendulum")) {
 					if (messageMode & 0x1) {
 						out += " Pendulum Scale: ";
 					} else {
@@ -1484,7 +1484,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				}
 				out += "\n";
 				out += quo + quo + quo + quo + quo + quo;
-			} else if (card.types.indexOf("Spell") > -1 || card.types.indexOf("Trap") > -1) {
+			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				let typeemote = addEmote(card.types, "/");
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
 					typeemote[1] += emoteDB["NormalST"];
@@ -1531,10 +1531,10 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			break;
 		case "effect":
 			out += "__**" + quo + card.name + quo + "**__" + (messageMode & 0x1 && " " || "\n");
-			if (card.types.indexOf("Monster") > -1) {
+			if (card.types.includes("Monster")) {
 				let cardText = card.desc;
 				let textName = "Monster Effect";
-				if (card.types.indexOf("Normal") > -1) {
+				if (card.types.includes("Normal")) {
 					textName = "Flavour Text";
 				}
 				if (cardText.length === 4) {
@@ -1551,7 +1551,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 						out += "**" + textName + "**: " + cardText[0];
 					}
 				}
-			} else if (card.types.indexOf("Spell") > -1 || card.types.indexOf("Trap") > -1) {
+			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				if (messageMode & 0x1) {
 					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Effect``\n";
 				} else {
@@ -1663,7 +1663,7 @@ function getCardScript(card) {
 	return new Promise((resolve) => {
 		let scriptUrl = scriptUrlMaster;
 		let ot = card.ot;
-		if (["Anime", "Illegal", "Video Game"].indexOf(ot) > -1) {
+		if (["Anime", "Illegal", "Video Game"].includes(ot)) {
 			scriptUrl = scriptUrlAnime;
 		}
 		if (ot === "Custom") {
@@ -1899,7 +1899,7 @@ function rankings(user, userID, channelID, message, event) {
 		if (parseInt(arg) > numToGet) {
 			numToGet = parseInt(arg);
 		}
-		if (validTerms.indexOf(arg.toLowerCase()) > -1) {
+		if (validTerms.includes(arg.toLowerCase())) {
 			term = arg.toLowerCase();
 		}
 		if (arg in dbs) {
@@ -1992,7 +1992,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 			if (code && outLang) {
 				imgurl = imageUrlMaster;
 				let card = cards[outLang][code];
-				if (["Anime", "Illegal", "Video Game"].indexOf(card.ot) > -1) {
+				if (["Anime", "Illegal", "Video Game"].includes(card.ot)) {
 					imgurl = imageUrlAnime;
 				}
 				if (card.ot === "Custom") {
@@ -2106,10 +2106,10 @@ function compareFuseObj(a, b) { //called in card searching by name to resort the
 function getEmbCT(card) {
 	let ct = null;
 	for (let type of card.types) {
-		if (["Spell", "Trap", "Fusion", "Ritual", "Synchro", "Token", "Xyz", "Link"].indexOf(type) > -1) {
+		if (["Spell", "Trap", "Fusion", "Ritual", "Synchro", "Token", "Xyz", "Link"].includes(type)) {
 			ct = type;
 		}
-		if (!ct && ["Normal", "Effect"].indexOf(type) > -1) {
+		if (!ct && ["Normal", "Effect"].includes(type)) {
 			ct = type;
 		}
 	}
@@ -2152,7 +2152,7 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 	} else {
 		for (let res of result) {
 			let card = cards[inLang][res.item.id];
-			if (["Anime", "Video Game", "Illegal"].indexOf(card.ot) > -1) {
+			if (["Anime", "Video Game", "Illegal"].includes(card.ot)) {
 				res.score = res.score * 1.2; //weights score by status. Lower is better so increasing it makes official take priority.
 			} else if (card.ot === "Custom") {
 				res.score = res.score * 1.4;
@@ -2189,55 +2189,55 @@ function parseFilterArgs(input) {
 		"status": {
 			name: "ot",
 			func: (arg) => {
-				return Card.otList.indexOf(arg) > -1;
+				return Card.otList.includes(arg);
 			}
 		},
 		"ot": {
 			name: "ot",
 			func: (arg) => {
-				return Card.otList.indexOf(arg) > -1;
+				return Card.otList.includes(arg);
 			}
 		},
 		"type": {
 			name: "type",
 			func: (arg) => {
-				return Card.typeList.indexOf(arg) > -1;
+				return Card.typeList.includes(arg);
 			}
 		},
 		"race": {
 			name: "race",
 			func: (arg) => {
-				return Card.raceList.indexOf(arg) > -1;
+				return Card.raceList.includes(arg);
 			}
 		},
 		"mtype": {
 			name: "race",
 			func: (arg) => {
-				return Card.raceList.indexOf(arg) > -1;
+				return Card.raceList.includes(arg);
 			}
 		},
 		"attribute": {
 			name: "att",
 			func: (arg) => {
-				return Card.attributeList.indexOf(arg) > -1;
+				return Card.attributeList.includes(arg);
 			}
 		},
 		"att": {
 			name: "att",
 			func: (arg) => {
-				return Card.attributeList.indexOf(arg) > -1;
+				return Card.attributeList.includes(arg);
 			}
 		},
 		"archetype": {
 			name: "set",
 			func: (arg) => {
-				return Card.setList.indexOf(arg) > -1;
+				return Card.setList.includes(arg);
 			}
 		},
 		"set": {
 			name: "set",
 			func: (arg) => {
-				return Card.setList.indexOf(arg) > -1;
+				return Card.setList.includes(arg);
 			}
 		},
 		"atk": {
@@ -2290,7 +2290,7 @@ function parseFilterArgs(input) {
 		}
 	};
 	let terms = [];
-	while (input.indexOf(":") > -1) {
+	while (input.includes(":")) {
 		let colonIndex = input.indexOf(":");
 		let startIndex = getLastIndexBefore(input, " ", colonIndex);
 		let nextColonIndex = getIndexAfter(input, ":", colonIndex);
@@ -2629,7 +2629,7 @@ function trivia(user, userID, channelID, message, event) {
 				}
 			}
 		}
-		let hard = (args.indexOf("hard") > -1);
+		let hard = (args.includes("hard"));
 		let argObj = parseFilterArgs(message.toLowerCase());
 		startTriviaRound(round, hard, outLang, argObj, user, userID, channelID, message, event);
 	}
@@ -2667,7 +2667,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			name = card.name;
 			let imageUrl = imageUrlMaster;
 			let stat = card.ot;
-			if (["Anime", "Illegal", "Video Game"].indexOf(stat) > -1) {
+			if (["Anime", "Illegal", "Video Game"].includes(stat)) {
 				imageUrl = imageUrlAnime;
 			}
 			if (stat === "Custom") {
@@ -2695,7 +2695,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			let ind;
 			do {
 				ind = getIncInt(0, name.length - 1);
-			} while (hintIs.indexOf(ind) > -1 && nameArr[ind] !== " ");
+			} while (hintIs.includes(ind) && nameArr[ind] !== " ");
 			hintIs.push(ind);
 		}
 		let hint = "";
@@ -3007,7 +3007,7 @@ function getPermissions(userID, channelID) {
 	Object.keys(bot.channels[channelID].permissions).forEach((overwrite) => {
 		if ((overwrite.type == "member" && overwrite.id == userID) ||
 			(overwrite.type == "role" &&
-				(bot.servers[serverID].members[userID].roles.indexOf(overwrite.id) > -1) ||
+				(bot.servers[serverID].members[userID].roles.includes(overwrite.id)) ||
 				serverID == overwrite.id)) {
 			_getPermissionArray(overwrite.deny).forEach((denied) => {
 				let index = permissions.indexOf(denied);
@@ -3080,7 +3080,7 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 	}
 	let searched = [];
 	for (let func of libFunctions) {
-		if (func.name.toLowerCase().split("(")[0].indexOf(arg.toLowerCase()) > -1) {
+		if (func.name.toLowerCase().split("(")[0].includes(arg.toLowerCase()) > -1) {
 			searched.push(func);
 		}
 	}
@@ -3124,7 +3124,7 @@ function searchConstants(user, userID, channelID, message, event, name) {
 	}
 	let searched = [];
 	for (let con of libConstants) {
-		if (con.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
+		if (con.name.toLowerCase().includes(arg.toLowerCase())) {
 			searched.push(con);
 		}
 	}
@@ -3168,7 +3168,7 @@ function searchParams(user, userID, channelID, message, event, name) {
 	}
 	let searched = [];
 	for (let par of libParams) {
-		if (par.name.toLowerCase().indexOf(arg.toLowerCase()) > -1) {
+		if (par.name.toLowerCase().includes(arg.toLowerCase())) {
 			searched.push(par);
 		}
 	}
