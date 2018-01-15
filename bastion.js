@@ -3049,7 +3049,7 @@ function servers(user, userID, channelID, message, event) {
 }
 
 function updatejson() {
-	Object.keys(sheetsDB).forEach((arg) => {
+	for (let arg of Object.keys(sheetsDB)) {
 		let sheetID = sheetsDB[arg];
 		if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
 			if (!sheetID)
@@ -3064,7 +3064,7 @@ function updatejson() {
 		}).catch((err) => {
 			console.error(err.message);
 		});
-	});
+	}
 	setJSON();
 }
 
