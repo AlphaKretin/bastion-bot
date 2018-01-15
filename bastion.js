@@ -2844,48 +2844,36 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		return;
 	}
 	let out;
+	if (!message.toLowerCase().startsWith(pre + "tq") && message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1 && thumbsdown) {
+		bot.addReaction({
+			channelID: channelID,
+			messageID: event.d.id,
+			reaction: thumbsdown
+		});
+		return;
+	}
+	gameData[channelID].lock = true;
+	if (gameData[channelID].TO1) {
+		clearTimeout(gameData[channelID].TO1);
+	}
+	if (gameData[channelID].TO2) {
+		clearTimeout(gameData[channelID].TO2);
+	}
+	if (gameData[channelID].IN) {
+		clearInterval(gameData[channelID].IN);
+	}
 	if (message.toLowerCase().startsWith(pre + "tq")) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
 		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		out = triviaWinners(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
-		gameData[channelID].lock = true;
-		if (gameData[channelID].TO1) {
-			clearTimeout(gameData[channelID].TO1);
-		}
-		if (gameData[channelID].TO2) {
-			clearTimeout(gameData[channelID].TO2);
-		}
-		if (gameData[channelID].IN) {
-			clearInterval(gameData[channelID].IN);
-		}
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
@@ -2910,12 +2898,6 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			sendMessage(user, userID, channelID, message, event, out);
 			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 		}
-	} else if (thumbsdown) {
-		bot.addReaction({
-			channelID: channelID,
-			messageID: event.d.id,
-			reaction: thumbsdown
-		});
 	}
 }
 
