@@ -2737,6 +2737,8 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			if (err) {
 				console.error(err);
 			} else {
+				if (!gameData[channelID])
+					return;
 				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then((res) => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
@@ -2838,12 +2840,14 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		return;
 	}
 	let out;
-	if (!message.toLowerCase().startsWith(pre + "tq") && message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1 && thumbsdown) {
-		bot.addReaction({
-			channelID: channelID,
-			messageID: event.d.id,
-			reaction: thumbsdown
-		});
+	if (!message.toLowerCase().startsWith(pre + "tq") && !message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+		if (thumbsdown) {
+			bot.addReaction({
+				channelID: channelID,
+				messageID: event.d.id,
+				reaction: thumbsdown
+			});
+		}
 		return;
 	}
 	gameData[channelID].lock = true;
@@ -2867,7 +2871,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
-	} else if (message.toLowerCase().indexOf(gameData[channelID].name.toLowerCase()) > -1) {
+	} else if (message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
@@ -2890,7 +2894,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			delete gameData[channelID];
 		} else {
 			sendMessage(user, userID, channelID, message, event, out);
-			startTriviaRound(gameData[channelID].ot, (gameData[channelID].round - 1), gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
+			startTriviaRound(gameData[channelID].round - 1, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 		}
 	}
 }
