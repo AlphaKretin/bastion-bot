@@ -266,13 +266,10 @@ function setJSON() { //this is a function because it needs to be repeated when i
 
 let sheetsDB;
 const gstojson = require("google-spreadsheet-to-json");
-if (owner && config.sheetsDB) {
-	let path = "config/" + config.sheetsDB;
-	sheetsDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-} else if (!owner) {
-	console.warn("Bot owner's ID not set up! JSON updating commands will be disabled.");
+if (config.sheetsDB) {
+	sheetsDB = JSON.parse(fs.readFileSync("config/" + config.sheetsDB, "utf-8"));
 } else {
-	console.warn("Sheets database not found at config.sheetsDB! JSON updating commands will be disabled.");
+	console.warn("Sheets database not found at config.sheetsDB! JSON updating will be disabled.");
 }
 
 let debugOutput = false;
@@ -467,19 +464,24 @@ async function dbUpdate() {
 }
 
 let skillFuse = {};
-setJSON();
+let updateFuncs = [];
+if (sheetsDB) {
+	updateFuncs.push(updatejson);
+	updatejson();
+} else {
+	setJSON();
+}
 if (config.updateRepos) {
+	updateFuncs.push(dbUpdate);
 	dbUpdate();
-	setInterval(() => {
-		dbUpdate();
-		updatejson();
-	}, 3.6 * Math.pow(10, 6));
 } else {
 	loadDBs();
-	setInterval(() => {
-		updatejson();
-	}, 3.6 * Math.pow(10, 6));
 }
+
+setInterval(() => {
+	for (let func of updateFuncs)
+		func();
+}, 3.6 * Math.pow(10, 6));
 
 const request = require("request");
 const https = require("https");
