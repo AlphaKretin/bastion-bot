@@ -3057,7 +3057,7 @@ function updatejson() {
 		let sheetID = sheetsDB[arg];
 		if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
 			if (!sheetID)
-				console.log(arg + ".json is not mapped.");
+				console.error(arg + ".json is not mapped.");
 			continue;
 		}
 		gstojson({
