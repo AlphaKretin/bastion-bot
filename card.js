@@ -59,6 +59,14 @@ module.exports = function (setcodes) {
 			return this.convertOT();
 		}
 
+		get isAnime() {
+			return this.convertAnime();
+		}
+
+		get isCustom() {
+			return this.convertCustom();
+		}
+
 		get alias() {
 			return this._alias;
 		}
@@ -131,12 +139,53 @@ module.exports = function (setcodes) {
 
 		//Methods
 		convertOT() {
+			let os = [];
 			for (let key of Object.keys(Card.ots)) {
-				if (this._ot === Card.ots[key]) {
-					return key;
+				if (this._ot & Card.ots[key]) {
+					os.push(key);
 				}
 			}
-			return "Null OT";
+			if (os.length === 0) {
+				return ["Null OT"];
+			} else {
+				return os;
+			}
+		}
+
+		convertAnime() {
+			for (let stat of this.convertOT()) {
+				if (["Anime", "Illegal", "Video Game"].includes(stat)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		convertCustom() {
+			for (let stat of this.convertOT()) {
+				if (["Custom"].includes(stat)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		hasSameOT(otherCard) {
+			let arr1 = this.convertOT().sort();
+			let arr2 = otherCard.ot.sort();
+
+			if (!arr1 || !arr2)
+				return false;
+
+			if (arr1.length != arr2.length)
+				return false;
+
+			for (let i = 0, l = arr1.length; i < l; i++) {
+				if (arr1[i] != arr2[i]) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		convertSetcode() {
@@ -280,7 +329,6 @@ module.exports = function (setcodes) {
 	Card.ots = {
 		"OCG": 0x1,
 		"TCG": 0x2,
-		"TCG/OCG": 0x3,
 		"Anime": 0x4,
 		"Illegal": 0x8,
 		"Video Game": 0x10,

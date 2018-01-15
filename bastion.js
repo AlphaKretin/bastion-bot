@@ -777,7 +777,7 @@ async function script(user, userID, channelID, message, event, name) {
 			let out = await getCardScript(cards[inLang][inInt]);
 			sendLongMessage(out, user, userID, channelID, message, event);
 		} catch (e) {
-			console.log("Error with search by ID:");
+			console.error("Error with search by ID:");
 			console.error(e);
 		}
 	} else { //if it wasn't an ID, the only remaining valid option is that it's a name
@@ -787,11 +787,11 @@ async function script(user, userID, channelID, message, event, name) {
 				let out = await getCardScript(cards[inLang][code]);
 				sendLongMessage(out, user, userID, channelID, message, event);
 			} else {
-				console.log("Invalid card ID or name, please try again.");
+				console.error("Invalid card ID or name, please try again.");
 				return;
 			}
 		} catch (e) {
-			console.log("Error with search by name:");
+			console.error("Error with search by name:");
 			console.error(e);
 		}
 	}
@@ -834,7 +834,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 			}
 		} catch (e) {
-			console.log("Error with search by ID:");
+			console.error("Error with search by ID:");
 			console.error(e);
 		}
 	} else {
@@ -861,11 +861,11 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
 				}
 			} else {
-				console.log("Invalid card or no corresponding entry in out language DB, please try again.");
+				console.error("Invalid card or no corresponding entry in out language DB, please try again.");
 				return;
 			}
 		} catch (e) {
-			console.log("Error with search by name:");
+			console.error("Error with search by name:");
 			console.error(e);
 		}
 	}
@@ -875,25 +875,26 @@ function getCardInfo(code, outLang) {
 	return new Promise((resolve, reject) => {
 		let markdownno = 0;
 		if (!code || !cards[outLang][code]) {
-			console.log("Invalid card ID, please try again.");
+			console.error("Invalid card ID, please try again.");
 			reject("Invalid card ID, please try again.");
 		}
 		let card = cards[outLang][code];
 		let alIDs = [code];
 		if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 			let alCard = cards[outLang][card.alias];
-			if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+			console.log(card.hasSameOT(alCard));
+			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
 				Object.values(cards[outLang]).forEach((tempCard) => {
-					if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+					if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 						alIDs.push(tempCard.code);
 					}
 				});
 			}
 		} else { //if other cards have this, the original, as an alias, they'll be noted here
 			Object.values(cards[outLang]).forEach((tempCard) => {
-				if (tempCard.alias === code && tempCard.ot === card.ot && tempCard.name === card.name) {
+				if (tempCard.alias === code && tempCard.hasSameOT(card) && tempCard.name === card.name) {
 					alIDs.push(tempCard.code);
 				}
 			});
@@ -916,7 +917,7 @@ function getCardInfo(code, outLang) {
 			out += card.sets.join(", ");
 		}
 		out += "\n";
-		let stat = card.ot;
+		let stat = card.ot.join("/");
 		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.includes(key)) {
 				let lim = 3;
@@ -1138,11 +1139,10 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 	try {
 		let imageUrl = imageUrlMaster;
 		let card = cards[outLang][code[0]];
-		let ot = card.ot;
-		if (["Anime", "Illegal", "Video Game"].includes(ot)) {
+		if (card.isAnime) {
 			imageUrl = imageUrlAnime;
 		}
-		if (ot === "Custom") {
+		if (card.isCustom) {
 			imageUrl = imageUrlCustom;
 		}
 		if (code.length > 1) {
@@ -1302,18 +1302,18 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
-				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
 					Object.values(cards[outLang]).forEach((tempCard) => {
-						if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
 				Object.values(cards[outLang]).forEach((tempCard) => {
-					if (tempCard.alias === code && tempCard.ot === card.ot) {
+					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
 						alIDs.push(tempCard.code);
 					}
 				});
@@ -1325,18 +1325,18 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
-				if (card.ot === alCard.ot && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
 					Object.values(cards[outLang]).forEach((tempCard) => {
-						if (tempCard.alias === code && tempCard.ot === alCard.ot) {
+						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
 				Object.values(cards[outLang]).forEach((tempCard) => {
-					if (tempCard.alias === code && tempCard.ot === card.ot) {
+					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
 						alIDs.push(tempCard.code);
 					}
 				});
@@ -1355,7 +1355,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				out += card.sets.join(", ");
 			}
 			out += "\n";
-			stat = card.ot;
+			stat = card.ot.join("/");
 			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
 				if (stat.includes(key)) {
 					let lim = 3;
@@ -1622,7 +1622,7 @@ function deck(user, userID, channelID, message, event) {
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
 				for (let msg of outArr) {
-					sendMessage(user, userID, channelID, message, event, msg );
+					sendMessage(user, userID, channelID, message, event, msg);
 				}
 			}
 		});
@@ -1632,11 +1632,10 @@ function deck(user, userID, channelID, message, event) {
 function getCardScript(card) {
 	return new Promise((resolve) => {
 		let scriptUrl = scriptUrlMaster;
-		let ot = card.ot;
-		if (["Anime", "Illegal", "Video Game"].includes(ot)) {
+		if (card.isAnime) {
 			scriptUrl = scriptUrlAnime;
 		}
-		if (ot === "Custom") {
+		if (card.isCustom) {
 			scriptUrl = scriptUrlCustom;
 		}
 		let fullUrl = scriptUrl + "c" + card.code + ".lua";
@@ -1962,10 +1961,10 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 			if (code && outLang) {
 				imgurl = imageUrlMaster;
 				let card = cards[outLang][code];
-				if (["Anime", "Illegal", "Video Game"].includes(card.ot)) {
+				if (card.isAnime) {
 					imgurl = imageUrlAnime;
 				}
-				if (card.ot === "Custom") {
+				if (card.isCustom) {
 					imgurl = imageUrlCustom;
 				}
 				imgurl += code + "." + imageExt;
@@ -2122,9 +2121,9 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 	} else {
 		for (let res of result) {
 			let card = cards[inLang][res.item.id];
-			if (["Anime", "Video Game", "Illegal"].includes(card.ot)) {
+			if (card.isAnime) {
 				res.score = res.score * 1.2; //weights score by status. Lower is better so increasing it makes official take priority.
-			} else if (card.ot === "Custom") {
+			} else if (card.isCustom) {
 				res.score = res.score * 1.4;
 			}
 		}
@@ -2283,8 +2282,15 @@ function randFilterCheck(code, args, outLang) {
 		case "ot":
 			subBoo = false;
 			for (let either of args[key]) {
-				if (card.ot.toLowerCase() === either[0])
-					subBoo = true;
+				let subSubBoo = true;
+				let tempOTs = [];
+				for (let stat of card.ot)
+					tempOTs.push(stat.toLowerCase());
+				for (let also of either) {
+					if (tempOTs.indexOf(also) < 0)
+						subSubBoo = false;
+				}
+				subBoo = subBoo || subSubBoo;
 			}
 			break;
 		case "type":
@@ -2401,7 +2407,7 @@ function aliasCheck(card, outLang) { //called when getting alt arts, checks if a
 		return true;
 	}
 	let alCard = cards[outLang][alias];
-	return alCard && card.ot !== alCard.ot;
+	return alCard && !card.hasSameOT(alCard);
 }
 
 function getBaseID(card, inLang) {
@@ -2411,7 +2417,7 @@ function getBaseID(card, inLang) {
 		return alCode;
 	}
 	let baseCard = cards[inLang][alias];
-	if (card.ot === baseCard.ot && card.name == baseCard.name) {
+	if (card.hasSameOT(baseCard) && card.name == baseCard.name) {
 		return baseCard.code;
 	} else {
 		return alCode;
@@ -2580,7 +2586,9 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 		let matches = [];
 		if (Object.keys(argObj).length === 0) {
 			argObj = {
-				ot: [["tcg/ocg"]]
+				ot: [
+					["tcg", "ocg"]
+				]
 			};
 		}
 		if (Object.keys(argObj).length > 0) {
@@ -2600,11 +2608,10 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			card = cards[outLang][code];
 			name = card.name;
 			let imageUrl = imageUrlMaster;
-			let stat = card.ot;
-			if (["Anime", "Illegal", "Video Game"].includes(stat)) {
+			if (card.isAnime) {
 				imageUrl = imageUrlAnime;
 			}
-			if (stat === "Custom") {
+			if (card.isCustom) {
 				imageUrl = imageUrlCustom;
 			}
 			buffer = await new Promise((resolve) => {
