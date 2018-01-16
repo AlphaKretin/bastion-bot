@@ -517,9 +517,7 @@ const filetype = require("file-type");
 //these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
 let gameData = {};
-let searchPage = {
-	active: false
-};
+let searchPage = {};
 
 //command declaration
 let commandList = [{
@@ -616,13 +614,13 @@ let commandList = [{
 {
 	names: ["p", "page"], //must be after param to avoid double-post
 	func: libPage,
-	chk: () => searchPage.active,
+	chk: (user, userID, channelID) => searchPage[channelID],
 	desc: "Changes the page of a function, constant or param search."
 },
 {
 	names: ["d", "desc", "description"],
 	func: libDesc,
-	chk: () => searchPage.active,
+	chk: (user, userID, channelID) => searchPage[channelID],
 	desc: "Displays the description of an entry in a function, constant or param search."
 },
 {
@@ -733,19 +731,22 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 		return;
 	}
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
-	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
+	let channelID = newMsg.channel_id;
+	if (!channelID)
+		return; 
+	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
 		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "p");
 	}
-	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "page") && lowMessage.indexOf("param") === -1) {
+	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "page") && lowMessage.indexOf("param") === -1) {
 		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "page");
 	}
-	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "d")) {
+	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "d")) {
 		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "d");
 	}
-	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "desc")) {
+	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "desc")) {
 		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "desc");
 	}
-	if (searchPage.active && lowMessage && lowMessage.startsWith(pre + "description")) {
+	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "description")) {
 		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "description");
 	}
 });
@@ -3249,15 +3250,13 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
-		searchPage = {
+		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
 			user: userID,
-			channel: channelID,
 			search: "f",
 			message: res.id,
-			content: out,
-			active: true
+			content: out
 		};
 	});
 }
@@ -3293,15 +3292,13 @@ function searchConstants(user, userID, channelID, message, event, name) {
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
-		searchPage = {
+		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
 			user: userID,
-			channel: channelID,
 			search: "c",
 			message: res.id,
-			content: out,
-			active: true
+			content: out
 		};
 	});
 }
@@ -3337,29 +3334,27 @@ function searchParams(user, userID, channelID, message, event, name) {
 	}
 	out += "````Page: 1/" + pages.length + "`";
 	sendMessage(user, userID, channelID, message, event, out).then((res) => {
-		searchPage = {
+		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
 			user: userID,
-			channel: channelID,
 			search: "p",
 			message: res.id,
-			content: out,
-			active: true
+			content: out
 		};
 	});
 }
 
 function libPage(user, userID, channelID, message, event, name) {
 	let arg = parseInt(message.slice((pre + name).length));
-	if (userID !== searchPage.user || isNaN(arg) || arg > searchPage.pages.length) {
+	if (!searchPage[channelID] || userID !== searchPage[channelID].user || isNaN(arg) || arg > searchPage[channelID].pages.length) {
 		return;
 	}
 	let index = arg - 1;
 	let len = 0;
-	let pages = searchPage.pages;
+	let pages = searchPage[channelID].pages;
 	let n = "sig";
-	switch (searchPage.search) {
+	switch (searchPage[channelID].search) {
 	case "c":
 		n = "val";
 		break;
@@ -3383,12 +3378,12 @@ function libPage(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line[n].toString().padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: " + arg + "/" + pages.length + "`";
-	searchPage.index = index;
-	searchPage.content = out;
+	searchPage[channelID].index = index;
+	searchPage[channelID].content = out;
 	if (messageMode & 0x2) {
 		bot.editMessage({
-			channelID: searchPage.channel,
-			messageID: searchPage.message,
+			channelID: channelID,
+			messageID: searchPage[channelID].message,
 			embed: {
 				color: embedColor,
 				description: out
@@ -3396,7 +3391,7 @@ function libPage(user, userID, channelID, message, event, name) {
 		});
 	} else {
 		bot.editMessage({
-			channelID: searchPage.channel,
+			channelID: channelID,
 			messageID: searchPage.message,
 			message: out
 		});
@@ -3405,31 +3400,31 @@ function libPage(user, userID, channelID, message, event, name) {
 
 function libDesc(user, userID, channelID, message, event, name) {
 	let arg = parseInt(message.slice((pre + name).length));
-	if (userID !== searchPage.user || isNaN(arg) || arg > searchPage.pages[searchPage.index].length) {
+	if (!searchPage[channelID] || userID !== searchPage[channelID].user || isNaN(arg) || arg > searchPage[channelID].pages[searchPage[channelID].index].length) {
 		return;
 	}
 	let index = arg - 1;
-	if (!searchPage.pages[searchPage.index][index]) {
+	if (!searchPage[channelID].pages[searchPage[channelID].index][index]) {
 		return;
 	}
-	let desc = searchPage.pages[searchPage.index][index].desc;
+	let desc = searchPage[channelID].pages[searchPage[channelID].index][index].desc;
 	if (desc.length === 0) {
 		desc = "No description found for this entry.";
 	}
 	if (messageMode & 0x2) {
 		bot.editMessage({
-			channelID: searchPage.channel,
-			messageID: searchPage.message,
+			channelID: channelID,
+			messageID: searchPage[channelID].message,
 			embed: {
 				color: embedColor,
-				description: searchPage.content + "\n`" + desc + "`"
+				description: searchPage[channelID].content + "\n`" + desc + "`"
 			}
 		});
 	} else {
 		bot.editMessage({
-			channelID: searchPage.channel,
-			messageID: searchPage.message,
-			message: searchPage.content + "\n`" + desc + "`"
+			channelID: channelID,
+			messageID: searchPage[channelID].message,
+			message: searchPage[channelID].content + "\n`" + desc + "`"
 		});
 	}
 }
