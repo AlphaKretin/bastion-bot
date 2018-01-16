@@ -422,62 +422,70 @@ function loadDBs() {
 }
 
 async function dbUpdate() {
-	console.log("Starting CDB update!");
-	let promises = [];
-	dbs = JSON.parse(JSON.stringify(staticDBs));
-	let oldDbs = {};
-	for (let lang of Object.keys(updateRepos)) {
-		if (config.liveDBs[lang])
-			oldDbs[lang] = JSON.parse(JSON.stringify(config.liveDBs[lang]));
-		config.liveDBs[lang] = [];
-		for (let repo of updateRepos[lang]) {
-			let arr = repo.split("/");
-			if (arr.length < 2)
-				continue;
-			try {
-				let prom;
-				if (arr.length > 2) {
-					prom = getGHContents(arr[0], arr[1], arr.slice(2).join("/"));
-				} else {
-					prom = getGHContents(arr[0], arr[1]);
+	return new Promise((resolve) => {
+		console.log("Starting CDB update!");
+		let promises = [];
+		dbs = JSON.parse(JSON.stringify(staticDBs));
+		let oldDbs = {};
+		for (let lang of Object.keys(updateRepos)) {
+			if (config.liveDBs[lang])
+				oldDbs[lang] = JSON.parse(JSON.stringify(config.liveDBs[lang]));
+			config.liveDBs[lang] = [];
+			for (let repo of updateRepos[lang]) {
+				let arr = repo.split("/");
+				if (arr.length < 2)
+					continue;
+				try {
+					let prom;
+					if (arr.length > 2) {
+						prom = getGHContents(arr[0], arr[1], arr.slice(2).join("/"));
+					} else {
+						prom = getGHContents(arr[0], arr[1]);
+					}
+					prom.then((res) => {
+						config.liveDBs[lang] = config.liveDBs[lang].concat(res);
+					});
+					promises.push(prom);
+				} catch (e) {
+					console.error("Failed to download files from " + repo + "!");
+					console.error(e);
 				}
-				prom.then((res) => {
-					config.liveDBs[lang] = config.liveDBs[lang].concat(res);
-				});
-				promises.push(prom);
-			} catch (e) {
-				console.error("Failed to download files from " + repo + "!");
-				console.error(e);
 			}
 		}
-	}
-	Promise.all(promises).then(() => {
-		Object.keys(config.liveDBs).forEach((lang) => {
-			if (dbs[lang]) {
-				dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
-			} else {
-				dbs[lang] = config.liveDBs[lang];
-			}
-			for (let db of config.liveDBs[lang]) {
-				if (oldDbs[lang])
-					oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
-			}
-			if (config.deleteOldDBs && oldDbs[lang].length > 0) {
-				console.log("Deleting the following old databases in 10 seconds: ");
-				console.log(oldDbs[lang]);
-				setTimeout(() => {
-					for (let db of oldDbs[lang]) {
-						console.log("Deleting " + db + ".");
-						fs.unlinkSync("dbs/" + db);
-					}
-				}, 10000);
-			}
+		Promise.all(promises).then(() => {
+			Object.keys(config.liveDBs).forEach((lang) => {
+				if (dbs[lang]) {
+					dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
+				} else {
+					dbs[lang] = config.liveDBs[lang];
+				}
+				for (let db of config.liveDBs[lang]) {
+					if (oldDbs[lang])
+						oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
+				}
+				if (config.deleteOldDBs && oldDbs[lang].length > 0) {
+					console.log("Deleting the following old databases in 10 seconds: ");
+					console.log(oldDbs[lang]);
+					setTimeout(() => {
+						for (let db of oldDbs[lang]) {
+							console.log("Deleting " + db + ".");
+							fs.unlinkSync("dbs/" + db);
+						}
+					}, 10000);
+				}
+			});
+			loadDBs();
+			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
+			resolve();
 		});
-		loadDBs();
-		fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 	});
-
 }
+
+const request = require("request");
+const https = require("https");
+const url = require("url");
+const jimp = require("jimp");
+const filetype = require("file-type");
 
 let skillFuse = {};
 let updateFuncs = [];
@@ -494,9 +502,10 @@ if (lflistSource)
 
 function hourlyUpdate() {
 	return new Promise(async (resolve) => {
+		let proms = [];
 		for (let func of updateFuncs)
-			await func();
-		resolve();
+			proms.push(func());
+		Promise.all(proms).then(() => resolve());
 	});
 }
 
@@ -507,12 +516,6 @@ hourlyUpdate().then(() => {
 		bot.connect();
 	}
 });
-
-const request = require("request");
-const https = require("https");
-const url = require("url");
-const jimp = require("jimp");
-const filetype = require("file-type");
 
 //these are used for various data that needs to persist between commands or uses of a command
 let longMsg = "";
@@ -3140,80 +3143,89 @@ function servers(user, userID, channelID, message, event) {
 }
 
 function updatejson() {
-	for (let arg of Object.keys(sheetsDB)) {
-		let sheetID = sheetsDB[arg];
-		if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
-			if (!sheetID)
-				console.error(arg + ".json is not mapped.");
-			continue;
+	return new Promise((resolve) => {
+		for (let arg of Object.keys(sheetsDB)) {
+			let sheetID = sheetsDB[arg];
+			if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
+				if (!sheetID)
+					console.error(arg + ".json is not mapped.");
+				continue;
+			}
+			gstojson({
+				spreadsheetId: sheetID,
+			}).then((result) => {
+				fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
+				console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
+			}).catch((err) => {
+				console.error(err.message);
+			});
 		}
-		gstojson({
-			spreadsheetId: sheetID,
-		}).then((result) => {
-			fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
-			console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
-		}).catch((err) => {
-			console.error(err.message);
-		});
-	}
-	setJSON();
+		setJSON();
+		resolve();
+	});
 }
 
 function updateSetcodes() {
-	console.log("Downloading strings file from " + setcodeSource + "...");
-	https.get(url.parse(setcodeSource), (response) => {
-		let data = [];
-		response.on("data", (chunk) => {
-			data.push(chunk);
-		}).on("end", () => {
-			let buffer = Buffer.concat(data);
-			let file = buffer.toString();
-			console.log("Strings file downloaded. Extracting setcodes...");
-			let tempCodes = {};
-			for (let line of file.split("\r\n")) {
-				if (line.startsWith("!setname")) {
-					let code = line.split(" ")[1];
-					let name = line.slice(line.indexOf(code) + code.length + 1);
-					tempCodes[code] = name;
+	return new Promise((resolve) => {
+		console.log("Downloading strings file from " + setcodeSource + "...");
+		https.get(url.parse(setcodeSource), (response) => {
+			let data = [];
+			response.on("data", (chunk) => {
+				data.push(chunk);
+			}).on("end", () => {
+				let buffer = Buffer.concat(data);
+				let file = buffer.toString();
+				console.log("Strings file downloaded. Extracting setcodes...");
+				let tempCodes = {};
+				for (let line of file.split("\r\n")) {
+					if (line.startsWith("!setname")) {
+						let code = line.split(" ")[1];
+						let name = line.slice(line.indexOf(code) + code.length + 1);
+						tempCodes[code] = name;
+					}
 				}
-			}
-			console.log("Setcodes assembled, writing to file...");
-			fs.writeFileSync("config/" + setsDB, JSON.stringify(tempCodes), "utf-8");
-			setcodes = tempCodes;
-			Card = require("./card.js")(setcodes);
-			console.log("Setcodes updated!");
+				console.log("Setcodes assembled, writing to file...");
+				fs.writeFileSync("config/" + setsDB, JSON.stringify(tempCodes), "utf-8");
+				setcodes = tempCodes;
+				Card = require("./card.js")(setcodes);
+				console.log("Setcodes updated!");
+				resolve();
+			});
 		});
 	});
 }
 
 function updateLflist() {
-	console.log("Downloading banlist file from " + lflistSource + "...");
-	https.get(url.parse(lflistSource), (response) => {
-		let data = [];
-		response.on("data", (chunk) => {
-			data.push(chunk);
-		}).on("end", () => {
-			let buffer = Buffer.concat(data);
-			let file = buffer.toString();
-			console.log("Banlist file found. Converting...");
-			let tempList = {};
-			let currentList = "";
-			for (let line of file.split("\r\n")) {
-				if (line.startsWith("#")) {
-					continue;
+	return new Promise((resolve) => {
+		console.log("Downloading banlist file from " + lflistSource + "...");
+		https.get(url.parse(lflistSource), (response) => {
+			let data = [];
+			response.on("data", (chunk) => {
+				data.push(chunk);
+			}).on("end", () => {
+				let buffer = Buffer.concat(data);
+				let file = buffer.toString();
+				console.log("Banlist file found. Converting...");
+				let tempList = {};
+				let currentList = "";
+				for (let line of file.split("\r\n")) {
+					if (line.startsWith("#")) {
+						continue;
+					}
+					if (line.startsWith("!")) {
+						currentList = line.split(" ")[1];
+						tempList[currentList] = {};
+						console.log("Reading " + currentList + " banlist..");
+						continue;
+					}
+					tempList[currentList][line.split(" ")[0]] = line.split(" ")[1];
 				}
-				if (line.startsWith("!")) {
-					currentList = line.split(" ")[1];
-					tempList[currentList] = {};
-					console.log("Reading " + currentList + " banlist..");
-					continue;
-				}
-				tempList[currentList][line.split(" ")[0]] = line.split(" ")[1];
-			}
-			console.log("Banlist assembled, writing to file...");
-			fs.writeFileSync("config/" + banDB, JSON.stringify(tempList), "utf-8");
-			lflist = tempList;
-			console.log("Banlist updated!");
+				console.log("Banlist assembled, writing to file...");
+				fs.writeFileSync("config/" + banDB, JSON.stringify(tempList), "utf-8");
+				lflist = tempList;
+				console.log("Banlist updated!");
+				resolve();
+			});
 		});
 	});
 }
