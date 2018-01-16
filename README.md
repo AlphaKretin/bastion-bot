@@ -191,7 +191,9 @@ By default, the configuration file is called `config.json`, and is expected to b
     "liveDBs": {  
         "en": []  
     }  
-    "deleteOldDBs": false  
+    "deleteOldDBs": false,  
+    "setcodeSource": "",  
+    "lflistSource": ""  
 }  
 ```  
 `token` is the Discord User token that the discord.io module will use to log in to Discord. You can obtain a bot token through the [Discord Developers website](https://discordapp.com/developers/applications/me/). This field is required.  
@@ -274,6 +276,10 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `deleteOldDBs` is a boolean that determines if Bastion will delete a database from your hard drive that gets removed as part of the live update process (because it has been removed from the source repo). Note that even while enabled, you get a 10 second warning before files are deleted so that you can terminate the process if you decide you want to keep them. This field is optional - if it is left blank, that is equivalent to false.  
   
+`setcodeSource` is a string that contains a link to a YGOPro `strings.conf` file online, that will be downloaded and converted to automatically update Bastion's setcode data. This field is optional - if it is missing, live update of setcodes will be disabled.  
+  
+`lflistSource` is a string that contains a link to a YGOPro `lflist.conf` fine online, that will be download and converted to automatically update Bastion's banlist data. This field is optional - if it is missing, live update of the banlist will be disabled.  
+  
 ### Shortcuts  
 By default, the shortcut file is called `shortcuts.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/shortcuts.json`. The script expects `shortcut.json` to contain a JSON array of arrays, with contents like the following:  
 ```json  
@@ -299,9 +305,7 @@ By default, the setcode file is called `setcodes.json`, and is expected to be fo
 	"0x1": "Ally of Justice",  
 	"0x2": "Genex"  
 }  
-```  
-  
-This file can be generated with the `setcodes2json.js` file. Simply run it as a node app in the same folder as a YGOPro `strings.conf` file, and it will output a `setcodes.json` that should be properly formatted.  
+```    
   
 ### Emotes  
 By default, the emote file is called `emotes.json`, and is expected to be found in a subfolder of the local directory called `config`, i.e. `config/emotes.json`. The script expects `emotes.json` to contain a object, with string values as both the keys and the values, with minimal exceptions.  
@@ -344,8 +348,6 @@ By default, the banlist file is called `lflist.json`, and is expected to be foun
 	}  
 }  
 ```  
-  
-This file can be generated with the `lflist2json.js` file. Simply run it as a node app in the same folder as a YGOPro `lflist.conf` file, and it will output an `lflist.json` that should be properly formatted. Note that it assumes the headings of each seperate banlist are in the format of "[date] [name]", i.e. it takes the word after the first space. If your `lflist.conf` is formatted differently, you can just go into the JSON and change the name of the key.  
   
 ### Skills  
 By default, the skills file is called `skills.json`, and is expected to be found in a subfolder of the local directory called `dbs`, i.e. `dbs/skills.json`. The script expects `skills.json` to contain an array of objects, the format of which is described below.  

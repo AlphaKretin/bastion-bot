@@ -314,6 +314,20 @@ if (config.updateRepos) {
 	console.warn("List of GitHub repositories to update from not found at config.updateRepos! Live database update will be disabled.");
 }
 
+let setcodeSource;
+if (config.setcodeSource) {
+	setcodeSource = config.setcodeSource;
+} else {
+	console.warn("Online source for setcodes to update from not found at config.setcodeSource! Live setcode update will be disabled.");
+}
+
+let lflistSource;
+if (config.lflistSource) {
+	lflistSource = config.lflistSource;
+} else {
+	console.warn("Online source for banlist to update from not found at config.lflistSource! Live banlist update will be disabled.");
+}
+
 //more config files, all explained in the readme
 let shortcuts = JSON.parse(fs.readFileSync("config/" + shortsDB, "utf8"));
 let setcodes = JSON.parse(fs.readFileSync("config/" + setsDB, "utf8"));
@@ -405,9 +419,6 @@ function loadDBs() {
 		});
 		fuse[lang] = new Fuse(nameList[lang], options);
 	}
-	if (!bot.connected) {
-		bot.connect();
-	}
 }
 
 async function dbUpdate() {
@@ -428,7 +439,7 @@ async function dbUpdate() {
 				if (arr.length > 2) {
 					prom = getGHContents(arr[0], arr[1], arr.slice(2).join("/"));
 				} else {
-					prom = getGHContents(arr[0], arr[1])
+					prom = getGHContents(arr[0], arr[1]);
 				}
 				prom.then((res) => {
 					config.liveDBs[lang] = config.liveDBs[lang].concat(res);
@@ -470,21 +481,32 @@ async function dbUpdate() {
 
 let skillFuse = {};
 let updateFuncs = [];
-if (sheetsDB) {
+if (sheetsDB)
 	updateFuncs.push(updatejson);
-	updatejson();
-}
-if (config.updateRepos) {
+if (setcodeSource)
+	updateFuncs.push(updateSetcodes); //this has to come before the DB update because the Card class requires setcodes
+if (updateRepos)
 	updateFuncs.push(dbUpdate);
-	dbUpdate();
-} else {
+else 
 	loadDBs();
+if (lflistSource)
+	updateFuncs.push(updateLflist);
+
+function hourlyUpdate() {
+	return new Promise(async (resolve) => {
+		for (let func of updateFuncs)
+			await func();
+		resolve();
+	});
 }
 
-setInterval(() => {
-	for (let func of updateFuncs)
-		func();
-}, 3.6 * Math.pow(10, 6));
+setInterval(hourlyUpdate, 3.6 * Math.pow(10, 6));
+
+hourlyUpdate().then(() => {
+	if (!bot.connected) {
+		bot.connect();
+	}
+});
 
 const request = require("request");
 const https = require("https");
@@ -3134,6 +3156,65 @@ function updatejson() {
 		});
 	}
 	setJSON();
+}
+
+function updateSetcodes() {
+	console.log("Downloading strings file from " + setcodeSource + "...");
+	https.get(url.parse(setcodeSource), (response) => {
+		let data = [];
+		response.on("data", (chunk) => {
+			data.push(chunk);
+		}).on("end", () => {
+			let buffer = Buffer.concat(data);
+			let file = buffer.toString();
+			console.log("Strings file downloaded. Extracting setcodes...");
+			let tempCodes = {};
+			for (let line of file.split("\r\n")) {
+				if (line.startsWith("!setname")) {
+					let code = line.split(" ")[1];
+					let name = line.slice(line.indexOf(code) + code.length + 1);
+					tempCodes[code] = name;
+				}
+			}
+			console.log("Setcodes assembled, writing to file...");
+			fs.writeFileSync("config/" + setsDB, JSON.stringify(tempCodes), "utf-8");
+			setcodes = tempCodes;
+			Card = require("./card.js")(setcodes);
+			console.log("Setcodes updated!");
+		});
+	});
+}
+
+function updateLflist() {
+	console.log("Downloading banlist file from " + lflistSource + "...");
+	https.get(url.parse(lflistSource), (response) => {
+		let data = [];
+		response.on("data", (chunk) => {
+			data.push(chunk);
+		}).on("end", () => {
+			let buffer = Buffer.concat(data);
+			let file = buffer.toString();
+			console.log("Banlist file found. Converting...");
+			let tempList = {};
+			let currentList = "";
+			for (let line of file.split("\r\n")) {
+				if (line.startsWith("#")) {
+					continue;
+				}
+				if (line.startsWith("!")) {
+					currentList = line.split(" ")[1];
+					tempList[currentList] = {};
+					console.log("Reading " + currentList + " banlist..");
+					continue;
+				}
+				tempList[currentList][line.split(" ")[0]] = line.split(" ")[1];
+			}
+			console.log("Banlist assembled, writing to file...");
+			fs.writeFileSync("config/" + banDB, JSON.stringify(tempList), "utf-8");
+			lflist = tempList;
+			console.log("Banlist updated!");
+		});
+	});
 }
 
 //scripting lib 
