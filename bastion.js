@@ -630,20 +630,30 @@ let commandList = [{
 	names: ["skill"],
 	func: searchSkill,
 	chk: () => skills.length > 0,
-	desc: "Searches for a skill from Yu-Gi-Oh! Duel Links"
+	desc: "Searches for a skill from Yu-Gi-Oh! Duel Links."
 },
 {
 	names: ["servers", "serverlist"],
 	func: servers,
 	chk: (user, userID) => owner && owner.includes(userID),
 	noTrack: true,
-	desc: "Generates a list of servers the bot is in"
+	desc: "Generates a list of servers the bot is in."
 },
 {
 	names: ["long"],
 	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg),
 	chk: () => longMsg.length > 0,
-	desc: "Sends the remainder of a message split up due to length"
+	desc: "Sends the remainder of a message split up due to length."
+},
+{
+	names: ["banlist", "lflist", "fllist"],
+	func: banlist,
+	desc: "Displays a Forbidden/Limited list stored within Bastion."
+},
+{
+	names: ["banlink", "lflink", "fllink"],
+	func: banlink,
+	desc: "Provides a link to the official Forbidden/Limited list."
 }];
 
 bot.on("message", (user, userID, channelID, message, event) => {
@@ -2080,6 +2090,78 @@ function rankings(user, userID, channelID, message, event) {
 		});
 		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
 	}
+}
+
+function banlist(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
+	for (let list of Object.keys(lflist)) {
+		if (input.toLowerCase() === list.toLowerCase()) {
+			let ban = lflist[list];
+			let out = "__**" + quo + list + " banlist: " + quo + "**__\n";
+			let banArr = [];
+			let limArr = [];
+			let semArr = [];
+			Object.keys(ban).forEach(card => {
+				switch(parseInt(ban[card])) {
+				case 0: banArr.push(card); break;
+				case 1: limArr.push(card); break;
+				case 2: semArr.push(card); break;
+				}
+			});
+			if (banArr.length > 0) {
+				out += "**" + quo + "Forbidden" + quo + "**" + "\n" + quo + quo + quo;
+				for (let code of banArr) {
+					let card = cards[defaultLang][parseInt(code)];
+					if (card)
+						out += card.name + "\n";
+					else
+						out += code + "\n";
+				}
+				out += quo + quo + quo;
+			}
+			if (limArr.length > 0) {
+				out += "**" + quo + "Limited" + quo + "**" + "\n" + quo + quo + quo;
+				for (let code of limArr) {
+					let card = cards[defaultLang][parseInt(code)];
+					if (card)
+						out += card.name + "\n";
+					else
+						out += code + "\n";
+				}
+				out += quo + quo + quo;
+			}
+			if (semArr.length > 0) {
+				out += "**" + quo + "Semi-Limited" + quo + "**" + "\n" + quo + quo + quo;
+				for (let code of semArr) {
+					let card = cards[defaultLang][parseInt(code)];
+					if (card)
+						out += card.name + "\n";
+					else
+						out += code + "\n";
+				}
+				out += quo + quo + quo;
+			}
+			if (out.length > 0) {
+				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
+				for (let msg of outArr) {
+					sendMessage(user, userID, userID, message, event, msg);
+				}
+			}
+			return;
+		}
+	}
+	sendMessage(user, userID, channelID, message, event, "Sorry, I couldn't find a banlist named `" + input + "`!");
+}
+
+function banlink(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
+	let out;
+	switch (input.toLowerCase()) {
+	case "tcg": out = "http://www.yugioh-card.com/en/limited/"; break;
+	case "ocg": out = "http://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?list=201801&lang=en"; break;
+	}
+	if (out)
+		sendMessage(user, userID, channelID, message, event, out);
 }
 
 //utility functions

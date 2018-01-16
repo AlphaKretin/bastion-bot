@@ -125,6 +125,16 @@ Usage: `.skill [name]`
   
 The `.skill` command searches for a character skill from Yu-Gi-Oh! Duel Links by name, and returns its name, the description of what it does, and which characters can obtain it and how.  
   
+### .banlist
+Usage: `.banlist [list name]`  
+  
+The `.banlist` command generates a banlist from the data it has stored and sends it to the user in a Direct Message.  
+
+### .banlink  
+Usage: `.banlink [ocg/tcg]`  
+  
+The `.banlink` command returns a link to the official banlist specified.  
+
 ### .trivia  
 Usage: `.trivia [options]`  
 For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. The command accepts any number of the following options:  
