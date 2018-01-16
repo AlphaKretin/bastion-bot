@@ -13,7 +13,8 @@ Thank you very much to my 10 and 20 dollar Patreon backers:
 Thank you to the following users for their work on Bastion:
  - MichaelLawrenceDee: For features including emotes and output display modes.  
  - edo9300: For features including multiple languages and improving database loading.  
- - Gideon: For hosting the public copy of the bot  
+ - Gideon: For hosting the public copy of the bot.  
+ - Becasita: For pointing out the Yugipedia API.
  
 ## Commands  
 Bastion's primary purpose is a database of card information. Basic knowledge about relevant terms will be assumed in this section and the next. Note that Bastion's prefix is customisable - more information on that in the configuration section - this section assumes the default prefix of ".".  
@@ -136,11 +137,6 @@ You can end the game prematurely by typing ".tq", or pass a round by typing ".ts
 ### .tlock  
 Usage: `.tlock`  
 The `.tlock` command tells Bastion that on the server you use the command, he should only allow `.trivia` in the channels in which you've used the command. Only users with the "Manage Messages" permission can use the command. You can use the command in multiple channels to allow trivia in multiple channels. Using the command in a channel already registered will remove it from the list. If there are no channels in the list, trivia will be allowed anywhere.  
-  
-### .updatejson  
-Usage: `.updatejson [json name]`  
-  
-The `.updatejson` command is a bot owner-only command which allows you to update the json file of your jsons in `dbs/` folder. The mapping of the json name will be set up in `sheetsDB` and the bot will reply if successful in updating, otherwise, the error will be recorded in the console.  
   
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  

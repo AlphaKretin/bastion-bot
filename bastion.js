@@ -177,7 +177,7 @@ let rulingLang;
 if (config.rulingLanguage) {
 	rulingLang = config.rulingLanguage;
 } else {
-	console.warn("Japanese language for rulings not found at config.rulingLanguage! Ruling search will be disabled.");
+	console.warn("Japanese language for rulings not found at config.rulingLanguage! Backup ruling search will be disabled.");
 }
 
 const GitHubApi = require("github");
@@ -561,7 +561,6 @@ let commandList = [{
 {
 	names: ["rulings"],
 	func: rulings,
-	chk: () => rulingLang, //ruling search relies on Japanese DB
 	desc: "Returns a link to a card's ruling page on the OCG card database."
 },
 {
@@ -1846,7 +1845,7 @@ function strings(user, userID, channelID, message, event, name) {
 	}
 }
 
-function rulings(user, userID, channelID, message, event, name) {
+async function rulings(user, userID, channelID, message, event, name) {
 	let input = message.slice((pre + name + " ").length);
 	let args = input.split("|");
 	let inLang = defaultLang;
@@ -1865,21 +1864,31 @@ function rulings(user, userID, channelID, message, event, name) {
 	if (!(code && code in cards[inLang]))
 		return;
 	let enCard = cards[inLang][code];
-	let jaCard;
-	Object.values(cards[rulingLang]).forEach((tempCard) => {
-		if (tempCard.code === code) {
-			jaCard = tempCard;
+	let enName = enCard.name;
+	let out = "Rulings for `" + enName + "`: ";
+	let jUrl;
+	await getDBID(enName).then(id => {
+		jUrl = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&cid=" + id;
+		out += "<" + encodeURI(jUrl) + ">";
+	}).catch(e => {
+		if (rulingLang) {
+			let jaCard;
+			Object.values(cards[rulingLang]).forEach((tempCard) => {
+				if (tempCard.code === code) {
+					jaCard = tempCard;
+				}
+			});
+			if (!jaCard) {
+				out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!";
+			} else {
+				let jaName = jaCard.name;
+				let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2&request_locale=ja";
+				out =+ "<" + encodeURI(jUrl) + ">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\"";
+			}
+		} else {
+			out = e;
 		}
 	});
-	let enName = enCard.name;
-	let out = "";
-	if (!jaCard) {
-		out = "Sorry, I don't have a Japanese translation of \"" + enName + "\"!";
-	} else {
-		let jaName = jaCard.name;
-		let jUrl = "https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&keyword=" + jaName + "&stype=1&ctype=&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&atkfr=&atkto=&deffr=&defto=&othercon=2&request_locale=ja";
-		out = "Rulings for `" + enName + "`: <" + encodeURI(jUrl) + ">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\"";
-	}
 	sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
 }
 
@@ -2493,6 +2502,30 @@ function downloadDB(file) {
 				fs.writeFileSync("dbs/" + file.name, buffer, null);
 				resolve(file.name);
 			});
+		});
+	});
+}
+
+function getDBID(name) {
+	return new Promise((resolve,reject) => {
+		request("https://yugipedia.com/api.php?action=query&redirects=true&prop=revisions&rvprop=content&format=json&formatversion=2&titles=" + name, (error, response, body) => {
+			let data;
+			if (body)
+				data = JSON.parse(body);
+			if (!error && response.statusCode && response.statusCode === 200 && data && data.query && !data.query.pages[0].missing) {
+				let re = /database_id\s+= (\d+)/;
+				let match = re.exec(data.query.pages[0].revisions[0].content);
+				match = match && match[1];
+				if (match) {
+					resolve(match);
+				} else {
+					reject("Card page for " + name + " does not contain a database ID.");
+				}
+			} else if(error) {
+				reject(error);
+			} else {
+				reject("Card page for " + name + " does not exist");
+			}
 		});
 	});
 }
