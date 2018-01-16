@@ -1592,61 +1592,126 @@ function deck(user, userID, channelID, message, event) {
 			let mainDeck = sliceBetween(deckString, "#main", "#extra").split("\r\n");
 			let extraDeck = sliceBetween(deckString, "#extra", "!side").split("\r\n");
 			let sideDeck = deckString.split("!side")[1] && deckString.split("!side")[1].split("\r\n");
-			let mainArr = [];
-			let extraArr = [];
-			let sideArr = [];
+			let mainObj = {};
+			let extraObj = {};
+			let sideObj = {};
 			for (let card of mainDeck) {
 				let car = cards[outLang][parseInt(card)];
 				if (car) {
-					mainArr.push(car.name);
+					if (mainObj[car.name])
+						mainObj[car.name].count++;
+					else 
+						mainObj[car.name] = { name: car.name, types: car.types, count: 1};
 				}
 			}
 			for (let card of extraDeck) {
 				let car = cards[outLang][parseInt(card)];
 				if (car) {
-					extraArr.push(car.name);
+					if (extraObj[car.name])
+						extraObj[car.name].count++;
+					else 
+						extraObj[car.name] = { name: car.name, types: car.types, count: 1};
 				}
 			}
 			if (sideDeck) {
 				for (let card of sideDeck) {
 					let car = cards[outLang][parseInt(card)];
 					if (car) {
-						sideArr.push(car.name);
+						if (sideObj[car.name])
+							sideObj[car.name].count++;
+						else 
+							sideObj[car.name] = { name: car.name, types: car.types, count: 1};
 					}
 				}
 			}
-			if (mainArr.length + extraArr.length + sideArr.length === 0) {
+			if (Object.keys(mainObj).length + Object.keys(extraObj).length + Object.keys(sideObj).length === 0) {
 				return;
 			}
+			let mainMonCount = 0;
+			let mainSpellCount = 0;
+			let mainTrapCount = 0;
+			let extraFusionCount = 0;
+			let extraSynchroCount = 0;
+			let extraXyzCount = 0;
+			let extraLinkCount = 0;
+			let mainArr = Object.values(mainObj);
+			mainArr.forEach(car => {
+				if (car.types.includes("Monster"))
+					mainMonCount += car.count;
+				if (car.types.includes("Spell"))
+					mainSpellCount += car.count;
+				if (car.types.includes("Trap"))
+					mainTrapCount += car.count;
+			});
+			let extraArr = Object.values(extraObj);
+			extraArr.forEach(car => {
+				if (car.types.includes("Fusion"))
+					extraFusionCount += car.count;
+				if (car.types.includes("Synchro"))
+					extraSynchroCount += car.count;
+				if (car.types.includes("Xyz"))
+					extraXyzCount += car.count;
+				if (car.types.includes("Link"))
+					extraLinkCount += car.count;
+			});
+			let sideArr = Object.values(sideObj);
 			let out = "";
+			let accu = (acc, val) => acc + val.count;
 			if (mainArr.length > 0) {
-				let mainCount = arrayCount(mainArr); //gets an object with array properties and the number of times that property appears
-				out += "**" + quo + "Main Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(mainCount).forEach((key) => {
-					out += mainCount[key] + " " + key + "\n";
+				out += "**" + quo + "Main Deck" + quo + "**\n";
+				out += mainArr.reduce(accu, 0) + " cards";
+				if (mainMonCount + mainSpellCount + mainTrapCount > 0) {
+					out += " (";
+					let tempArr = [];
+					if (mainMonCount > 0)
+						tempArr.push("Monsters: " + mainMonCount);
+					if (mainSpellCount > 0)
+						tempArr.push("Spells: " + mainSpellCount);
+					if (mainTrapCount > 0)
+						tempArr.push("Traps: " + mainTrapCount);
+					out += tempArr.join(", ") + ")\n";
+				}
+				out += bo + quo + quo + quo;
+				mainArr.forEach(car => {
+					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
+				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (extraArr.length > 0) {
-				let extraCount = arrayCount(extraArr);
-				out += "**" + quo + "Extra Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(extraCount).forEach((key) => {
-					out += extraCount[key] + " " + key + "\n";
+				out += "**" + quo + "Extra Deck" + quo + "**\n";
+				out += extraArr.reduce(accu, 0) + " cards";
+				if (extraFusionCount + extraSynchroCount + extraXyzCount + extraLinkCount > 0) {
+					out += " (";
+					let tempArr = [];
+					if (extraFusionCount > 0)
+						tempArr.push("Fusion: " + extraFusionCount);
+					if (extraSynchroCount > 0)
+						tempArr.push("Synchro: " + extraSynchroCount);
+					if (extraXyzCount > 0)
+						tempArr.push("Xyz: " + extraXyzCount);
+					if (extraLinkCount > 0)
+						tempArr.push("Link: " + extraLinkCount);
+					out += tempArr.join(", ") + ")\n";
+				}
+				out += bo + quo + quo + quo;
+				extraArr.forEach(car => {
+					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
+				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (sideArr.length > 0) {
-				let sideCount = arrayCount(sideArr);
-				out += "**" + quo + "Side Deck" + quo + "**\n" + bo + quo + quo + quo;
-				Object.keys(sideCount).forEach((key) => {
-					out += sideCount[key] + " " + key + "\n";
+				out += "**" + quo + "Side Deck" + quo + "**\n";
+				out += sideArr.reduce(accu, 0) + " cards";
+				out += bo + quo + quo + quo;
+				sideArr.forEach(car => {
+					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 && " " || "");
+				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
 				for (let msg of outArr) {
-					sendMessage(user, userID, channelID, message, event, msg);
+					sendMessage(user, userID, userID, message, event, msg);
 				}
 			}
 		});
@@ -2583,13 +2648,6 @@ function getIncInt(min, max) { //get random inclusive integer
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
-}
-
-function arrayCount(arr) {
-	return arr.reduce((prev, cur) => {
-		prev[cur] = (prev[cur] || 0) + 1;
-		return prev;
-	}, {});
 }
 
 function getLastIndexBefore(str, cha, ind) {
