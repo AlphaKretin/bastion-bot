@@ -424,7 +424,12 @@ async function dbUpdate() {
 			if (arr.length < 2)
 				continue;
 			try {
-				let prom = getGHContents(arr[0], arr[1]);
+				let prom;
+				if (arr.length > 2) {
+					prom = getGHContents(arr[0], arr[1], arr.slice(2).join("/"));
+				} else {
+					prom = getGHContents(arr[0], arr[1])
+				}
 				prom.then((res) => {
 					config.liveDBs[lang] = config.liveDBs[lang].concat(res);
 				});
@@ -2523,13 +2528,15 @@ function getBaseID(card, inLang) {
 	}
 }
 
-function getGHContents(owner, repo) {
+function getGHContents(owner, repo, path) {
 	return new Promise((resolve, reject) => {
 		console.log("Reading repo " + owner + "/" + repo + ".");
+		if (!path)
+			path = "";
 		github.repos.getContent({
 			owner: owner,
 			repo: repo,
-			path: ""
+			path: path
 		}, (err, res) => {
 			if (err) {
 				reject(err);
