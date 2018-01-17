@@ -433,7 +433,7 @@ async function dbUpdate() {
 			config.liveDBs[lang] = [];
 			for (let repo of updateRepos[lang]) {
 				let arr = repo.split("/");
-				if (arr.length < 2)
+				if (!arr || arr.length < 2)
 					continue;
 				try {
 					let prom;
@@ -463,7 +463,7 @@ async function dbUpdate() {
 					if (oldDbs[lang])
 						oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
 				}
-				if (config.deleteOldDBs && oldDbs[lang].length > 0) {
+				if (config.deleteOldDBs && oldDbs[lang] && oldDbs[lang].length > 0) {
 					console.log("Deleting the following old databases in 10 seconds: ");
 					console.log(oldDbs[lang]);
 					setTimeout(() => {
