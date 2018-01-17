@@ -387,7 +387,7 @@ function loadDBs() {
 	nameList = {};
 	for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
 		console.log("loading " + lang + " database");
-		let filebuffer = fs.readFileSync("dbs/" + dbs[lang][0]);
+		let filebuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][0]);
 		let db = new SQL.Database(filebuffer);
 		nameList[lang] = [];
 		cards[lang] = {};
@@ -400,7 +400,7 @@ function loadDBs() {
 		if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
 			console.log("loading additional " + lang + " databases");
 			for (let i = 1; i < dbs[lang].length; i++) {
-				let newbuffer = fs.readFileSync("dbs/" + dbs[lang][i]);
+				let newbuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][i]);
 				console.log("loading " + dbs[lang][i]);
 				let newDB = new SQL.Database(newbuffer);
 				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
@@ -438,9 +438,9 @@ async function dbUpdate() {
 				try {
 					let prom;
 					if (arr.length > 2) {
-						prom = getGHContents(arr[0], arr[1], arr.slice(2).join("/"));
+						prom = getGHContents(lang, arr[0], arr[1], arr.slice(2).join("/"));
 					} else {
-						prom = getGHContents(arr[0], arr[1]);
+						prom = getGHContents(lang, arr[0], arr[1]);
 					}
 					prom.then((res) => {
 						config.liveDBs[lang] = config.liveDBs[lang].concat(res);
@@ -2636,7 +2636,7 @@ function getBaseID(card, inLang) {
 	}
 }
 
-function getGHContents(owner, repo, path) {
+function getGHContents(lang, owner, repo, path) {
 	return new Promise((resolve, reject) => {
 		console.log("Reading repo " + owner + "/" + repo + ".");
 		if (!path)
@@ -2655,7 +2655,7 @@ function getGHContents(owner, repo, path) {
 					if (file.name.endsWith(".cdb")) {
 						console.log("Downloading " + file.name + ".");
 						try {
-							let prom = downloadDB(file);
+							let prom = downloadDB(file, lang);
 							promises.push(prom);
 							filenames.push(file.name);
 						} catch (e) {
@@ -2671,7 +2671,7 @@ function getGHContents(owner, repo, path) {
 	});
 }
 
-function downloadDB(file) {
+function downloadDB(file, lang) {
 	return new Promise((resolve) => {
 		https.get(url.parse(file.download_url), (response) => {
 			let data = [];
@@ -2679,7 +2679,7 @@ function downloadDB(file) {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
-				fs.writeFileSync("dbs/" + file.name, buffer, null);
+				fs.writeFileSync("dbs/" + lang + "/" + file.name, buffer, null);
 				resolve(file.name);
 			});
 		});
