@@ -2681,6 +2681,8 @@ function downloadDB(file, lang) {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
+				if (!fs.existsSync("dbs/" + lang))
+					fs.mkdirSync("dbs/" + lang);
 				fs.writeFileSync("dbs/" + lang + "/" + file.name, buffer, null);
 				resolve(file.name);
 			});
