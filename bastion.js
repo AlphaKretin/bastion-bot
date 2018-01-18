@@ -491,6 +491,8 @@ let skillFuse = {};
 let updateFuncs = [];
 if (sheetsDB)
 	updateFuncs.push(updatejson);
+else
+	setJSON();
 if (setcodeSource)
 	updateFuncs.push(updateSetcodes); //this has to come before the DB update because the Card class requires setcodes
 if (updateRepos)
@@ -3320,7 +3322,7 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 	}
 	let searched = [];
 	for (let func of libFunctions) {
-		if (func.name.toLowerCase().split("(")[0].includes(arg.toLowerCase()) > -1) {
+		if (func.name.toLowerCase().split("(")[0].includes(arg.toLowerCase())) {
 			searched.push(func);
 		}
 	}
