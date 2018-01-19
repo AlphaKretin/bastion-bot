@@ -3224,7 +3224,7 @@ function servers(user, userID, channelID, message, event) {
 		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
 	});
 	out += "```";
-	sendMessage(user, userID, channelID, message, event, out);
+	sendMessage(user, userID, userID, message, event, out);
 }
 
 function updatejson() {
