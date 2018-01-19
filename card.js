@@ -76,7 +76,7 @@ module.exports = function (setcodes) {
 		}
 
 		get types() {
-			return this.convertType([0x10, 0x20], [0x100]);
+			return this.convertType(["Normal", "Effect"], ["Trap Monster"]);
 		}
 
 		get allTypes() {
@@ -213,13 +213,13 @@ module.exports = function (setcodes) {
 			let typs = [];
 			let t = [];
 			for (let key of Object.keys(Card.typeObj)) {
-				if ((this._type & Card.typeObj[key]) && delay.indexOf(Card.typeObj[key]) === -1 && ignore.indexOf(Card.typeObj[key]) === -1) {
+				if ((this._type & Card.typeObj[key]) && delay.indexOf(key) === -1 && ignore.indexOf(key) === -1) {
 					typs.push(key);
 				}
 				t.push(Card.typeObj[key]);
 			}
 			for (let key of delay) {
-				if (t.indexOf(key) > -1 && (this._type & Card.typeObj[key]) && ignore.indexOf(Card.typeObj[key]) === -1) {
+				if (key in Card.typeObj && (this._type & Card.typeObj[key]) && ignore.indexOf(key) === -1) {
 					typs.push(key);
 				}
 			}
