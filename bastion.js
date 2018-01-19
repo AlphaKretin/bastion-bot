@@ -63,7 +63,7 @@ if (config.imageUrl) {
 		console.warn("No file extension for images found at config.imageExt! Defaulting to " + imageExt + "!");
 	}
 } else {
-	console.log("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
+	console.warn("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
 }
 
 let emoteMode = 0;
@@ -134,7 +134,7 @@ if (config.scriptUrl) {
 		console.warn("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
 	}
 } else {
-	console.log("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
+	console.warn("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
 }
 
 let pre = ".";
@@ -949,7 +949,6 @@ function getCardInfo(code, outLang) {
 		let alIDs = [code];
 		if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 			let alCard = cards[outLang][card.alias];
-			console.log(card.hasSameOT(alCard));
 			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
