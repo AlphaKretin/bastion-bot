@@ -469,7 +469,7 @@ async function dbUpdate() {
 					setTimeout(() => {
 						for (let db of oldDbs[lang]) {
 							console.log("Deleting " + db + ".");
-							fs.unlinkSync("dbs/" + db);
+							fs.unlinkSync("dbs/" + lang + "/" + db);
 						}
 					}, 10000);
 				}
