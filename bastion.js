@@ -1975,7 +1975,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 	let out = "Rulings for `" + enName + "`: ";
 	let jUrl;
 	await getDBID(enName).then(id => {
-		jUrl = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&cid=" + id;
+		jUrl = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&cid=" + id + "&request_locale=ja";
 		out += "<" + encodeURI(jUrl) + ">";
 	}).catch(e => {
 		if (rulingLang) {
