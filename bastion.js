@@ -2288,10 +2288,10 @@ function compareFuseObj(a, b) { //called in card searching by name to resort the
 function getEmbCT(card) {
 	let ct = null;
 	for (let type of card.types) {
-		if (["Spell", "Trap", "Fusion", "Ritual", "Synchro", "Token", "Xyz", "Link"].includes(type)) {
+		if (["Spell", "Trap", "Fusion", "Synchro", "Token", "Xyz", "Link"].includes(type)) {
 			ct = type;
 		}
-		if (!ct && ["Normal", "Effect"].includes(type)) {
+		if (!ct && ["Ritual", "Normal", "Effect"].includes(type)) { //ritual is in the delayed portion so that if it's a Ritual Spell, the ct will be Spell, and not Ritual.
 			ct = type;
 		}
 	}
