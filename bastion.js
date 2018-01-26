@@ -545,7 +545,7 @@ let commandList = [{
 {
 	names: ["tlock"],
 	func: tlock,
-	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, [8192]), //User must have manage message permission
+	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, ["TEXT_MANAGE_MESSAGES"]), //User must have manage message permission
 	desc: "Adds the current channel to a list of which trivia can only be played in channels from."
 },
 {
@@ -3170,9 +3170,9 @@ function getPermissions(userID, channelID) {
 	let serverID = bot.channels[channelID].guild_id;
 
 	let permissions = [];
-
+	
 	bot.servers[serverID].members[userID].roles.concat([serverID]).forEach((roleID) => {
-		_getPermissionArray(bot.servers[serverID].roles[roleID].permissions).forEach((perm) => {
+		_getPermissionArray(bot.servers[serverID].roles[roleID]._permissions).forEach((perm) => {
 			if (permissions.indexOf(perm) < 0) {
 				permissions.push(perm);
 			}
@@ -3204,18 +3204,18 @@ function getPermissions(userID, channelID) {
 
 function checkForPermissions(userID, channelID, permissionValues) {
 	let serverID = bot.channels[channelID].guild_id;
-	let forbidden = false;
-
+	if (userID === bot.servers[serverID].owner_id)
+		return true;
 	let permissions = getPermissions(userID, channelID);
+	if (permissions.indexOf("GENERAL_ADMINISTRATOR") > -1)
+		return true;
 	let forbiddenPerms = [];
-
 	permissionValues.forEach((permission) => {
-		if ((permissions.indexOf(permission) < 0) && userID != bot.servers[serverID].owner_id) {
-			forbidden = true;
+		if ((permissions.indexOf(permission) < 0)) {
 			forbiddenPerms.push(permission);
 		}
 	});
-	return !forbidden;
+	return forbiddenPerms.length === 0;
 }
 
 function servers(user, userID, channelID, message, event) {
