@@ -2887,6 +2887,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			gameData[channelID].hint = hint;
 			gameData[channelID].round = round;
 			gameData[channelID].lock = false;
+			gameData[channelID].attempted = false;
 		} else {
 			//start game
 			gameData[channelID] = {
@@ -2898,7 +2899,9 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				"hard": hard,
 				"lang": outLang,
 				"lock": false,
-				"argObj": argObj
+				"argObj": argObj,
+				"attempted": false,
+				"noAttCount": 0
 			};
 		}
 		if (hard) {
@@ -2953,15 +2956,23 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 					out += quo + quo + quo + bo;
 				}
 				gameData[channelID].TO2 = setTimeout(() => {
-					if (gameData[channelID.lock]) {
+					if (gameData[channelID].lock)
 						return;
-					}
-					gameData[channelID].lock = true;
-					sendMessage(user, userID, channelID, message, event, out);
-					if (gameData[channelID].IN) {
+					if (gameData[channelID].attempted)
+						gameData[channelID].noAttCount = 0;
+					else
+						gameData[channelID].noAttCount++;
+					if (gameData[channelID].IN)
 						clearInterval(gameData[channelID].IN);
+					if (gameData[channelID].noAttCount >= 3) {
+						out += "No attempt was made for 3 rounds! The game is over.";
+						sendMessage(user, userID, channelID, message, event, out);
+						delete gameData[channelID];
+					} else {
+						gameData[channelID].lock = true;
+						sendMessage(user, userID, channelID, message, event, out);
+						startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 					}
-					startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 				}, triviaTimeLimit);
 			}
 		});
@@ -3016,6 +3027,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 	}
 	let out;
 	if (!message.toLowerCase().startsWith(pre + "tq") && !message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+		gameData[channelID].attempted = true;
 		if (thumbsdown) {
 			bot.addReaction({
 				channelID: channelID,
@@ -3042,11 +3054,13 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		sendMessage(user, userID, channelID, message, event, out);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
+		gameData[channelID].noAttCount = 0;
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+		gameData[channelID].noAttCount = 0;
 		bot.addReaction({
 			channelID: channelID,
 			messageID: event.d.id,
