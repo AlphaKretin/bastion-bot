@@ -704,9 +704,8 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	let regx;
 	do {
 		regx = re.exec(message);
-		if (regx && regx[1].length > 0 && regx[1].indexOf(":") !== 0 && regx[1].indexOf("@") !== 0 && regx[1].indexOf("#") !== 0 && !regx[1].includes("http")) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>. All these only apply for <>, but doesn't hurt to use the same check here
+		if (regx && validateReg(regx[1]))
 			results.push(regx[1]);
-		}
 	} while (regx);
 	let results2 = [];
 	if (imageUrlMaster) {
@@ -714,9 +713,8 @@ bot.on("message", (user, userID, channelID, message, event) => {
 		let regx2;
 		do {
 			regx2 = re2.exec(message);
-			if (regx2 && regx2[1].length > 0 && regx2[1].indexOf(":") !== 0 && regx2[1].indexOf("@") !== 0 && regx2[1].indexOf("#") !== 0 && regx2[1].indexOf("http") === -1) { //ignores <@mentions>, <#channels>, <http://escaped.links> and <:customEmoji:126243>
+			if (regx2 && validateReg(regx2[1]))
 				results2.push(regx2[1]);
-			}
 		} while (regx2);
 	}
 	if (results.length + results2.length > maxSearches) {
@@ -2756,6 +2754,10 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 			});
 		}
 	});
+}
+
+function validateReg(regx) { //ignores <@mentions>, <#channels>, <http://escaped.links>, <:customEmoji:126243> and <a:animatedEmoji:12164>
+	return regx.length > 0 && regx.indexOf(":") !== 0 && regx.indexOf("a:") !== 0 && regx.indexOf("@") !== 0 && regx.indexOf("#") !== 0 && !regx.includes("http");
 }
 
 function sliceBetween(str, cha1, cha2) {
