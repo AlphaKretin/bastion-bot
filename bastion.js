@@ -353,8 +353,8 @@ bot.on("ready", () => {
 	console.log("Logged in as %s - %s\n", bot.username, bot.id);
 });
 
-bot.on("disconnect", () => { //Discord API occasionally disconnects bots for an unknown reason.
-	console.log("Disconnected. Reconnecting...");
+bot.on("disconnect", (err, code) => { //Discord API occasionally disconnects bots for an unknown reason.
+	console.log("Disconnected with error code " + code + ". Reconnecting...");
 	bot.connect();
 });
 
