@@ -1632,9 +1632,9 @@ function deck(user, userID, channelID, message, event) {
 		}).on("end", async () => {
 			let buffer = Buffer.concat(data);
 			let deckString = buffer.toString();
-			let mainDeck = sliceBetween(deckString, "#main", "#extra").split("\r\n");
-			let extraDeck = sliceBetween(deckString, "#extra", "!side").split("\r\n");
-			let sideDeck = deckString.split("!side")[1] && deckString.split("!side")[1].split("\r\n");
+			let mainDeck = sliceBetween(deckString, "#main", "#extra").split("\n");
+			let extraDeck = sliceBetween(deckString, "#extra", "!side").split("\n");
+			let sideDeck = deckString.split("!side")[1] && deckString.split("!side")[1].split("\n");
 			let mainObj = {};
 			let extraObj = {};
 			let sideObj = {};
@@ -1712,9 +1712,9 @@ function deck(user, userID, channelID, message, event) {
 						tempArr.push("Spells: " + mainSpellCount);
 					if (mainTrapCount > 0)
 						tempArr.push("Traps: " + mainTrapCount);
-					out += tempArr.join(", ") + ")\n";
+					out += tempArr.join(", ") + ")";
 				}
-				out += bo + quo + quo + quo;
+				out += "\n" + bo + quo + quo + quo;
 				mainArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
 				});
@@ -1734,9 +1734,9 @@ function deck(user, userID, channelID, message, event) {
 						tempArr.push("Xyz: " + extraXyzCount);
 					if (extraLinkCount > 0)
 						tempArr.push("Link: " + extraLinkCount);
-					out += tempArr.join(", ") + ")\n";
+					out += tempArr.join(", ") + ")";
 				}
-				out += bo + quo + quo + quo;
+				out += "\n" + bo + quo + quo + quo;
 				extraArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
 				});
@@ -1744,7 +1744,7 @@ function deck(user, userID, channelID, message, event) {
 			}
 			if (sideArr.length > 0) {
 				out += "**" + quo + "Side Deck" + quo + "**\n";
-				out += sideArr.reduce(accu, 0) + " cards";
+				out += sideArr.reduce(accu, 0) + " cards\n";
 				out += bo + quo + quo + quo;
 				sideArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
