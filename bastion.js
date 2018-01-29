@@ -416,6 +416,9 @@ function loadDBs() {
 				name: card.name,
 				id: card.code
 			});
+			if (card.alias > 0 && cards[lang][card.alias]) { //cards with an alias inherit their setcode from their alias
+				card.setcode = cards[lang][card.alias].setcode;
+			}
 		});
 		fuse[lang] = new Fuse(nameList[lang], options);
 	}

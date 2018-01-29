@@ -73,8 +73,12 @@ module.exports = function (setcodes) {
 			return this._alias;
 		}
 
-		get sets() {
+		get sets() { //returns array of set names
 			return this.convertSetcode();
+		}
+		
+		get setcode() { //exposes raw setcode for alias inheritance
+			return this._setcode;
 		}
 
 		get types() {
@@ -137,6 +141,11 @@ module.exports = function (setcodes) {
 
 		get strings() {
 			return this._strings;
+		}
+		
+		//Setters
+		set setcode(code) { //used to make inherit from alias
+			this._setcode = code;
 		}
 
 		//Methods
