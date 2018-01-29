@@ -1,3 +1,5 @@
+const XRegExp = require('xregexp');
+
 module.exports = function (setcodes) {
 	let Card = class Card {
 		constructor(datas) {
@@ -15,7 +17,7 @@ module.exports = function (setcodes) {
 			this._name = datas[12];
 			this._desc = datas[13];
 			this._strings = {}; //is an object instead of an array so we can get a value's real index if one before it is skipped
-			let re = /\S/;
+			let re = XRegExp(/\S/);
 			if (re.test(datas[14]))
 				this._strings[1] = datas[14];
 			if (re.test(datas[15]))
@@ -315,10 +317,13 @@ module.exports = function (setcodes) {
 					}
 				});
 				if (ind) {
+					let re = XRegExp("\\p{L}[\\p{L} ]+\\p{L}");
 					let head1 = lines.slice(0, 1)[0];
+					let re1 = re.exec(head1)
+					head1 = re1 ? re1[0] : head1;
 					let head2 = lines.slice(ind + 1, ind + 2)[0];
-					head1 = head1.slice(2, head1.length - 2);
-					head2 = head2.slice(2, head2.length - 2);
+					let re2 = re.exec(head2)
+					head2 = re2 ? re2[0] : head2;
 					return [lines.slice(1, ind).join("\n"), lines.slice(ind + 2).join("\n"), head1, head2]; //a few lines are skipped because each section has headings
 				}
 			}
