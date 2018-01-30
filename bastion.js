@@ -659,6 +659,11 @@ let commandList = [{
 	names: ["banlink", "lflink", "fllink"],
 	func: banlink,
 	desc: "Provides a link to the official Forbidden/Limited list."
+},
+{
+	names: ["yugi", "yugipedia"],
+	func: yugi,
+	desc: "Links a given page from the Yugipedia wiki."
 }];
 
 bot.on("message", (user, userID, channelID, message, event) => {
@@ -2164,6 +2169,27 @@ function banlink(user, userID, channelID, message, event, name) {
 	}
 	if (out)
 		sendMessage(user, userID, channelID, message, event, out);
+}
+
+function yugi(user, userID, channelID, message, event, name) {
+	let input = message.slice((pre + name + " ").length);
+	request("https://yugipedia.com/api.php?action=opensearch&results=2&redirects=resolve&format=json&search=" + input, (error, response, body) => {
+		let out;
+		let data;
+		if (body)
+			data = JSON.parse(body);
+		if (!error && response.statusCode && response.statusCode === 200 && data) {
+			if (data[3].length > 0) {
+				out = data[3][0];
+			} else {
+				out = "Sorry, no page was found for `" + input + "`!";
+			}
+		} else if (error) {
+			console.error(error);
+			out = "Sorry, there was an error searching Yugipedia.";
+		}
+		sendMessage(user, userID, channelID, message, event, out);
+	});
 }
 
 //utility functions

@@ -137,6 +137,11 @@ Usage: `.banlink [ocg/tcg]`
   
 The `.banlink` command returns a link to the official banlist specified.  
 
+### .yugi  
+Usage: `.yugi [page name]`  
+  
+The `.yugi` command returns a link to the specified [Yugipedia](https://yugipedia.com/wiki/Yugipedia) page. Note that at this time, the search is extremely strict - this is a restriction on Yugipedia's end, not mine, but may improve in the future.  
+  
 ### .trivia  
 Usage: `.trivia [options]`  
 For fun, Bastion can play a game where it will provide the art of a card, and players have 30 seconds to give its name, with a hint at 10 seconds. The command accepts any number of the following options:  
