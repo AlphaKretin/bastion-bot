@@ -540,7 +540,7 @@ let commandList = [{
 	desc: "Displays the script of a card."
 },
 {
-	names: ["trivia"],
+	names: ["trivia", "game", "guess"],
 	func: trivia,
 	chk: () => imageUrlMaster,
 	desc: "Plays a game where you guess the name of a card by its artwork."
@@ -554,6 +554,7 @@ let commandList = [{
 {
 	names: ["matches", "match"],
 	func: matches,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Returns the top 10 cards with names similar to the text entered."
 },
 {
@@ -564,21 +565,25 @@ let commandList = [{
 {
 	names: ["id"],
 	func: getSingleProp,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Displays the ID of a card."
 },
 {
 	names: ["notext", "stats"],
 	func: getSingleProp,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Displays the stats of a card, without its effect."
 },
 {
 	names: ["effect", "cardtext"],
 	func: getSingleProp,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Displays the effect or text of a card, without its stats."
 },
 {
 	names: ["strings"],
 	func: strings,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Displays the strings assinged to a card in YGOPro, such as descriptions of its effects or dialog boxes it may ask the player."
 },
 {
@@ -594,6 +599,7 @@ let commandList = [{
 {
 	names: ["rulings"],
 	func: rulings,
+	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Returns a link to a card's ruling page on the OCG card database."
 },
 {
