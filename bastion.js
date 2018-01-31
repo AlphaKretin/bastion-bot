@@ -193,7 +193,7 @@ if (config.staticDBs) {
 	staticDBs = config.staticDBs;
 	dbs = JSON.parse(JSON.stringify(config.staticDBs));
 	if (config.liveDBs) {
-		Object.keys(config.liveDBs).forEach((lang) => {
+		Object.keys(config.liveDBs).forEach(lang => {
 			if (dbs[lang]) {
 				dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
 			} else {
@@ -411,7 +411,7 @@ function loadDBs() {
 				}
 			}
 		}
-		Object.values(cards[lang]).forEach((card) => {
+		Object.values(cards[lang]).forEach(card => {
 			nameList[lang].push({
 				name: card.name,
 				id: card.code
@@ -425,7 +425,7 @@ function loadDBs() {
 }
 
 async function dbUpdate() {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		console.log("Starting CDB update!");
 		let promises = [];
 		dbs = JSON.parse(JSON.stringify(staticDBs));
@@ -445,7 +445,7 @@ async function dbUpdate() {
 					} else {
 						prom = getGHContents(lang, arr[0], arr[1]);
 					}
-					prom.then((res) => {
+					prom.then(res => {
 						config.liveDBs[lang] = config.liveDBs[lang].concat(res);
 					});
 					promises.push(prom);
@@ -456,7 +456,7 @@ async function dbUpdate() {
 			}
 		}
 		Promise.all(promises).then(() => {
-			Object.keys(config.liveDBs).forEach((lang) => {
+			Object.keys(config.liveDBs).forEach(lang => {
 				if (dbs[lang]) {
 					dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
 				} else {
@@ -964,14 +964,14 @@ function getCardInfo(code, outLang) {
 			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
-				Object.values(cards[outLang]).forEach((tempCard) => {
+				Object.values(cards[outLang]).forEach(tempCard => {
 					if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 						alIDs.push(tempCard.code);
 					}
 				});
 			}
 		} else { //if other cards have this, the original, as an alias, they'll be noted here
-			Object.values(cards[outLang]).forEach((tempCard) => {
+			Object.values(cards[outLang]).forEach(tempCard => {
 				if (tempCard.alias === code && tempCard.hasSameOT(card) && tempCard.name === card.name) {
 					alIDs.push(tempCard.code);
 				}
@@ -996,7 +996,7 @@ function getCardInfo(code, outLang) {
 		}
 		out += "\n";
 		let stat = card.ot.join("/");
-		Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
+		Object.keys(lflist).forEach(key => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.includes(key)) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
@@ -1322,9 +1322,9 @@ function downloadImage(imageUrl) {
 			console.log("Debug Data: " + imageUrl);
 			console.dir(url.parse(imageUrl));
 		}
-		https.get(url.parse(imageUrl), (response) => {
+		https.get(url.parse(imageUrl), response => {
 			let data = [];
-			response.on("data", (chunk) => {
+			response.on("data", chunk => {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
@@ -1383,14 +1383,14 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
-					Object.values(cards[outLang]).forEach((tempCard) => {
+					Object.values(cards[outLang]).forEach(tempCard => {
 						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
-				Object.values(cards[outLang]).forEach((tempCard) => {
+				Object.values(cards[outLang]).forEach(tempCard => {
 					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
 						alIDs.push(tempCard.code);
 					}
@@ -1406,14 +1406,14 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
-					Object.values(cards[outLang]).forEach((tempCard) => {
+					Object.values(cards[outLang]).forEach(tempCard => {
 						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
 							alIDs.push(tempCard.code);
 						}
 					});
 				}
 			} else {
-				Object.values(cards[outLang]).forEach((tempCard) => {
+				Object.values(cards[outLang]).forEach(tempCard => {
 					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
 						alIDs.push(tempCard.code);
 					}
@@ -1434,7 +1434,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			}
 			out += "\n";
 			stat = card.ot.join("/");
-			Object.keys(lflist).forEach((key) => { //keys of the banlist table are card IDs, values are number of copies allowed
+			Object.keys(lflist).forEach(key => { //keys of the banlist table are card IDs, values are number of copies allowed
 				if (stat.includes(key)) {
 					let lim = 3;
 					if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
@@ -1636,9 +1636,9 @@ function deck(user, userID, channelID, message, event) {
 			outLang = arg;
 		}
 	}
-	https.get(url.parse(deckUrl), (response) => {
+	https.get(url.parse(deckUrl), response => {
 		let data = [];
-		response.on("data", (chunk) => {
+		response.on("data", chunk => {
 			data.push(chunk);
 		}).on("end", async () => {
 			let buffer = Buffer.concat(data);
@@ -1773,7 +1773,7 @@ function deck(user, userID, channelID, message, event) {
 }
 
 function getCardScript(card) {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		let scriptUrl = scriptUrlMaster;
 		if (card.isAnime) {
 			scriptUrl = scriptUrlAnime;
@@ -1786,19 +1786,19 @@ function getCardScript(card) {
 			console.log("Debug data: " + fullUrl);
 			console.dir(url.parse(fullUrl));
 		}
-		https.get(url.parse(fullUrl), (response) => {
+		https.get(url.parse(fullUrl), response => {
 			let data = [];
-			response.on("data", (chunk) => {
+			response.on("data", chunk => {
 				data.push(chunk);
 			}).on("end", async () => {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
 				if (script === "404: Not Found\n" && scriptUrlBackup) {
-					script = await new Promise((resolve) => {
+					script = await new Promise(resolve => {
 						fullUrl = scriptUrlBackup + "c" + card.code + ".lua";
-						https.get(url.parse(fullUrl), (response) => {
+						https.get(url.parse(fullUrl), response => {
 							let data2 = [];
-							response.on("data", (chunk) => {
+							response.on("data", chunk => {
 								data2.push(chunk);
 							}).on("end", async () => {
 								let buffer2 = Buffer.concat(data2);
@@ -1882,7 +1882,7 @@ function set(user, userID, channelID, message, event, name) {
 	if (arg.toLowerCase() in setcodes) {
 		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[arg.toLowerCase()] + ": " + arg + quo + quo + quo + bo);
 	} else {
-		Object.keys(setcodes).forEach((key) => {
+		Object.keys(setcodes).forEach(key => {
 			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
 				sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo);
 				return;
@@ -1949,7 +1949,7 @@ function strings(user, userID, channelID, message, event, name) {
 		let strs = card.strings;
 		if (strs && Object.keys(strs).length > 0) {
 			let out = "__**" + card.name + "**__\n";
-			Object.keys(strs).forEach((key) => {
+			Object.keys(strs).forEach(key => {
 				if (messageMode & 0x1) {
 					out += key + ": " + strs[key] + "\n";
 				} else {
@@ -1992,7 +1992,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 	}).catch(e => {
 		if (rulingLang) {
 			let jaCard;
-			Object.values(cards[rulingLang]).forEach((tempCard) => {
+			Object.values(cards[rulingLang]).forEach(tempCard => {
 				if (tempCard.code === code) {
 					jaCard = tempCard;
 				}
@@ -2403,67 +2403,67 @@ function parseFilterArgs(input) {
 	let validFilters = {
 		"status": {
 			name: "ot",
-			func: (arg) => Card.otList.includes(arg)
+			func: arg => Card.otList.includes(arg)
 		},
 		"ot": {
 			name: "ot",
-			func: (arg) => Card.otList.includes(arg)
+			func: arg => Card.otList.includes(arg)
 		},
 		"type": {
 			name: "type",
-			func: (arg) => Card.typeList.includes(arg)
+			func: arg => Card.typeList.includes(arg)
 		},
 		"race": {
 			name: "race",
-			func: (arg) => Card.raceList.includes(arg)
+			func: arg => Card.raceList.includes(arg)
 		},
 		"mtype": {
 			name: "race",
-			func: (arg) => Card.raceList.includes(arg)
+			func: arg => Card.raceList.includes(arg)
 		},
 		"attribute": {
 			name: "att",
-			func: (arg) => Card.attributeList.includes(arg)
+			func: arg => Card.attributeList.includes(arg)
 		},
 		"att": {
 			name: "att",
-			func: (arg) => Card.attributeList.includes(arg)
+			func: arg => Card.attributeList.includes(arg)
 		},
 		"archetype": {
 			name: "set",
-			func: (arg) => Card.setList.includes(arg)
+			func: arg => Card.setList.includes(arg)
 		},
 		"set": {
 			name: "set",
-			func: (arg) => Card.setList.includes(arg)
+			func: arg => Card.setList.includes(arg)
 		},
 		"atk": {
 			name: "atk",
-			func: (arg) => !isNaN(parseInt(arg)) || arg === "?"
+			func: arg => !isNaN(parseInt(arg)) || arg === "?"
 		},
 		"def": {
 			name: "def",
-			func: (arg) => !isNaN(parseInt(arg)) || arg === "?"
+			func: arg => !isNaN(parseInt(arg)) || arg === "?"
 		},
 		"level": {
 			name: "level",
-			func: (arg) => !isNaN(parseInt(arg)),
-			convert: (arg) => parseInt(arg)
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
 		},
 		"lscale": {
 			name: "lscale",
-			func: (arg) => !isNaN(parseInt(arg)),
-			convert: (arg) => parseInt(arg)
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
 		},
 		"rscale": {
 			name: "lscale",
-			func: (arg) => !isNaN(parseInt(arg)),
-			convert: (arg) => parseInt(arg)
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
 		},
 		"scale": {
 			name: "scale",
-			func: (arg) => !isNaN(parseInt(arg)),
-			convert: (arg) => parseInt(arg)
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
 		}
 	};
 	let terms = [];
@@ -2706,10 +2706,10 @@ function getGHContents(lang, owner, repo, path) {
 }
 
 function downloadDB(file, lang) {
-	return new Promise((resolve) => {
-		https.get(url.parse(file.download_url), (response) => {
+	return new Promise(resolve => {
+		https.get(url.parse(file.download_url), response => {
 			let data = [];
-			response.on("data", (chunk) => {
+			response.on("data", chunk => {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
@@ -2885,14 +2885,14 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			if (card.isCustom) {
 				imageUrl = imageUrlCustom;
 			}
-			buffer = await new Promise((resolve) => {
+			buffer = await new Promise(resolve => {
 				if (debugOutput) {
 					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
 					console.dir(url.parse(imageUrl + code + "." + imageExt));
 				}
-				https.get(url.parse(imageUrl + code + "." + imageExt), (response) => {
+				https.get(url.parse(imageUrl + code + "." + imageExt), response => {
 					let data = [];
-					response.on("data", (chunk) => {
+					response.on("data", chunk => {
 						data.push(chunk);
 					}).on("end", async () => {
 						resolve(Buffer.concat(data));
@@ -2948,13 +2948,13 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			to: channelID,
 			file: buffer,
 			filename: code + "." + imageExt
-		}, (err) => {
+		}, err => {
 			if (err) {
 				console.error(err);
 			} else {
 				if (!gameData[channelID])
 					return;
-				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then((res) => {
+				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then(res => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
 					gameData[channelID].IN = setInterval(() => {
@@ -2987,7 +2987,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
 				if (Object.keys(gameData[channelID].score).length > 0) {
 					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
-					Object.keys(gameData[channelID].score).forEach((id) => {
+					Object.keys(gameData[channelID].score).forEach(id => {
 						out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 					});
 					out += quo + quo + quo + bo;
@@ -3128,7 +3128,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 function triviaScore(out, user, userID, channelID) {
 	if (Object.keys(gameData[channelID].score).length > 0) {
 		out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
-		Object.keys(gameData[channelID].score).forEach((id) => {
+		Object.keys(gameData[channelID].score).forEach(id => {
 			out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 		});
 		out += quo + quo + quo + bo;
@@ -3208,7 +3208,7 @@ function _getPermissionArray(number) {
 		if (bit == 0) {
 			return;
 		}
-		Object.keys(Discord.Permissions).forEach((p) => {
+		Object.keys(Discord.Permissions).forEach(p => {
 			if (Discord.Permissions[p] == (binary.length - index - 1)) {
 				permissions.push(p);
 			}
@@ -3222,27 +3222,27 @@ function getPermissions(userID, channelID) {
 
 	let permissions = [];
 	
-	bot.servers[serverID].members[userID].roles.concat([serverID]).forEach((roleID) => {
-		_getPermissionArray(bot.servers[serverID].roles[roleID]._permissions).forEach((perm) => {
+	bot.servers[serverID].members[userID].roles.concat([serverID]).forEach(roleID => {
+		_getPermissionArray(bot.servers[serverID].roles[roleID]._permissions).forEach(perm => {
 			if (permissions.indexOf(perm) < 0) {
 				permissions.push(perm);
 			}
 		});
 	});
 
-	Object.keys(bot.channels[channelID].permissions).forEach((overwrite) => {
+	Object.keys(bot.channels[channelID].permissions).forEach(overwrite => {
 		if ((overwrite.type == "member" && overwrite.id == userID) ||
 			(overwrite.type == "role" &&
 				(bot.servers[serverID].members[userID].roles.includes(overwrite.id)) ||
 				serverID == overwrite.id)) {
-			_getPermissionArray(overwrite.deny).forEach((denied) => {
+			_getPermissionArray(overwrite.deny).forEach(denied => {
 				let index = permissions.indexOf(denied);
 				if (index > -1) {
 					permissions.splice(index, 1);
 				}
 			});
 
-			_getPermissionArray(overwrite.allow).forEach((allowed) => {
+			_getPermissionArray(overwrite.allow).forEach(allowed => {
 				if (permissions.indexOf(allowed) < 0) {
 					permissions.push(allowed);
 				}
@@ -3261,7 +3261,7 @@ function checkForPermissions(userID, channelID, permissionValues) {
 	if (permissions.indexOf("GENERAL_ADMINISTRATOR") > -1)
 		return true;
 	let forbiddenPerms = [];
-	permissionValues.forEach((permission) => {
+	permissionValues.forEach(permission => {
 		if ((permissions.indexOf(permission) < 0)) {
 			forbiddenPerms.push(permission);
 		}
@@ -3271,7 +3271,7 @@ function checkForPermissions(userID, channelID, permissionValues) {
 
 function servers(user, userID, channelID, message, event) {
 	let out = "```\n";
-	Object.keys(bot.servers).forEach((key) => {
+	Object.keys(bot.servers).forEach(key => {
 		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
 	});
 	out += "```";
@@ -3279,7 +3279,7 @@ function servers(user, userID, channelID, message, event) {
 }
 
 function updatejson() {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		for (let arg of Object.keys(sheetsDB)) {
 			let sheetID = sheetsDB[arg];
 			if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
@@ -3289,10 +3289,10 @@ function updatejson() {
 			}
 			gstojson({
 				spreadsheetId: sheetID,
-			}).then((result) => {
+			}).then(result => {
 				fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
 				console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
-			}).catch((err) => {
+			}).catch(err => {
 				console.error(err.message);
 			});
 		}
@@ -3302,11 +3302,11 @@ function updatejson() {
 }
 
 function updateSetcodes() {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		console.log("Downloading strings file from " + setcodeSource + "...");
-		https.get(url.parse(setcodeSource), (response) => {
+		https.get(url.parse(setcodeSource), response => {
 			let data = [];
-			response.on("data", (chunk) => {
+			response.on("data", chunk => {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
@@ -3332,11 +3332,11 @@ function updateSetcodes() {
 }
 
 function updateLflist() {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		console.log("Downloading banlist file from " + lflistSource + "...");
-		https.get(url.parse(lflistSource), (response) => {
+		https.get(url.parse(lflistSource), response => {
 			let data = [];
-			response.on("data", (chunk) => {
+			response.on("data", chunk => {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
@@ -3397,7 +3397,7 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.sig.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then((res) => {
+	sendMessage(user, userID, channelID, message, event, out).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
@@ -3439,7 +3439,7 @@ function searchConstants(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.val.toString().padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then((res) => {
+	sendMessage(user, userID, channelID, message, event, out).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
@@ -3481,7 +3481,7 @@ function searchParams(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.type.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then((res) => {
+	sendMessage(user, userID, channelID, message, event, out).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
