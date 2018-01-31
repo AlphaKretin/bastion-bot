@@ -505,8 +505,8 @@ else
 if (lflistSource)
 	updateFuncs.push(updateLflist);
 
-function hourlyUpdate() {
-	return new Promise(async (resolve) => {
+function periodicUpdate() {
+	return new Promise(async resolve => {
 		let proms = [];
 		for (let func of updateFuncs)
 			proms.push(func());
@@ -514,9 +514,9 @@ function hourlyUpdate() {
 	});
 }
 
-setInterval(hourlyUpdate, 3.6 * Math.pow(10, 6));
+setInterval(periodicUpdate, 1000 * 60 * 60 * 24);
 
-hourlyUpdate().then(() => {
+periodicUpdate().then(() => {
 	if (!bot.connected) {
 		bot.connect();
 	}
@@ -649,6 +649,13 @@ let commandList = [{
 	chk: (user, userID) => owner && owner.includes(userID),
 	noTrack: true,
 	desc: "Generates a list of servers the bot is in."
+},
+{
+	names: ["update", "updatejson"],
+	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!")).catch(e => sendMessage(user, userID, userID, message, event, e)),
+	chk: (user, userID) => owner && owner.includes(userID),
+	noTrack: true,
+	desc: "Updates the data for cards, functions, skills, etc."
 },
 {
 	names: ["long"],
