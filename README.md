@@ -15,8 +15,8 @@ Thank you to the following users for their work on Bastion:
  - edo9300: For features including multiple languages and improving database loading.  
  - Gideon: For hosting the public copy of the bot.  
  - Radioboy: Also for providing hosting.  
- - Becasita: For pointing out the Yugipedia API.  
- - Dragon: For miscenallenous assistance and support.  
+ - Becasita: For introducing me to the Yugipedia API.  
+ - Dragon: For miscellaneous support, including promoting Bastion in numerous Discords servers and communication with DevPro for some alternate language databases.  
  
 ## Commands  
 Bastion's primary purpose is a database of card information. Basic knowledge about relevant terms will be assumed in this section and the next. Note that Bastion's prefix is customisable - more information on that in the configuration section - this section assumes the default prefix of ".".  
