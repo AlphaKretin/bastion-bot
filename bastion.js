@@ -781,21 +781,21 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 	let lowMessage = newMsg.content && newMsg.content.toLowerCase();
 	let channelID = newMsg.channel_id;
 	if (!channelID)
-		return; 
+		return;
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
-		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "p");
+		libPage(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "p");
 	}
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "page") && lowMessage.indexOf("param") === -1) {
-		libPage(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "page");
+		libPage(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "page");
 	}
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "d")) {
-		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "d");
+		libDesc(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "d");
 	}
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "desc")) {
-		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "desc");
+		libDesc(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "desc");
 	}
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "description")) {
-		libDesc(newMsg.author.username, newMsg.author.id, newMsg.channelID, newMsg.content, event, "description");
+		libDesc(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "description");
 	}
 });
 
