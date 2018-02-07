@@ -19,37 +19,37 @@ module.exports = function (setcodes) {
 			this._strings = {}; //is an object instead of an array so we can get a value's real index if one before it is skipped
 			let re = XRegExp(/\S/);
 			if (re.test(datas[14]))
-				this._strings[1] = datas[14];
+				this._strings[0] = datas[14];
 			if (re.test(datas[15]))
-				this._strings[2] = datas[15];
+				this._strings[1] = datas[15];
 			if (re.test(datas[16]))
-				this._strings[3] = datas[16];
+				this._strings[2] = datas[16];
 			if (re.test(datas[17]))
-				this._strings[4] = datas[17];
+				this._strings[3] = datas[17];
 			if (re.test(datas[18]))
-				this._strings[5] = datas[18];
+				this._strings[4] = datas[18];
 			if (re.test(datas[19]))
-				this._strings[6] = datas[19];
+				this._strings[5] = datas[19];
 			if (re.test(datas[20]))
-				this._strings[7] = datas[20];
+				this._strings[6] = datas[20];
 			if (re.test(datas[21]))
-				this._strings[8] = datas[21];
+				this._strings[7] = datas[21];
 			if (re.test(datas[22]))
-				this._strings[9] = datas[22];
+				this._strings[8] = datas[22];
 			if (re.test(datas[23]))
-				this._strings[10] = datas[23];
+				this._strings[9] = datas[23];
 			if (re.test(datas[24]))
-				this._strings[11] = datas[24];
+				this._strings[10] = datas[24];
 			if (re.test(datas[25]))
-				this._strings[12] = datas[25];
+				this._strings[11] = datas[25];
 			if (re.test(datas[26]))
-				this._strings[13] = datas[26];
+				this._strings[12] = datas[26];
 			if (re.test(datas[27]))
-				this._strings[14] = datas[27];
+				this._strings[13] = datas[27];
 			if (re.test(datas[28]))
-				this._strings[15] = datas[28];
+				this._strings[14] = datas[28];
 			if (re.test(datas[29]))
-				this._strings[16] = datas[29];
+				this._strings[15] = datas[29];
 		}
 
 		//Getters
