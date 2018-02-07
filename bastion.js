@@ -231,18 +231,32 @@ function setJSON() { //this is a function because it needs to be repeated when i
 	if (config.scriptFunctions) {
 		let path = "dbs/" + config.scriptFunctions;
 		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libFunctions.forEach((func) => {
+			if (!func.sig)
+				func.sig = "";
+		});
 	} else {
 		console.warn("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
 	}
 	if (config.scriptConstants) {
 		let path = "dbs/" + config.scriptConstants;
 		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libConstants.forEach((cons) => {
+			if (!cons.val)
+				cons.val = "";
+			if (typeof cons.val === "number")
+				cons.val = cons.val.toString();
+		});
 	} else {
 		console.warn("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
 	}
 	if (config.scriptParams) {
 		let path = "dbs/" + config.scriptParams;
 		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libParams.forEach((par) => {
+			if (!par.type)
+				par.type = "";
+		});
 	} else {
 		console.warn("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
 	}
@@ -497,7 +511,7 @@ if (sheetsDB)
 else
 	setJSON();
 if (setcodeSource)
-	updateFuncs.push(updateSetcodes); //this has to come before the DB update because the Card class requires setcodes
+	updateFuncs.push(updateSetcodes);
 if (updateRepos)
 	updateFuncs.push(dbUpdate);
 else 
@@ -3298,7 +3312,7 @@ function updatejson() {
 				spreadsheetId: sheetID,
 			}).then(result => {
 				fs.writeFileSync("dbs/" + arg + ".json", JSON.stringify(result), "utf8");
-				console.log(bo + quo + arg + ".json updated successfully." + quo + bo);
+				console.log(arg + ".json updated successfully.");
 			}).catch(err => {
 				console.error(err.message);
 			});
