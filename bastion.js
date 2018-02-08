@@ -666,14 +666,14 @@ let commandList = [{
 },
 {
 	names: ["update", "updatejson"],
-	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!")).catch(e => sendMessage(user, userID, userID, message, event, e)),
+	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!").catch(msgErrHandler)).catch(e => sendMessage(user, userID, userID, message, event, e).catch(msgErrHandler)),
 	chk: (user, userID) => owner && owner.includes(userID),
 	noTrack: true,
 	desc: "Updates the data for cards, functions, skills, etc."
 },
 {
 	names: ["long"],
-	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg),
+	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg).catch(msgErrHandler),
 	chk: () => longMsg.length > 0,
 	desc: "Sends the remainder of a message split up due to length."
 },
@@ -715,7 +715,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	}
 	if (message.includes("<@" + bot.id + ">") || lowMessage.startsWith(pre + "help")) {
 		//send help message
-		sendMessage(user, userID, channelID, message, event, helpMessage);
+		sendMessage(user, userID, channelID, message, event, helpMessage).catch(msgErrHandler);
 		if (stats.cmdRankings.help) {
 			stats.cmdRankings.help++;
 		} else {
@@ -753,7 +753,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 		} while (regx2);
 	}
 	if (results.length + results2.length > maxSearches) {
-		sendMessage(user, userID, channelID, message, event, "You can only search up to " + maxSearches + " cards!");
+		sendMessage(user, userID, channelID, message, event, "You can only search up to " + maxSearches + " cards!").catch(msgErrHandler);
 	} else {
 		for (let result of results) {
 			searchCard(result, false, user, userID, channelID, message, event); //second parameter here is whether to display image or not
@@ -813,7 +813,13 @@ function commands(user, userID, channelID, message, event) {
 		}
 	}
 	out += "See the readme for details: <https://github.com/AlphaKretin/bastion-bot/>";
-	sendMessage(user, userID, userID, message, event, out);
+	if (out.length > 0) {
+		let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
+		sendMessage(user, userID, userID, message, event, outArr[0]).then(() => {
+			if (outArr[1])
+				sendMessage(user, userID, userID, message, event, outArr[1]).catch(msgErrHandler);
+		}).catch(msgErrHandler);
+	}
 }
 
 async function randomCard(user, userID, channelID, message, event) { //anything that gets card data has to be async because getting the price involves a Promise
@@ -1638,7 +1644,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			return;
 		}
 		if (out.length > 0) {
-			sendMessage(user, userID, channelID, message, event, out);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
 	} else {
 		console.log("Invalid card ID or name, please try again.");
@@ -1785,9 +1791,10 @@ function deck(user, userID, channelID, message, event) {
 			}
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
-				for (let msg of outArr) {
-					sendMessage(user, userID, userID, message, event, msg);
-				}
+				sendMessage(user, userID, userID, message, event, outArr[0]).then(() => {
+					if (outArr[1])
+						sendMessage(user, userID, userID, message, event, outArr[1]).catch(msgErrHandler);
+				}).catch(msgErrHandler);
 			}
 		});
 	});
@@ -1871,7 +1878,7 @@ function matches(user, userID, channelID, message, event, name) {
 	}
 	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
-		sendMessage(user, userID, channelID, message, event, bo + quo + "No matches found!" + quo + bo);
+		sendMessage(user, userID, channelID, message, event, bo + quo + "No matches found!" + quo + bo).catch(msgErrHandler);
 	} else {
 		let argObj;
 		if (args) {
@@ -1894,18 +1901,18 @@ function matches(user, userID, channelID, message, event, name) {
 			out += o;
 		}
 		out += quo + quo + quo + bo;
-		sendMessage(user, userID, channelID, message, event, out);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	}
 }
 
 function set(user, userID, channelID, message, event, name) {
 	let arg = message.slice((pre + name + " ").length);
 	if (arg.toLowerCase() in setcodes) {
-		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[arg.toLowerCase()] + ": " + arg + quo + quo + quo + bo);
+		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[arg.toLowerCase().catch(msgErrHandler)] + ": " + arg + quo + quo + quo + bo);
 	} else {
 		Object.keys(setcodes).forEach(key => {
 			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
-				sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo);
+				sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo).catch(msgErrHandler);
 				return;
 			}
 		});
@@ -1977,10 +1984,10 @@ function strings(user, userID, channelID, message, event, name) {
 					out += key + ": `" + strs[key] + "`\n";
 				}
 			});
-			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
+			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
 		} else {
 			let out = "No strings found for " + card.name + "!";
-			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
+			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
 		}
 	}
 }
@@ -2029,7 +2036,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 			out = e;
 		}
 	});
-	sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
+	sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
 }
 
 function rankings(user, userID, channelID, message, event) {
@@ -2122,7 +2129,7 @@ function rankings(user, userID, channelID, message, event) {
 				}
 			}
 		});
-		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo);
+		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
 	}
 }
 
@@ -2178,13 +2185,13 @@ function banlist(user, userID, channelID, message, event, name) {
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
 				for (let msg of outArr) {
-					sendMessage(user, userID, userID, message, event, msg);
+					sendMessage(user, userID, userID, message, event, msg).catch(msgErrHandler);
 				}
 			}
 			return;
 		}
 	}
-	sendMessage(user, userID, channelID, message, event, "Sorry, I couldn't find a banlist named `" + input + "`!");
+	sendMessage(user, userID, channelID, message, event, "Sorry, I couldn't find a banlist named `" + input + "`!").catch(msgErrHandler);
 }
 
 function banlink(user, userID, channelID, message, event, name) {
@@ -2195,7 +2202,7 @@ function banlink(user, userID, channelID, message, event, name) {
 	case "ocg": out = "http://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?list=201801&lang=en"; break;
 	}
 	if (out)
-		sendMessage(user, userID, channelID, message, event, out);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 }
 
 function yugi(user, userID, channelID, message, event, name) {
@@ -2215,7 +2222,7 @@ function yugi(user, userID, channelID, message, event, name) {
 			console.error(error);
 			out = "Sorry, there was an error searching Yugipedia.";
 		}
-		sendMessage(user, userID, channelID, message, event, out);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	});
 }
 
@@ -2782,7 +2789,7 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 				if (err) {
 					if (err.response && err.response.retry_after) {
 						setTimeout(() => {
-							sendMessage(user, userID, channelID, message, event, out, embColour);
+							sendMessage(user, userID, channelID, message, event, out, embColour).catch(msgErrHandler);
 						}, err.response.retry_after + 1);
 					} else {
 						reject(err);
@@ -2799,7 +2806,7 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 				if (err) {
 					if (err.response && err.response.retry_after) {
 						setTimeout(() => {
-							sendMessage(user, userID, channelID, message, event, out, embColour);
+							sendMessage(user, userID, channelID, message, event, out, embColour).catch(msgErrHandler);
 						}, err.response.retry_after + 1);
 					} else {
 						reject(err);
@@ -2810,6 +2817,10 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 			});
 		}
 	});
+}
+
+function msgErrHandler(e) {
+	console.error(e);
 }
 
 function validateReg(regx) { //ignores <@mentions>, <#channels>, <http://escaped.links>, <:customEmoji:126243> and <a:animatedEmoji:12164>
@@ -2975,7 +2986,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			} else {
 				if (!gameData[channelID])
 					return;
-				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).then(res => {
+				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).catch(msgErrHandler).then(res => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
 					gameData[channelID].IN = setInterval(() => {
@@ -3003,7 +3014,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 					}, 1000);
 				});
 				gameData[channelID].TO1 = setTimeout(() => {
-					sendMessage(user, userID, channelID, message, event, bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo);
+					sendMessage(user, userID, channelID, message, event, bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo).catch(msgErrHandler);
 				}, triviaHintTime);
 				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
 				if (Object.keys(gameData[channelID].score).length > 0) {
@@ -3024,11 +3035,11 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 						clearInterval(gameData[channelID].IN);
 					if (gameData[channelID].noAttCount >= 3) {
 						out += "No attempt was made for 3 rounds! The game is over.";
-						sendMessage(user, userID, channelID, message, event, out);
+						sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 						delete gameData[channelID];
 					} else {
 						gameData[channelID].lock = true;
-						sendMessage(user, userID, channelID, message, event, out);
+						sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 						startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 					}
 				}, triviaTimeLimit);
@@ -3109,13 +3120,13 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		out = triviaWinners(out, user, userID, channelID, message, event);
-		sendMessage(user, userID, channelID, message, event, out);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
 		gameData[channelID].noAttCount = 0;
 		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
-		sendMessage(user, userID, channelID, message, event, out);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 	} else if (message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
 		gameData[channelID].noAttCount = 0;
@@ -3137,10 +3148,10 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			}
 			out += bo + quo + "The game is over! " + quo + bo;
 			out = triviaWinners(out, user, userID, channelID, message, event);
-			sendMessage(user, userID, channelID, message, event, out);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 			delete gameData[channelID];
 		} else {
-			sendMessage(user, userID, channelID, message, event, out);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 			startTriviaRound(gameData[channelID].round - 1, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
 		}
 	}
@@ -3190,12 +3201,12 @@ function tlock(user, userID, channelID, message, event) {
 				for (let lock of triviaLocks[serverID]) {
 					out.push("<#" + lock + ">");
 				}
-				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
+				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			} else {
 				delete triviaLocks[serverID];
-				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to any channel on this server!");
+				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to any channel on this server!").catch(msgErrHandler);
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			}
@@ -3205,7 +3216,7 @@ function tlock(user, userID, channelID, message, event) {
 			for (let lock of triviaLocks[serverID]) {
 				out.push("<#" + lock + ">");
 			}
-			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
+			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
 			config.triviaLocks = triviaLocks;
 			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 		}
@@ -3215,7 +3226,7 @@ function tlock(user, userID, channelID, message, event) {
 		for (let lock of triviaLocks[serverID]) {
 			out.push("<#" + lock + ">");
 		}
-		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", "));
+		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
 		config.triviaLocks = triviaLocks;
 		fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 	}
@@ -3296,7 +3307,7 @@ function servers(user, userID, channelID, message, event) {
 		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
 	});
 	out += "```";
-	sendMessage(user, userID, userID, message, event, out);
+	sendMessage(user, userID, userID, message, event, out).catch(msgErrHandler);
 }
 
 function updatejson() {
@@ -3418,7 +3429,7 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.sig.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then(res => {
+	sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
@@ -3460,7 +3471,7 @@ function searchConstants(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.val.toString().padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then(res => {
+	sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
@@ -3502,7 +3513,7 @@ function searchParams(user, userID, channelID, message, event, name) {
 		out += "[" + (i + 1) + "] " + line.type.padStart(len, " ") + " | " + line.name + "\n";
 	}
 	out += "````Page: 1/" + pages.length + "`";
-	sendMessage(user, userID, channelID, message, event, out).then(res => {
+	sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler).then(res => {
 		searchPage[channelID] = {
 			pages: pages,
 			index: 0,
