@@ -180,6 +180,24 @@ if (config.rulingLanguage) {
 	console.warn("Japanese language for rulings not found at config.rulingLanguage! Backup ruling search will be disabled.");
 }
 
+let options = {
+	shouldSort: true,
+	includeScore: true,
+	threshold: 0.5,
+	location: 0,
+	distance: 100,
+	maxPatternLength: 57,
+	minMatchCharLength: 2,
+	keys: [
+		"name"
+	]
+};
+if (config.fuseOptions)
+	options = config.fuseOptions;
+else {
+	console.warn("Settings for fuse.js not found at config.fuseOptions! Using defaults!");
+}
+
 const GitHubApi = require("github");
 let github = new GitHubApi({
 	debug: false
@@ -368,7 +386,7 @@ bot.on("ready", () => {
 });
 
 bot.on("disconnect", (err, code) => { //Discord API occasionally disconnects bots for an unknown reason.
-	console.log("Disconnected with error code " + code + ". Reconnecting...");
+	console.error("Disconnected with error code " + code + ". Reconnecting...");
 	bot.connect();
 });
 
@@ -382,18 +400,6 @@ let nameList = {};
 
 //fuse setup
 const Fuse = require("fuse.js");
-let options = {
-	shouldSort: true,
-	includeScore: true,
-	threshold: 0.6,
-	location: 0,
-	distance: 100,
-	maxPatternLength: 64,
-	minMatchCharLength: 1,
-	keys: [
-		"name"
-	]
-};
 let fuse = {};
 
 function loadDBs() {
@@ -693,6 +699,8 @@ let commandList = [{
 	desc: "Links a given page from the Yugipedia wiki."
 }];
 
+let helpCooldown = true;
+
 bot.on("message", (user, userID, channelID, message, event) => {
 	if (userID === bot.id || (bot.users[userID] && bot.users[userID].bot)) { //ignores own messages to prevent loops, and those of other bots just in case
 		return;
@@ -713,9 +721,11 @@ bot.on("message", (user, userID, channelID, message, event) => {
 			}
 		}
 	}
-	if (message.includes("<@" + bot.id + ">") || lowMessage.startsWith(pre + "help")) {
+	if ((message.includes("<@" + bot.id + ">") || lowMessage.startsWith(pre + "help")) && helpCooldown) {
 		//send help message
 		sendMessage(user, userID, channelID, message, event, helpMessage).catch(msgErrHandler);
+		helpCooldown = false;
+		setTimeout(() => helpCooldown = true, 30000);
 		if (stats.cmdRankings.help) {
 			stats.cmdRankings.help++;
 		} else {
@@ -2823,8 +2833,8 @@ function msgErrHandler(e) {
 	console.error(e);
 }
 
-function validateReg(regx) { //ignores <@mentions>, <#channels>, <http://escaped.links>, <:customEmoji:126243> and <a:animatedEmoji:12164>
-	return regx.length > 0 && regx.indexOf(":") !== 0 && regx.indexOf("a:") !== 0 && regx.indexOf("@") !== 0 && regx.indexOf("#") !== 0 && !regx.includes("http");
+function validateReg(regx) { //ignores <@mentions>, <#channels>, <http://escaped.links>, <:customEmoji:126243>, <a:animatedEmoji:12164>, and messages that are too long
+	return regx.length > 0 && regx.indexOf(":") !== 0 && regx.indexOf("a:") !== 0 && regx.indexOf("@") !== 0 && regx.indexOf("#") !== 0 && !regx.includes("http") && regx.length <= options.maxPatternLength;
 }
 
 function sliceBetween(str, cha1, cha2) {
