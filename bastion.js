@@ -2381,6 +2381,8 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 			return tempCard.code;
 		}
 	}
+	if (line.length === 1) //if no exact match, kill short searches
+		return -1;
 	if (shortcuts.length > 0) {
 		let lineArr = line.split(" ");
 		for (let i = 0; i < lineArr.length; i++) {
