@@ -3213,7 +3213,7 @@ function tlock(user, userID, channelID, message, event) {
 				for (let lock of triviaLocks[serverID]) {
 					out.push("<#" + lock + ">");
 				}
-				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
+				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 				config.triviaLocks = triviaLocks;
 				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			} else {
@@ -3228,7 +3228,7 @@ function tlock(user, userID, channelID, message, event) {
 			for (let lock of triviaLocks[serverID]) {
 				out.push("<#" + lock + ">");
 			}
-			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
+			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 			config.triviaLocks = triviaLocks;
 			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 		}
@@ -3238,7 +3238,7 @@ function tlock(user, userID, channelID, message, event) {
 		for (let lock of triviaLocks[serverID]) {
 			out.push("<#" + lock + ">");
 		}
-		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ").catch(msgErrHandler));
+		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 		config.triviaLocks = triviaLocks;
 		fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 	}
