@@ -18,7 +18,7 @@ Thank you to the following users for their work on Bastion:
  - Becasita: For introducing me to the Yugipedia API.  
  - Dragon: For miscellaneous support, including promoting Bastion in numerous Discords servers and communication with DevPro for some alternate language databases.  
  - Antimetaman: For supplying the pictures public bastion uses.
- Manga / Anime artist which helped supply manga / anime art for bastion's card lookup: https://serenade87.deviantart.com/art/Yu-Gi-Oh-Ultimate-HQ-Card-Project-595260185
+ - Manga / Anime artist which helped supply manga / anime art for bastion's card lookup: https://serenade87.deviantart.com/art/Yu-Gi-Oh-Ultimate-HQ-Card-Project-595260185
  
 ## Commands  
 Bastion's primary purpose is a database of card information. Basic knowledge about relevant terms will be assumed in this section and the next. Note that Bastion's prefix is customisable - more information on that in the configuration section - this section assumes the default prefix of ".".  
