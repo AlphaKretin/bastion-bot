@@ -265,7 +265,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `helpMessage` is the message the bot will respond with when mentioned or the .help command is used, ideally providing a link to this readme and/or explaning the commands.  
   
-`messageMode` determines how Bastion will send Messages. If it is set to 0, it will send messages in regular text format. If it is set to 1, it will send messages enclosed in quotes. If it is set to 2, it will send embedded messages. If it is set to 3, it will send messages enclosed in quotes which are also embedded. This field is optional - if it is missing, it will default to what you see above.  
+`messageMode` determines how Bastion will send Messages. If it is set to 0 or below, it will send messages in regular text format. If it is set to 1 or above, it will send messages enclosed within an embed object. This field is optional - if it is missing, it will default to what you see above.  
   
 `embedColor` is the default color of the bar of your embedded messages. This field is optional - is can be ignored depending on `messageMode`'s setting, and if it is expected but missing, the default color will be used. This is a decimal value converted from a hex color value.  
   
