@@ -3344,7 +3344,7 @@ function libPage(user, userID, channelID, message, event, name) {
 	} else {
 		bot.editMessage({
 			channelID: channelID,
-			messageID: searchPage.message,
+			messageID: searchPage[channelID].message,
 			message: out
 		});
 	}
