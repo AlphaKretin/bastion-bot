@@ -94,21 +94,17 @@ if (config.messageMode || config.messageMode === 0) {
 } else {
 	console.warn("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
 }
-if (messageMode & 0x2 && config.embedColor) {
+if (messageMode > 0 && config.embedColor) {
 	embedColor = config.embedColor;
-} else if (messageMode & 0x2) {
+} else if (messageMode > 0) {
 	console.warn("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
 }
-if (messageMode & 0x2 && config.embedColorDB) {
+if (messageMode > 0 && config.embedColorDB) {
 	let path = "config/" + config.embedColorDB;
 	embcDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-} else if (messageMode & 0x2) {
+} else if (messageMode > 0) {
 	console.warn("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
 }
-
-let quo = messageMode & 0x1 && "`" || "";
-let bo = messageMode & 0x1 && "**" || "";
-let jvex = messageMode & 0x1 && "java\n" || "";
 
 let scriptUrlMaster;
 let scriptUrlAnime;
@@ -154,9 +150,6 @@ if (config.helpMessage) {
 	helpMessage = config.helpMessage;
 } else {
 	console.warn("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
-}
-if (messageMode & 0x1) {
-	helpMessage = bo + quo + helpMessage + quo + bo;
 }
 
 let maxSearches = 3;
@@ -679,7 +672,7 @@ let commandList = [{
 },
 {
 	names: ["long"],
-	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, bo + quo + quo + quo + longMsg).catch(msgErrHandler),
+	func: (user, userID, channelID, message, event) => sendMessage(user, userID, userID, message, event, longMsg).catch(msgErrHandler),
 	chk: () => longMsg.length > 0,
 	desc: "Sends the remainder of a message split up due to length."
 },
@@ -818,8 +811,7 @@ function commands(user, userID, channelID, message, event) {
 			if (cmd.desc)
 				out += ": " + cmd.desc;
 			if (cmd.names.length > 1)
-				out += " (Aliases: " + cmd.names.join(", ").replace(cmd.names[0] + ", ", "") + ")";
-			out += "\n";
+				out += " (Aliases: " + cmd.names.join(", ").replace(cmd.names[0] + ", ", "") + ")\n";
 		}
 	}
 	out += "See the readme for details: <https://github.com/AlphaKretin/bastion-bot/>";
@@ -864,7 +856,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		}
 		let out = await getCardInfo(code, outLang); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
 		if (imageUrlMaster && args.includes("image")) {
-			if (out[1].length == 1 && messageMode & 0x2) {
+			if (out[1].length == 1 && messageMode > 0) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 			} else {
 				postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -941,7 +933,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 			}
 			let out = await getCardInfo(inInt, outLang);
 			if (hasImage) {
-				if (out[1].length == 1 && messageMode & 0x2) {
+				if (out[1].length == 1 && messageMode > 0) {
 					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 				} else {
 					postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -968,7 +960,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				}
 				let out = await getCardInfo(code, outLang);
 				if (hasImage) {
-					if (out[1].length == 1 && messageMode & 0x2) { //if it's embed mode, sendLongMessage handles embedding one image
+					if (out[1].length == 1 && messageMode > 0) { //if it's embed mode, sendLongMessage handles embedding one image
 						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 					} else {
 						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -989,7 +981,6 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 
 function getCardInfo(code, outLang) {
 	return new Promise((resolve, reject) => {
-		let markdownno = 0;
 		if (!code || !cards[outLang][code]) {
 			console.error("Invalid card ID, please try again.");
 			reject("Invalid card ID, please try again.");
@@ -1014,22 +1005,10 @@ function getCardInfo(code, outLang) {
 				}
 			});
 		}
-		let out = "__**" + quo + card.name + quo + "**__\n";
-		markdownno += quo.length * 2;
-		if (messageMode & 0x1) {
-			out += bo + quo + quo + quo + jvex + "ID: ";
-		} else {
-			out += "**ID**: ";
-		}
-		markdownno += quo.length * 3 + bo.length + jvex.length;
-		out += alIDs.join("|") + "\n";
+		let out = "__**" + card.name + "**__\n";
+		out += "**ID**: " + alIDs.join("|") + "\n";
 		if (card.sets) {
-			if (messageMode & 0x1) {
-				out += "Archetype: ";
-			} else {
-				out += "**Archetype**: ";
-			}
-			out += card.sets.join(", ");
+			out += "**Archetype**: " + card.sets.join(", ");
 		}
 		out += "\n";
 		let stat = card.ot.join("/");
@@ -1062,26 +1041,12 @@ function getCardInfo(code, outLang) {
 				}
 				if (avgs.length > 0) {
 					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-					if (messageMode & 0x1) {
-						out += "Status: " + stat + " Price: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
-					} else {
-						out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
-					}
+					out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 				} else {
-					if (messageMode & 0x1) {
-						out += "Status: ";
-					} else {
-						out += "**Status**: ";
-					}
-					out += stat + "\n";
+					out += "**Status**: " + stat + "\n";
 				}
 			} else {
-				if (messageMode & 0x1) {
-					out += "Status: ";
-				} else {
-					out += "**Status**: ";
-				}
-				out += stat + "\n";
+				out += "**Status**: " + stat + "\n";
 			}
 			let embCT = getEmbCT(card);
 			if (card.types.includes("Monster")) {
@@ -1095,98 +1060,46 @@ function getCardInfo(code, outLang) {
 						typesStr += " " + arrace[1];
 					}
 				}
-				if (messageMode & 0x1) {
-					out += "Type: " + typesStr + " Attribute: " + addEmote(card.attribute, "|")[0] + "\n";
-				} else {
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
-				}
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
 				let lvName = "Level";
 				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
 				} else if (card.types.includes("Link")) {
 					lvName = "Link Rating";
 				}
-				if (messageMode & 0x1) {
-					out += lvName + ": " + card.level;
-				} else {
-					out += "**" + lvName + "**: " + card.level + " ";
-				}
+				out += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
-					if (messageMode & 0x1) {
-						if (lvName == "Level") {
-							out += "✪";
-						} else if (lvName == "Rank") {
-							out += "⍟";
-						}
+					if (card.isType(0x1000000000)) { //is dark synchro
+						out += emoteDB["NLevel"] + " ";
 					} else {
-						if (card.isType(0x1000000000)) { //is dark synchro
-							out += emoteDB["NLevel"] + " ";
-						} else {
-							out += emoteDB[lvName] + " ";
-						}
+						out += emoteDB[lvName] + " ";
 					}
 				}
-				out += " ";
-				if (messageMode & 0x1) {
-					out += "ATK: ";
-				} else {
-					out += "**ATK**: ";
-				}
-				out += card.atk + " ";
+				out += " **ATK**: " + card.atk + " ";
 				if (card.def) {
-					if (messageMode & 0x1) {
-						out += "DEF: ";
-					} else {
-						out += "**DEF**: ";
-					}
-					out += card.def;
+					out += "**DEF**: " + card.def;
 				} else {
-					if (messageMode & 0x1) {
-						out += "Link Markers: ";
-					} else {
-						out += "**Link Markers**: ";
-					}
-					out += card.markers;
+					out += "**Link Markers**: " + card.markers;
 				}
 				if (card.types.includes("Pendulum")) {
-					if (messageMode & 0x1) {
-						out += " Pendulum Scale: ";
-					} else {
-						out += " **Pendulum Scale**: ";
-					}
+					out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
-						if (messageMode & 0x1) {
-							out += "←" + card.lscale + "/" + card.rscale + "→ ";
-						} else {
-							out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
-						}
+						out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
 					} else {
 						out += card.lscale + "/" + card.rscale;
 					}
 				}
 				out += "\n";
-				out += quo + quo + quo + quo + quo + quo;
-				markdownno += quo.length * 6;
 				let cardText = card.desc;
 				let textName = "Monster Effect";
 				if (card.types.includes("Normal")) {
 					textName = "Flavour Text";
 				}
 				if (cardText.length === 4) {
-					if (messageMode & 0x1) {
-						out += cardText[0] + "``` ``" + cardText[2] + "``\n" + "```" + cardText[1] + "`````" + cardText[3] + "``";
-					} else {
-						out += "**" + cardText[2] + "**: " + cardText[0] + "\n";
-						out += "**" + cardText[3] + "**: " + cardText[1];
-					}
+					out += "**" + cardText[2] + "**: " + cardText[0] + "\n**" + cardText[3] + "**: " + cardText[1];
 				} else {
-					if (messageMode & 0x1) {
-						out += cardText[0] + "``` ``" + textName + "``";
-					} else {
-						out += "**" + textName + "**: " + cardText[0];
-					}
+					out += "**" + textName + "**: " + cardText[0];
 				}
-				markdownno += quo.length * 3;
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				let typeemote = addEmote(card.types, "/");
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
@@ -1204,53 +1117,24 @@ function getCardInfo(code, outLang) {
 							typesStr += " " + arrace[1] + typeemote[1];
 						}
 					}
-					if (messageMode & 0x1) {
-						out += "Type: " + typesStr + " Attribute: " + addEmote(card.attribute, "|")[0] + "\n";
-						out += "Level: " + card.level;
-					} else {
-						out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
-						out += "**Level**: " + card.level;
-					}
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n**Level**: " + card.level;
 					if (emoteMode > 0) {
-						if (messageMode & 0x1) {
-							out += "✪";
-						} else {
-							out += " " + emoteDB["Level"];
-						}
+						out += " " + emoteDB["Level"];
 					}
-					if (messageMode & 0x1) {
-						out += " " + " ATK: " + card.atk + " DEF: " + card.def + "\n";
-					} else {
-						out += " " + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
-					}
+					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
-					if (messageMode & 0x1) {
-						out += "Type: " + typeemote[0] + "\n";
-					} else {
-						out += "**Type**: " + typeemote[emoteMode] + "\n";
-					}
+					out += "**Type**: " + typeemote[emoteMode] + "\n";
 				}
-				if (messageMode & 0x1) {
-					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Effect``\n";
-				} else {
-					out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
-				}
-				markdownno += quo.length * 3;
+				out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
 			} else {
-				if (messageMode & 0x1) {
-					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Card Text``";
-				} else {
-					out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
-				}
-				markdownno += quo.length * 3;
+				out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
 			}
-			out += bo;
-			resolve([out, alIDs, embCT, markdownno]);
+			resolve([out, alIDs, embCT]);
 		});
 	});
 }
 
-async function postImage(code, out, outLang, user, userID, channelID, message, event, embCT, markdownno) {
+async function postImage(code, out, outLang, user, userID, channelID, message, event, embCT) {
 	try {
 		let imageUrl = imageUrlMaster;
 		let card = cards[outLang][code[0]];
@@ -1331,7 +1215,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 				file: buffer,
 				filename: code[0] + "." + imageExt
 			}, () => {
-				sendLongMessage(out, user, userID, channelID, message, event, embCT, markdownno);
+				sendLongMessage(out, user, userID, channelID, message, event, embCT);
 			});
 		} else {
 			let buffer = await downloadImage(imageUrl + code[0] + "." + imageExt, user, userID, channelID, message, event);
@@ -1341,10 +1225,10 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 					file: buffer,
 					filename: code[0] + "." + imageExt
 				}, () => {
-					sendLongMessage(out, user, userID, channelID, message, event, embCT, markdownno);
+					sendLongMessage(out, user, userID, channelID, message, event, embCT);
 				});
 			} else {
-				sendLongMessage(out, user, userID, channelID, message, event, embCT, markdownno);
+				sendLongMessage(out, user, userID, channelID, message, event, embCT);
 			}
 		}
 	} catch (e) {
@@ -1433,10 +1317,10 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					}
 				});
 			}
-			out += bo + quo + quo + quo + jvex + card.name + ": " + alIDs.join("|") + quo + quo + quo + bo;
+			out += card.name + ": " + alIDs.join("|");
 			break;
 		case "notext":
-			out += "__**" + quo + card.name + quo + "**__\n";
+			out += "__**" + card.name + "**__\n";
 			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
@@ -1456,18 +1340,9 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					}
 				});
 			}
-			if (messageMode & 0x1) {
-				out += bo + quo + quo + quo + jvex + "ID: " + alIDs.join("|") + "\n";
-			} else {
-				out += "**ID**: " + alIDs.join("|") + "\n";
-			}
+			out += "**ID**: " + alIDs.join("|") + "\n";
 			if (card.sets) {
-				if (messageMode & 0x1) {
-					out += "Archetype: ";
-				} else {
-					out += "**Archetype**: ";
-				}
-				out += card.sets.join(", ");
+				out += "**Archetype**: " + card.sets.join(", ");
 			}
 			out += "\n";
 			stat = card.ot.join("/");
@@ -1481,94 +1356,46 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					stat = stat.replace(re, key + ": " + lim);
 				}
 			});
-			if (messageMode & 0x1) {
-				out += "Status: ";
-			} else {
-				out += "**Status**: ";
-			}
-			out += stat + "\n";
+			out += "**Status**: " + stat + "\n";
 			if (card.types.includes("Monster")) {
 				let arrace = addEmote(card.race, "|");
 				let typesStr;
-				if (emoteMode < 2 && messageMode != 1) {
+				if (emoteMode < 2) {
 					typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
 				} else {
 					typesStr = card.types.join("/").replace("Monster", arrace[0]);
-					if (messageMode != 1) {
-						typesStr += " " + arrace[1];
-					}
+					typesStr += " " + arrace[1];
 				}
-				if (messageMode & 0x1) {
-					out += "Type: " + typesStr + " Attribute: " + addEmote(card.attribute, "|")[0] + "\n";
-				} else {
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
-				}
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
 				let lvName = "Level";
 				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
 				} else if (card.types.includes("Link")) {
 					lvName = "Link Rating";
 				}
-				if (messageMode & 0x1) {
-					out += lvName + ": " + card.level;
-				} else {
-					out += "**" + lvName + "**: " + card.level + " ";
-				}
+				out += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
-					if (messageMode & 0x1) {
-						if (lvName == "Level") {
-							out += "✪";
-						} else if (lvName == "Rank") {
-							out += "⍟";
-						}
+					if (card.isType(0x1000000000)) { //is dark synchro
+						out += emoteDB["NLevel"] + " ";
 					} else {
-						if (card.isType(0x1000000000)) { //is dark synchro
-							out += emoteDB["NLevel"] + " ";
-						} else {
-							out += emoteDB[lvName] + " ";
-						}
+						out += emoteDB[lvName] + " ";
 					}
 				}
-				out += " ";
-				if (messageMode & 0x1) {
-					out += "ATK: ";
-				} else {
-					out += "**ATK**: ";
-				}
-				out += card.atk + " ";
+				out += " **ATK**: " + card.atk + " ";
 				if (card.def) {
-					if (messageMode & 0x1) {
-						out += "DEF: ";
-					} else {
-						out += "**DEF**: ";
-					}
-					out += card.def;
+					out += "**DEF**: " + card.def;
 				} else {
-					if (messageMode & 0x1) {
-						out += "Link Markers: ";
-					} else {
-						out += "**Link Markers**: ";
-					}
-					out += card.markers;
+					out += "**Link Markers**: " + card.markers;
 				}
 				if (card.types.includes("Pendulum")) {
-					if (messageMode & 0x1) {
-						out += " Pendulum Scale: ";
-					} else {
-						out += " **Pendulum Scale**: ";
-					}
+					out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
-						if (messageMode & 0x1) {
-							out += "←" + card.lscale + "/" + card.rscale + "→ ";
-						} else {
-							out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
-						}
+						out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
 					} else {
 						out += card.lscale + "/" + card.rscale;
 					}
 				}
 				out += "\n";
-				out += quo + quo + quo + quo + quo + quo;
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				let typeemote = addEmote(card.types, "/");
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
@@ -1578,44 +1405,24 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.isType(0x100)) { //is trap monster
 					let arrace = addEmote(card.race, "|");
 					let typesStr;
-					if (emoteMode < 2 && messageMode != 1) {
+					if (emoteMode < 2) {
 						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
 					} else {
 						typesStr = arrace[0] + "/" + typeemote[0];
-						if (messageMode != 1) {
-							typesStr += " " + arrace[1] + typeemote[1];
-						}
+						typesStr += " " + arrace[1] + typeemote[1];
 					}
-					if (messageMode & 0x1) {
-						out += "Type: " + typesStr + " Attribute: " + addEmote(card.attribute, "|")[0] + "\n";
-						out += "Level: " + card.level;
-					} else {
-						out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
-						out += "**Level**: " + card.level;
-					}
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n**Level**: " + card.level;
 					if (emoteMode > 0) {
-						if (messageMode & 0x1) {
-							out += "✪";
-						} else {
-							out += " " + emoteDB["Level"];
-						}
+						out += " " + emoteDB["Level"];
 					}
-					if (messageMode & 0x1) {
-						out += " " + " ATK: " + card.atk + " DEF: " + card.def + "\n";
-					} else {
-						out += " " + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
-					}
+					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
-					if (messageMode & 0x1) {
-						out += "Type: " + typeemote[0] + "\n";
-					} else {
-						out += "**Type**: " + typeemote[emoteMode] + "\n";
-					}
+					out += "**Type**: " + typeemote[emoteMode] + "\n";
 				}
 			}
 			break;
 		case "effect":
-			out += "__**" + quo + card.name + quo + "**__" + (messageMode & 0x1 && " " || "\n");
+			out += "__**" + card.name + "**__\n";
 			if (card.types.includes("Monster")) {
 				let cardText = card.desc;
 				let textName = "Monster Effect";
@@ -1623,31 +1430,14 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					textName = "Flavour Text";
 				}
 				if (cardText.length === 4) {
-					if (messageMode & 0x1) {
-						out += cardText[0] + "``` ``" + cardText[2] + "``\n" + "```" + cardText[1] + "`````" + cardText[3] + "``";
-					} else {
-						out += "**" + cardText[2] + "**: " + cardText[0] + "\n";
-						out += "**" + cardText[3] + "**: " + cardText[1];
-					}
+					out += "**" + cardText[2] + "**: " + cardText[0] + "\n**" + cardText[3] + "**: " + cardText[1];
 				} else {
-					if (messageMode & 0x1) {
-						out += cardText[0] + "``` ``" + textName + "``";
-					} else {
-						out += "**" + textName + "**: " + cardText[0];
-					}
+					out += "**" + textName + "**: " + cardText[0];
 				}
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				if (messageMode & 0x1) {
-					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Effect``\n";
-				} else {
-					out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
-				}
+				out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
 			} else {
-				if (messageMode & 0x1) {
-					out += "``````" + card.desc[0].replace(/\n/g, "\n") + "``` ``Card Text``\n";
-				} else {
-					out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
-				}
+				out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
 			}
 			break;
 		default:
@@ -1749,8 +1539,7 @@ function deck(user, userID, channelID, message, event) {
 			let out = "";
 			let accu = (acc, val) => acc + val.count;
 			if (mainArr.length > 0) {
-				out += "**" + quo + "Main Deck" + quo + "**\n";
-				out += mainArr.reduce(accu, 0) + " cards";
+				out += "**Main Deck**\n" + mainArr.reduce(accu, 0) + " cards";
 				if (mainMonCount + mainSpellCount + mainTrapCount > 0) {
 					out += " (";
 					let tempArr = [];
@@ -1762,15 +1551,13 @@ function deck(user, userID, channelID, message, event) {
 						tempArr.push("Traps: " + mainTrapCount);
 					out += tempArr.join(", ") + ")";
 				}
-				out += "\n" + bo + quo + quo + quo;
+				out += "\n";
 				mainArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (extraArr.length > 0) {
-				out += "**" + quo + "Extra Deck" + quo + "**\n";
-				out += extraArr.reduce(accu, 0) + " cards";
+				out += "**Extra Deck**\n" + extraArr.reduce(accu, 0) + " cards";
 				if (extraFusionCount + extraSynchroCount + extraXyzCount + extraLinkCount > 0) {
 					out += " (";
 					let tempArr = [];
@@ -1784,20 +1571,16 @@ function deck(user, userID, channelID, message, event) {
 						tempArr.push("Link: " + extraLinkCount);
 					out += tempArr.join(", ") + ")";
 				}
-				out += "\n" + bo + quo + quo + quo;
+				out += "\n";
 				extraArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (sideArr.length > 0) {
-				out += "**" + quo + "Side Deck" + quo + "**\n";
-				out += sideArr.reduce(accu, 0) + " cards\n";
-				out += bo + quo + quo + quo;
+				out += "**Side Deck**\n" + sideArr.reduce(accu, 0) + " cards\n";
 				sideArr.forEach(car => {
 					out += car.count + " " + car.name + "\n";
 				});
-				out += quo + quo + quo + bo + (messageMode & 0x1 ? " " : "");
 			}
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
@@ -1888,14 +1671,13 @@ function matches(user, userID, channelID, message, event, name) {
 	}
 	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
-		sendMessage(user, userID, channelID, message, event, bo + quo + "No matches found!" + quo + bo).catch(msgErrHandler);
+		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
 	} else {
 		let argObj;
 		if (args) {
 			argObj = parseFilterArgs(a[1]);
 		}
-		let out = bo + quo + "Top 10 card name matches for" + quo + bo + " **`" + arg + "`**:";
-		out += bo + quo + quo + quo;
+		let out = "Top 10 card name matches for **`" + arg + "`**:";
 		let i = 0;
 		let outs = [];
 		while (results[i] && outs.length < 10) {
@@ -1910,7 +1692,6 @@ function matches(user, userID, channelID, message, event, name) {
 		for (let o of outs) {
 			out += o;
 		}
-		out += quo + quo + quo + bo;
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	}
 }
@@ -1918,11 +1699,11 @@ function matches(user, userID, channelID, message, event, name) {
 function set(user, userID, channelID, message, event, name) {
 	let arg = message.slice((pre + name + " ").length);
 	if (arg.toLowerCase() in setcodes) {
-		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[arg.toLowerCase().catch(msgErrHandler)] + ": " + arg + quo + quo + quo + bo);
+		sendMessage(user, userID, channelID, message, event, setcodes[arg.toLowerCase()] + ": " + arg).catch(msgErrHandler);
 	} else {
 		Object.keys(setcodes).forEach(key => {
 			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
-				sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + setcodes[key] + ": " + key + quo + quo + quo + bo).catch(msgErrHandler);
+				sendMessage(user, userID, channelID, message, event, setcodes[key] + ": " + key).catch(msgErrHandler);
 				return;
 			}
 		});
@@ -1950,13 +1731,7 @@ function searchSkill(user, userID, channelID, message, event, name) {
 	if (index > -1) {
 		let skill = skills[index];
 		let out = "";
-		out += "__**" + quo + skill.name + quo + "**__" + (messageMode & 0x1 && " " || "\n");
-		if (messageMode & 0x1) {
-			out += "**```http\n" + skill.desc + "``` ``Effect`` ```css\n" + skill.chars + "``` ``Characters``**";
-		} else {
-			out += "**Effect**: " + skill.desc + "\n";
-			out += "**Characters**: " + skill.chars;
-		}
+		out += "__**" + skill.name + "**__\n**Effect**: " + skill.desc + "\n**Characters**: " + skill.chars;
 		sendLongMessage(out, user, userID, channelID, message, event);
 	} else {
 		console.log("No skill found for search '" + arg + "'!");
@@ -1988,16 +1763,12 @@ function strings(user, userID, channelID, message, event, name) {
 		if (strs && Object.keys(strs).length > 0) {
 			let out = "__**" + card.name + "**__\n";
 			Object.keys(strs).forEach(key => {
-				if (messageMode & 0x1) {
-					out += key + ": " + strs[key] + "\n";
-				} else {
-					out += key + ": `" + strs[key] + "`\n";
-				}
+				out += key + ": `" + strs[key] + "`\n";
 			});
-			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		} else {
 			let out = "No strings found for " + card.name + "!";
-			sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
 	}
 }
@@ -2046,7 +1817,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 			out = e;
 		}
 	});
-	sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
+	sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 }
 
 function rankings(user, userID, channelID, message, event) {
@@ -2139,7 +1910,7 @@ function rankings(user, userID, channelID, message, event) {
 				}
 			}
 		});
-		sendMessage(user, userID, channelID, message, event, bo + quo + quo + quo + jvex + out + quo + quo + quo + bo).catch(msgErrHandler);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	}
 }
 
@@ -2148,7 +1919,7 @@ function banlist(user, userID, channelID, message, event, name) {
 	for (let list of Object.keys(lflist)) {
 		if (input.toLowerCase() === list.toLowerCase()) {
 			let ban = lflist[list];
-			let out = "__**" + quo + list + " banlist: " + quo + "**__\n";
+			let out = "__**" + list + " banlist: **__\n";
 			let banArr = [];
 			let limArr = [];
 			let semArr = [];
@@ -2160,7 +1931,7 @@ function banlist(user, userID, channelID, message, event, name) {
 				}
 			});
 			if (banArr.length > 0) {
-				out += "**" + quo + "Forbidden" + quo + "**" + "\n" + quo + quo + quo;
+				out += "**Forbidden**\n";
 				for (let code of banArr) {
 					let card = cards[defaultLang][parseInt(code)];
 					if (card)
@@ -2168,10 +1939,9 @@ function banlist(user, userID, channelID, message, event, name) {
 					else
 						out += code + "\n";
 				}
-				out += quo + quo + quo;
 			}
 			if (limArr.length > 0) {
-				out += "**" + quo + "Limited" + quo + "**" + "\n" + quo + quo + quo;
+				out += "**Limited**\n";
 				for (let code of limArr) {
 					let card = cards[defaultLang][parseInt(code)];
 					if (card)
@@ -2179,10 +1949,9 @@ function banlist(user, userID, channelID, message, event, name) {
 					else
 						out += code + "\n";
 				}
-				out += quo + quo + quo;
 			}
 			if (semArr.length > 0) {
-				out += "**" + quo + "Semi-Limited" + quo + "**" + "\n" + quo + quo + quo;
+				out += "**Semi-Limited**\n";
 				for (let code of semArr) {
 					let card = cards[defaultLang][parseInt(code)];
 					if (card)
@@ -2190,7 +1959,6 @@ function banlist(user, userID, channelID, message, event, name) {
 					else
 						out += code + "\n";
 				}
-				out += quo + quo + quo;
 			}
 			if (out.length > 0) {
 				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
@@ -2237,7 +2005,7 @@ function yugi(user, userID, channelID, message, event, name) {
 }
 
 //utility functions
-function sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
+function sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
 	return new Promise((resolve, reject) => {
 		try {
 			let tempcolor = embcDB && typecolor && embcDB[typecolor] || embedColor;
@@ -2254,9 +2022,9 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 				imgurl += code + "." + imageExt;
 			}
 			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - markdownno - 5 - longStr.length) + quo + quo + quo + bo + longStr, out.slice(2000 - markdownno - 5 - longStr.length)];
+				let outArr = [out.slice(0, 2000 - 5 - longStr.length) + longStr, out.slice(2000 - 5 - longStr.length)];
 				longMsg = outArr[1];
-				if (messageMode & 0x2) {
+				if (messageMode > 0) {
 					bot.sendMessage({
 						to: channelID,
 						embed: {
@@ -2270,7 +2038,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2287,7 +2055,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2298,7 +2066,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 					});
 				}
 			} else {
-				if (messageMode & 0x2) {
+				if (messageMode > 0) {
 					bot.sendMessage({
 						to: channelID,
 						embed: {
@@ -2312,7 +2080,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2329,7 +2097,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, markdownno, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2790,7 +2558,7 @@ function sendMessage(user, userID, channelID, message, event, out, embColour) {
 	return new Promise((resolve, reject) => {
 		if (!embColour)
 			embColour = embedColor;
-		if (messageMode & 0x2) {
+		if (messageMode > 0) {
 			bot.sendMessage({
 				to: channelID,
 				embed: {
@@ -2998,20 +2766,20 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			} else {
 				if (!gameData[channelID])
 					return;
-				sendMessage(user, userID, channelID, message, event, bo + quo + "Can you name this card? Time remaining:" + quo + " `" + triviaTimeLimit / 1000 + "`" + bo, 0x00ff00).catch(msgErrHandler).then(res => {
+				sendMessage(user, userID, channelID, message, event, "Can you name this card? Time remaining: `" + triviaTimeLimit / 1000 + "`", 0x00ff00).catch(msgErrHandler).then(res => {
 					let messageID = res.id;
 					let i = triviaTimeLimit / 1000 - 1;
 					gameData[channelID].IN = setInterval(() => {
 						let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 						let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
 						let tempcolor = parseInt("0x" + red + green + "00");
-						if (messageMode & 0x2) {
+						if (messageMode > 0) {
 							bot.editMessage({
 								channelID: channelID,
 								messageID: messageID,
 								embed: {
 									color: tempcolor,
-									description: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo,
+									description: "Can you name this card? Time remaining: `" + i + "`",
 								}
 							});
 							tempcolor += 0x300 - 0x1000;
@@ -3019,22 +2787,21 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 							bot.editMessage({
 								channelID: channelID,
 								messageID: messageID,
-								message: bo + quo + "Can you name this card? Time remaining:" + quo + " `" + i + "`" + bo
+								message: "Can you name this card? Time remaining: `" + i + "`"
 							});
 						}
 						i--;
 					}, 1000);
 				});
 				gameData[channelID].TO1 = setTimeout(() => {
-					sendMessage(user, userID, channelID, message, event, bo + quo + "Have a hint:" + quo + " `" + gameData[channelID].hint + "`" + bo).catch(msgErrHandler);
+					sendMessage(user, userID, channelID, message, event, "Have a hint: `" + gameData[channelID].hint + "`").catch(msgErrHandler);
 				}, triviaHintTime);
-				let out = bo + quo + "Time's up! The card was" + quo + bo + " **" + gameData[channelID].name + "**" + bo + quo + "!" + quo + bo + "\n";
+				let out = "Time's up! The card was **" + gameData[channelID].name + "**!\n";
 				if (Object.keys(gameData[channelID].score).length > 0) {
-					out += "**Scores**:\n" + bo + quo + quo + quo + jvex;
+					out += "**Scores**:\n";
 					Object.keys(gameData[channelID].score).forEach(id => {
 						out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 					});
-					out += quo + quo + quo + bo;
 				}
 				gameData[channelID].TO2 = setTimeout(() => {
 					if (gameData[channelID].lock)
@@ -3129,14 +2896,14 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		clearInterval(gameData[channelID].IN);
 	}
 	if (message.toLowerCase().startsWith(pre + "tq")) {
-		out = "<@" + userID + "> " + bo + quo + "quit the game. The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
+		out = "<@" + userID + "> quit the game. The answer was **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		out = triviaWinners(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		delete gameData[channelID];
 	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
 		gameData[channelID].noAttCount = 0;
-		out = "<@" + userID + "> " + bo + quo + "skipped the round! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
+		out = "<@" + userID + "> skipped the round! The answer was **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
@@ -3147,7 +2914,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 			messageID: event.d.id,
 			reaction: thumbsup
 		});
-		out = "<@" + userID + ">" + bo + quo + " got it! The answer was" + quo + bo + " **" + gameData[channelID].name + "**!\n";
+		out = "<@" + userID + "> got it! The answer was **" + gameData[channelID].name + "**!\n";
 		if (gameData[channelID].score[userID]) {
 			gameData[channelID].score[userID]++;
 		} else {
@@ -3155,10 +2922,7 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		}
 		out = triviaScore(out, user, userID, channelID, message, event);
 		if (gameData[channelID].round === 1) {
-			if (messageMode & 0x1) {
-				out += " ";
-			}
-			out += bo + quo + "The game is over! " + quo + bo;
+			out += "The game is over! ";
 			out = triviaWinners(out, user, userID, channelID, message, event);
 			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 			delete gameData[channelID];
@@ -3171,11 +2935,10 @@ async function answerTrivia(user, userID, channelID, message, event) {
 
 function triviaScore(out, user, userID, channelID) {
 	if (Object.keys(gameData[channelID].score).length > 0) {
-		out += "\n**Scores**:\n" + bo + quo + quo + quo + jvex;
+		out += "\n**Scores**:\n";
 		Object.keys(gameData[channelID].score).forEach(id => {
 			out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
 		});
-		out += quo + quo + quo + bo;
 	}
 	return out;
 }
@@ -3190,13 +2953,10 @@ function triviaWinners(out, user, userID, channelID) {
 				winners.push(id);
 			}
 		});
-		if (messageMode & 0x1) {
-			out += " ";
-		}
 		if (winners.length > 1) {
-			out += bo + quo + "It was a tie! The winners are " + quo + bo + "<@" + winners.join(">, <@") + ">!";
+			out += "It was a tie! The winners are <@" + winners.join(">, <@") + ">!";
 		} else {
-			out += bo + quo + "The winner is " + quo + bo + "<@" + winners + ">!";
+			out += "The winner is <@" + winners + ">!";
 		}
 	}
 	return out;
@@ -3572,7 +3332,7 @@ function libPage(user, userID, channelID, message, event, name) {
 	out += "````Page: " + arg + "/" + pages.length + "`";
 	searchPage[channelID].index = index;
 	searchPage[channelID].content = out;
-	if (messageMode & 0x2) {
+	if (messageMode > 0) {
 		bot.editMessage({
 			channelID: channelID,
 			messageID: searchPage[channelID].message,
@@ -3584,7 +3344,7 @@ function libPage(user, userID, channelID, message, event, name) {
 	} else {
 		bot.editMessage({
 			channelID: channelID,
-			messageID: searchPage.message,
+			messageID: searchPage[channelID].message,
 			message: out
 		});
 	}
@@ -3603,7 +3363,7 @@ function libDesc(user, userID, channelID, message, event, name) {
 	if (desc.length === 0) {
 		desc = "No description found for this entry.";
 	}
-	if (messageMode & 0x2) {
+	if (messageMode > 0) {
 		bot.editMessage({
 			channelID: channelID,
 			messageID: searchPage[channelID].message,
