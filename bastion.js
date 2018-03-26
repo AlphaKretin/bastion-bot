@@ -1017,6 +1017,8 @@ function getCardInfo(code, outLang) {
 				let lim = 3;
 				if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
 					lim = lflist[key][code];
+				} else if (card.alias && (lflist[key][card.alias] || lflist[key][card.alias] === 0)) {
+					lim = lflist[key][card.alias];
 				}
 				let re = new RegExp(key);
 				stat = stat.replace(re, key + ": " + lim);
