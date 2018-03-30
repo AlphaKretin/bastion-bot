@@ -694,6 +694,15 @@ let commandList = [{
 
 let helpCooldown = true;
 
+function cmdCheck(name, mes, nameList) {
+	for (let nam of nameList) {
+		if (nam !== name && (pre + nam) === mes) { //checks if another alias in the name list is an exact match
+			return false; //in which case it won't execute the command based off the shorter alias, waiting for the full match
+		}
+	}
+	return true;
+}
+
 bot.on("message", (user, userID, channelID, message, event) => {
 	if (userID === bot.id || (bot.users[userID] && bot.users[userID].bot)) { //ignores own messages to prevent loops, and those of other bots just in case
 		return;
@@ -701,7 +710,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	let lowMessage = message.toLowerCase();
 	for (let cmd of commandList) {
 		for (let name of cmd.names) {
-			if (lowMessage.startsWith(pre + name) && (!cmd.chk || cmd.chk(user, userID, channelID, message, event))) {
+			if (lowMessage.startsWith(pre + name) && cmdCheck(name, lowMessage.split(" ")[0], cmd.names) && (!cmd.chk || cmd.chk(user, userID, channelID, message, event))) {
 				cmd.func(user, userID, channelID, message, event, name, cmd.names[0]);
 				if (!cmd.noTrack) {
 					if (stats.cmdRankings[cmd.names[0]]) {
