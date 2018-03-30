@@ -838,7 +838,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		let argObj = parseFilterArgs(message.toLowerCase());
 		if (Object.keys(argObj).length > 0) {
 			let matches = [];
-			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
+			for (let id of ids) { //gets a list of all cards that meet specified criteria, before getting a random one of those cards
 				if (randFilterCheck(id, argObj, outLang)) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
@@ -1651,6 +1651,7 @@ function matches(user, userID, channelID, message, event, name) {
 	let arg = a[0].slice((pre + name + " ").length);
 	let args = a[1] && a[1].split(" ");
 	let outLang = defaultLang;
+	let num = 10;
 	if (args) {
 		for (let ar of args) {
 			if (ar in dbs) {
@@ -1671,18 +1672,38 @@ function matches(user, userID, channelID, message, event, name) {
 		}
 		arg = lineArr.join(" ");
 	}
+	let argObj;
+	if (args) {
+		argObj = parseFilterArgs(a[1]);
+	}
 	let results = fuse[outLang].search(arg);
 	if (results.length < 1) {
-		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
-	} else {
-		let argObj;
-		if (args) {
-			argObj = parseFilterArgs(a[1]);
+		if (!argObj) {
+			sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
+		} else {
+			let out = num + " cards that meet your criteria:";
+			let i = 0;
+			let outs = [];
+			let cardList = Object.values(cards[outLang]);
+			while (outs.length < num) {
+				let card = cardList[i];
+				if (card) {
+					if (aliasCheck(card, outLang) && randFilterCheck(card.code, argObj, outLang)) {
+						outs.push("\n" + (outs.length + 1) + ". " + card.name);
+					}
+				}
+				i++;
+			}
+			for (let o of outs) {
+				out += o;
+			}
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
-		let out = "Top 10 card name matches for **`" + arg + "`**:";
+	} else {
+		let out = "Top " + num + " card name matches for **`" + arg + "`**:";
 		let i = 0;
 		let outs = [];
-		while (results[i] && outs.length < 10) {
+		while (results[i] && outs.length < num) {
 			let card = cards[outLang][results[i].item.id];
 			if (card) {
 				if (aliasCheck(card, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
@@ -2677,7 +2698,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 			};
 		}
 		if (Object.keys(argObj).length > 0) {
-			for (let id of ids) { //gets a list of all cards that meet specified critera, before getting a random one of those cards
+			for (let id of ids) { //gets a list of all cards that meet specified criteria, before getting a random one of those cards
 				if (randFilterCheck(id, argObj, outLang) && cards[outLang][id].name.indexOf("(Anime)") === -1) { //a number of filters can be specified in the command, and this checks that a card meets them
 					matches.push(id);
 				}
