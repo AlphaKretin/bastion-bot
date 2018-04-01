@@ -156,6 +156,22 @@ You can end the game prematurely by typing ".tq", or pass a round by typing ".ts
 ### .tlock  
 Usage: `.tlock`  
 The `.tlock` command tells Bastion that on the server you use the command, he should only allow `.trivia` in the channels in which you've used the command. Only users with the "Manage Messages" permission can use the command. You can use the command in multiple channels to allow trivia in multiple channels. Using the command in a channel already registered will remove it from the list. If there are no channels in the list, trivia will be allowed anywhere.  
+
+### .config
+Usage: `.config [field] [value]`
+The `.config` command allows users with the "Manage Messages" permission to edit certain aspects of Bastion's config, local to the server where the command was used. For example, this allows different servers to choose different prefixes. Note that unlike other functions, this command (most importantly, the field parameter) is case-sensitive. Below is a table of valid field names and notes on usage. Leaving the value field blank will return the value to the server-independent default.
+
+| Field Name      | Description                                                                                                                                               | Restrictions                                                                                                            |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| prefix          | The string the bot will look for at the start of a message to denote commands.                                                                            |                                                                                                                         |
+| imageSize       | The size the bot will resize images to when they're displayed with a card search.                                                                         | The size must be less than or equal to the default size the bot owner has set.                                          |
+| triviaTimeLimit | The time a player has to guess a card's name in the trivia game, in milliseconds.                                                                         | The time must be greater than zero, and greater than the current triviaHintTime.                                        |
+| triviaHintTime  | The time at which the trivia game will provide a hint as to the card's name, in milliseconds. Set to 0 or lower to disable hints.                         | The time must be lower than the current triviaTimeLimit.                                                                |
+| triviaMaxRounds | The maximum number of rounds the bot will allow the trivia game to play for.                                                                              | The number of rounds must be greater than zero.                                                                         |
+| emoteMode       | A value that determines how emoticons are displayed in card searches - 0 does not display them, 1 displays only them, and 2 displays them alongside text. | The value must be between zero and two, inclusive. Also, the bot owner must have set up a database of emoticons to use. |
+| messageMode     | A value that determines how messages are displayed - 0 displays them as raw text, 1 or higher displays them within a Discord embed.                       | The value must be zero or greater.                                                                                      |
+| embedColour     | The default colour of the bar that accompanies an embed, as a hexadecimal RGB value.                                                                      | The value must be within the valid range for a hexadecimal colour (between 0 and 0xffffff).                             |
+| maxSearches     | The maximum number of card searches a user can make in one message.                                                                                       | The value must be less than or equal to the default value the bot owner has set.                                        |
   
 ## Installation  
 If you so choose, you can run a copy of Bastion yourself! This section will assume some basic familiarity with NodeJS and the command line.  

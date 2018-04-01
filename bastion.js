@@ -1,194 +1,11 @@
 const fs = require("fs");
 
-let config = JSON.parse(fs.readFileSync("config/config.json", "utf8"));
-//load data from JSON. Expected values can be intuited from console feedback or seen in the readme.
-if (!config.token) {
+let c = require("./config.js")(); //load data from JSON into a special class. Expected values can be intuited from console feedback or seen in the readme.
+let config = c[0];
+let Conf = c[1];
+if (!config.getConfig("token")) {
 	console.error("No Discord user token found at config.token! Exiting..."); //need the token to work as a bot, rest can be left out or defaulted. 
 	process.exit();
-}
-
-let imageUrlMaster;
-let imageUrlAnime;
-let imageUrlCustom;
-//these defaults are overwritten by what's in the config, if possible
-let imageSize = 100;
-let triviaTimeLimit = 30000;
-let triviaHintTime = 10000;
-let triviaMaxRounds = 20;
-let triviaLocks = {};
-let imageExt = "png";
-if (config.imageUrl) {
-	imageUrlMaster = config.imageUrl;
-	//a bunch of stuff relies on images, and other config fields related to them only need to be checked if images exist
-	if (config.imageUrlAnime) {
-		imageUrlAnime = config.imageUrlAnime;
-	} else {
-		imageUrlAnime = imageUrlMaster;
-		console.warn("URL for anime image source not found at config.imageUrlAnime! Defaulting to same source as official cards, " + imageUrlMaster + "!");
-	}
-	if (config.imageUrlCustom) {
-		imageUrlCustom = config.imageUrlCustom;
-	} else {
-		imageUrlCustom = imageUrlMaster;
-		console.warn("URL for custom image source not found at config.imageUrlCustom! Defaulting to same source as official cards, " + imageUrlMaster + "!");
-	}
-	if (config.imageSize) {
-		imageSize = config.imageSize;
-	} else {
-		console.warn("Size for images not found at config.imageSize! Defaulting to " + imageSize + "!");
-	}
-	if (config.triviaTimeLimit) {
-		triviaTimeLimit = config.triviaTimeLimit;
-	} else {
-		console.warn("No time limit for trivia found at config.triviaTimeLimit! Defaulting to " + triviaTimeLimit + "!");
-	}
-	if (config.triviaHintTime) {
-		triviaHintTime = config.triviaHintTime;
-	} else {
-		console.warn("No hint time for trivia found at config.triviaHintTime! Defaulting to " + triviaHintTime + "!");
-	}
-	if (config.triviaMaxRounds) {
-		triviaMaxRounds = config.triviaMaxRounds;
-	} else {
-		console.warn("No hint time for trivia found at config.triviaMaxRounds! Defaulting to " + triviaMaxRounds + "!");
-	}
-	if (config.triviaLocks) {
-		triviaLocks = config.triviaLocks;
-	} else {
-		console.warn("No specifications for channels to lock trivia to found at config.triviaLocks! Defaulting to nothing, configure with \".tlock\" command!");
-	}
-	if (config.imageExt) {
-		imageExt = config.imageExt;
-	} else {
-		console.warn("No file extension for images found at config.imageExt! Defaulting to " + imageExt + "!");
-	}
-} else {
-	console.warn("URL for image source not found at config.imageUrl! Image lookup and trivia will be disabled.");
-}
-
-let emoteMode = 0;
-let emoteDB;
-let thumbsup = "👍";
-let thumbsdown;
-
-if (config.emoteMode && config.emoteMode > 0 && config.emotesDB) {
-	emoteMode = config.emoteMode;
-	let path = "config/" + config.emotesDB;
-	emoteDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-	thumbsup = emoteDB["thumbsup"];
-	if (emoteDB["thumbsdown"]) {
-		thumbsdown = emoteDB["thumbsdown"];
-	}
-} else if (config.emoteMode && config.emoteMode > 0) {
-	console.warn("Emote database not found at config.emotesDB! Emotes display will be disabled.");
-} else if (config.emoteMode === undefined || config.emoteMode === null) {
-	console.warn("Emote mode specification not found at config.emoteMode! Defaulting to " + emoteMode + "!");
-}
-
-let messageMode = 0;
-let embedColor = 0x1;
-let embcDB;
-
-if (config.messageMode || config.messageMode === 0) {
-	messageMode = config.messageMode;
-} else {
-	console.warn("Message mode specification not found at config.messageMode! Defaulting to " + messageMode + "!");
-}
-if (messageMode > 0 && config.embedColor) {
-	embedColor = config.embedColor;
-} else if (messageMode > 0) {
-	console.warn("Embed color specification not found at config.embedColor! Defaulting to " + embedColor + "!");
-}
-if (messageMode > 0 && config.embedColorDB) {
-	let path = "config/" + config.embedColorDB;
-	embcDB = JSON.parse(fs.readFileSync(path, "utf-8"));
-} else if (messageMode > 0) {
-	console.warn("Embed color database not found at config.embedColorDB! Card Type specific embed color will be set to default.");
-}
-
-let scriptUrlMaster;
-let scriptUrlAnime;
-let scriptUrlCustom;
-let scriptUrlBackup;
-if (config.scriptUrl) {
-	scriptUrlMaster = config.scriptUrl;
-	if (config.scriptUrlAnime) {
-		scriptUrlAnime = config.scriptUrlAnime;
-	} else {
-		scriptUrlAnime = scriptUrlMaster;
-		console.warn("URL for anime script source not found at config.scriptUrlAnime! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
-	}
-	if (config.scriptUrlCustom) {
-		scriptUrlCustom = config.scriptUrlCustom;
-	} else {
-		scriptUrlCustom = scriptUrlMaster;
-		console.warn("URL for custom script source not found at config.scriptUrlCustom! Defaulting to same source as official cards, " + scriptUrlMaster + "!");
-	}
-	if (config.scriptUrlBackup) {
-		scriptUrlBackup = config.scriptUrlBackup;
-	} else {
-		console.warn("URL for backup script source not found at config.scriptUrlBackup! Bastion will not try to find an alternative to missing scripts!");
-	}
-} else {
-	console.warn("URL for script source not found at config.scriptUrl! Script lookup will be disabled.");
-}
-
-let pre = ".";
-if (config.prefix) {
-	pre = config.prefix;
-} else {
-	console.warn("No prefix found at config.prefix! Defaulting to \"" + pre + "\"!");
-}
-let longStr = "...\n__Type `" + pre + "long` to be PMed the rest!__";
-if (config.longStr) {
-	longStr = config.longStr;
-} else {
-	console.warn("No long message string found at config.longStr! Defaulting to \"" + longStr + "\"!");
-}
-let helpMessage = "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `" + pre + "commands` to be DMed a short summary of my commands without going to an external website.";
-if (config.helpMessage) {
-	helpMessage = config.helpMessage;
-} else {
-	console.warn("Help message not found at console.helpMessage! Defaulting to \"" + helpMessage + "\"!");
-}
-
-let maxSearches = 3;
-if (config.maxSearches) {
-	maxSearches = config.maxSearches;
-} else {
-	console.warn("No upper limit on searches in one message found at config.maxSearches! Defaulting to " + maxSearches + "!");
-}
-
-let defaultLang = "en";
-if (config.defaultLanguage) {
-	defaultLang = config.defaultLanguage;
-} else {
-	console.warn("Default language not found at config.defaultLanguage! Defaulting to " + defaultLang + "!");
-}
-
-let rulingLang;
-if (config.rulingLanguage) {
-	rulingLang = config.rulingLanguage;
-} else {
-	console.warn("Japanese language for rulings not found at config.rulingLanguage! Backup ruling search will be disabled.");
-}
-
-let options = {
-	shouldSort: true,
-	includeScore: true,
-	threshold: 0.5,
-	location: 0,
-	distance: 100,
-	maxPatternLength: 57,
-	minMatchCharLength: 2,
-	keys: [
-		"name"
-	]
-};
-if (config.fuseOptions)
-	options = config.fuseOptions;
-else {
-	console.warn("Settings for fuse.js not found at config.fuseOptions! Using defaults!");
 }
 
 const GitHubApi = require("github");
@@ -196,173 +13,20 @@ let github = new GitHubApi({
 	debug: false
 });
 
-let dbs = {};
-dbs[defaultLang] = ["cards.cdb"];
-let staticDBs = {};
-staticDBs[defaultLang] = ["cards.cdb"];
-if (config.staticDBs) {
-	staticDBs = config.staticDBs;
-	dbs = JSON.parse(JSON.stringify(config.staticDBs));
-	if (config.liveDBs) {
-		Object.keys(config.liveDBs).forEach(lang => {
-			if (dbs[lang]) {
-				dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
-			} else {
-				dbs[lang] = config.liveDBs[lang];
-			}
-		});
-	} else {
-		console.warn("List of live-updating databases not found at config.liveDBs! Defaulting to none, and live update will populate it if enabled!");
-		config.liveDBs = {};
-	}
-} else {
-	console.warn("List of non-updating card databases not found at config.staticDBs! Defaulting to one database named " + staticDBs[defaultLang][0] + ".");
-}
-let dbMemory = 33554432;
-if (config.dbMemory) {
-	dbMemory = config.dbMemory;
-} else {
-	console.warn("Size of memory allocated for card databases not found at config.dbMemory! Defaulting to " + dbMemory + ".");
-}
-let owner;
-if (config.botOwner) {
-	owner = config.botOwner;
-} else {
-	console.warn("Bot owner's ID not found at config.botOwner! Owner commands will be disabled.");
-}
+//more config files, all explained in the readme
+let shortcuts = JSON.parse(fs.readFileSync("config/" + config.getConfig("shortcutDB"), "utf8"));
+let setcodes = JSON.parse(fs.readFileSync("config/" + config.getConfig("setcodesDB"), "utf8"));
+let lflist = JSON.parse(fs.readFileSync("config/" + config.getConfig("lflistDB"), "utf8"));
+let stats = JSON.parse(fs.readFileSync("config/" + config.getConfig("statsDB"), "utf8"));
 
 let libFunctions;
 let libConstants;
 let libParams;
 
-let skills = [];
-let skillNames = [];
-
-function setJSON() { //this is a function because it needs to be repeated when it's updated
-	if (config.scriptFunctions) {
-		let path = "dbs/" + config.scriptFunctions;
-		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libFunctions.forEach((func) => {
-			if (!func.sig)
-				func.sig = "";
-		});
-	} else {
-		console.warn("Path to function library not found at config.scriptFunctions! Function library will be disabled!");
-	}
-	if (config.scriptConstants) {
-		let path = "dbs/" + config.scriptConstants;
-		libConstants = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libConstants.forEach((cons) => {
-			if (!cons.val)
-				cons.val = "";
-			if (typeof cons.val === "number")
-				cons.val = cons.val.toString();
-		});
-	} else {
-		console.warn("Path to constant library not found at config.scriptFunctions! Constant library will be disabled!");
-	}
-	if (config.scriptParams) {
-		let path = "dbs/" + config.scriptParams;
-		libParams = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libParams.forEach((par) => {
-			if (!par.type)
-				par.type = "";
-		});
-	} else {
-		console.warn("Path to parameter library not found at config.scriptFunctions! Parameter library will be disabled!");
-	}
-
-	if (config.skillDB) {
-		let path = "dbs/" + config.skillDB;
-		skills = JSON.parse(fs.readFileSync(path, "utf-8"));
-		skillNames = [];
-		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
-			skillNames.push({
-				name: skill.name,
-			});
-		}
-		if (skillNames.length > 0) {
-			skillFuse = new Fuse(skillNames, options);
-		}
-	} else {
-		console.warn("Path to Duel Links Skill database not found at config.skillDB! Skill lookup will be disabled.");
-	}
-}
-
-let sheetsDB;
-const gstojson = require("google-spreadsheet-to-json");
-if (config.sheetsDB) {
-	sheetsDB = JSON.parse(fs.readFileSync("config/" + config.sheetsDB, "utf-8"));
-} else {
-	console.warn("Sheets database not found at config.sheetsDB! JSON updating will be disabled.");
-}
-
-let debugOutput = false;
-if (config.debugOutput || config.debugOutput === false) {
-	debugOutput = config.debugOutput;
-} else {
-	console.warn("Choice whether to display debug information not found at config.debugOutput! Defaulting to not displaying it.");
-}
-
-let shortsDB = "shortcuts.json";
-if (config.shortcutDB) {
-	shortsDB = config.shortcutDB;
-} else {
-	console.warn("Filename for shortcuts file not found at config.shortcutDB! Defaulting to " + shortsDB + ".");
-}
-
-let setsDB = "setcodes.json";
-if (config.setcodesDB) {
-	setsDB = config.setcodesDB;
-} else {
-	console.warn("Filename for setcodes file not found at config.setcodesDB! Defaulting to " + setsDB + ".");
-}
-
-let banDB = "lflist.json";
-if (config.lflistDB) {
-	banDB = config.lflistDB;
-} else {
-	console.warn("Filename for banlist file not found at config.lflistDB! Defaulting to " + banDB + ".");
-}
-
-let statsDB = "stats.json";
-if (config.statsDB) {
-	statsDB = config.statsDB;
-} else {
-	console.warn("Filename for stats file not found at config.statsDB! Defaulting to " + statsDB + ".");
-}
-
-let updateRepos;
-if (config.updateRepos) {
-	updateRepos = config.updateRepos;
-} else {
-	console.warn("List of GitHub repositories to update from not found at config.updateRepos! Live database update will be disabled.");
-}
-
-let setcodeSource;
-if (config.setcodeSource) {
-	setcodeSource = config.setcodeSource;
-} else {
-	console.warn("Online source for setcodes to update from not found at config.setcodeSource! Live setcode update will be disabled.");
-}
-
-let lflistSource;
-if (config.lflistSource) {
-	lflistSource = config.lflistSource;
-} else {
-	console.warn("Online source for banlist to update from not found at config.lflistSource! Live banlist update will be disabled.");
-}
-
-//more config files, all explained in the readme
-let shortcuts = JSON.parse(fs.readFileSync("config/" + shortsDB, "utf8"));
-let setcodes = JSON.parse(fs.readFileSync("config/" + setsDB, "utf8"));
-let lflist = JSON.parse(fs.readFileSync("config/" + banDB, "utf8"));
-let stats = JSON.parse(fs.readFileSync("config/" + statsDB, "utf8"));
-
 let Card = require("./card.js")(setcodes); //initialises a "Card" Class, takes setcodes as an argument for handling archetypes as a class function
 
 setInterval(() => {
-	fs.writeFileSync("config/stats.json", JSON.stringify(stats), "utf8");
+	fs.writeFileSync("config/" + config.getConfig("statsDB"), JSON.stringify(stats), "utf8");
 	console.log("Stats saved!");
 }, 300000); //5 minutes
 
@@ -370,7 +34,7 @@ setInterval(() => {
 const Discord = require("discord.io");
 
 let bot = new Discord.Client({
-	token: config.token,
+	token: config.getConfig("token"),
 	autorun: false //users can't interface with the bot until it's ready
 });
 
@@ -384,9 +48,6 @@ bot.on("disconnect", (err, code) => { //Discord API occasionally disconnects bot
 });
 
 //sql setup
-Module = {
-	TOTAL_MEMORY: dbMemory
-};
 const SQL = require("sql.js");
 let cards = {};
 let nameList = {};
@@ -394,10 +55,60 @@ let nameList = {};
 //fuse setup
 const Fuse = require("fuse.js");
 let fuse = {};
+let skillFuse = {};
+
+let skills = [];
+let skillNames = [];
+
+const gstojson = require("google-spreadsheet-to-json");
+
+function setJSON() { //this is a function because it needs to be repeated when it's updated
+	let scriptFunctions = config.getConfig("scriptFunctions");
+	if (scriptFunctions) {
+		let path = "dbs/" + scriptFunctions;
+		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libFunctions.forEach((func) => {
+			if (!func.sig)
+				func.sig = "";
+		});
+	}
+	let scriptConstants = config.getConfig("scriptConstants");
+	if (scriptConstants) {
+		libConstants = JSON.parse(fs.readFileSync("dbs/" + scriptConstants, "utf-8"));
+		libConstants.forEach((cons) => {
+			if (!cons.val)
+				cons.val = "";
+			if (typeof cons.val === "number")
+				cons.val = cons.val.toString();
+		});
+	}
+	let scriptParams = config.getConfig("scriptParams");
+	if (scriptParams) {
+		libParams = JSON.parse(fs.readFileSync("dbs/" + scriptParams, "utf-8"));
+		libParams.forEach((par) => {
+			if (!par.type)
+				par.type = "";
+		});
+	}
+	let skillDB = config.getConfig("skillDB");
+	if (skillDB) {
+		skills = JSON.parse(fs.readFileSync("dbs/" + skillDB, "utf-8"));
+		skillNames = [];
+		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
+			skillNames.push({
+				name: skill.name,
+			});
+		}
+		if (skillNames.length > 0) {
+			skillFuse = new Fuse(skillNames, config.getConfig("fuseOptions"));
+		}
+	}
+}
 
 function loadDBs() {
 	cards = {};
 	nameList = {};
+	let dbs = config.dbs;
 	for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
 		console.log("loading " + lang + " database");
 		let filebuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][0]);
@@ -433,7 +144,7 @@ function loadDBs() {
 				card.setcode = cards[lang][card.alias].setcode;
 			}
 		});
-		fuse[lang] = new Fuse(nameList[lang], options);
+		fuse[lang] = new Fuse(nameList[lang], config.getConfig("fuseOptions"));
 	}
 }
 
@@ -441,12 +152,15 @@ async function dbUpdate() {
 	return new Promise(resolve => {
 		console.log("Starting CDB update!");
 		let promises = [];
-		dbs = JSON.parse(JSON.stringify(staticDBs));
+		let dbs = config.dbs;
+		dbs = JSON.parse(JSON.stringify(config.getConfig("staticDBs")));
 		let oldDbs = {};
+		let updateRepos = config.getConfig("updateRepos");
+		let liveDBs = config.getConfig("liveDBs");
 		for (let lang of Object.keys(updateRepos)) {
-			if (config.liveDBs[lang])
-				oldDbs[lang] = JSON.parse(JSON.stringify(config.liveDBs[lang]));
-			config.liveDBs[lang] = [];
+			if (liveDBs[lang])
+				oldDbs[lang] = JSON.parse(JSON.stringify(liveDBs[lang]));
+			liveDBs[lang] = [];
 			for (let repo of updateRepos[lang]) {
 				let arr = repo.split("/");
 				if (!arr || arr.length < 2)
@@ -459,7 +173,7 @@ async function dbUpdate() {
 						prom = getGHContents(lang, arr[0], arr[1]);
 					}
 					prom.then(res => {
-						config.liveDBs[lang] = config.liveDBs[lang].concat(res);
+						liveDBs[lang] = liveDBs[lang].concat(res);
 					});
 					promises.push(prom);
 				} catch (e) {
@@ -469,17 +183,17 @@ async function dbUpdate() {
 			}
 		}
 		Promise.all(promises).then(() => {
-			Object.keys(config.liveDBs).forEach(lang => {
+			Object.keys(liveDBs).forEach(lang => {
 				if (dbs[lang]) {
-					dbs[lang] = dbs[lang].concat(config.liveDBs[lang]);
+					dbs[lang] = dbs[lang].concat(liveDBs[lang]);
 				} else {
-					dbs[lang] = config.liveDBs[lang];
+					dbs[lang] = liveDBs[lang];
 				}
-				for (let db of config.liveDBs[lang]) {
+				for (let db of liveDBs[lang]) {
 					if (oldDbs[lang])
 						oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
 				}
-				if (config.deleteOldDBs && oldDbs[lang] && oldDbs[lang].length > 0) {
+				if (config.getConfig("deleteOldDBs") && oldDbs[lang] && oldDbs[lang].length > 0) {
 					console.log("Deleting the following old databases in 10 seconds: ");
 					console.log(oldDbs[lang]);
 					setTimeout(() => {
@@ -491,7 +205,7 @@ async function dbUpdate() {
 				}
 			});
 			loadDBs();
-			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
+			config.liveDBs = liveDBs;
 			resolve();
 		});
 	});
@@ -503,19 +217,18 @@ const url = require("url");
 const jimp = require("jimp");
 const filetype = require("file-type");
 
-let skillFuse = {};
 let updateFuncs = [];
-if (sheetsDB)
+if (config.getConfig("sheetsDB"))
 	updateFuncs.push(updatejson);
 else
 	setJSON();
-if (setcodeSource)
+if (config.getConfig("setcodeSource"))
 	updateFuncs.push(updateSetcodes);
-if (updateRepos)
+if (config.getConfig("updateRepos"))
 	updateFuncs.push(dbUpdate);
 else 
 	loadDBs();
-if (lflistSource)
+if (config.getConfig("lflistSource"))
 	updateFuncs.push(updateLflist);
 
 function periodicUpdate() {
@@ -549,20 +262,26 @@ let commandList = [{
 {
 	names: ["script"],
 	func: script,
-	chk: () => scriptUrlMaster,
+	chk: () => config.getConfig("scriptUrl"),
 	desc: "Displays the script of a card."
 },
 {
 	names: ["trivia", "game", "guess"],
 	func: trivia,
-	chk: () => imageUrlMaster,
+	chk: () => config.getConfig("imageUrl"),
 	desc: "Plays a game where you guess the name of a card by its artwork."
 },
 {
 	names: ["tlock"],
 	func: tlock,
-	chk: (user, userID, channelID) => imageUrlMaster && checkForPermissions(userID, channelID, ["TEXT_MANAGE_MESSAGES"]), //User must have manage message permission
+	chk: (user, userID, channelID) => config.getConfig("imageUrl") && checkForPermissions(userID, channelID, ["TEXT_MANAGE_MESSAGES"]), //User must have manage message permission
 	desc: "Adds the current channel to a list of which trivia can only be played in channels from."
+},
+{
+	names: ["config", "setconfig"],
+	func: setConf,
+	chk: (user, userID, channelID) => checkForPermissions(userID, channelID, ["TEXT_MANAGE_MESSAGES"]),
+	desc: "Configures certain options about how the bot runs, local to the server. See readme for more info."
 },
 {
 	names: ["matches", "match"],
@@ -623,19 +342,19 @@ let commandList = [{
 {
 	names: ["function", "func", "f"],
 	func: searchFunctions,
-	chk: () => libFunctions,
+	chk: () => config.getConfig("scriptFunctions"),
 	desc: "Searches for functions used in YGOPro scripting."
 },
 {
 	names: ["constant", "const", "c"],
 	func: searchConstants,
-	chk: () => libConstants,
+	chk: () => config.getConfig("scriptConstants"),
 	desc: "Searches for constants used in YGOPro scripting."
 },
 {
 	names: ["param", "parameter"],
 	func: searchParams,
-	chk: () => libParams,
+	chk: () => config.getConfig("scriptParams"),
 	desc: "Searches for parameters used in the description of functions used in YGOPro scripting."
 },
 {
@@ -659,14 +378,20 @@ let commandList = [{
 {
 	names: ["servers", "serverlist"],
 	func: servers,
-	chk: (user, userID) => owner && owner.includes(userID),
+	chk: (user, userID) => {
+		let owner = config.getConfig("botOwner");
+		return owner && owner.includes(userID);
+	},
 	noTrack: true,
 	desc: "Generates a list of servers the bot is in."
 },
 {
 	names: ["update", "updatejson"],
 	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!").catch(msgErrHandler)).catch(e => sendMessage(user, userID, userID, message, event, e).catch(msgErrHandler)),
-	chk: (user, userID) => owner && owner.includes(userID),
+	chk: (user, userID) => {
+		let owner = config.getConfig("botOwner");
+		return owner && owner.includes(userID);
+	},
 	noTrack: true,
 	desc: "Updates the data for cards, functions, skills, etc."
 },
@@ -694,7 +419,7 @@ let commandList = [{
 
 let helpCooldown = true;
 
-function cmdCheck(name, mes, nameList) {
+function cmdCheck(name, mes, nameList, pre) {
 	for (let nam of nameList) {
 		if (nam !== name && (pre + nam) === mes) { //checks if another alias in the name list is an exact match
 			return false; //in which case it won't execute the command based off the shorter alias, waiting for the full match
@@ -708,9 +433,11 @@ bot.on("message", (user, userID, channelID, message, event) => {
 		return;
 	}
 	let lowMessage = message.toLowerCase();
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let pre = config.getConfig("prefix", serverID);
 	for (let cmd of commandList) {
 		for (let name of cmd.names) {
-			if (lowMessage.startsWith(pre + name) && cmdCheck(name, lowMessage.split(" ")[0], cmd.names) && (!cmd.chk || cmd.chk(user, userID, channelID, message, event))) {
+			if (lowMessage.startsWith(pre + name) && cmdCheck(name, lowMessage.split(" ")[0], cmd.names, pre) && (!cmd.chk || cmd.chk(user, userID, channelID, message, event))) {
 				cmd.func(user, userID, channelID, message, event, name, cmd.names[0]);
 				if (!cmd.noTrack) {
 					if (stats.cmdRankings[cmd.names[0]]) {
@@ -725,7 +452,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	}
 	if ((message.includes("<@" + bot.id + ">") || lowMessage.startsWith(pre + "help")) && helpCooldown) {
 		//send help message
-		sendMessage(user, userID, channelID, message, event, helpMessage).catch(msgErrHandler);
+		sendMessage(user, userID, channelID, message, event, config.getConfig("helpMessage")).catch(msgErrHandler);
 		helpCooldown = false;
 		setTimeout(() => helpCooldown = true, 30000);
 		if (stats.cmdRankings.help) {
@@ -755,7 +482,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 			results.push(regx[1]);
 	} while (regx);
 	let results2 = [];
-	if (imageUrlMaster) {
+	if (config.getConfig("imageUrl")) {
 		let re2 = /<(.*?)>/g; //gets text between <>
 		let regx2;
 		do {
@@ -764,6 +491,7 @@ bot.on("message", (user, userID, channelID, message, event) => {
 				results2.push(regx2[1]);
 		} while (regx2);
 	}
+	let maxSearches = config.getConfig("maxSearches", serverID);
 	if (results.length + results2.length > maxSearches) {
 		sendMessage(user, userID, channelID, message, event, "You can only search up to " + maxSearches + " cards!").catch(msgErrHandler);
 	} else {
@@ -794,6 +522,8 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 	let channelID = newMsg.channel_id;
 	if (!channelID)
 		return;
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let pre = config.getConfig("prefix", serverID);
 	if (searchPage[channelID] && lowMessage && lowMessage.startsWith(pre + "p") && lowMessage.indexOf("param") === -1) {
 		libPage(newMsg.author.username, newMsg.author.id, channelID, newMsg.content, event, "p");
 	}
@@ -812,6 +542,8 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 });
 
 function commands(user, userID, channelID, message, event) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let pre = config.getConfig("prefix", serverID);
 	let out = "__**Command List**__\n";
 	out += "Type a card name or ID between `{}` (or `<>` to include images) to see its profile.\n";
 	for (let cmd of commandList) {
@@ -835,11 +567,12 @@ function commands(user, userID, channelID, message, event) {
 
 async function randomCard(user, userID, channelID, message, event) { //anything that gets card data has to be async because getting the price involves a Promise
 	try {
+		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 		let args = message.toLowerCase().split(" ");
 		let code;
-		let outLang = defaultLang;
+		let outLang = config.getConfig("defaultLanguage");
 		for (let arg of args) {
-			if (arg in dbs) {
+			if (arg in config.dbs) {
 				outLang = arg;
 			}
 		}
@@ -864,8 +597,8 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 			code = ids[Math.floor(Math.random() * ids.length)];
 		}
 		let out = await getCardInfo(code, outLang); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
-		if (imageUrlMaster && args.includes("image")) {
-			if (out[1].length == 1 && messageMode > 0) {
+		if (config.getConfig("imageUrl") && args.includes("image")) {
+			if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) {
 				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 			} else {
 				postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -880,12 +613,13 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 
 //from hereon out, some functions and logic will be re-used from earlier functions - I won't repeat myself, just check that.
 async function script(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");
-	let inLang = defaultLang;
+	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in dbs)
+		if (args[1] in config.dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -920,14 +654,16 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	} else {
 		stats.inputRankings[input] = 1;
 	}
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let args = input.split(",");
 	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
-	if (inLang in dbs && outLang in dbs) {
+	let defaultLanguage = config.getConfig("defaultLanguage");
+	if (inLang in config.dbs && outLang in config.dbs) {
 		input = args.splice(0, args.length - 2).join(",");
 	} else {
-		inLang = defaultLang;
-		outLang = defaultLang;
+		inLang = defaultLanguage;
+		outLang = defaultLanguage;
 	}
 	let inInt = parseInt(input);
 	if (inInt in cards[inLang]) {
@@ -940,9 +676,9 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 					stats.searchRankings[alID] = 1;
 				}
 			}
-			let out = await getCardInfo(inInt, outLang);
+			let out = await getCardInfo(inInt, outLang, serverID);
 			if (hasImage) {
-				if (out[1].length == 1 && messageMode > 0) {
+				if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) {
 					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 				} else {
 					postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -967,9 +703,9 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 						stats.searchRankings[alID] = 1;
 					}
 				}
-				let out = await getCardInfo(code, outLang);
+				let out = await getCardInfo(code, outLang, serverID);
 				if (hasImage) {
-					if (out[1].length == 1 && messageMode > 0) { //if it's embed mode, sendLongMessage handles embedding one image
+					if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) { //if it's embed mode, sendLongMessage handles embedding one image
 						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
 					} else {
 						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
@@ -988,7 +724,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	}
 }
 
-function getCardInfo(code, outLang) {
+function getCardInfo(code, outLang, serverID) {
 	return new Promise((resolve, reject) => {
 		if (!code || !cards[outLang][code]) {
 			console.error("Invalid card ID, please try again.");
@@ -996,9 +732,11 @@ function getCardInfo(code, outLang) {
 		}
 		let card = cards[outLang][code];
 		let alIDs = [code];
+		let emoteMode = config.getConfig("emoteMode", serverID);
+		let emotesDB = config.emotesDB;
 		if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 			let alCard = cards[outLang][card.alias];
-			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
 				alIDs = [code];
 				Object.values(cards[outLang]).forEach(tempCard => {
@@ -1061,17 +799,15 @@ function getCardInfo(code, outLang) {
 			}
 			let embCT = getEmbCT(card);
 			if (card.types.includes("Monster")) {
-				let arrace = addEmote(card.race, "|");
+				let arrace = addEmote(card.race, "|", serverID);
 				let typesStr;
-				if (emoteMode < 2 && messageMode != 1) {
+				if (emoteMode < 2) {
 					typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
 				} else {
 					typesStr = card.types.join("/").replace("Monster", arrace[0]);
-					if (messageMode != 1) {
-						typesStr += " " + arrace[1];
-					}
+					typesStr += " " + arrace[1];
 				}
-				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
 				let lvName = "Level";
 				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
@@ -1081,9 +817,9 @@ function getCardInfo(code, outLang) {
 				out += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
 					if (card.isType(0x1000000000)) { //is dark synchro
-						out += emoteDB["NLevel"] + " ";
+						out += emotesDB["NLevel"] + " ";
 					} else {
-						out += emoteDB[lvName] + " ";
+						out += emotesDB[lvName] + " ";
 					}
 				}
 				out += " **ATK**: " + card.atk + " ";
@@ -1095,7 +831,7 @@ function getCardInfo(code, outLang) {
 				if (card.types.includes("Pendulum")) {
 					out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
-						out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
+						out += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
 					} else {
 						out += card.lscale + "/" + card.rscale;
 					}
@@ -1112,25 +848,23 @@ function getCardInfo(code, outLang) {
 					out += "**" + textName + "**: " + cardText[0];
 				}
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				let typeemote = addEmote(card.types, "/");
+				let typeemote = addEmote(card.types, "/", serverID);
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
-					typeemote[1] += emoteDB["NormalST"];
-					typeemote[2] += emoteDB["NormalST"];
+					typeemote[1] += emotesDB["NormalST"];
+					typeemote[2] += emotesDB["NormalST"];
 				}
 				if (card.isType(0x100)) { //is trap monster
-					let arrace = addEmote(card.race, "|");
+					let arrace = addEmote(card.race, "|", serverID);
 					let typesStr;
-					if (emoteMode < 2 && messageMode != 1) {
+					if (emoteMode < 2) {
 						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
 					} else {
 						typesStr = arrace[0] + "/" + typeemote[0];
-						if (messageMode != 1) {
-							typesStr += " " + arrace[1] + typeemote[1];
-						}
+						typesStr += " " + arrace[1] + typeemote[1];
 					}
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n**Level**: " + card.level;
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
 					if (emoteMode > 0) {
-						out += " " + emoteDB["Level"];
+						out += " " + emotesDB["Level"];
 					}
 					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
@@ -1147,13 +881,16 @@ function getCardInfo(code, outLang) {
 
 async function postImage(code, out, outLang, user, userID, channelID, message, event, embCT) {
 	try {
-		let imageUrl = imageUrlMaster;
+		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+		let imageUrl = config.getConfig("imageUrl");
+		let imageSize = config.getConfig("imageSize", serverID);
+		let imageExt = config.getConfig("imageExt");
 		let card = cards[outLang][code[0]];
 		if (card.isAnime) {
-			imageUrl = imageUrlAnime;
+			imageUrl = config.getConfig("imageUrlAnime");
 		}
 		if (card.isCustom) {
-			imageUrl = imageUrlCustom;
+			imageUrl = config.getConfig("imageUrlCustom");
 		}
 		if (code.length > 1) {
 			let pics = [];
@@ -1229,7 +966,7 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 				sendLongMessage(out, user, userID, channelID, message, event, embCT);
 			});
 		} else {
-			let buffer = await downloadImage(imageUrl + code[0] + "." + imageExt, user, userID, channelID, message, event);
+			let buffer = await downloadImage(imageUrl + code[0] + "." + imageExt, serverID);
 			if (buffer) {
 				bot.uploadFile({
 					to: channelID,
@@ -1248,9 +985,9 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 
 }
 
-function downloadImage(imageUrl) {
+function downloadImage(imageUrl, serverID) {
 	return new Promise((resolve, reject) => {
-		if (debugOutput) {
+		if (config.getConfig("debugOutput")) {
 			console.log("Debug Data: " + imageUrl);
 			console.dir(url.parse(imageUrl));
 		}
@@ -1260,12 +997,12 @@ function downloadImage(imageUrl) {
 				data.push(chunk);
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
-				if (filetype(buffer) && filetype(buffer).ext === imageExt) {
+				if (filetype(buffer) && filetype(buffer).ext === config.getConfig("imageExt")) {
 					jimp.read(buffer, (err, image) => {
 						if (err) {
 							reject(err);
 						} else {
-							image.resize(jimp.AUTO, imageSize);
+							image.resize(jimp.AUTO, config.getConfig("imageSize", serverID));
 							image.getBuffer(jimp.AUTO, (err, res) => {
 								if (err) {
 									reject(err);
@@ -1286,12 +1023,15 @@ function downloadImage(imageUrl) {
 
 //see getCardInfo for much of the functionality here
 async function getSingleProp(user, userID, channelID, message, event, name, prop) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");
-	let outLang = defaultLang;
+	let outLang = config.getConfig("defaultLanguage");
+	let emoteMode = config.getConfig("emoteMode", serverID);
+	let emotesDB = config.emotesDB;
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in dbs)
+		if (args[1] in config.dbs)
 			outLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1312,7 +1052,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
-				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
 					Object.values(cards[outLang]).forEach(tempCard => {
@@ -1335,7 +1075,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			alIDs = [code];
 			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 				alCard = cards[outLang][card.alias];
-				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
+				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 					code = alCard.code;
 					alIDs = [code];
 					Object.values(cards[outLang]).forEach(tempCard => {
@@ -1369,7 +1109,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 			});
 			out += "**Status**: " + stat + "\n";
 			if (card.types.includes("Monster")) {
-				let arrace = addEmote(card.race, "|");
+				let arrace = addEmote(card.race, "|", serverID);
 				let typesStr;
 				if (emoteMode < 2) {
 					typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
@@ -1377,7 +1117,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 					typesStr = card.types.join("/").replace("Monster", arrace[0]);
 					typesStr += " " + arrace[1];
 				}
-				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n";
+				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
 				let lvName = "Level";
 				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
@@ -1387,9 +1127,9 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				out += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
 					if (card.isType(0x1000000000)) { //is dark synchro
-						out += emoteDB["NLevel"] + " ";
+						out += emotesDB["NLevel"] + " ";
 					} else {
-						out += emoteDB[lvName] + " ";
+						out += emotesDB[lvName] + " ";
 					}
 				}
 				out += " **ATK**: " + card.atk + " ";
@@ -1401,20 +1141,20 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				if (card.types.includes("Pendulum")) {
 					out += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
-						out += " " + card.lscale + emoteDB["L.Scale"] + " " + emoteDB["R.Scale"] + card.rscale + " ";
+						out += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
 					} else {
 						out += card.lscale + "/" + card.rscale;
 					}
 				}
 				out += "\n";
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				let typeemote = addEmote(card.types, "/");
+				let typeemote = addEmote(card.types, "/", serverID);
 				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
-					typeemote[1] += emoteDB["NormalST"];
-					typeemote[2] += emoteDB["NormalST"];
+					typeemote[1] += emotesDB["NormalST"];
+					typeemote[2] += emotesDB["NormalST"];
 				}
 				if (card.isType(0x100)) { //is trap monster
-					let arrace = addEmote(card.race, "|");
+					let arrace = addEmote(card.race, "|", serverID);
 					let typesStr;
 					if (emoteMode < 2) {
 						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
@@ -1422,9 +1162,9 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 						typesStr = arrace[0] + "/" + typeemote[0];
 						typesStr += " " + arrace[1] + typeemote[1];
 					}
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|")[emoteMode] + "\n**Level**: " + card.level;
+					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
 					if (emoteMode > 0) {
-						out += " " + emoteDB["Level"];
+						out += " " + emotesDB["Level"];
 					}
 					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
@@ -1468,9 +1208,9 @@ function deck(user, userID, channelID, message, event) {
 		return;
 	}
 	let args = message.toLowerCase().split(" ");
-	let outLang = defaultLang;
+	let outLang = config.getConfig("defaultLanguage");
 	for (let arg of args) {
-		if (arg in dbs) {
+		if (arg in config.dbs) {
 			outLang = arg;
 		}
 	}
@@ -1606,15 +1346,15 @@ function deck(user, userID, channelID, message, event) {
 
 function getCardScript(card) {
 	return new Promise(resolve => {
-		let scriptUrl = scriptUrlMaster;
+		let scriptUrl = config.getConfig("scriptUrl");
 		if (card.isAnime) {
-			scriptUrl = scriptUrlAnime;
+			scriptUrl = config.getConfig("scriptUrlAnime");
 		}
 		if (card.isCustom) {
-			scriptUrl = scriptUrlCustom;
+			scriptUrl = config.getConfig("scriptUrlCustom");
 		}
 		let fullUrl = scriptUrl + "c" + card.code + ".lua";
-		if (debugOutput) {
+		if (config.getConfig("debugOutput")) {
 			console.log("Debug data: " + fullUrl);
 			console.dir(url.parse(fullUrl));
 		}
@@ -1625,9 +1365,9 @@ function getCardScript(card) {
 			}).on("end", async () => {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
-				if (script === "404: Not Found\n" && scriptUrlBackup) {
+				if (script === "404: Not Found\n" && config.getConfig("scriptUrlBackup")) {
 					script = await new Promise(resolve => {
-						fullUrl = scriptUrlBackup + "c" + card.code + ".lua";
+						fullUrl = config.getConfig("scriptUrlBackup") + "c" + card.code + ".lua";
 						https.get(url.parse(fullUrl), response => {
 							let data2 = [];
 							response.on("data", chunk => {
@@ -1657,13 +1397,14 @@ function getCardScript(card) {
 
 function matches(user, userID, channelID, message, event, name) {
 	let a = message.toLowerCase().split("|");
-	let arg = a[0].slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = a[0].slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = a[1] && a[1].split(" ");
-	let outLang = defaultLang;
+	let outLang = config.getConfig("defaultLanguage");
 	let num = 10;
 	if (args) {
 		for (let ar of args) {
-			if (ar in dbs) {
+			if (ar in config.dbs) {
 				outLang = ar;
 			}
 		}
@@ -1729,7 +1470,8 @@ function matches(user, userID, channelID, message, event, name) {
 }
 
 function set(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	if (arg.toLowerCase() in setcodes) {
 		sendMessage(user, userID, channelID, message, event, setcodes[arg.toLowerCase()] + ": " + arg).catch(msgErrHandler);
 	} else {
@@ -1743,7 +1485,8 @@ function set(user, userID, channelID, message, event, name) {
 }
 
 function searchSkill(user, userID, channelID, message, event, name) {
-	let arg = message.toLowerCase().slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.toLowerCase().slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let index = -1;
 	skills.forEach((skill, ind) => {
 		if (arg === skill.name.toLowerCase()) {
@@ -1771,12 +1514,13 @@ function searchSkill(user, userID, channelID, message, event, name) {
 }
 
 function strings(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");
-	let inLang = defaultLang;
+	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in dbs)
+		if (args[1] in config.dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1806,12 +1550,13 @@ function strings(user, userID, channelID, message, event, name) {
 }
 
 async function rulings(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");
-	let inLang = defaultLang;
+	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in dbs)
+		if (args[1] in config.dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1831,6 +1576,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 		jUrl = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&cid=" + id + "&request_locale=ja";
 		out += "<" + encodeURI(jUrl) + ">";
 	}).catch(e => {
+		let rulingLang = config.getConfig("rulingLanguage");
 		if (rulingLang) {
 			let jaCard;
 			Object.values(cards[rulingLang]).forEach(tempCard => {
@@ -1853,11 +1599,12 @@ async function rulings(user, userID, channelID, message, event, name) {
 }
 
 function rankings(user, userID, channelID, message, event) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let args = message.split(" ");
 	let term = "cards";
 	let validTerms = ["cards", "inputs", "commands"];
 	let numToGet = -1;
-	let outLang = defaultLang;
+	let outLang = config.getConfig("defaultLanguage");
 	for (let arg of args) {
 		if (parseInt(arg) > numToGet) {
 			numToGet = parseInt(arg);
@@ -1865,7 +1612,7 @@ function rankings(user, userID, channelID, message, event) {
 		if (validTerms.includes(arg.toLowerCase())) {
 			term = arg.toLowerCase();
 		}
-		if (arg in dbs) {
+		if (arg in config.dbs) {
 			outLang = arg;
 		}
 	}
@@ -1925,7 +1672,7 @@ function rankings(user, userID, channelID, message, event) {
 			case "commands":
 				tempVal = value;
 				if (tempVal.indexOf("search") < 0) {
-					tempVal = "`" + pre + tempVal + "`";
+					tempVal = "`" + config.getConfig("prefix", serverID) + tempVal + "`";
 				}
 				tempOut = ranks[index] + ". " + tempVal + " (" + stats[statsKey][value] + " times)\n";
 				if (out.length + tempOut.length < 2000) {
@@ -1947,7 +1694,9 @@ function rankings(user, userID, channelID, message, event) {
 }
 
 function banlist(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let defaultLanguage = config.getConfig("defaultLanguage");
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	for (let list of Object.keys(lflist)) {
 		if (input.toLowerCase() === list.toLowerCase()) {
 			let ban = lflist[list];
@@ -1965,7 +1714,7 @@ function banlist(user, userID, channelID, message, event, name) {
 			if (banArr.length > 0) {
 				out += "**Forbidden**\n";
 				for (let code of banArr) {
-					let card = cards[defaultLang][parseInt(code)];
+					let card = cards[defaultLanguage][parseInt(code)];
 					if (card)
 						out += card.name + "\n";
 					else
@@ -1975,7 +1724,7 @@ function banlist(user, userID, channelID, message, event, name) {
 			if (limArr.length > 0) {
 				out += "**Limited**\n";
 				for (let code of limArr) {
-					let card = cards[defaultLang][parseInt(code)];
+					let card = cards[defaultLanguage][parseInt(code)];
 					if (card)
 						out += card.name + "\n";
 					else
@@ -1985,7 +1734,7 @@ function banlist(user, userID, channelID, message, event, name) {
 			if (semArr.length > 0) {
 				out += "**Semi-Limited**\n";
 				for (let code of semArr) {
-					let card = cards[defaultLang][parseInt(code)];
+					let card = cards[defaultLanguage][parseInt(code)];
 					if (card)
 						out += card.name + "\n";
 					else
@@ -2005,18 +1754,20 @@ function banlist(user, userID, channelID, message, event, name) {
 }
 
 function banlink(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let out;
 	switch (input.toLowerCase()) {
 	case "tcg": out = "http://www.yugioh-card.com/en/limited/"; break;
 	case "ocg": out = "http://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?list=201801&lang=en"; break;
+	default: return;
 	}
-	if (out)
-		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+	sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 }
 
 function yugi(user, userID, channelID, message, event, name) {
-	let input = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	request("https://yugipedia.com/api.php?action=opensearch&results=2&redirects=resolve&format=json&search=" + input, (error, response, body) => {
 		let out;
 		let data;
@@ -2036,23 +1787,52 @@ function yugi(user, userID, channelID, message, event, name) {
 	});
 }
 
+function setConf(user, userID, channelID, message, event) {
+	let args = message.split(" ");
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	if (serverID) {
+		let fieldName = args[1];
+		let val = args[2];
+		if (Conf.fieldList[fieldName] != null && Conf.fieldList[fieldName].configable) {
+			if (config.setConfig(fieldName, val, serverID)) {
+				let out = "Value of `" + fieldName + "` successfully set to `" + args[2] + "`!";
+				if (val == null)
+					out = "Value of `" + fieldName + "` successfully reverted to default of `" + config.getConfig(fieldName) + "`!";
+				sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+			} else {
+				let out = "Sorry, but something went wrong setting the value of `" + fieldName + "` to `" + args[2] + "`! `" + args[2] + "` might have been an invalid value, see the readme for instructions on using this command.";
+				if (val == null)
+					out = "Sorry, but something went wrong reverting the value of `" + fieldName + "` to default! Perhaps it had not been set for this server?";
+				sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+			}
+		} else {
+			sendMessage(user, userID, channelID, message, event, "Sorry, but `" + fieldName + "` isn't the name of a config field that can be configured per-server. Keep in mind config fields are case sensitive. See the readme for a list of valid fields!").catch(msgErrHandler);
+		}
+	} else {
+		sendMessage(user, userID, channelID, message, event, "Sorry, but I can't get the ID of the current server. This command does not work in Direct Messages.").catch(msgErrHandler);
+	}
+}
+
 //utility functions
-function sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
+function sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
 	return new Promise((resolve, reject) => {
 		try {
-			let tempcolor = embcDB && typecolor && embcDB[typecolor] || embedColor;
+			let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+			let tempColour = config.embcDB && typeColour && config.embcDB[typeColour] || config.getConfig("embedColour", serverID);
 			let imgurl = "";
 			if (code && outLang) {
-				imgurl = imageUrlMaster;
+				imgurl = config.getConfig("imageUrl");
 				let card = cards[outLang][code];
 				if (card.isAnime) {
-					imgurl = imageUrlAnime;
+					imgurl = config.getConfig("imageUrlAnime");
 				}
 				if (card.isCustom) {
-					imgurl = imageUrlCustom;
+					imgurl = config.getConfig("imageUrlCustom");
 				}
-				imgurl += code + "." + imageExt;
+				imgurl += code + "." + config.getConfig("imageExt");
 			}
+			let longStr = config.getConfig("longStr");
+			let messageMode = config.getConfig("messageMode", serverID);
 			if (out.length > 2000) {
 				let outArr = [out.slice(0, 2000 - 5 - longStr.length) + longStr, out.slice(2000 - 5 - longStr.length)];
 				longMsg = outArr[1];
@@ -2060,7 +1840,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 					bot.sendMessage({
 						to: channelID,
 						embed: {
-							color: tempcolor,
+							color: tempColour,
 							description: outArr[0],
 							thumbnail: {
 								url: imgurl
@@ -2070,7 +1850,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2087,7 +1867,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2102,7 +1882,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 					bot.sendMessage({
 						to: channelID,
 						embed: {
-							color: tempcolor,
+							color: tempColour,
 							description: out,
 							thumbnail: {
 								url: imgurl
@@ -2112,7 +1892,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2129,7 +1909,7 @@ function sendLongMessage(out, user, userID, channelID, message, event, typecolor
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typecolor, code, outLang);
+									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -2173,8 +1953,8 @@ function getEmbCT(card) {
 }
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
-	if (!(inLang in dbs)) {
-		inLang = defaultLang;
+	if (!(inLang in config.dbs)) {
+		inLang = config.getConfig("defaultLanguage");
 	}
 	for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
 		if (tempCard.name.toLowerCase() === line.toLowerCase()) {
@@ -2223,12 +2003,13 @@ function nameCheck(line, inLang) { //called by card searching functions to deter
 	}
 }
 
-function addEmote(args, symbol) {
+function addEmote(args, symbol, serverID) {
 	let str = args.join(symbol);
 	let emotes = "";
+	let emoteMode = config.getConfig("emoteMode", serverID);
 	if (emoteMode > 0) {
 		for (let i = 0; i < args.length; i++) {
-			emotes += emoteDB[args[i]];
+			emotes += config.emotesDB[args[i]];
 		}
 	}
 	return [str, emotes, str + " " + emotes];
@@ -2588,9 +2369,10 @@ function getDBID(name) {
 
 function sendMessage(user, userID, channelID, message, event, out, embColour) {
 	return new Promise((resolve, reject) => {
+		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 		if (!embColour)
-			embColour = embedColor;
-		if (messageMode > 0) {
+			embColour = config.getConfig("embedColour", serverID);
+		if (config.getConfig("messageMode", serverID) > 0) {
 			bot.sendMessage({
 				to: channelID,
 				embed: {
@@ -2636,7 +2418,7 @@ function msgErrHandler(e) {
 }
 
 function validateReg(regx) { //ignores <@mentions>, <#channels>, <http://escaped.links>, <:customEmoji:126243>, <a:animatedEmoji:12164>, and messages that are too long
-	return regx.length > 0 && regx.indexOf(":") !== 0 && regx.indexOf("a:") !== 0 && regx.indexOf("@") !== 0 && regx.indexOf("#") !== 0 && !regx.includes("http") && regx.length <= options.maxPatternLength;
+	return regx.length > 0 && regx.indexOf(":") !== 0 && regx.indexOf("a:") !== 0 && regx.indexOf("@") !== 0 && regx.indexOf("#") !== 0 && !regx.includes("http") && regx.length <= config.getConfig("fuseOptions").maxPatternLength;
 }
 
 function sliceBetween(str, cha1, cha2) {
@@ -2667,14 +2449,16 @@ function getIndexAfter(str, cha, ind) {
 //games
 function trivia(user, userID, channelID, message, event) {
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let triviaLocks = config.getConfig("triviaLocks", serverID);
+	let triviaMaxRounds = config.getConfig("triviaMaxRounds", serverID);
 	if (channelID in gameData || (triviaLocks[serverID] && triviaLocks[serverID].indexOf(channelID) === -1)) {
 		return;
 	} else {
-		let outLang = defaultLang;
+		let outLang = config.getConfig("defaultLanguage");
 		let round = 1;
 		let args = message.toLowerCase().split(" ");
 		for (let arg of args) {
-			if (arg in dbs)
+			if (arg in config.dbs)
 				outLang = arg;
 			if (parseInt(arg) > round) {
 				if (parseInt(arg) > triviaMaxRounds) {
@@ -2692,6 +2476,9 @@ function trivia(user, userID, channelID, message, event) {
 
 async function startTriviaRound(round, hard, outLang, argObj, user, userID, channelID, message, event) {
 	try {
+		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+		let triviaTimeLimit = config.getConfig("triviaTimeLimit", serverID);
+		let triviaHintTime = config.getConfig("triviaHintTime", serverID);
 		//pick a random card
 		let code;
 		let buffer;
@@ -2718,19 +2505,20 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 		} else {
 			matches = ids;
 		}
+		let imageExt = config.getConfig("imageExt");
 		do {
 			code = matches[Math.floor(Math.random() * matches.length)];
 			card = cards[outLang][code];
 			name = card.name;
-			let imageUrl = imageUrlMaster;
+			let imageUrl = config.getConfig("imageUrl");
 			if (card.isAnime) {
-				imageUrl = imageUrlAnime;
+				imageUrl = config.getConfig("imageUrlAnime");
 			}
 			if (card.isCustom) {
-				imageUrl = imageUrlCustom;
+				imageUrl = config.getConfig("imageUrlCustom");
 			}
 			buffer = await new Promise(resolve => {
-				if (debugOutput) {
+				if (config.getConfig("debugOutput")) {
 					console.log("Debug Data: " + imageUrl + code + "." + imageExt);
 					console.dir(url.parse(imageUrl + code + "." + imageExt));
 				}
@@ -2804,17 +2592,17 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 					gameData[channelID].IN = setInterval(() => {
 						let green = Math.floor(0xff * (i * 1000 / triviaTimeLimit)).toString("16").padStart(2, "0").replace(/0x/, "");
 						let red = Math.floor(0xff * (1 - (i * 1000 / triviaTimeLimit))).toString("16").padStart(2, "0").replace(/0x/, "");
-						let tempcolor = parseInt("0x" + red + green + "00");
-						if (messageMode > 0) {
+						let tempColour = parseInt("0x" + red + green + "00");
+						if (config.getConfig("messageMode", serverID) > 0) {
 							bot.editMessage({
 								channelID: channelID,
 								messageID: messageID,
 								embed: {
-									color: tempcolor,
+									color: tempColour,
 									description: "Can you name this card? Time remaining: `" + i + "`",
 								}
 							});
-							tempcolor += 0x300 - 0x1000;
+							tempColour += 0x300 - 0x1000;
 						} else {
 							bot.editMessage({
 								channelID: channelID,
@@ -2905,7 +2693,15 @@ async function answerTrivia(user, userID, channelID, message, event) {
 	if (!(channelID in gameData) || gameData[channelID].game !== "trivia" || gameData[channelID].lock) {
 		return;
 	}
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let pre = config.getConfig("prefix", serverID);
 	let out;
+	let thumbsup = "👍";
+	let thumbsdown;
+	if (config.getConfig("emoteMode") > 0) {
+		thumbsup = config.emotesDB["thumbsup"];
+		thumbsdown = config.emotesDB["thumbsdown"];
+	}
 	if (!message.toLowerCase().startsWith(pre + "tq") && !message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
 		gameData[channelID].attempted = true;
 		if (thumbsdown) {
@@ -2996,6 +2792,7 @@ function triviaWinners(out, user, userID, channelID) {
 
 function tlock(user, userID, channelID, message, event) {
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let triviaLocks = config.getConfig("triviaLocks");
 	if (serverID in triviaLocks) {
 		let index = triviaLocks[serverID].indexOf(channelID);
 		if (index > -1) {
@@ -3007,12 +2804,10 @@ function tlock(user, userID, channelID, message, event) {
 				}
 				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 				config.triviaLocks = triviaLocks;
-				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			} else {
 				delete triviaLocks[serverID];
 				sendMessage(user, userID, channelID, message, event, "Trivia no longer locked to any channel on this server!").catch(msgErrHandler);
 				config.triviaLocks = triviaLocks;
-				fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 			}
 		} else {
 			triviaLocks[serverID].push(channelID);
@@ -3022,7 +2817,6 @@ function tlock(user, userID, channelID, message, event) {
 			}
 			sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 			config.triviaLocks = triviaLocks;
-			fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 		}
 	} else {
 		triviaLocks[serverID] = [channelID];
@@ -3032,7 +2826,6 @@ function tlock(user, userID, channelID, message, event) {
 		}
 		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 		config.triviaLocks = triviaLocks;
-		fs.writeFileSync("config/config.json", JSON.stringify(config, null, 4), "utf8");
 	}
 }
 
@@ -3106,18 +2899,22 @@ function checkForPermissions(userID, channelID, permissionValues) {
 }
 
 function servers(user, userID, channelID, message, event) {
-	let out = "```\n";
+	let out = "";
 	Object.keys(bot.servers).forEach(key => {
 		out += bot.servers[key].name + "\t" + bot.servers[key].member_count + " members\n";
 	});
-	out += "```";
-	sendMessage(user, userID, userID, message, event, out).catch(msgErrHandler);
+	if (out.length > 0) {
+		let outArr = out.match(/[\s\S]{1,1990}/g); //splits text into 2k character chunks
+		for (let msg of outArr) {
+			sendMessage(user, userID, userID, message, event, "```\n" + msg + "```").catch(msgErrHandler);
+		}
+	}
 }
 
 function updatejson() {
 	return new Promise(resolve => {
-		for (let arg of Object.keys(sheetsDB)) {
-			let sheetID = sheetsDB[arg];
+		for (let arg of Object.keys(config.sheetsDB)) {
+			let sheetID = config.sheetsDB[arg];
 			if (!arg || !(/\S/.test(arg)) || !sheetID) { //if null or empty
 				if (!sheetID)
 					console.error(arg + ".json is not mapped.");
@@ -3139,6 +2936,7 @@ function updatejson() {
 
 function updateSetcodes() {
 	return new Promise(resolve => {
+		let setcodeSource = config.getConfig("setcodeSource");
 		console.log("Downloading strings file from " + setcodeSource + "...");
 		https.get(url.parse(setcodeSource), response => {
 			let data = [];
@@ -3157,7 +2955,7 @@ function updateSetcodes() {
 					}
 				}
 				console.log("Setcodes assembled, writing to file...");
-				fs.writeFileSync("config/" + setsDB, JSON.stringify(tempCodes), "utf-8");
+				fs.writeFileSync("config/" + config.getConfig("setcodesDB"), JSON.stringify(tempCodes), "utf-8");
 				setcodes = tempCodes;
 				Card = require("./card.js")(setcodes);
 				console.log("Setcodes updated!");
@@ -3169,6 +2967,7 @@ function updateSetcodes() {
 
 function updateLflist() {
 	return new Promise(resolve => {
+		let lflistSource = config.getConfig("lflistSource");
 		console.log("Downloading banlist file from " + lflistSource + "...");
 		https.get(url.parse(lflistSource), response => {
 			let data = [];
@@ -3193,7 +2992,7 @@ function updateLflist() {
 					tempList[currentList][line.split(" ")[0]] = line.split(" ")[1];
 				}
 				console.log("Banlist assembled, writing to file...");
-				fs.writeFileSync("config/" + banDB, JSON.stringify(tempList), "utf-8");
+				fs.writeFileSync("config/" + config.getConfig("lflistDB"), JSON.stringify(tempList), "utf-8");
 				lflist = tempList;
 				console.log("Banlist updated!");
 				resolve();
@@ -3204,7 +3003,8 @@ function updateLflist() {
 
 //scripting lib 
 function searchFunctions(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3246,7 +3046,8 @@ function searchFunctions(user, userID, channelID, message, event, name) {
 }
 
 function searchConstants(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3288,7 +3089,8 @@ function searchConstants(user, userID, channelID, message, event, name) {
 }
 
 function searchParams(user, userID, channelID, message, event, name) {
-	let arg = message.slice((pre + name + " ").length);
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	if (!arg || !(/\S/.test(arg))) { //if null or empty
 		return;
 	}
@@ -3330,7 +3132,8 @@ function searchParams(user, userID, channelID, message, event, name) {
 }
 
 function libPage(user, userID, channelID, message, event, name) {
-	let arg = parseInt(message.slice((pre + name).length));
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = parseInt(message.slice((config.getConfig("prefix", serverID) + name).length));
 	if (!searchPage[channelID] || userID !== searchPage[channelID].user || isNaN(arg) || arg > searchPage[channelID].pages.length) {
 		return;
 	}
@@ -3364,12 +3167,12 @@ function libPage(user, userID, channelID, message, event, name) {
 	out += "````Page: " + arg + "/" + pages.length + "`";
 	searchPage[channelID].index = index;
 	searchPage[channelID].content = out;
-	if (messageMode > 0) {
+	if (config.getConfig("messageMode", serverID) > 0) {
 		bot.editMessage({
 			channelID: channelID,
 			messageID: searchPage[channelID].message,
 			embed: {
-				color: embedColor,
+				color: config.getConfig("embedColour", serverID),
 				description: out
 			}
 		});
@@ -3383,7 +3186,8 @@ function libPage(user, userID, channelID, message, event, name) {
 }
 
 function libDesc(user, userID, channelID, message, event, name) {
-	let arg = parseInt(message.slice((pre + name).length));
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = parseInt(message.slice((config.getConfig("prefix", serverID) + name).length));
 	if (!searchPage[channelID] || userID !== searchPage[channelID].user || isNaN(arg) || arg > searchPage[channelID].pages[searchPage[channelID].index].length) {
 		return;
 	}
@@ -3395,12 +3199,12 @@ function libDesc(user, userID, channelID, message, event, name) {
 	if (desc.length === 0) {
 		desc = "No description found for this entry.";
 	}
-	if (messageMode > 0) {
+	if (config.getConfig("messageMode", serverID) > 0) {
 		bot.editMessage({
 			channelID: channelID,
 			messageID: searchPage[channelID].message,
 			embed: {
-				color: embedColor,
+				color: config.getConfig("embedColour", serverID),
 				description: searchPage[channelID].content + "\n`" + desc + "`"
 			}
 		});
