@@ -706,7 +706,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 				let out = await getCardInfo(code, outLang, serverID);
 				if (hasImage) {
 					if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) { //if it's embed mode, sendLongMessage handles embedding one image
-						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
+						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[1][0], outLang);
 					} else {
 						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
 					}
