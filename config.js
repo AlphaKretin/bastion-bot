@@ -177,18 +177,22 @@ module.exports = function() {
 	}
 
 	if (!conf.shortcutDB) {
+		conf.shortcutDB = "shortcuts.json";
 		console.warn("Filename for shortcuts file not found at conf.shortcutDB! Defaulting to " + conf.shortcutDB + ".");
 	}
 
 	if (!conf.setcodesDB) {
+		conf.setcodesDB = "setcodes.json";
 		console.warn("Filename for setcodes file not found at conf.setcodesDB! Defaulting to " + conf.setcodesDB + ".");
 	}
 
 	if (!conf.lflistDB) {
+		conf.lflistDB = "lflist.json";
 		console.warn("Filename for banlist file not found at conf.lflistDB! Defaulting to " + conf.lflistDB + ".");
 	}
 
 	if (!conf.statsDB) {
+		conf.statsDB = "stats.json";
 		console.warn("Filename for stats file not found at conf.statsDB! Defaulting to " + conf.statsDB + ".");
 	}
 
