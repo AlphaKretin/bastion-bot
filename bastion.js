@@ -541,7 +541,7 @@ bot.on("messageUpdate", (oldMsg, newMsg, event) => { //a few commands can be met
 	}
 });
 
-function commands(user, userID, channelID, message, event) {
+async function commands(user, userID, channelID, message, event) {
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let pre = config.getConfig("prefix", serverID);
 	let out = "__**Command List**__\n";
@@ -556,12 +556,22 @@ function commands(user, userID, channelID, message, event) {
 		}
 	}
 	out += "See the readme for details: <https://github.com/AlphaKretin/bastion-bot/>";
-	if (out.length > 0) {
-		let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
-		sendMessage(user, userID, userID, message, event, outArr[0]).then(() => {
-			if (outArr[1])
-				sendMessage(user, userID, userID, message, event, outArr[1]).catch(msgErrHandler);
-		}).catch(msgErrHandler);
+	let outArr = [out];
+	let outIndex = 0;
+	while (outArr[outIndex].length > 2000) {
+		let index = outArr[outIndex].length - 1;
+		while (outArr[outIndex].slice(0,index).length > 2000) {
+			index--;
+			while (outArr[outIndex][index - 1] !== "\n") {
+				index--;
+			}
+		}
+		outArr.push(outArr[outIndex].slice(index));
+		outArr[outIndex] = outArr[outIndex].slice(0,index);
+		outIndex++;
+	}
+	for (let msg of outArr) {
+		await sendMessage(user, userID, userID, message, event, msg).catch(msgErrHandler);
 	}
 }
 
@@ -1135,12 +1145,22 @@ function deck(user, userID, channelID, message, event) {
 					out += car.count + " " + car.name + "\n";
 				});
 			}
-			if (out.length > 0) {
-				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
-				sendMessage(user, userID, userID, message, event, outArr[0]).then(() => {
-					if (outArr[1])
-						sendMessage(user, userID, userID, message, event, outArr[1]).catch(msgErrHandler);
-				}).catch(msgErrHandler);
+			let outArr = [out];
+			let outIndex = 0;
+			while (outArr[outIndex].length > 2000) {
+				let index = outArr[outIndex].length - 1;
+				while (outArr[outIndex].slice(0,index).length > 2000) {
+					index--;
+					while (outArr[outIndex][index - 1] !== "\n") {
+						index--;
+					}
+				}
+				outArr.push(outArr[outIndex].slice(index));
+				outArr[outIndex] = outArr[outIndex].slice(0,index);
+				outIndex++;
+			}
+			for (let msg of outArr) {
+				await sendMessage(user, userID, userID, message, event, msg).catch(msgErrHandler);
 			}
 		});
 	});
@@ -1495,7 +1515,7 @@ function rankings(user, userID, channelID, message, event) {
 	}
 }
 
-function banlist(user, userID, channelID, message, event, name) {
+async function banlist(user, userID, channelID, message, event, name) {
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let defaultLanguage = config.getConfig("defaultLanguage");
 	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
@@ -1543,11 +1563,22 @@ function banlist(user, userID, channelID, message, event, name) {
 						out += code + "\n";
 				}
 			}
-			if (out.length > 0) {
-				let outArr = out.match(/[\s\S]{1,2000}/g); //splits text into 2k character chunks
-				for (let msg of outArr) {
-					sendMessage(user, userID, userID, message, event, msg).catch(msgErrHandler);
+			let outArr = [out];
+			let outIndex = 0;
+			while (outArr[outIndex].length > 2000) {
+				let index = outArr[outIndex].length - 1;
+				while (outArr[outIndex].slice(0,index).length > 2000) {
+					index--;
+					while (outArr[outIndex][index - 1] !== "\n") {
+						index--;
+					}
 				}
+				outArr.push(outArr[outIndex].slice(index));
+				outArr[outIndex] = outArr[outIndex].slice(0,index);
+				outIndex++;
+			}
+			for (let msg of outArr) {
+				await sendMessage(user, userID, userID, message, event, msg).catch(msgErrHandler);
 			}
 			return;
 		}
@@ -1662,8 +1693,15 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 		}
 		let longText;
 		if (cardData.mText.length > 1024) { //even though an embed's total content can be up to 6k charas, a field is capped to 1024 :/
-			longText = cardData.mText.slice(1024);
-			cardData.mText = cardData.mText.slice(0,1024);
+			let index = cardData.mText.length - 1;
+			while (cardData.mText.slice(0,index).length > 1024) {
+				index--;
+				while (cardData.mText[index - 1] !== ".") {
+					index--;
+				}
+			}
+			longText = cardData.mText.slice(index);
+			cardData.mText = cardData.mText.slice(0,index);
 		}
 		embed.fields.push({
 			name: cardData.mHeading,
@@ -1682,14 +1720,23 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 		if (cardData.pHeading) {
 			out += "**" + cardData.pHeading + "**: " + cardData.pText + "\n";
 		}
-		out += "**" + cardData.mHeading + "**: " + cardData.mText;
-		if (out.length > 2000) {
-			let longStr = config.getConfig("longStr");
-			let index = 2000 - 3 - longStr.length;
-			longMsg = out.slice(index);
-			out = out.slice(0,index) + longStr;
+
+		let mText = "**" + cardData.mHeading + "**: " + cardData.mText;
+		let longStr = config.getConfig("longStr");
+		if (out.length + mText.length > 2000) {
+			let index = mText.length - 1;
+			while (out.length + mText.slice(0,index).length + longStr.length > 2000) {
+				index--;
+				while (mText[index - 1] !== ".") {
+					index--;
+				}
+			}
+			longMsg = mText.slice(index);
+			out += mText.slice(0,index) + longStr;
+		} else {
+			out += mText;
 		}
-		sendProfileMessage(user, userID, channelID, message, event, out);
+		sendProfileMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	}
 }
 
