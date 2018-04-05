@@ -567,7 +567,6 @@ function commands(user, userID, channelID, message, event) {
 
 async function randomCard(user, userID, channelID, message, event) { //anything that gets card data has to be async because getting the price involves a Promise
 	try {
-		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 		let args = message.toLowerCase().split(" ");
 		let code;
 		let outLang = config.getConfig("defaultLanguage");
@@ -596,16 +595,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		} else {
 			code = ids[Math.floor(Math.random() * ids.length)];
 		}
-		let out = await getCardInfo(code, outLang); //returns a list of IDs for the purposes of cards with multiple images, as well as of course the card's profile
-		if (config.getConfig("imageUrl") && args.includes("image")) {
-			if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) {
-				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
-			} else {
-				postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
-			}
-		} else {
-			sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
-		}
+		sendCardProfile(user, userID, channelID, message, event, code, outLang, args.indexOf("image") > -1);
 	} catch (e) {
 		console.error(e);
 	}
@@ -626,7 +616,7 @@ async function script(user, userID, channelID, message, event, name) {
 	if (inInt in cards[inLang]) {
 		try {
 			let out = await getCardScript(cards[inLang][inInt]);
-			sendLongMessage(out, user, userID, channelID, message, event);
+			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		} catch (e) {
 			console.error("Error with search by ID:");
 			console.error(e);
@@ -636,7 +626,7 @@ async function script(user, userID, channelID, message, event, name) {
 			let code = nameCheck(input, inLang); //this handles all the fuzzy search stuff
 			if (code && code in cards[inLang]) {
 				let out = await getCardScript(cards[inLang][code]);
-				sendLongMessage(out, user, userID, channelID, message, event);
+				sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 			} else {
 				console.error("Invalid card ID or name, please try again.");
 				return;
@@ -654,7 +644,6 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	} else {
 		stats.inputRankings[input] = 1;
 	}
-	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let args = input.split(",");
 	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
@@ -667,52 +656,12 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	}
 	let inInt = parseInt(input);
 	if (inInt in cards[inLang]) {
-		try {
-			let alID = getBaseID(cards[inLang][inInt], outLang); //determines if the card should be tracked by its own ID, or its alias, and returns the appropriate ID.
-			if (alID > -1) {
-				if (stats.searchRankings[alID]) {
-					stats.searchRankings[alID]++;
-				} else {
-					stats.searchRankings[alID] = 1;
-				}
-			}
-			let out = await getCardInfo(inInt, outLang, serverID);
-			if (hasImage) {
-				if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) {
-					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3], out[1][0], outLang);
-				} else {
-					postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
-				}
-			} else {
-				sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
-			}
-		} catch (e) {
-			console.error("Error with search by ID:");
-			console.error(e);
-		}
+		sendCardProfile(user, userID, channelID, message, event, inInt, outLang, hasImage);
 	} else {
 		try {
 			let code = nameCheck(input, inLang);
 			if (code && code in cards[outLang]) {
-				let card = cards[outLang][code];
-				let alID = getBaseID(card, outLang);
-				if (alID > -1) {
-					if (stats.searchRankings[alID]) {
-						stats.searchRankings[alID]++;
-					} else {
-						stats.searchRankings[alID] = 1;
-					}
-				}
-				let out = await getCardInfo(code, outLang, serverID);
-				if (hasImage) {
-					if (out[1].length == 1 && config.getConfig("messageMode", serverID) > 0) { //if it's embed mode, sendLongMessage handles embedding one image
-						sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[1][0], outLang);
-					} else {
-						postImage(out[1], out[0], outLang, user, userID, channelID, message, event, out[2], out[3]); //postImage also handles sending the message
-					}
-				} else {
-					sendLongMessage(out[0], user, userID, channelID, message, event, out[2], out[3]); //in case a message is over 2k characters (thanks Ra anime), this splits it up
-				}
+				sendCardProfile(user, userID, channelID, message, event, code, outLang, hasImage);
 			} else {
 				console.error("Invalid card or no corresponding entry in out language DB, please try again.");
 				return;
@@ -730,34 +679,34 @@ function getCardInfo(code, outLang, serverID) {
 			console.error("Invalid card ID, please try again.");
 			reject("Invalid card ID, please try again.");
 		}
+		let out = {};
 		let card = cards[outLang][code];
-		let alIDs = [code];
+		out.alIDs = [code];
 		let emoteMode = config.getConfig("emoteMode", serverID);
 		let emotesDB = config.emotesDB;
 		if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
 			let alCard = cards[outLang][card.alias];
 			if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
 				code = alCard.code;
-				alIDs = [code];
+				out.alIDs = [code];
 				Object.values(cards[outLang]).forEach(tempCard => {
 					if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
-						alIDs.push(tempCard.code);
+						out.alIDs.push(tempCard.code);
 					}
 				});
 			}
 		} else { //if other cards have this, the original, as an alias, they'll be noted here
 			Object.values(cards[outLang]).forEach(tempCard => {
 				if (tempCard.alias === code && tempCard.hasSameOT(card) && tempCard.name === card.name) {
-					alIDs.push(tempCard.code);
+					out.alIDs.push(tempCard.code);
 				}
 			});
 		}
-		let out = "__**" + card.name + "**__\n";
-		out += "**ID**: " + alIDs.join("|") + "\n";
+		out.stats = "**ID**: " + out.alIDs.join("|") + "\n";
 		if (card.sets) {
-			out += "**Archetype**: " + card.sets.join(", ");
+			out.stats += "**Archetype**: " + card.sets.join(", ");
 		}
-		out += "\n";
+		out.stats += "\n";
 		let stat = card.ot.join("/");
 		Object.keys(lflist).forEach(key => { //keys of the banlist table are card IDs, values are number of copies allowed
 			if (stat.includes(key)) {
@@ -790,14 +739,14 @@ function getCardInfo(code, outLang, serverID) {
 				}
 				if (avgs.length > 0) {
 					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-					out += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+					out.stats += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 				} else {
-					out += "**Status**: " + stat + "\n";
+					out.stats += "**Status**: " + stat + "\n";
 				}
 			} else {
-				out += "**Status**: " + stat + "\n";
+				out.stats += "**Status**: " + stat + "\n";
 			}
-			let embCT = getEmbCT(card);
+			out.embCT = getEmbCT(card);
 			if (card.types.includes("Monster")) {
 				let arrace = addEmote(card.race, "|", serverID);
 				let typesStr;
@@ -807,45 +756,48 @@ function getCardInfo(code, outLang, serverID) {
 					typesStr = card.types.join("/").replace("Monster", arrace[0]);
 					typesStr += " " + arrace[1];
 				}
-				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
+				out.stats += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
 				let lvName = "Level";
 				if (card.types.includes("Xyz")) {
 					lvName = "Rank";
 				} else if (card.types.includes("Link")) {
 					lvName = "Link Rating";
 				}
-				out += "**" + lvName + "**: " + card.level + " ";
+				out.stats += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
 					if (card.isType(0x1000000000)) { //is dark synchro
-						out += emotesDB["NLevel"] + " ";
+						out.stats += emotesDB["NLevel"] + " ";
 					} else {
-						out += emotesDB[lvName] + " ";
+						out.stats += emotesDB[lvName] + " ";
 					}
 				}
-				out += " **ATK**: " + card.atk + " ";
+				out.stats += " **ATK**: " + card.atk + " ";
 				if (card.def) {
-					out += "**DEF**: " + card.def;
+					out.stats += "**DEF**: " + card.def;
 				} else {
-					out += "**Link Markers**: " + card.markers;
+					out.stats += "**Link Markers**: " + card.markers;
 				}
 				if (card.types.includes("Pendulum")) {
-					out += " **Pendulum Scale**: ";
+					out.stats += " **Pendulum Scale**: ";
 					if (emoteMode > 0) {
-						out += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
+						out.stats += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
 					} else {
-						out += card.lscale + "/" + card.rscale;
+						out.stats += card.lscale + "/" + card.rscale;
 					}
 				}
-				out += "\n";
 				let cardText = card.desc;
-				let textName = "Monster Effect";
-				if (card.types.includes("Normal")) {
-					textName = "Flavour Text";
-				}
 				if (cardText.length === 4) {
-					out += "**" + cardText[2] + "**: " + cardText[0] + "\n**" + cardText[3] + "**: " + cardText[1];
+					out.pHeading = cardText[2];
+					out.pText = cardText[0];
+					out.mHeading = cardText[3];
+					out.mText = cardText[1];
 				} else {
-					out += "**" + textName + "**: " + cardText[0];
+					if (card.types.includes("Normal")) {
+						out.mHeading = "Flavour Text";
+					} else {
+						out.mHeading = "Monster Effect";
+					}
+					out.mText = cardText[0];
 				}
 			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
 				let typeemote = addEmote(card.types, "/", serverID);
@@ -862,24 +814,26 @@ function getCardInfo(code, outLang, serverID) {
 						typesStr = arrace[0] + "/" + typeemote[0];
 						typesStr += " " + arrace[1] + typeemote[1];
 					}
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
+					out.stats += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
 					if (emoteMode > 0) {
-						out += " " + emotesDB["Level"];
+						out.stats += " " + emotesDB["Level"];
 					}
-					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
+					out.stats += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
-					out += "**Type**: " + typeemote[emoteMode] + "\n";
+					out.stats += "**Type**: " + typeemote[emoteMode];
 				}
-				out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
+				out.mHeading = "Effect";
+				out.mText = card.desc[0].replace(/\n/g, "\n"); //replaces literal new lines that Discord doesn't recognise with a newline character that it does. I know this looks silly.
 			} else {
-				out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
+				out.mHeading = "Card Text";
+				out.mText = card.desc[0].replace(/\n/g, "\n");
 			}
-			resolve([out, alIDs, embCT]);
+			resolve(out);
 		});
 	});
 }
 
-async function postImage(code, out, outLang, user, userID, channelID, message, event, embCT) {
+async function getImage(code, outLang, user, userID, channelID, message, event) {
 	try {
 		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 		let imageUrl = config.getConfig("imageUrl");
@@ -958,26 +912,10 @@ async function postImage(code, out, outLang, user, userID, channelID, message, e
 					}
 				});
 			});
-			bot.uploadFile({
-				to: channelID,
-				file: buffer,
-				filename: code[0] + "." + imageExt
-			}, () => {
-				sendLongMessage(out, user, userID, channelID, message, event, embCT);
-			});
+			return buffer;
 		} else {
 			let buffer = await downloadImage(imageUrl + code[0] + "." + imageExt, serverID);
-			if (buffer) {
-				bot.uploadFile({
-					to: channelID,
-					file: buffer,
-					filename: code[0] + "." + imageExt
-				}, () => {
-					sendLongMessage(out, user, userID, channelID, message, event, embCT);
-				});
-			} else {
-				sendLongMessage(out, user, userID, channelID, message, event, embCT);
-			}
+			return buffer;
 		}
 	} catch (e) {
 		console.error(e);
@@ -1027,8 +965,6 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");
 	let outLang = config.getConfig("defaultLanguage");
-	let emoteMode = config.getConfig("emoteMode", serverID);
-	let emotesDB = config.emotesDB;
 	if (args.length > 1) {
 		input = args[0];
 		if (args[1] in config.dbs)
@@ -1042,154 +978,20 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 		code = nameCheck(input, outLang);
 	}
 	if (code && code in cards[outLang]) {
-		let card = cards[outLang][code];
+		let cardData = getCardInfo(code);
 		let out = "";
-		let alIDs;
-		let alCard;
-		let stat;
 		switch (prop) {
 		case "id":
-			alIDs = [code];
-			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
-				alCard = cards[outLang][card.alias];
-				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
-					code = alCard.code;
-					alIDs = [code];
-					Object.values(cards[outLang]).forEach(tempCard => {
-						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
-							alIDs.push(tempCard.code);
-						}
-					});
-				}
-			} else {
-				Object.values(cards[outLang]).forEach(tempCard => {
-					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
-						alIDs.push(tempCard.code);
-					}
-				});
-			}
-			out += card.name + ": " + alIDs.join("|");
+			out = cardData.alIDs;
 			break;
 		case "notext":
-			out += "__**" + card.name + "**__\n";
-			alIDs = [code];
-			if (card.alias > 0 && cards[outLang][card.alias]) { //if the card has an alias, e.g. IS the alt art
-				alCard = cards[outLang][card.alias];
-				if (card.hasSameOT(alCard) && card.name === alCard.name) { //If the card with the alias is the same OT as the card with the base ID, then it's an alt art as opposed to an anime version or pre-errata or something. However if the name is different it's a Fusion Sub or Harpie Lady.
-					code = alCard.code;
-					alIDs = [code];
-					Object.values(cards[outLang]).forEach(tempCard => {
-						if (tempCard.alias === code && tempCard.hasSameOT(alCard)) {
-							alIDs.push(tempCard.code);
-						}
-					});
-				}
-			} else {
-				Object.values(cards[outLang]).forEach(tempCard => {
-					if (tempCard.alias === code && tempCard.hasSameOT(card)) {
-						alIDs.push(tempCard.code);
-					}
-				});
-			}
-			out += "**ID**: " + alIDs.join("|") + "\n";
-			if (card.sets) {
-				out += "**Archetype**: " + card.sets.join(", ");
-			}
-			out += "\n";
-			stat = card.ot.join("/");
-			Object.keys(lflist).forEach(key => { //keys of the banlist table are card IDs, values are number of copies allowed
-				if (stat.includes(key)) {
-					let lim = 3;
-					if (lflist[key][code] || lflist[key][code] === 0) { //0 is falsy, so we need to check it explicitly. Ugh.
-						lim = lflist[key][code];
-					}
-					let re = new RegExp(key);
-					stat = stat.replace(re, key + ": " + lim);
-				}
-			});
-			out += "**Status**: " + stat + "\n";
-			if (card.types.includes("Monster")) {
-				let arrace = addEmote(card.race, "|", serverID);
-				let typesStr;
-				if (emoteMode < 2) {
-					typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
-				} else {
-					typesStr = card.types.join("/").replace("Monster", arrace[0]);
-					typesStr += " " + arrace[1];
-				}
-				out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
-				let lvName = "Level";
-				if (card.types.includes("Xyz")) {
-					lvName = "Rank";
-				} else if (card.types.includes("Link")) {
-					lvName = "Link Rating";
-				}
-				out += "**" + lvName + "**: " + card.level + " ";
-				if (emoteMode > 0) {
-					if (card.isType(0x1000000000)) { //is dark synchro
-						out += emotesDB["NLevel"] + " ";
-					} else {
-						out += emotesDB[lvName] + " ";
-					}
-				}
-				out += " **ATK**: " + card.atk + " ";
-				if (card.def) {
-					out += "**DEF**: " + card.def;
-				} else {
-					out += "**Link Markers**: " + card.markers;
-				}
-				if (card.types.includes("Pendulum")) {
-					out += " **Pendulum Scale**: ";
-					if (emoteMode > 0) {
-						out += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
-					} else {
-						out += card.lscale + "/" + card.rscale;
-					}
-				}
-				out += "\n";
-			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				let typeemote = addEmote(card.types, "/", serverID);
-				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
-					typeemote[1] += emotesDB["NormalST"];
-					typeemote[2] += emotesDB["NormalST"];
-				}
-				if (card.isType(0x100)) { //is trap monster
-					let arrace = addEmote(card.race, "|", serverID);
-					let typesStr;
-					if (emoteMode < 2) {
-						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
-					} else {
-						typesStr = arrace[0] + "/" + typeemote[0];
-						typesStr += " " + arrace[1] + typeemote[1];
-					}
-					out += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
-					if (emoteMode > 0) {
-						out += " " + emotesDB["Level"];
-					}
-					out += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
-				} else {
-					out += "**Type**: " + typeemote[emoteMode] + "\n";
-				}
-			}
+			out = cardData.stats;
 			break;
 		case "effect":
-			out += "__**" + card.name + "**__\n";
-			if (card.types.includes("Monster")) {
-				let cardText = card.desc;
-				let textName = "Monster Effect";
-				if (card.types.includes("Normal")) {
-					textName = "Flavour Text";
-				}
-				if (cardText.length === 4) {
-					out += "**" + cardText[2] + "**: " + cardText[0] + "\n**" + cardText[3] + "**: " + cardText[1];
-				} else {
-					out += "**" + textName + "**: " + cardText[0];
-				}
-			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				out += "**Effect**: " + card.desc[0].replace(/\n/g, "\n");
-			} else {
-				out += "**Card Text**: " + card.desc[0].replace(/\n/g, "\n");
+			if (cardData.pHeading) {
+				out += "**" + cardData.pHeading + "**: " + cardData.pText + "\n";
 			}
+			out += "**" + cardData.mHeading + "**: " + cardData.mText;
 			break;
 		default:
 			return;
@@ -1507,7 +1309,7 @@ function searchSkill(user, userID, channelID, message, event, name) {
 		let skill = skills[index];
 		let out = "";
 		out += "__**" + skill.name + "**__\n**Effect**: " + skill.desc + "\n**Characters**: " + skill.chars;
-		sendLongMessage(out, user, userID, channelID, message, event);
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	} else {
 		console.log("No skill found for search '" + arg + "'!");
 	}
@@ -1814,15 +1616,30 @@ function setConf(user, userID, channelID, message, event) {
 }
 
 //utility functions
-function sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang) { //called by most cases of replying with a message to split up card text if too long, thanks ra anime
-	return new Promise((resolve, reject) => {
-		try {
-			let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
-			let tempColour = config.embcDB && typeColour && config.embcDB[typeColour] || config.getConfig("embedColour", serverID);
-			let imgurl = "";
-			if (code && outLang) {
-				imgurl = config.getConfig("imageUrl");
-				let card = cards[outLang][code];
+async function sendCardProfile(user, userID, channelID, message, event, code, outLang, hasImage) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let alID = getBaseID(cards[outLang][code], outLang); //determines if the card should be tracked by its own ID, or its alias, and returns the appropriate ID.
+	if (alID > -1) {
+		if (stats.searchRankings[alID]) {
+			stats.searchRankings[alID]++;
+		} else {
+			stats.searchRankings[alID] = 1;
+		}
+	}
+	let cardData = await getCardInfo(code, outLang, serverID);
+	let card = cards[outLang][code];
+	if (config.getConfig("messageMode", serverID) > 0) {
+		let tempColour = config.embcDB && cardData.embCT && config.embcDB[cardData.embCT] || config.getConfig("embedColour", serverID);
+		let embed = {
+			title: card.name,
+			color: tempColour
+		};
+		let buffer;
+		if (hasImage) {
+			if (cardData.alIDs.length > 1) {
+				buffer = getImage(cardData.alIDs, outLang, user, userID, channelID, message, event);
+			} else {
+				let imgurl = config.getConfig("imageUrl");
 				if (card.isAnime) {
 					imgurl = config.getConfig("imageUrlAnime");
 				}
@@ -1830,44 +1647,83 @@ function sendLongMessage(out, user, userID, channelID, message, event, typeColou
 					imgurl = config.getConfig("imageUrlCustom");
 				}
 				imgurl += code + "." + config.getConfig("imageExt");
+				embed.thumbnail = {
+					url: imgurl
+				};
 			}
+		}
+		embed.description = cardData.stats;
+		embed.fields = [];
+		if (cardData.pHeading) {
+			embed.fields.push({
+				name: cardData.pHeading,
+				value: cardData.pText
+			});
+		}
+		let longText;
+		if (cardData.mText.length > 1024) { //even though an embed's total content can be up to 6k charas, a field is capped to 1024 :/
+			longText = cardData.mText.slice(1024);
+			cardData.mText = cardData.mText.slice(0,1024);
+		}
+		embed.fields.push({
+			name: cardData.mHeading,
+			value: cardData.mText
+		});
+		if (longText) {
+			embed.fields.push({
+				name: "Continued",
+				value: longText
+			});
+		}
+		sendProfileMessage(user, userID, channelID, message, event, null, embed, buffer, code + "." + config.getConfig("imageExt"));
+	} else {
+		let out = "__**" + card.name + "**__\n";
+		out += cardData.stats + "\n";
+		if (cardData.pHeading) {
+			out += "**" + cardData.pHeading + "**: " + cardData.pText + "\n";
+		}
+		out += "**" + cardData.mHeading + "**: " + cardData.mText;
+		if (out.length > 2000) {
 			let longStr = config.getConfig("longStr");
-			let messageMode = config.getConfig("messageMode", serverID);
-			if (out.length > 2000) {
-				let outArr = [out.slice(0, 2000 - 5 - longStr.length) + longStr, out.slice(2000 - 5 - longStr.length)];
-				longMsg = outArr[1];
-				if (messageMode > 0) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: tempColour,
-							description: outArr[0],
-							thumbnail: {
-								url: imgurl
-							},
-						}
-					}, (err, res) => {
-						if (err) {
-							if (err.response && err.response.retry_after) {
-								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
-								}, err.response.retry_after + 1);
-							} else {
-								reject(err);
-							}
-						} else {
-							resolve(res);
-						}
-					});
+			let index = 2000 - 3 - longStr.length;
+			longMsg = out.slice(index);
+			out = out.slice(0,index) + longStr;
+		}
+		sendProfileMessage(user, userID, channelID, message, event, out);
+	}
+}
+
+function sendProfileMessage(user, userID, channelID, message, event, desc, embed, buffer, filename) {
+	return new Promise((resolve, reject) => {
+		let sendObj = {
+			to: channelID
+		};
+		if (embed) {
+			sendObj.embed = embed;
+		}
+		if (desc) {
+			sendObj.message = desc;
+		}
+		if (buffer) {
+			bot.uploadFile({
+				to: channelID,
+				file: buffer,
+				filename: filename
+			}, err => {
+				if (err) {
+					if (err.response && err.response.retry_after) {
+						setTimeout(() => {
+							sendProfileMessage(user, userID, channelID, message, event, desc, embed, buffer, filename);
+						}, err.response.retry_after + 1);
+					} else {
+						reject(err);
+					}
 				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: outArr[0]
-					}, (err, res) => {
+					bot.sendMessage(sendObj, (err, res) => {
 						if (err) {
 							if (err.response && err.response.retry_after) {
 								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
+									sendProfileMessage(user, userID, channelID, message, event, desc, embed);
 								}, err.response.retry_after + 1);
 							} else {
 								reject(err);
@@ -1877,51 +1733,21 @@ function sendLongMessage(out, user, userID, channelID, message, event, typeColou
 						}
 					});
 				}
-			} else {
-				if (messageMode > 0) {
-					bot.sendMessage({
-						to: channelID,
-						embed: {
-							color: tempColour,
-							description: out,
-							thumbnail: {
-								url: imgurl
-							},
-						}
-					}, (err, res) => {
-						if (err) {
-							if (err.response && err.response.retry_after) {
-								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
-								}, err.response.retry_after + 1);
-							} else {
-								reject(err);
-							}
-						} else {
-							resolve(res);
-						}
-					});
+			});
+		} else {
+			bot.sendMessage(sendObj, (err, res) => {
+				if (err) {
+					if (err.response && err.response.retry_after) {
+						setTimeout(() => {
+							sendProfileMessage(user, userID, channelID, message, event, desc, embed);
+						}, err.response.retry_after + 1);
+					} else {
+						reject(err);
+					}
 				} else {
-					bot.sendMessage({
-						to: channelID,
-						message: out
-					}, (err, res) => {
-						if (err) {
-							if (err.response && err.response.retry_after) {
-								setTimeout(() => {
-									sendLongMessage(out, user, userID, channelID, message, event, typeColour, code, outLang);
-								}, err.response.retry_after + 1);
-							} else {
-								reject(err);
-							}
-						} else {
-							resolve(res);
-						}
-					});
+					resolve(res);
 				}
-			}
-		} catch (e) {
-			reject(e);
+			});
 		}
 	});
 }
