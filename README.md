@@ -82,11 +82,16 @@ As an example, `.script macro cosmos` returns the following output:
 ### .matches  
 Usage: `.matches [name]|[args]`  
   
-The `.matches` command simulates a search for cards by name and returns the 10 closest matches for your search term. If you specify arguments after a `|`, (the same kinds as `.randcard`), it will only show matches that fit that critera. This command ignores cards with the same name, for example alternate artworks, however it will allow Anime versions of existing cards, etc., unless you specify a status as an arg.  
+The `.matches` command simulates a search for cards by name and returns the 10 closest matches for your search term. If you specify arguments after a `|`, (the same kinds as `.randcard`, plus `count:` for the number of results), it will only show matches that fit that critera. This command ignores cards with the same name, for example alternate artworks, however it will allow Anime versions of existing cards, etc., unless you specify a status as an arg.  
   
 As an example, `.matches junk warrior` returns the following output:  
 ![.matches output](/readme-images/matches.png)  
   
+### .search  
+Usage: `.search [text]|[args]`  
+  
+The `.search` command is similar to `.matches`, except it searches by card text. Unlike `.matches`, the card text must exactly contain the search phrase, though it is not case-sensitive.  
+
 ### .set  
 Usage: `.set [name|setcode]`  
   
@@ -211,8 +216,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"emotesDB": null,  
 	"helpMessage": "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\nPrice data is from the <https://yugiohprices.com> API.\nYou can find my help file and source here: <https://github.com/AlphaKretin/bastion-bot/>\nYou can support my development on Patreon here: <https://www.patreon.com/alphakretinbots>\nType `.commands` to be DMed a short summary of my commands without going to an external website.",  
 	"messageMode": 0,  
-	"embedColor": 1,  
-	"embedColorDB": null,  
+	"embedColour": 1,  
+	"embedColourDB": null,  
 	"debugOutput": false,  
 	"sheetsDB": "sheets.json",  
 	"defaultLanguage": "en",  
@@ -285,9 +290,9 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `messageMode` determines how Bastion will send Messages. If it is set to 0 or below, it will send messages in regular text format. If it is set to 1 or above, it will send messages enclosed within an embed object. This field is optional - if it is missing, it will default to what you see above.  
   
-`embedColor` is the default color of the bar of your embedded messages. This field is optional - is can be ignored depending on `messageMode`'s setting, and if it is expected but missing, the default color will be used. This is a decimal value converted from a hex color value.  
+`embedColour` is the default colour of the bar of your embedded messages. This field is optional - is can be ignored depending on `messageMode`'s setting, and if it is expected but missing, the default colour will be used. This is a decimal value converted from a hex colour value.  
   
-`embedColorDB` is the name of the JSON file Bastion will load containing the color codes of your embedded messages. Currently, it only supports different colors depending on the card type of a searched card. This field is optional - if it is missing, all embedded messages will have the same color.  
+`embedColourDB` is the name of the JSON file Bastion will load containing the colour codes of your embedded messages. Currently, it only supports different colours depending on the card type of a searched card. This field is optional - if it is missing, all embedded messages will have the same colour.  
   
 `debugOutput` is a boolean that determines if Bastion will log large amounts of data to the console, in situations that have caused unexplained crashes before. However, such a crash has not occured since I added such logs, and it is a large amount of logging, so it is recommended to disable this. This field is optional - if it is missing, it will default to what you see above.  
   

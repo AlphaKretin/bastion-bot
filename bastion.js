@@ -290,6 +290,11 @@ let commandList = [{
 	desc: "Returns the top 10 cards with names similar to the text entered."
 },
 {
+	names: ["search", "textsearch", "searchtext"],
+	func: textSearch,
+	desc: "Returns 10 cards that include the given phrase in their card text."
+},
+{
 	names: ["set", "setcode", "archetype", "setname", "sets"],
 	func: set,
 	desc: "Converts between YGOPro setcodes and archetype names."
@@ -1229,6 +1234,12 @@ function matches(user, userID, channelID, message, event, name) {
 			if (ar in config.dbs) {
 				outLang = ar;
 			}
+			if (ar.toLowerCase().startsWith("count:")) {
+				num = parseInt(ar.slice("count:".length));
+				if (num > config.getConfig("maxSearches", serverID) * 10) {
+					num = config.getConfig("maxSearches", serverID) * 10;
+				}
+			}
 		}
 	}
 	if (shortcuts.length > 0) {
@@ -1258,10 +1269,9 @@ function matches(user, userID, channelID, message, event, name) {
 			let outs = [];
 			let cardList = Object.values(cards[outLang]);
 			while (outs.length < num) {
-				let card = cardList[i];
-				if (card) {
-					if (aliasCheck(card, outLang) && randFilterCheck(card.code, argObj, outLang)) {
-						outs.push("\n" + (outs.length + 1) + ". " + card.name);
+				if (cardList[i]) {
+					if (aliasCheck(cardList[i].code, outLang) && randFilterCheck(cardList[i].code, argObj, outLang)) {
+						outs.push("\n" + (outs.length + 1) + ". " + cardList[i].name);
 					}
 				}
 				i++;
@@ -1272,18 +1282,79 @@ function matches(user, userID, channelID, message, event, name) {
 			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
 	} else {
-		let out = "Top " + num + " card name matches for **`" + arg + "`**:";
 		let i = 0;
 		let outs = [];
 		while (results[i] && outs.length < num) {
-			let card = cards[outLang][results[i].item.id];
-			if (card) {
-				if (aliasCheck(card, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
+			if (results[i].item.id in cards[outLang]) {
+				if (aliasCheck(results[i].item.id, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
 					outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 				}
 			}
 			i++;
 		}
+		if (outs.length < num) {
+			num = outs.length;
+		}
+		let out = "Top " + num + " card name matches for **`" + arg + "`**:";
+		for (let o of outs) {
+			out += o;
+		}
+		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+	}
+}
+
+function textSearch(user, userID, channelID, message, event, name) {
+	let a = message.toLowerCase().split("|");
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = a[0].slice((config.getConfig("prefix", serverID) + name + " ").length).toLowerCase();
+	let args = a[1] && a[1].split(" ");
+	let outLang = config.getConfig("defaultLanguage");
+	let num = 10;
+	if (args) {
+		for (let ar of args) {
+			if (ar in config.dbs) {
+				outLang = ar;
+			}
+			if (ar.toLowerCase().startsWith("count:")) {
+				num = parseInt(ar.slice("count:".length));
+				if (num > config.getConfig("maxSearches", serverID) * 10) {
+					num = config.getConfig("maxSearches", serverID) * 10;
+				}
+			}
+		}
+	}
+	let argObj;
+	if (args) {
+		argObj = parseFilterArgs(a[1]);
+	}
+	let results = [];
+	Object.values(cards[outLang]).forEach(card => {
+		if (card.desc.length === 4) {
+			if (card.desc[1].toLowerCase().indexOf(arg) > -1) {
+				results.push(card.code);
+			}
+		}
+		if (card.desc[0].toLowerCase().indexOf(arg) > -1) {
+			results.push(card.code);
+		}
+	});
+	if (results.length < 1) {
+		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
+	} else {
+		let i = 0;
+		let outs = [];
+		while (i in results && outs.length < num) {
+			if (results[i] in cards[outLang]) {
+				if (aliasCheck(results[i], outLang) && (!argObj || randFilterCheck(results[i], argObj, outLang))) {
+					outs.push("\n" + (outs.length + 1) + ". " + cards[outLang][results[i]].name);
+				}
+			}
+			i++;
+		}
+		if (outs.length < num) {
+			num = outs.length;
+		}
+		let out = num + " card text matches for **`" + arg + "`**:";
 		for (let o of outs) {
 			out += o;
 		}
@@ -2141,7 +2212,8 @@ function randFilterCheck(code, args, outLang) {
 	return boo;
 }
 
-function aliasCheck(card, outLang) { //called when getting alt arts, checks if an aliased card has the same OT as the original
+function aliasCheck(code, outLang) { //called when getting alt arts, checks if an aliased card has the same OT as the original
+	let card = cards[outLang][code];
 	let alias = card.alias;
 	if (alias === 0) {
 		return true;
