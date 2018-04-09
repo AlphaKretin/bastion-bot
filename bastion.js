@@ -391,6 +391,16 @@ let commandList = [{
 	desc: "Generates a list of servers the bot is in."
 },
 {
+	names: ["eval", "ownereval"],
+	func: ownerEval,
+	chk: (user, userID) => {
+		let owner = config.getConfig("botOwner");
+		return owner && owner.includes(userID);
+	},
+	noTrack: true,
+	desc: "Executes arbitrary JavaScript code for testing. USE WITH CAUTION."
+},
+{
 	names: ["update", "updatejson"],
 	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!").catch(msgErrHandler)).catch(e => sendMessage(user, userID, userID, message, event, e).catch(msgErrHandler)),
 	chk: (user, userID) => {
@@ -2859,6 +2869,26 @@ function servers(user, userID, channelID, message, event) {
 		for (let msg of outArr) {
 			sendMessage(user, userID, userID, message, event, "```\n" + msg + "```").catch(msgErrHandler);
 		}
+	}
+}
+
+function ownerEval(user, userID, channelID, message, event, name) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
+	let out;
+	try {
+		out = eval(input);
+	} catch(e) {
+		sendMessage(user, userID, channelID, message, event, e).catch(msgErrHandler);
+	}
+	if (out) {
+		let outStr;
+		if (typeof out === "object")
+			outStr = "```json\n" + JSON.stringify(out, null, 4) + "```";
+		else {
+			outStr = out;
+		}
+		sendMessage(user, userID, channelID, message, event, outStr).catch(msgErrHandler);
 	}
 }
 
