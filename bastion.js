@@ -8,6 +8,8 @@ if (!config.getConfig("token")) {
 	process.exit();
 }
 
+let dbs = JSON.parse(JSON.stringify(config.getConfig("staticDBs")));
+
 const GitHubApi = require("github");
 let github = new GitHubApi({
 	debug: false
@@ -108,7 +110,6 @@ function setJSON() { //this is a function because it needs to be repeated when i
 function loadDBs() {
 	cards = {};
 	nameList = {};
-	let dbs = config.dbs;
 	for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
 		console.log("loading " + lang + " database");
 		let filebuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][0]);
@@ -152,7 +153,6 @@ async function dbUpdate() {
 	return new Promise(resolve => {
 		console.log("Starting CDB update!");
 		let promises = [];
-		let dbs = config.dbs;
 		dbs = JSON.parse(JSON.stringify(config.getConfig("staticDBs")));
 		let oldDbs = {};
 		let updateRepos = config.getConfig("updateRepos");
@@ -184,25 +184,29 @@ async function dbUpdate() {
 		}
 		Promise.all(promises).then(() => {
 			Object.keys(liveDBs).forEach(lang => {
-				if (dbs[lang]) {
-					dbs[lang] = dbs[lang].concat(liveDBs[lang]);
+				if (lang in updateRepos) {
+					if (dbs[lang]) {
+						dbs[lang] = dbs[lang].concat(liveDBs[lang]);
+					} else {
+						dbs[lang] = liveDBs[lang];
+					}
+					for (let db of liveDBs[lang]) {
+						if (oldDbs[lang])
+							oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
+					}
+					if (config.getConfig("deleteOldDBs") && oldDbs[lang] && oldDbs[lang].length > 0) {
+						console.log("Deleting the following old databases in 10 seconds: ");
+						console.log(oldDbs[lang]);
+						setTimeout(() => {
+							for (let db of oldDbs[lang]) {
+								console.log("Deleting " + db + ".");
+								fs.unlinkSync("dbs/" + lang + "/" + db);
+							}
+						}, 10000);
+					}
 				} else {
-					dbs[lang] = liveDBs[lang];
-				}
-				for (let db of liveDBs[lang]) {
-					if (oldDbs[lang])
-						oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
-				}
-				if (config.getConfig("deleteOldDBs") && oldDbs[lang] && oldDbs[lang].length > 0) {
-					console.log("Deleting the following old databases in 10 seconds: ");
-					console.log(oldDbs[lang]);
-					setTimeout(() => {
-						for (let db of oldDbs[lang]) {
-							console.log("Deleting " + db + ".");
-							fs.unlinkSync("dbs/" + lang + "/" + db);
-						}
-					}, 10000);
-				}
+					delete liveDBs[lang];
+				}	
 			});
 			loadDBs();
 			config.liveDBs = liveDBs;
@@ -596,7 +600,7 @@ async function randomCard(user, userID, channelID, message, event) { //anything 
 		let code;
 		let outLang = config.getConfig("defaultLanguage");
 		for (let arg of args) {
-			if (arg in config.dbs) {
+			if (arg in dbs) {
 				outLang = arg;
 			}
 		}
@@ -634,7 +638,7 @@ async function script(user, userID, channelID, message, event, name) {
 	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in config.dbs)
+		if (args[1] in dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -673,7 +677,7 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	let inLang = args[args.length - 2] && args[args.length - 2].replace(/ /g, "").toLowerCase(); //expecting cardname,lang,lang
 	let outLang = args[args.length - 1] && args[args.length - 1].replace(/ /g, "").toLowerCase();
 	let defaultLanguage = config.getConfig("defaultLanguage");
-	if (inLang in config.dbs && outLang in config.dbs) {
+	if (inLang in dbs && outLang in dbs) {
 		input = args.splice(0, args.length - 2).join(",");
 	} else {
 		inLang = defaultLanguage;
@@ -992,7 +996,7 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 	let outLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in config.dbs)
+		if (args[1] in dbs)
 			outLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1039,7 +1043,7 @@ function deck(user, userID, channelID, message, event) {
 	let args = message.toLowerCase().split(" ");
 	let outLang = config.getConfig("defaultLanguage");
 	for (let arg of args) {
-		if (arg in config.dbs) {
+		if (arg in dbs) {
 			outLang = arg;
 		}
 	}
@@ -1243,7 +1247,7 @@ function matches(user, userID, channelID, message, event, name) {
 	let num = 10;
 	if (args) {
 		for (let ar of args) {
-			if (ar in config.dbs) {
+			if (ar in dbs) {
 				outLang = ar;
 			}
 			if (ar.toLowerCase().startsWith("count:")) {
@@ -1324,7 +1328,7 @@ function textSearch(user, userID, channelID, message, event, name) {
 	let num = 10;
 	if (args) {
 		for (let ar of args) {
-			if (ar in config.dbs) {
+			if (ar in dbs) {
 				outLang = ar;
 			}
 			if (ar.toLowerCase().startsWith("count:")) {
@@ -1425,7 +1429,7 @@ function strings(user, userID, channelID, message, event, name) {
 	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in config.dbs)
+		if (args[1] in dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1461,7 +1465,7 @@ async function rulings(user, userID, channelID, message, event, name) {
 	let inLang = config.getConfig("defaultLanguage");
 	if (args.length > 1) {
 		input = args[0];
-		if (args[1] in config.dbs)
+		if (args[1] in dbs)
 			inLang = args[1];
 	}
 	let inInt = parseInt(input);
@@ -1517,7 +1521,7 @@ function rankings(user, userID, channelID, message, event) {
 		if (validTerms.includes(arg.toLowerCase())) {
 			term = arg.toLowerCase();
 		}
-		if (arg in config.dbs) {
+		if (arg in dbs) {
 			outLang = arg;
 		}
 	}
@@ -1913,7 +1917,7 @@ function getEmbCT(card) {
 }
 
 function nameCheck(line, inLang) { //called by card searching functions to determine if fuse is needed and if so use it
-	if (!(inLang in config.dbs)) {
+	if (!(inLang in dbs)) {
 		inLang = config.getConfig("defaultLanguage");
 	}
 	for (let tempCard of Object.values(cards[inLang])) { //check all entries for exact name
@@ -2419,7 +2423,7 @@ function trivia(user, userID, channelID, message, event) {
 		let round = 1;
 		let args = message.toLowerCase().split(" ");
 		for (let arg of args) {
-			if (arg in config.dbs)
+			if (arg in dbs)
 				outLang = arg;
 			if (parseInt(arg) > round) {
 				if (parseInt(arg) > triviaMaxRounds) {

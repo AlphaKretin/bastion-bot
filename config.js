@@ -56,11 +56,21 @@ module.exports = function() {
 		console.warn("Message mode specification not found at conf.messageMode! Defaulting to " + conf.messageMode + "!");
 	}
 	if (conf.messageMode > 0 && !conf.embedColour) {
-		conf.embedColour = 0x1;
-		console.warn("Embed Colour specification not found at conf.embedColour! Defaulting to " + conf.embedColour + "!");
+		if (conf.embedColor) {
+			conf.embedColour = conf.embedColor;
+			delete conf.embedColor;
+		} else {
+			conf.embedColour = 0x1;
+			console.warn("Embed Colour specification not found at conf.embedColour! Defaulting to " + conf.embedColour + "!");
+		}
 	}
 	if (conf.messageMode > 0 && !conf.embedColourDB) {
-		console.warn("Embed Colour database not found at conf.embedColourDB! Card Type specific embed Colour will be set to default.");	
+		if (conf.embedColorDB) {
+			conf.embedColourDB = conf.embedColorDB;
+			delete conf.embedColorDB;
+		} else {
+			console.warn("Embed Colour database not found at conf.embedColourDB! Card Type specific embed Colour will be set to default.");
+		}	
 	} //if it does exist, loaded into the class later
 
 	if (conf.scriptUrl) {
@@ -124,22 +134,13 @@ module.exports = function() {
 		console.warn("Settings for fuse.js not found at conf.fuseOptions! Using defaults!");
 	}
 
-	let dbs = {};
-	dbs[conf.defaultLanguage] = ["cards.cdb"];
 	if (!conf.staticDBs) {
 		conf.staticDBs = {};
 		conf.staticDBs[conf.defaultLanguage][0] = ["cards.cdb"];
 		console.warn("List of non-updating card databases not found at conf.staticDBs! Defaulting to one database named " + conf.staticDBs[conf.defaultLanguage][0] + ".");
 	}
-	dbs = JSON.parse(JSON.stringify(conf.staticDBs)); //parse and stringify copies contents instead of affecting original
+	
 	if (conf.liveDBs) {
-		Object.keys(conf.liveDBs).forEach(lang => {
-			if (dbs[lang]) {
-				dbs[lang] = dbs[lang].concat(conf.liveDBs[lang]);
-			} else {
-				dbs[lang] = conf.liveDBs[lang];
-			}
-		});
 		if (conf.deleteOldDBs == null) {
 			conf.deleteOldDBs = false;
 			console.warn("Choice whether to delete old live-update databases not found at conf.deleteOldDBs! Default to " + conf.deleteOldDBs + "!");
@@ -208,9 +209,8 @@ module.exports = function() {
 		console.warn("Online source for banlist to update from not found at conf.lflistSource! Live banlist update will be disabled.");
 	}
 	let Config = class config {
-		constructor(conf, dbs) {
+		constructor(conf) {
 			this._conf = conf;
-			this._dbs = dbs;
 			if (conf.emotesDB) {
 				this._emotesDB = JSON.parse(fs.readFileSync("config/" + conf.emotesDB, "utf-8"));
 			}
@@ -220,10 +220,6 @@ module.exports = function() {
 			if (conf.sheetsDB) {
 				this._sheetsDB = JSON.parse(fs.readFileSync("config/" + conf.sheetsDB, "utf-8"));
 			}
-		}
-
-		get dbs() {
-			return this._dbs;
 		}
 
 		get emotesDB() {
@@ -335,6 +331,6 @@ module.exports = function() {
 		setcodeSource: { configable: false },
 		lflistSource: { configable: false }
 	};
-	let c = new Config(conf, dbs);
+	let c = new Config(conf);
 	return [c, Config];
 };
