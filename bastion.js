@@ -993,16 +993,18 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 		code = nameCheck(input, outLang);
 	}
 	if (code && code in cards[outLang]) {
-		let cardData = getCardInfo(code);
+		let cardData = await getCardInfo(code, outLang, serverID);
+		let cardName = cards[outLang][code].name;
 		let out = "";
 		switch (prop) {
 		case "id":
-			out = cardData.alIDs;
+			out = "**" + cardName + "**: " + cardData.alIDs.join("|");
 			break;
 		case "notext":
-			out = cardData.stats;
+			out = "__**" + cardName + "**__\n" + cardData.stats;
 			break;
 		case "effect":
+			out = "__**" + cardName + "**__\n";
 			if (cardData.pHeading) {
 				out += "**" + cardData.pHeading + "**: " + cardData.pText + "\n";
 			}
@@ -1330,11 +1332,11 @@ function textSearch(user, userID, channelID, message, event, name) {
 	let results = [];
 	Object.values(cards[outLang]).forEach(card => {
 		if (card.desc.length === 4) {
-			if (card.desc[1].toLowerCase().indexOf(arg) > -1) {
+			if (card.desc[1].toLowerCase().indexOf(arg) > -1 && results.indexOf(card.code) === -1) {
 				results.push(card.code);
 			}
 		}
-		if (card.desc[0].toLowerCase().indexOf(arg) > -1) {
+		if (card.desc[0].toLowerCase().indexOf(arg) > -1 && results.indexOf(card.code) === -1) {
 			results.push(card.code);
 		}
 	});
@@ -1739,7 +1741,7 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 		let buffer;
 		if (hasImage) {
 			if (cardData.alIDs.length > 1) {
-				buffer = getImage(cardData.alIDs, outLang, user, userID, channelID, message, event);
+				buffer = await getImage(cardData.alIDs, outLang, user, userID, channelID, message, event);
 			} else {
 				let imgurl = config.getConfig("imageUrl");
 				if (card.isAnime) {
@@ -1786,6 +1788,10 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 		}
 		sendProfileMessage(user, userID, channelID, message, event, null, embed, buffer, code + "." + config.getConfig("imageExt"));
 	} else {
+		let buffer;
+		if (hasImage) {
+			buffer = await getImage(cardData.alIDs, outLang, user, userID, channelID, message, event);
+		}
 		let out = "__**" + card.name + "**__\n";
 		out += cardData.stats + "\n";
 		if (cardData.pHeading) {
@@ -1807,7 +1813,7 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 		} else {
 			out += mText;
 		}
-		sendProfileMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+		sendProfileMessage(user, userID, channelID, message, event, out, null, buffer, code + "." + config.getConfig("imageExt")).catch(msgErrHandler);
 	}
 }
 
