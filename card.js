@@ -2,7 +2,8 @@ const XRegExp = require('xregexp');
 
 module.exports = function (setcodes) {
 	let Card = class Card {
-		constructor(datas) {
+		constructor(datas, db) {
+			this._db = db; //the name of the database the card can be found in
 			this._code = datas[0];
 			this._ot = datas[1];
 			this._alias = datas[2];
@@ -53,6 +54,10 @@ module.exports = function (setcodes) {
 		}
 
 		//Getters
+		get db() {
+			return this._db;
+		}
+
 		get code() {
 			return this._code;
 		}

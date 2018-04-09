@@ -119,7 +119,7 @@ function loadDBs() {
 		let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 		db.close();
 		for (let card of contents[0].values) {
-			let car = new Card(card);
+			let car = new Card(card, dbs[lang][0]);
 			cards[lang][car.code] = car;
 		}
 		if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
@@ -131,7 +131,7 @@ function loadDBs() {
 				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
 				newDB.close();
 				for (let newCard of newContents[0].values) {
-					let newCar = new Card(newCard);
+					let newCar = new Card(newCard, dbs[lang][i]);
 					cards[lang][newCar.code] = newCar;
 				}
 			}
@@ -383,6 +383,11 @@ let commandList = [{
 	func: searchSkill,
 	chk: () => skills.length > 0,
 	desc: "Searches for a skill from Yu-Gi-Oh! Duel Links."
+},
+{
+	names: ["dbfind"],
+	func: dbFind,
+	desc: "Returns the name of the database the given card's information is stored in."
 },
 {
 	names: ["servers", "serverlist"],
@@ -1419,6 +1424,29 @@ function searchSkill(user, userID, channelID, message, event, name) {
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	} else {
 		console.log("No skill found for search '" + arg + "'!");
+	}
+}
+
+function dbFind(user, userID, channelID, message, event, name) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
+	let args = input.split("|");
+	let outLang = config.getConfig("defaultLanguage");
+	if (args.length > 1) {
+		input = args[0];
+		if (args[1] in dbs)
+			outLang = args[1];
+	}
+	let inInt = parseInt(input);
+	let code;
+	if (inInt in cards[outLang]) {
+		code = inInt;
+	} else {
+		code = nameCheck(input, outLang);
+	}
+	if (code && code in cards[outLang]) {
+		let card = cards[outLang][code];
+		sendMessage(user, userID, channelID, message, event, "**" + card.name + "**'s entry can be found in the database `" + card.db + "`!").catch(msgErrHandler);
 	}
 }
 

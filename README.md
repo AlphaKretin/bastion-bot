@@ -108,12 +108,17 @@ The `.deck` command reads the contents of a YGOPro `.ydk` file uploaded with the
 ### .strings  
 Usage: `.strings [card name/ID]|[lang]`  
   
-The `.strings` command searches for a card by name or YGOPro ID, and returns the database strings for that card - i.e., the customs messages assigned to it that a script can call on for effect descriptions or dialog boxes. If a language is specified, it will look for a card with a name like you typed in that language.  
+The `.strings` command searches for a card by name or YGOPro ID, and returns the database strings for that card - i.e., the custom messages assigned to it that a script can call on for effect descriptions or dialog boxes. If a language is specified, it will look for a card with a name like you typed in that language.  
   
 ### .skill  
 Usage: `.skill [skill name]`  
   
-The `.skill` command searches for a Skill, from Yu-Gi-Oh! Duel Links, and returns its name, description, and a list of which characters can obtain the Skill and how.  
+The `.skill` command searches for a Skill, from Yu-Gi-Oh! Duel Links, and returns its name, description, and a list of which characters can obtain the Skill and how. 
+
+### .dbfind
+Usage: `.dbfind [card name/ID]|[lang]`  
+
+The `.dbfind` command searches for a card by name or YGOPro ID, and returns the name of the card database that it is stored within. This is useful for scripters working with multiple databases and trying to find which one holds a certain card.  
   
 ### .top  
 Usage: `.top [number] [stat] [lang]`  
