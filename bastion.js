@@ -64,157 +64,6 @@ let skillNames = [];
 
 const gstojson = require("google-spreadsheet-to-json");
 
-function setJSON() { //this is a function because it needs to be repeated when it's updated
-	let scriptFunctions = config.getConfig("scriptFunctions");
-	if (scriptFunctions) {
-		let path = "dbs/" + scriptFunctions;
-		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
-		libFunctions.forEach((func) => {
-			if (!func.sig)
-				func.sig = "";
-		});
-	}
-	let scriptConstants = config.getConfig("scriptConstants");
-	if (scriptConstants) {
-		libConstants = JSON.parse(fs.readFileSync("dbs/" + scriptConstants, "utf-8"));
-		libConstants.forEach((cons) => {
-			if (!cons.val)
-				cons.val = "";
-			if (typeof cons.val === "number")
-				cons.val = cons.val.toString();
-		});
-	}
-	let scriptParams = config.getConfig("scriptParams");
-	if (scriptParams) {
-		libParams = JSON.parse(fs.readFileSync("dbs/" + scriptParams, "utf-8"));
-		libParams.forEach((par) => {
-			if (!par.type)
-				par.type = "";
-		});
-	}
-	let skillDB = config.getConfig("skillDB");
-	if (skillDB) {
-		skills = JSON.parse(fs.readFileSync("dbs/" + skillDB, "utf-8"));
-		skillNames = [];
-		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
-			skillNames.push({
-				name: skill.name,
-			});
-		}
-		if (skillNames.length > 0) {
-			skillFuse = new Fuse(skillNames, config.getConfig("fuseOptions"));
-		}
-	}
-}
-
-function loadDBs() {
-	cards = {};
-	nameList = {};
-	for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
-		console.log("loading " + lang + " database");
-		let filebuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][0]);
-		let db = new SQL.Database(filebuffer);
-		nameList[lang] = [];
-		cards[lang] = {};
-		let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
-		db.close();
-		for (let card of contents[0].values) {
-			let car = new Card(card, dbs[lang][0]);
-			cards[lang][car.code] = car;
-		}
-		if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
-			console.log("loading additional " + lang + " databases");
-			for (let i = 1; i < dbs[lang].length; i++) {
-				let newbuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][i]);
-				console.log("loading " + dbs[lang][i]);
-				let newDB = new SQL.Database(newbuffer);
-				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
-				newDB.close();
-				for (let newCard of newContents[0].values) {
-					let newCar = new Card(newCard, dbs[lang][i]);
-					cards[lang][newCar.code] = newCar;
-				}
-			}
-		}
-		Object.values(cards[lang]).forEach(card => {
-			nameList[lang].push({
-				name: card.name,
-				id: card.code
-			});
-			if (card.alias > 0 && cards[lang][card.alias]) { //cards with an alias inherit their setcode from their alias
-				card.setcode = cards[lang][card.alias].setcode;
-			}
-		});
-		fuse[lang] = new Fuse(nameList[lang], config.getConfig("fuseOptions"));
-	}
-}
-
-async function dbUpdate() {
-	return new Promise(resolve => {
-		console.log("Starting CDB update!");
-		let promises = [];
-		dbs = JSON.parse(JSON.stringify(config.getConfig("staticDBs")));
-		let oldDbs = {};
-		let updateRepos = config.getConfig("updateRepos");
-		let liveDBs = config.getConfig("liveDBs");
-		for (let lang of Object.keys(updateRepos)) {
-			if (liveDBs[lang])
-				oldDbs[lang] = JSON.parse(JSON.stringify(liveDBs[lang]));
-			liveDBs[lang] = [];
-			for (let repo of updateRepos[lang]) {
-				let arr = repo.split("/");
-				if (!arr || arr.length < 2)
-					continue;
-				try {
-					let prom;
-					if (arr.length > 2) {
-						prom = getGHContents(lang, arr[0], arr[1], arr.slice(2).join("/"));
-					} else {
-						prom = getGHContents(lang, arr[0], arr[1]);
-					}
-					prom.then(res => {
-						liveDBs[lang] = liveDBs[lang].concat(res);
-					});
-					promises.push(prom);
-				} catch (e) {
-					console.error("Failed to download files from " + repo + "!");
-					console.error(e);
-				}
-			}
-		}
-		Promise.all(promises).then(() => {
-			Object.keys(liveDBs).forEach(lang => {
-				if (lang in updateRepos) {
-					if (dbs[lang]) {
-						dbs[lang] = dbs[lang].concat(liveDBs[lang]);
-					} else {
-						dbs[lang] = liveDBs[lang];
-					}
-					for (let db of liveDBs[lang]) {
-						if (oldDbs[lang])
-							oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
-					}
-					if (config.getConfig("deleteOldDBs") && oldDbs[lang] && oldDbs[lang].length > 0) {
-						console.log("Deleting the following old databases in 10 seconds: ");
-						console.log(oldDbs[lang]);
-						setTimeout(() => {
-							for (let db of oldDbs[lang]) {
-								console.log("Deleting " + db + ".");
-								fs.unlinkSync("dbs/" + lang + "/" + db);
-							}
-						}, 10000);
-					}
-				} else {
-					delete liveDBs[lang];
-				}	
-			});
-			loadDBs();
-			config.liveDBs = liveDBs;
-			resolve();
-		});
-	});
-}
-
 const request = require("request");
 const https = require("https");
 const url = require("url");
@@ -1446,7 +1295,7 @@ function dbFind(user, userID, channelID, message, event, name) {
 	}
 	if (code && code in cards[outLang]) {
 		let card = cards[outLang][code];
-		sendMessage(user, userID, channelID, message, event, "**" + card.name + "**'s entry can be found in the database `" + card.db + "`!").catch(msgErrHandler);
+		sendMessage(user, userID, channelID, message, event, "**" + card.name + "**'s entry can be found in the following databases: `" + card.db.join("`, `") + "`!\nThe rightmost database's entry is the one currently in use.").catch(msgErrHandler);
 	}
 }
 
@@ -2922,6 +2771,161 @@ function ownerEval(user, userID, channelID, message, event, name) {
 		}
 		sendMessage(user, userID, channelID, message, event, outStr).catch(msgErrHandler);
 	}
+}
+
+function setJSON() { //this is a function because it needs to be repeated when it's updated
+	let scriptFunctions = config.getConfig("scriptFunctions");
+	if (scriptFunctions) {
+		let path = "dbs/" + scriptFunctions;
+		libFunctions = JSON.parse(fs.readFileSync(path, "utf-8"));
+		libFunctions.forEach((func) => {
+			if (!func.sig)
+				func.sig = "";
+		});
+	}
+	let scriptConstants = config.getConfig("scriptConstants");
+	if (scriptConstants) {
+		libConstants = JSON.parse(fs.readFileSync("dbs/" + scriptConstants, "utf-8"));
+		libConstants.forEach((cons) => {
+			if (!cons.val)
+				cons.val = "";
+			if (typeof cons.val === "number")
+				cons.val = cons.val.toString();
+		});
+	}
+	let scriptParams = config.getConfig("scriptParams");
+	if (scriptParams) {
+		libParams = JSON.parse(fs.readFileSync("dbs/" + scriptParams, "utf-8"));
+		libParams.forEach((par) => {
+			if (!par.type)
+				par.type = "";
+		});
+	}
+	let skillDB = config.getConfig("skillDB");
+	if (skillDB) {
+		skills = JSON.parse(fs.readFileSync("dbs/" + skillDB, "utf-8"));
+		skillNames = [];
+		for (let skill of skills) { //populate array of objects containing names for the sake of fuzzy search
+			skillNames.push({
+				name: skill.name,
+			});
+		}
+		if (skillNames.length > 0) {
+			skillFuse = new Fuse(skillNames, config.getConfig("fuseOptions"));
+		}
+	}
+}
+
+function loadDBs() {
+	cards = {};
+	nameList = {};
+	for (let lang in dbs) { //this reads the keys of an object loaded above, which are supposed to be the languages of the card databases in that field of the object
+		console.log("loading " + lang + " database");
+		let filebuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][0]);
+		let db = new SQL.Database(filebuffer);
+		nameList[lang] = [];
+		cards[lang] = {};
+		let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
+		db.close();
+		for (let card of contents[0].values) {
+			let car = new Card(card, [ dbs[lang][0] ]);
+			cards[lang][car.code] = car;
+		}
+		if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
+			console.log("loading additional " + lang + " databases");
+			for (let i = 1; i < dbs[lang].length; i++) {
+				let newbuffer = fs.readFileSync("dbs/" + lang + "/" + dbs[lang][i]);
+				console.log("loading " + dbs[lang][i]);
+				let newDB = new SQL.Database(newbuffer);
+				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
+				newDB.close();
+				for (let newCard of newContents[0].values) {
+					let dbList = [ dbs[lang][i] ];
+					if (newCard[0] in cards[lang]) { //if already an entry by that ID
+						dbList = cards[lang][newCard[0]].db.concat(dbList);
+					} 
+					let newCar = new Card(newCard, dbList);
+					cards[lang][newCar.code] = newCar;
+				}
+			}
+		}
+		Object.values(cards[lang]).forEach(card => {
+			nameList[lang].push({
+				name: card.name,
+				id: card.code
+			});
+			if (card.alias > 0 && cards[lang][card.alias]) { //cards with an alias inherit their setcode from their alias
+				card.setcode = cards[lang][card.alias].setcode;
+			}
+		});
+		fuse[lang] = new Fuse(nameList[lang], config.getConfig("fuseOptions"));
+	}
+}
+
+async function dbUpdate() {
+	return new Promise(resolve => {
+		console.log("Starting CDB update!");
+		let promises = [];
+		dbs = JSON.parse(JSON.stringify(config.getConfig("staticDBs")));
+		let oldDbs = {};
+		let updateRepos = config.getConfig("updateRepos");
+		let liveDBs = config.getConfig("liveDBs");
+		for (let lang of Object.keys(updateRepos)) {
+			if (liveDBs[lang])
+				oldDbs[lang] = JSON.parse(JSON.stringify(liveDBs[lang]));
+			liveDBs[lang] = [];
+			for (let repo of updateRepos[lang]) {
+				let arr = repo.split("/");
+				if (!arr || arr.length < 2)
+					continue;
+				try {
+					let prom;
+					if (arr.length > 2) {
+						prom = getGHContents(lang, arr[0], arr[1], arr.slice(2).join("/"));
+					} else {
+						prom = getGHContents(lang, arr[0], arr[1]);
+					}
+					prom.then(res => {
+						liveDBs[lang] = liveDBs[lang].concat(res);
+					});
+					promises.push(prom);
+				} catch (e) {
+					console.error("Failed to download files from " + repo + "!");
+					console.error(e);
+				}
+			}
+		}
+		Promise.all(promises).then(() => {
+			Object.keys(liveDBs).forEach(lang => {
+				if (lang in updateRepos) {
+					if (dbs[lang]) {
+						dbs[lang] = dbs[lang].concat(liveDBs[lang]);
+					} else {
+						dbs[lang] = liveDBs[lang];
+					}
+					for (let db of liveDBs[lang]) {
+						if (oldDbs[lang])
+							oldDbs[lang] = oldDbs[lang].filter(a => a !== db);
+					}
+					if (config.getConfig("deleteOldDBs") && oldDbs[lang] && oldDbs[lang].length > 0) {
+						console.log("Deleting the following old databases in 10 seconds: ");
+						console.log(oldDbs[lang]);
+						setTimeout(() => {
+							for (let db of oldDbs[lang]) {
+								console.log("Deleting " + db + ".");
+								fs.unlinkSync("dbs/" + lang + "/" + db);
+							}
+						}, 10000);
+					}
+				} else {
+					delete liveDBs[lang];
+				}	
+			});
+			loadDBs();
+			config.liveDBs = liveDBs;
+			resolve();
+		});
+	});
 }
 
 function updatejson() {
