@@ -338,7 +338,6 @@ module.exports = function (setcodes) {
 					});
 					lines.splice(ind, 0, "---");
 				}
-				console.dir(lines);
 				if (ind) {
 					let re = XRegExp("\\p{L}[\\p{L} ]+\\p{L}");
 					let head1 = lines.slice(0, 1)[0];
