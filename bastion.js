@@ -1856,6 +1856,15 @@ function addEmote(args, symbol, serverID) {
 	return [str, emotes, str + " " + emotes];
 }
 
+function setCheck(args, set) {
+	for (let set2 of Card.setList) {
+		if (set2.indexOf(set) > -1 && set2.length > set.length && args.indexOf(set2) > -1) {
+			return false;
+		} 
+	}
+	return true;
+}
+
 function parseFilterArgs(input) {
 	if (Array.isArray(input)) {
 		input = input.join(" ");
@@ -1958,8 +1967,15 @@ function parseFilterArgs(input) {
 			continue;
 		}
 		let outArr = [];
+		for (let set of Card.setList) {
+			if (set.indexOf("/") > -1 && args.toLowerCase().indexOf(set) > -1 && setCheck(args, set)) { //looks for sets with slashes and fixes them up before splitting by slash. The practical reason for this is D/D/D
+				let ind = args.toLowerCase().indexOf(set);
+				args = args.slice(0, ind) + set.replace(/\//g,"THISISASLASH") + args.slice(ind + set.length);
+			}
+		}
 		let ors = args.split("/");
 		for (let arg of ors) {
+			arg = arg.replace(/THISISASLASH/g, "/");
 			let tempArr = [];
 			for (let plus of arg.split("+")) {
 				if (validFilters[name].func(plus)) {
