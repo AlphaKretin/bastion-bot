@@ -1677,6 +1677,11 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 				value: longText
 			});
 		}
+		embed.fields.forEach((_,i) => { //uses key instead of value to modify original array
+			if (embed.fields[i].value.length < 1) {
+				embed.fields[i].value = "[ no card text ]";
+			}
+		});
 		sendProfileMessage(user, userID, channelID, message, event, null, embed, buffer, code + "." + config.getConfig("imageExt"));
 	} else {
 		let buffer;
