@@ -1093,8 +1093,8 @@ function getCardScript(card) {
 }
 
 function matches(user, userID, channelID, message, event, name) {
-	let a = message.toLowerCase().split("|");
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let a = message.toLowerCase().split("|");
 	let arg = a[0].slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = a[1] && a[1].split(" ");
 	let outLang = config.getConfig("defaultLanguage");
@@ -1129,48 +1129,48 @@ function matches(user, userID, channelID, message, event, name) {
 	if (args) {
 		argObj = parseFilterArgs(a[1]);
 	}
-	let results = fuse[outLang].search(arg);
-	if (results.length < 1) {
-		if (!argObj) {
+	if (arg.length > 0) {
+		let results = fuse[outLang].search(arg);
+		if (results.length < 1) {
 			sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
 		} else {
-			let out = num + " cards that meet your criteria:";
 			let i = 0;
 			let outs = [];
-			let cardList = Object.values(cards[outLang]);
-			while (outs.length < num) {
-				if (cardList[i]) {
-					if (aliasCheck(cardList[i].code, outLang) && randFilterCheck(cardList[i].code, argObj, outLang)) {
-						outs.push("\n" + (outs.length + 1) + ". " + cardList[i].name);
+			while (i in results && outs.length < num) {
+				if (results[i].item.id in cards[outLang]) {
+					if (aliasCheck(results[i].item.id, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
+						outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
 					}
 				}
 				i++;
 			}
+			if (outs.length < num) {
+				num = outs.length;
+			}
+			let out = "Top " + num + " card name matches for **`" + arg + "`**:";
 			for (let o of outs) {
 				out += o;
 			}
 			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
-	} else {
+	} else if (argObj) {
+		let out = num + " cards that meet your criteria:";
 		let i = 0;
 		let outs = [];
-		while (results[i] && outs.length < num) {
-			if (results[i].item.id in cards[outLang]) {
-				if (aliasCheck(results[i].item.id, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
-					outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
-				}
+		let cardList = Object.values(cards[outLang]);
+		while (i in cardList && outs.length < num) {
+			if (aliasCheck(cardList[i].code, outLang) && randFilterCheck(cardList[i].code, argObj, outLang)) {
+				outs.push("\n" + (outs.length + 1) + ". " + cardList[i].name);
 			}
 			i++;
 		}
-		if (outs.length < num) {
-			num = outs.length;
-		}
-		let out = "Top " + num + " card name matches for **`" + arg + "`**:";
 		for (let o of outs) {
 			out += o;
 		}
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
-	}
+	} else {
+		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
+	} 
 }
 
 function textSearch(user, userID, channelID, message, event, name) {
