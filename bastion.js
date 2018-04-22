@@ -1070,20 +1070,26 @@ function getCardScript(card) {
 			}).on("end", async () => {
 				let buffer = Buffer.concat(data);
 				let script = buffer.toString();
-				if (script === "404: Not Found\n" && config.getConfig("scriptUrlBackup")) {
-					script = await new Promise(resolve => {
-						fullUrl = config.getConfig("scriptUrlBackup") + "c" + card.code + ".lua";
-						https.get(url.parse(fullUrl), response => {
-							let data2 = [];
-							response.on("data", chunk => {
-								data2.push(chunk);
-							}).on("end", async () => {
-								let buffer2 = Buffer.concat(data2);
-								let script2 = buffer2.toString();
-								resolve(script2);
+				let scriptUrlBackup = config.getConfig("scriptUrlBackup");
+				if (script === "404: Not Found\n" && scriptUrlBackup) {
+					let i = 0;
+					while (script === "404: Not Found\n" && i in scriptUrlBackup) {
+						script = await new Promise(resolve => {
+							fullUrl = scriptUrlBackup[i] + "c" + card.code + ".lua";
+							https.get(url.parse(fullUrl), response => {
+								let data2 = [];
+								response.on("data", chunk => {
+									data2.push(chunk);
+								}).on("end", async () => {
+									let buffer2 = Buffer.concat(data2);
+									let script2 = buffer2.toString();
+									resolve(script2);
+								});
 							});
 						});
-					});
+						i++;
+					}
+					
 				}
 				let scriptArr = script.split("\n");
 				script = "";

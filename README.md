@@ -209,7 +209,8 @@ By default, the configuration file is called `config.json`, and is expected to b
 	"imageExt": "png",  
 	"scriptUrl": "",  
 	"scriptUrlAnime": "",  
-	"scriptUrlCustom": "",  
+	"scriptUrlCustom": "",
+	"scriptUrlBackup": [ "", "" ],  
 	"staticDBs": {  
 		"en": [ "cards.cdb" ]  
 	},  
@@ -269,7 +270,7 @@ By default, the configuration file is called `config.json`, and is expected to b
   
 `scriptUrlCustom` is a link to a source for custom card scripts. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will default to `scriptUrl`.  
   
-`scriptUrlBackup` is a link to a source for backup card scripts - if Bastion doesn't find a script at the first source specified, he'll try again here. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
+`scriptUrlBackup` is an array of links to sources for backup card scripts, ordered by priority - if Bastion doesn't find a script at the first source specified, he'll try again here from left to right. Bastion will append the ID of the card, then ".lua". This field is optional - if it is missing, Bastion will not try to find backup scripts.  
   
 `staticDBs` is an object of arrays of filenames for card databases Bastion will read, to be found in a folder called `dbs`. The keys of the object are language names. If two DBs have an entry with the same ID, for example because of "fix" DBs, the latest occurence in the array will be the final version of the entry that overwrites the others. This object is for base databases that should not be modified by the live update process - if you have anything stored in a GitHub repository, see below for fields that enable an automatic update process. This field is optional - if it is missing, Bastion will default to what you see above.  
   

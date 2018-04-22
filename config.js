@@ -84,6 +84,8 @@ module.exports = function() {
 		}
 		if (!conf.scriptUrlBackup) {
 			console.warn("URL for backup script source not found at conf.scriptUrlBackup! The bot will not try to find an alternative to missing scripts!");
+		} else if (typeof conf.scriptUrlBackup === "string") {
+			conf.scriptUrlBackup = [ conf.scriptUrlBackup ];
 		}
 	} else {
 		console.warn("URL for script source not found at conf.scriptUrl! Script lookup will be disabled.");
