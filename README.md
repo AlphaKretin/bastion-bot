@@ -93,6 +93,11 @@ Usage: `.search [text]|[args]`
   
 The `.search` command is similar to `.matches`, except it searches by card text. Unlike `.matches`, the card text must exactly contain the search phrase, though it is not case-sensitive.  
 
+### .viewmatch
+Usage: `.viewmatch [index]`
+
+The `.viewmatch` command allows you to search for a card in the results of a `.matches` or `.search` query without copying a result's name - simply enter the number that appears before it in the list.
+
 ### .set  
 Usage: `.set [name|setcode]`  
   

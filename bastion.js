@@ -105,6 +105,8 @@ periodicUpdate().then(() => {
 let longMsg = "";
 let gameData = {};
 let searchPage = {};
+let matchPage = {};
+let matchLangs = {};
 
 //command declaration
 let commandList = [{
@@ -146,6 +148,12 @@ let commandList = [{
 	names: ["search", "textsearch", "searchtext"],
 	func: textSearch,
 	desc: "Returns 10 cards that include the given phrase in their card text."
+},
+{
+	names: ["viewmatch"],
+	func: viewMatch,
+	chk: (user, userID, channelID) => channelID in matchPage,
+	desc: "Returns the card profile for a result from the .matches or .search commands."
 },
 {
 	names: ["set", "setcode", "archetype", "setname", "sets"],
@@ -1139,7 +1147,7 @@ function matches(user, userID, channelID, message, event, name) {
 			while (i in results && outs.length < num) {
 				if (results[i].item.id in cards[outLang]) {
 					if (aliasCheck(results[i].item.id, outLang) && (!argObj || randFilterCheck(results[i].item.id, argObj, outLang))) {
-						outs.push("\n" + (outs.length + 1) + ". " + results[i].item.name);
+						outs.push(results[i].item.id);
 					}
 				}
 				i++;
@@ -1148,25 +1156,32 @@ function matches(user, userID, channelID, message, event, name) {
 				num = outs.length;
 			}
 			let out = "Top " + num + " card name matches for **`" + arg + "`**:";
-			for (let o of outs) {
-				out += o;
-			}
+			outs.forEach((code, i) => {
+				out += "\n" + (i + 1) + ". " + cards[outLang][code].name;
+			});
+			matchPage[channelID] = outs;
+			matchLangs[channelID] = outLang;
 			sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		}
 	} else if (argObj) {
-		let out = num + " cards that meet your criteria:";
 		let i = 0;
 		let outs = [];
 		let cardList = Object.values(cards[outLang]);
 		while (i in cardList && outs.length < num) {
 			if (aliasCheck(cardList[i].code, outLang) && randFilterCheck(cardList[i].code, argObj, outLang)) {
-				outs.push("\n" + (outs.length + 1) + ". " + cardList[i].name);
+				outs.push(cardList[i].code);
 			}
 			i++;
 		}
-		for (let o of outs) {
-			out += o;
+		if (outs.length < num) {
+			num = outs.length;
 		}
+		let out = num + " cards that meet your criteria:";
+		outs.forEach((code, i) => {
+			out += "\n" + (i + 1) + ". " + cards[outLang][code].name;
+		});
+		matchPage[channelID] = outs;
+		matchLangs[channelID] = outLang;
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	} else {
 		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
@@ -1216,7 +1231,7 @@ function textSearch(user, userID, channelID, message, event, name) {
 		while (i in results && outs.length < num) {
 			if (results[i] in cards[outLang]) {
 				if (aliasCheck(results[i], outLang) && (!argObj || randFilterCheck(results[i], argObj, outLang))) {
-					outs.push("\n" + (outs.length + 1) + ". " + cards[outLang][results[i]].name);
+					outs.push(results[i]);
 				}
 			}
 			i++;
@@ -1225,10 +1240,25 @@ function textSearch(user, userID, channelID, message, event, name) {
 			num = outs.length;
 		}
 		let out = num + " card text matches for **`" + arg + "`**:";
-		for (let o of outs) {
-			out += o;
-		}
+		outs.forEach((code, i) => {
+			out += "\n" + (i + 1) + ". " + cards[outLang][code].name;
+		});
+		matchPage[channelID] = outs;
+		matchLangs[channelID] = outLang;
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+	}
+}
+
+function viewMatch(user, userID, channelID, message, event, name) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
+	let argInt = parseInt(arg);
+	if (channelID in matchPage && !isNaN(argInt) && (argInt - 1) in matchPage[channelID]) {
+		let searchTerm = matchPage[channelID][argInt - 1].toString();
+		if (channelID in matchLangs) {
+			searchTerm += "," + matchLangs[channelID] + "," + matchLangs[channelID];
+		}
+		searchCard(searchTerm, false, user, userID, channelID, message, event);
 	}
 }
 
