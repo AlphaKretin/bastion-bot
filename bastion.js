@@ -2664,7 +2664,11 @@ function triviaScore(out, user, userID, channelID) {
 	if (Object.keys(gameData[channelID].score).length > 0) {
 		out += "\n**Scores**:\n";
 		Object.keys(gameData[channelID].score).forEach(id => {
-			out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
+			if (id in bot.users) {
+				out += bot.users[id].username + ": " + gameData[channelID].score[id] + "\n";
+			} else {
+				out += id + ": " + gameData[channelID].score[id] + "\n";
+			}
 		});
 	}
 	return out;
