@@ -1996,6 +1996,16 @@ function parseFilterArgs(input) {
 			func: arg => !isNaN(parseInt(arg)),
 			convert: arg => parseInt(arg)
 		},
+		"rank": {
+			name: "level",
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
+		},
+		"link": {
+			name: "level",
+			func: arg => !isNaN(parseInt(arg)),
+			convert: arg => parseInt(arg)
+		},
 		"lscale": {
 			name: "lscale",
 			func: arg => !isNaN(parseInt(arg)),
