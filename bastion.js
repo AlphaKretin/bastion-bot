@@ -2780,6 +2780,15 @@ function triviaFix(user, userID, channelID, message, event) {
 	if (channelID in gameData) {
 		console.log("User: " + user + " force quit trivia in #" + bot.channels[channelID].name + ". Game state:");
 		console.dir(gameData[channelID]);
+		if (gameData[channelID].TO1) {
+			clearTimeout(gameData[channelID].TO1);
+		}
+		if (gameData[channelID].TO2) {
+			clearTimeout(gameData[channelID].TO2);
+		}
+		if (gameData[channelID].IN) {
+			clearInterval(gameData[channelID].IN);
+		}
 		delete gameData[channelID];
 		sendMessage(user, userID, channelID, message, event, "Trivia data cleared!");
 	}
