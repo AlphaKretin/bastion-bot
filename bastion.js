@@ -298,6 +298,11 @@ let commandList = [{
 	desc: "Links a given page from the Yugipedia wiki."
 },
 {
+	names: ["ygoprodeck", "ydeck", "ygodeck", "prodeck"],
+	func: proDeck,
+	desc: "Links the YGOProDeck database page for a given card."
+},
+{
 	names: ["tfix", "triviafix", "fixtrivia"],
 	func: triviaFix,
 	chk: () => channelID in gameData,
@@ -1624,6 +1629,29 @@ function yugi(user, userID, channelID, message, event, name) {
 		}
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 	});
+}
+
+function proDeck(user, userID, channelID, message, event, name) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
+	let args = input.split("|");
+	let inLang = config.getConfig("defaultLanguage");
+	if (args.length > 1) {
+		input = args[0];
+		if (args[1] in dbs)
+			inLang = args[1];
+	}
+	let inInt = parseInt(input);
+	let code;
+	if (inInt in cards[inLang]) {
+		code = inInt;
+	} else {
+		code = nameCheck(input, inLang);
+	}
+	if (!(code && code in cards[inLang]))
+		return;
+	let name = cards[config.getConfig("defaultLanguage")][code].name;
+	sendMessage(user, userID, channelID, message, event, "https://db.ygoprodeck.com/card/?search=" + encodeURISegment(name));	
 }
 
 function setConf(user, userID, channelID, message, event) {
