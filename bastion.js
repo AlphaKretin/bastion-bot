@@ -2484,7 +2484,7 @@ async function startTriviaRound(round, hard, outLang, argObj, user, userID, chan
 		bot.uploadFile({
 			to: channelID,
 			file: buffer,
-			filename: code + "." + imageExt
+			filename: "triviaPic." + imageExt
 		}, err => {
 			if (err) {
 				console.error(err);
