@@ -305,7 +305,7 @@ let commandList = [{
 {
 	names: ["tfix", "triviafix", "fixtrivia"],
 	func: triviaFix,
-	chk: () => channelID in gameData,
+	chk: (user, userID, channelID) => channelID in gameData,
 	desc: "Clears the trivia data for the current channel, fixing issues when it freezes."
 }];
 
@@ -1650,8 +1650,8 @@ function proDeck(user, userID, channelID, message, event, name) {
 	}
 	if (!(code && code in cards[inLang]))
 		return;
-	let name = cards[config.getConfig("defaultLanguage")][code].name;
-	sendMessage(user, userID, channelID, message, event, "https://db.ygoprodeck.com/card/?search=" + encodeURISegment(name));	
+	let engName = cards[config.getConfig("defaultLanguage")][code].name;
+	sendMessage(user, userID, channelID, message, event, "https://db.ygoprodeck.com/card/?search=" + encodeURI(engName));	
 }
 
 function setConf(user, userID, channelID, message, event) {
