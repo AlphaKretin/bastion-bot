@@ -296,6 +296,12 @@ let commandList = [{
 	names: ["yugi", "yugipedia"],
 	func: yugi,
 	desc: "Links a given page from the Yugipedia wiki."
+},
+{
+	names: ["tfix", "triviafix", "fixtrivia"],
+	func: triviaFix,
+	chk: () => channelID in gameData,
+	desc: "Clears the trivia data for the current channel, fixing issues when it freezes."
 }];
 
 let helpCooldown = true;
@@ -2729,6 +2735,15 @@ function tlock(user, userID, channelID, message, event) {
 		}
 		sendMessage(user, userID, channelID, message, event, "Trivia locked to this channel!\nTrivia is locked to the following channels on this server: " + out.join(", ")).catch(msgErrHandler);
 		config.triviaLocks = triviaLocks;
+	}
+}
+
+function triviaFix(user, userID, channelID, message, event) {
+	if (channelID in gameData) {
+		console.log("User: " + user + " force quit trivia in #" + bot.channels[channelID].name + ". Game state:");
+		console.dir(gameData[channelID]);
+		delete gameData[channelID];
+		sendMessage(user, userID, channelID, message, event, "Trivia data cleared!");
 	}
 }
 
