@@ -2848,8 +2848,8 @@ function getPermissions(userID, channelID) {
 }
 
 function checkForPermissions(userID, channelID, permissionValues) {
-	let serverID = bot.channels[channelID].guild_id;
-	if (userID === bot.servers[serverID].owner_id)
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	if (serverID && userID === bot.servers[serverID].owner_id)
 		return true;
 	let permissions = getPermissions(userID, channelID);
 	if (permissions.indexOf("GENERAL_ADMINISTRATOR") > -1)
@@ -3336,7 +3336,7 @@ function libDesc(user, userID, channelID, message, event, name) {
 		return;
 	}
 	let desc = searchPage[channelID].pages[searchPage[channelID].index][index].desc;
-	if (desc.length === 0) {
+	if (!desc || desc.trim().length === 0) {
 		desc = "No description found for this entry.";
 	}
 	if (config.getConfig("messageMode", serverID) > 0) {
