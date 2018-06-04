@@ -99,7 +99,7 @@ setInterval(periodicUpdate, 1000 * 60 * 60 * 24);
 periodicUpdate().then(() => {
 	if (!bot.connected) {
 		bot.connect();
-	};
+	}
 	for (let lang of Object.keys(dbs)) {
 		if (!(lang in strings)) {
 			strings[lang] = {};
@@ -709,7 +709,7 @@ function getCardInfo(code, outLang, serverID) {
 					if (card.types.includes("Normal")) {
 						out.mHeading = "Flavour Text";
 					} else {
-						out.mHeading = stats[outLang].meffect;
+						out.mHeading = strings[outLang].meffect;
 					}
 					out.mText = cardText[0];
 				}
