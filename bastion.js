@@ -2429,6 +2429,10 @@ function trivia(user, userID, channelID, message, event) {
 	}
 }
 
+function fixTriviaMessage(msg) {
+	return msg.replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0)).replace(/[\s\-·∙•‧・･‐‑‒–—―﹘﹣－]/g,"").toLowerCase();
+}
+
 async function startTriviaRound(round, hard, outLang, argObj, user, userID, channelID, message, event) {
 	try {
 		let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
@@ -2657,7 +2661,8 @@ async function answerTrivia(user, userID, channelID, message, event) {
 		thumbsup = config.emotesDB["thumbsup"];
 		thumbsdown = config.emotesDB["thumbsdown"];
 	}
-	if (!message.toLowerCase().startsWith(pre + "tq") && !message.toLowerCase().startsWith(pre + "tskip") && !message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+	let fixMes = fixTriviaMessage(message);
+	if (!fixMes.startsWith(pre + "tq") && !fixMes.startsWith(pre + "tskip") && !fixMes.includes(fixTriviaMessage(gameData[channelID].name))) {
 		gameData[channelID].attempted = true;
 		if (thumbsdown) {
 			bot.addReaction({
@@ -2678,19 +2683,19 @@ async function answerTrivia(user, userID, channelID, message, event) {
 	if (gameData[channelID].IN) {
 		clearInterval(gameData[channelID].IN);
 	}
-	if (message.toLowerCase().startsWith(pre + "tq")) {
+	if (fixMes.startsWith(pre + "tq")) {
 		out = "<@" + userID + "> quit the game. The answer was **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		out = triviaWinners(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		delete gameData[channelID];
-	} else if (message.toLowerCase().startsWith(pre + "tskip")) {
+	} else if (fixMes.startsWith(pre + "tskip")) {
 		gameData[channelID].noAttCount = 0;
 		out = "<@" + userID + "> skipped the round! The answer was **" + gameData[channelID].name + "**!\n";
 		out = triviaScore(out, user, userID, channelID, message, event);
 		sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
 		startTriviaRound(gameData[channelID].round, gameData[channelID].hard, gameData[channelID].lang, gameData[channelID].argObj, user, userID, channelID, message, event);
-	} else if (message.toLowerCase().includes(gameData[channelID].name.toLowerCase())) {
+	} else if (fixMes.includes(fixTriviaMessage(gameData[channelID].name))) {
 		gameData[channelID].noAttCount = 0;
 		bot.addReaction({
 			channelID: channelID,
