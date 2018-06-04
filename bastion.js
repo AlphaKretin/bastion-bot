@@ -20,6 +20,7 @@ let shortcuts = JSON.parse(fs.readFileSync("config/" + config.getConfig("shortcu
 let setcodes = JSON.parse(fs.readFileSync("config/" + config.getConfig("setcodesDB"), "utf8"));
 let lflist = JSON.parse(fs.readFileSync("config/" + config.getConfig("lflistDB"), "utf8"));
 let stats = JSON.parse(fs.readFileSync("config/" + config.getConfig("statsDB"), "utf8"));
+let strings = JSON.parse(fs.readFileSync("config/" + config.getConfig("stringsDB"),"utf8"));
 
 let libFunctions;
 let libConstants;
@@ -98,6 +99,17 @@ setInterval(periodicUpdate, 1000 * 60 * 60 * 24);
 periodicUpdate().then(() => {
 	if (!bot.connected) {
 		bot.connect();
+	};
+	for (let lang of Object.keys(dbs)) {
+		if (!(lang in strings)) {
+			strings[lang] = {};
+		}
+		let en = config.getConfig("defaultLanguage");
+		Object.keys(strings[en]).forEach(key => {
+			if (!(key in strings[lang]) || strings[lang][key].trim().length === 0) {
+				strings[lang][key] = strings[en][key];
+			}
+		});
 	}
 });
 
@@ -180,7 +192,7 @@ let commandList = [{
 },
 {
 	names: ["strings"],
-	func: strings,
+	func: stringsearch,
 	chk: (user, userID, channelID) => !(channelID in gameData),
 	desc: "Displays the strings assinged to a card in YGOPro, such as descriptions of its effects or dialog boxes it may ask the player."
 },
@@ -604,9 +616,9 @@ function getCardInfo(code, outLang, serverID) {
 				}
 			});
 		}
-		out.stats = "**ID**: " + out.alIDs.join("|") + "\n";
+		out.stats = "** " + strings[outLang].id + "**: " + out.alIDs.join("|") + "\n";
 		if (card.sets) {
-			out.stats += "**Archetype**: " + card.sets.join(", ");
+			out.stats += "**" + strings[outLang].archetype + "**: " + card.sets.join(", ");
 		}
 		out.stats += "\n";
 		let stat = card.ot.join("/");
@@ -641,12 +653,12 @@ function getCardInfo(code, outLang, serverID) {
 				}
 				if (avgs.length > 0) {
 					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-					out.stats += "**Status**: " + stat + " **Price**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
+					out.stats += "**" + strings[outLang].ot + "**: " + stat + " **" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
 				} else {
-					out.stats += "**Status**: " + stat + "\n";
+					out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
 				}
 			} else {
-				out.stats += "**Status**: " + stat + "\n";
+				out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
 			}
 			out.embCT = getEmbCT(card);
 			if (card.types.includes("Monster")) {
@@ -658,12 +670,12 @@ function getCardInfo(code, outLang, serverID) {
 					typesStr = card.types.join("/").replace("Monster", arrace[0]);
 					typesStr += " " + arrace[1];
 				}
-				out.stats += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
-				let lvName = "Level";
+				out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
+				let lvName = strings[outLang].lv;
 				if (card.types.includes("Xyz")) {
-					lvName = "Rank";
+					lvName = strings[outLang].rank;
 				} else if (card.types.includes("Link")) {
-					lvName = "Link Rating";
+					lvName = strings[outLang].linkr;
 				}
 				out.stats += "**" + lvName + "**: " + card.level + " ";
 				if (emoteMode > 0) {
@@ -677,10 +689,10 @@ function getCardInfo(code, outLang, serverID) {
 				if (card.def) {
 					out.stats += "**DEF**: " + card.def;
 				} else {
-					out.stats += "**Link Markers**: " + card.markers;
+					out.stats += "**" + strings[outLang].arrow + "**: " + card.markers;
 				}
 				if (card.types.includes("Pendulum")) {
-					out.stats += " **Pendulum Scale**: ";
+					out.stats += " **" + strings[outLang].scale + "**: ";
 					if (emoteMode > 0) {
 						out.stats += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
 					} else {
@@ -697,7 +709,7 @@ function getCardInfo(code, outLang, serverID) {
 					if (card.types.includes("Normal")) {
 						out.mHeading = "Flavour Text";
 					} else {
-						out.mHeading = "Monster Effect";
+						out.mHeading = stats[outLang].meffect;
 					}
 					out.mText = cardText[0];
 				}
@@ -716,18 +728,18 @@ function getCardInfo(code, outLang, serverID) {
 						typesStr = arrace[0] + "/" + typeemote[0];
 						typesStr += " " + arrace[1] + typeemote[1];
 					}
-					out.stats += "**Type**: " + typesStr + " **Attribute**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**Level**: " + card.level;
+					out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**" + strings[outLang].lv + "**: " + card.level;
 					if (emoteMode > 0) {
 						out.stats += " " + emotesDB["Level"];
 					}
 					out.stats += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 				} else {
-					out.stats += "**Type**: " + typeemote[emoteMode];
+					out.stats += "**" + strings[outLang].type + "**: " + typeemote[emoteMode];
 				}
-				out.mHeading = "Effect";
+				out.mHeading = strings[outLang].effect;
 				out.mText = card.desc[0].replace(/\n/g, "\n"); //replaces literal new lines that Discord doesn't recognise with a newline character that it does. I know this looks silly.
 			} else {
-				out.mHeading = "Card Text";
+				out.mHeading = strings[outLang].text;
 				out.mText = card.desc[0].replace(/\n/g, "\n");
 			}
 			resolve(out);
@@ -1346,7 +1358,7 @@ function dbFind(user, userID, channelID, message, event, name) {
 	}
 }
 
-function strings(user, userID, channelID, message, event, name) {
+function stringsearch(user, userID, channelID, message, event, name) {
 	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
 	let input = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
 	let args = input.split("|");

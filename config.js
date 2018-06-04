@@ -199,6 +199,11 @@ module.exports = function() {
 		console.warn("Filename for stats file not found at conf.statsDB! Defaulting to " + conf.statsDB + ".");
 	}
 
+	if (!conf.stringsDB) {
+		conf.stringsDB = "strings.json";
+		console.warn("Filename for translation strings file not found at conf.stringsDB! Defaulting to " + conf.stringsDB + ".");
+	}
+
 	if (!conf.updateRepos) {
 		console.warn("List of GitHub repositories to update from not found at conf.updateRepos! Live database update will be disabled.");
 	}
@@ -329,6 +334,7 @@ module.exports = function() {
 		setcodesDB: { configable: false },
 		lflistDB: { configable: false },
 		statsDB: { configable: false },
+		stringsDB: { configable: false },
 		updateRepos: { configable: false },
 		setcodeSource: { configable: false },
 		lflistSource: { configable: false }
