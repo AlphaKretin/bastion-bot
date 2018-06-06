@@ -191,6 +191,12 @@ let commandList = [{
 	desc: "Displays the effect or text of a card, without its stats."
 },
 {
+	names: ["price"],
+	func: getSingleProp,
+	chk: (user, userID, channelID) => !(channelID in gameData),
+	desc: "Displays the price of a card, without any other detail."
+},
+{
 	names: ["strings"],
 	func: stringsearch,
 	chk: (user, userID, channelID) => !(channelID in gameData),
@@ -599,7 +605,7 @@ function getPrice(code, outLang) {
 					if (match === null) {
 						reject();
 					} else {
-						resolve("**" + strings[outLang].price + "**: 最安: " + match[1] + "円, ﾄﾘﾑ平均: " + match[2] + "円");
+						resolve("最安: " + match[1] + "円, ﾄﾘﾑ平均: " + match[2] + "円");
 					}
 				} else {
 					reject();
@@ -628,9 +634,9 @@ function getPrice(code, outLang) {
 					}
 					if (avgs.length > 0) {
 						let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-						resolve("**" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
 					} else {
-						resolve("**" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						resolve("$" + low.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
 					}
 					
 				} else {
@@ -689,7 +695,9 @@ function getCardInfo(code, outLang, serverID) {
 			}
 		});
 		try {
-			out.stats += "**" + strings[outLang].ot + "**: " + stat + " " + await getPrice(code, outLang) + "\n";
+			let price = await getPrice(code, outLang);
+			out.stats += "**" + strings[outLang].ot + "**: " + stat + " **" + strings[outLang].price + "**: " + price + "\n";
+			out.price = price;
 		} catch (e) {
 			out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
 		}
@@ -940,6 +948,13 @@ async function getSingleProp(user, userID, channelID, message, event, name, prop
 				out += "**" + cardData.pHeading + "**: " + cardData.pText + "\n";
 			}
 			out += "**" + cardData.mHeading + "**: " + cardData.mText;
+			break;
+		case "price":
+			if (cardData.price) {
+				out = "**" + cardName + "**: " + cardData.price;
+			} else {
+				out = "Sorry, I could not find a price for " + cardName + "!";
+			}
 			break;
 		default:
 			return;
