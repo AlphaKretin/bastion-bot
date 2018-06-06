@@ -587,8 +587,62 @@ async function searchCard(input, hasImage, user, userID, channelID, message, eve
 	}
 }
 
-function getCardInfo(code, outLang, serverID) {
+function getPrice(code, outLang) {
 	return new Promise((resolve, reject) => {
+		if (outLang === "ja") {
+			request("https://ocg.xpg.jp/search/search.fcgi?Name=" + code + "&Mode=0&Price=1", (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else if (response.statusCode === 200) {
+					let re = /<td>([0-9]+)円<\/td><td>([0-9]+)円<\/td>/g;
+					let match = re.exec(body);
+					if (match === null) {
+						reject();
+					} else {
+						resolve("**" + strings[outLang].price + "**: 最安: " + match[1] + "円, ﾄﾘﾑ平均: " + match[2] + "円");
+					}
+				} else {
+					reject();
+				}
+			});
+		} else {
+			let card = cards[outLang][code];
+			request("https://yugiohprices.com/api/get_card_prices/" + card.name, (error, response, body) => { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
+				if (error) {
+					reject(error);
+				} else if (response.statusCode === 200 && JSON.parse(body).status === "success") {
+					let data = JSON.parse(body);
+					let low;
+					let hi;
+					let avgs = [];
+					for (let price of data.data) {
+						if (price.price_data.status === "success") {
+							if (!hi || price.price_data.data.prices.high > hi) {
+								hi = price.price_data.data.prices.high;
+							}
+							if (!low || price.price_data.data.prices.low < low) {
+								low = price.price_data.data.prices.low;
+							}
+							avgs.push(price.price_data.data.prices.average);
+						}
+					}
+					if (avgs.length > 0) {
+						let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+						resolve("**" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+					} else {
+						resolve("**" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+					}
+					
+				} else {
+					reject();
+				}
+			});
+		}
+	});
+}
+
+function getCardInfo(code, outLang, serverID) {
+	return new Promise(async (resolve, reject) => {
 		if (!code || !cards[outLang][code]) {
 			console.error("Invalid card ID, please try again.");
 			reject("Invalid card ID, please try again.");
@@ -634,116 +688,94 @@ function getCardInfo(code, outLang, serverID) {
 				stat = stat.replace(re, key + ": " + lim);
 			}
 		});
-		request("https://yugiohprices.com/api/get_card_prices/" + card.name, (error, response, body) => { //https://yugiohprices.docs.apiary.io/#reference/checking-card-prices/check-price-for-card-name/check-price-for-card-name
-			if (!error && response.statusCode === 200 && JSON.parse(body).status === "success") {
-				let data = JSON.parse(body);
-				let low;
-				let hi;
-				let avgs = [];
-				for (let price of data.data) {
-					if (price.price_data.status === "success") {
-						if (!hi || price.price_data.data.prices.high > hi) {
-							hi = price.price_data.data.prices.high;
-						}
-						if (!low || price.price_data.data.prices.low < low) {
-							low = price.price_data.data.prices.low;
-						}
-						avgs.push(price.price_data.data.prices.average);
-					}
-				}
-				if (avgs.length > 0) {
-					let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-					out.stats += "**" + strings[outLang].ot + "**: " + stat + " **" + strings[outLang].price + "**: $" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n";
-				} else {
-					out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
-				}
+		try {
+			out.stats += "**" + strings[outLang].ot + "**: " + stat + " " + await getPrice(code, outLang) + "\n";
+		} catch (e) {
+			out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
+		}
+		out.embCT = getEmbCT(card);
+		if (card.types.includes("Monster")) {
+			let arrace = addEmote(card.race, "|", serverID);
+			let typesStr;
+			if (emoteMode < 2) {
+				typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
 			} else {
-				out.stats += "**" + strings[outLang].ot + "**: " + stat + "\n";
+				typesStr = card.types.join("/").replace("Monster", arrace[0]);
+				typesStr += " " + arrace[1];
 			}
-			out.embCT = getEmbCT(card);
-			if (card.types.includes("Monster")) {
+			out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
+			let lvName = strings[outLang].lv;
+			if (card.types.includes("Xyz")) {
+				lvName = strings[outLang].rank;
+			} else if (card.types.includes("Link")) {
+				lvName = strings[outLang].linkr;
+			}
+			out.stats += "**" + lvName + "**: " + card.level + " ";
+			if (emoteMode > 0) {
+				if (card.isType(0x1000000000)) { //is dark synchro
+					out.stats += emotesDB["NLevel"] + " ";
+				} else {
+					out.stats += emotesDB[lvName] + " ";
+				}
+			}
+			out.stats += " **ATK**: " + card.atk + " ";
+			if (card.def) {
+				out.stats += "**DEF**: " + card.def;
+			} else {
+				out.stats += "**" + strings[outLang].arrow + "**: " + card.markers;
+			}
+			if (card.types.includes("Pendulum")) {
+				out.stats += " **" + strings[outLang].scale + "**: ";
+				if (emoteMode > 0) {
+					out.stats += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
+				} else {
+					out.stats += card.lscale + "/" + card.rscale;
+				}
+			}
+			let cardText = card.desc;
+			if (cardText.length === 4) {
+				out.pHeading = cardText[2];
+				out.pText = cardText[0];
+				out.mHeading = cardText[3];
+				out.mText = cardText[1];
+			} else {
+				if (card.types.includes("Normal")) {
+					out.mHeading = "Flavour Text";
+				} else {
+					out.mHeading = strings[outLang].meffect;
+				}
+				out.mText = cardText[0];
+			}
+		} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
+			let typeemote = addEmote(card.types, "/", serverID);
+			if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
+				typeemote[1] += emotesDB["NormalST"];
+				typeemote[2] += emotesDB["NormalST"];
+			}
+			if (card.isType(0x100)) { //is trap monster
 				let arrace = addEmote(card.race, "|", serverID);
 				let typesStr;
 				if (emoteMode < 2) {
-					typesStr = card.types.join("/").replace("Monster", arrace[emoteMode]);
+					typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
 				} else {
-					typesStr = card.types.join("/").replace("Monster", arrace[0]);
-					typesStr += " " + arrace[1];
+					typesStr = arrace[0] + "/" + typeemote[0];
+					typesStr += " " + arrace[1] + typeemote[1];
 				}
-				out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n";
-				let lvName = strings[outLang].lv;
-				if (card.types.includes("Xyz")) {
-					lvName = strings[outLang].rank;
-				} else if (card.types.includes("Link")) {
-					lvName = strings[outLang].linkr;
-				}
-				out.stats += "**" + lvName + "**: " + card.level + " ";
+				out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**" + strings[outLang].lv + "**: " + card.level;
 				if (emoteMode > 0) {
-					if (card.isType(0x1000000000)) { //is dark synchro
-						out.stats += emotesDB["NLevel"] + " ";
-					} else {
-						out.stats += emotesDB[lvName] + " ";
-					}
+					out.stats += " " + emotesDB["Level"];
 				}
-				out.stats += " **ATK**: " + card.atk + " ";
-				if (card.def) {
-					out.stats += "**DEF**: " + card.def;
-				} else {
-					out.stats += "**" + strings[outLang].arrow + "**: " + card.markers;
-				}
-				if (card.types.includes("Pendulum")) {
-					out.stats += " **" + strings[outLang].scale + "**: ";
-					if (emoteMode > 0) {
-						out.stats += " " + card.lscale + emotesDB["L.Scale"] + " " + emotesDB["R.Scale"] + card.rscale + " ";
-					} else {
-						out.stats += card.lscale + "/" + card.rscale;
-					}
-				}
-				let cardText = card.desc;
-				if (cardText.length === 4) {
-					out.pHeading = cardText[2];
-					out.pText = cardText[0];
-					out.mHeading = cardText[3];
-					out.mText = cardText[1];
-				} else {
-					if (card.types.includes("Normal")) {
-						out.mHeading = "Flavour Text";
-					} else {
-						out.mHeading = strings[outLang].meffect;
-					}
-					out.mText = cardText[0];
-				}
-			} else if (card.types.includes("Spell") || card.types.includes("Trap")) {
-				let typeemote = addEmote(card.types, "/", serverID);
-				if ((typeemote[0] == "Spell" || typeemote[0] == "Trap") && emoteMode > 0) {
-					typeemote[1] += emotesDB["NormalST"];
-					typeemote[2] += emotesDB["NormalST"];
-				}
-				if (card.isType(0x100)) { //is trap monster
-					let arrace = addEmote(card.race, "|", serverID);
-					let typesStr;
-					if (emoteMode < 2) {
-						typesStr = arrace[emoteMode] + "/" + typeemote[emoteMode];
-					} else {
-						typesStr = arrace[0] + "/" + typeemote[0];
-						typesStr += " " + arrace[1] + typeemote[1];
-					}
-					out.stats += "**" + strings[outLang].type + "**: " + typesStr + " **" + strings[outLang].att + "**: " + addEmote(card.attribute, "|", serverID)[emoteMode] + "\n**" + strings[outLang].lv + "**: " + card.level;
-					if (emoteMode > 0) {
-						out.stats += " " + emotesDB["Level"];
-					}
-					out.stats += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
-				} else {
-					out.stats += "**" + strings[outLang].type + "**: " + typeemote[emoteMode];
-				}
-				out.mHeading = strings[outLang].effect;
-				out.mText = card.desc[0].replace(/\n/g, "\n"); //replaces literal new lines that Discord doesn't recognise with a newline character that it does. I know this looks silly.
+				out.stats += "  **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
 			} else {
-				out.mHeading = strings[outLang].text;
-				out.mText = card.desc[0].replace(/\n/g, "\n");
+				out.stats += "**" + strings[outLang].type + "**: " + typeemote[emoteMode];
 			}
-			resolve(out);
-		});
+			out.mHeading = strings[outLang].effect;
+			out.mText = card.desc[0].replace(/\n/g, "\n"); //replaces literal new lines that Discord doesn't recognise with a newline character that it does. I know this looks silly.
+		} else {
+			out.mHeading = strings[outLang].text;
+			out.mText = card.desc[0].replace(/\n/g, "\n");
+		}
+		resolve(out);
 	});
 }
 
