@@ -545,8 +545,7 @@ async function script(user, userID, channelID, message, event, name) {
 		try {
 			let code = nameCheck(input, inLang); //this handles all the fuzzy search stuff
 			if (code && code in cards[inLang]) {
-				let out = await getCardScript(cards[inLang][code]);
-				sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler);
+				getCardScript(cards[inLang][code]).then(out => sendMessage(user, userID, channelID, message, event, out).catch(msgErrHandler));
 			} else {
 				console.error("Invalid card ID or name, please try again.");
 				return;
@@ -1119,8 +1118,53 @@ function deck(user, userID, channelID, message, event) {
 	});
 }
 
-function getCardScript(card) {
+function downloadScript(file) {
 	return new Promise(resolve => {
+		https.get(url.parse(file.data.download_url), response => {
+			let data = [];
+			response.on("data", chunk => {
+				data.push(chunk);
+			}).on("end", () => {
+				resolve(Buffer.concat(data));
+			});
+		});
+	});
+}
+
+function getGHCardScript(card, scriptUrl) {
+	return new Promise((resolve, reject) => {
+		let arr = scriptUrl.split("/");
+		if (!arr || arr.length < 2)
+			reject("Invalid card script source: " + scriptUrl);
+		else {
+			let path;
+			if (arr.length > 2) {
+				path = arr.slice(2).join("/") + "/c" + card.code + ".lua";
+			} else {
+				path = "/c" + card.code + ".lua";
+			}
+			github.repos.getContent({
+				owner: arr[0],
+				repo: arr[1],
+				path: path
+			}, (err, file) => {
+				if (err) {
+					reject(err);
+				} else {
+					downloadScript(file).then(buffer => {
+						resolve({
+							script: buffer.toString(),
+							file: file
+						});
+					});
+				}
+			});
+		}
+	});
+}
+
+function getCardScript(card) {
+	return new Promise((resolve, reject) => {
 		let scriptUrl = config.getConfig("scriptUrl");
 		if (card.isAnime) {
 			scriptUrl = config.getConfig("scriptUrlAnime");
@@ -1128,50 +1172,50 @@ function getCardScript(card) {
 		if (card.isCustom) {
 			scriptUrl = config.getConfig("scriptUrlCustom");
 		}
-		let fullUrl = scriptUrl + "c" + card.code + ".lua";
-		if (config.getConfig("debugOutput")) {
-			console.log("Debug data: " + fullUrl);
-			console.dir(url.parse(fullUrl));
-		}
-		https.get(url.parse(fullUrl), response => {
-			let data = [];
-			response.on("data", chunk => {
-				data.push(chunk);
-			}).on("end", async () => {
-				let buffer = Buffer.concat(data);
-				let script = buffer.toString();
-				let scriptUrlBackup = config.getConfig("scriptUrlBackup");
-				if (script === "404: Not Found\n" && scriptUrlBackup) {
-					let i = 0;
-					while (script === "404: Not Found\n" && i in scriptUrlBackup) {
-						script = await new Promise(resolve => {
-							fullUrl = scriptUrlBackup[i] + "c" + card.code + ".lua";
-							https.get(url.parse(fullUrl), response => {
-								let data2 = [];
-								response.on("data", chunk => {
-									data2.push(chunk);
-								}).on("end", async () => {
-									let buffer2 = Buffer.concat(data2);
-									let script2 = buffer2.toString();
-									resolve(script2);
-								});
-							});
-						});
-						i++;
-					}
-					
-				}
-				let scriptArr = script.split("\n");
-				script = "";
-				scriptArr.forEach((key, index) => {
-					script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n"; //appends properly space-padded line numbers at start of lines
-				});
-				if (script.length + "```lua\n```\n".length + fullUrl.length > 2000) { //display script if it fits, otherwise just link to it
-					resolve(fullUrl);
-				} else {
-					resolve("```lua\n" + script + "```\n" + fullUrl);
-				}
+		getGHCardScript(card, scriptUrl).then(res => {
+			let scriptArr = res.script.split("\n");
+			let script = "";
+			scriptArr.forEach((key, index) => {
+				script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n"; //appends properly space-padded line numbers at start of lines
 			});
+			if (script.length + "```lua\n```\n".length + res.file.data.html_url.length > 2000) { //display script if it fits, otherwise just link to it
+				resolve(res.file.data.html_url);
+			} else {
+				resolve("```lua\n" + script + "```\n" + res.file.data.html_url);
+			}
+		}).catch(async e => {
+			let scriptUrlBackup = config.getConfig("scriptUrlBackup");
+			let err = e;
+			let res; 
+			if (err.code === 404 && scriptUrlBackup) {
+				let i = 0;
+				while (err.code === 404 && i in scriptUrlBackup) {
+					await getGHCardScript(card, scriptUrlBackup[i]).then(scr => {
+						res = scr;
+						err = {code: -1};
+						i++; //this success should end the loop by the first statement, but better to be sure
+					}).catch(e => {
+						err = e;
+						i++;
+					});
+				}
+				if (res) {
+					let scriptArr = res.script.split("\n");
+					let script = "";
+					scriptArr.forEach((key, index) => {
+						script += " ".repeat(scriptArr.length.toString().length - (index + 1).toString().length) + (index + 1) + "| " + scriptArr[index] + "\n"; //appends properly space-padded line numbers at start of lines
+					});
+					if (script.length + "```lua\n```\n".length + res.file.data.html_url.length > 2000) { //display script if it fits, otherwise just link to it
+						resolve(res.file.data.html_url);
+					} else {
+						resolve("```lua\n" + script + "```\n" + res.file.data.html_url);
+					}
+				} else {
+					reject(err);
+				}	
+			} else {
+				reject(e);
+			}
 		});
 	});
 }
