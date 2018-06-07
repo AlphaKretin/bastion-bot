@@ -189,6 +189,11 @@ module.exports = function() {
 		console.warn("Filename for setcodes file not found at conf.setcodesDB! Defaulting to " + conf.setcodesDB + ".");
 	}
 
+	if (!conf.countersDB) {
+		conf.countersDB = "counters.json";
+		console.warn("Filename for counters file not found at conf.countersDB! Defaulting to " + conf.countersDB + ".");
+	}
+
 	if (!conf.lflistDB) {
 		conf.lflistDB = "lflist.json";
 		console.warn("Filename for banlist file not found at conf.lflistDB! Defaulting to " + conf.lflistDB + ".");
@@ -332,6 +337,7 @@ module.exports = function() {
 		debugOutput: { configable: false },
 		shortcutDB: { configable: false },
 		setcodesDB: { configable: false },
+		countersDB: { configable: false },
 		lflistDB: { configable: false },
 		statsDB: { configable: false },
 		stringsDB: { configable: false },

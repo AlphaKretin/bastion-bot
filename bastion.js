@@ -18,6 +18,7 @@ let github = new GitHubApi({
 //more config files, all explained in the readme
 let shortcuts = JSON.parse(fs.readFileSync("config/" + config.getConfig("shortcutDB"), "utf8"));
 let setcodes = JSON.parse(fs.readFileSync("config/" + config.getConfig("setcodesDB"), "utf8"));
+let counters = JSON.parse(fs.readFileSync("config/" + config.getConfig("countersDB"), "utf8"));
 let lflist = JSON.parse(fs.readFileSync("config/" + config.getConfig("lflistDB"), "utf8"));
 let stats = JSON.parse(fs.readFileSync("config/" + config.getConfig("statsDB"), "utf8"));
 let strings = JSON.parse(fs.readFileSync("config/" + config.getConfig("stringsDB"),"utf8"));
@@ -173,6 +174,11 @@ let commandList = [{
 	desc: "Converts between YGOPro setcodes and archetype names."
 },
 {
+	names: ["counter", "count", "ct"],
+	func: counter,
+	desc: "Converts between YGOPro hex codes and Counter names."
+},
+{
 	names: ["id"],
 	func: getSingleProp,
 	chk: (user, userID, channelID) => !(channelID in gameData),
@@ -286,7 +292,10 @@ let commandList = [{
 },
 {
 	names: ["update", "updatejson"],
-	func: (user, userID, channelID, message, event) => periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!").catch(msgErrHandler)).catch(e => sendMessage(user, userID, userID, message, event, e).catch(msgErrHandler)),
+	func: (user, userID, channelID, message, event) => {
+		sendMessage(user, userID, channelID, message, event, "Starting update!").catch(msgErrHandler);
+		periodicUpdate().then(() => sendMessage(user, userID, channelID, message, event, "Update complete!").catch(msgErrHandler)).catch(e => sendMessage(user, userID, userID, message, event, e).catch(msgErrHandler));
+	},
 	chk: (user, userID) => {
 		let owner = config.getConfig("botOwner");
 		return owner && owner.includes(userID);
@@ -1391,6 +1400,21 @@ function set(user, userID, channelID, message, event, name) {
 		Object.keys(setcodes).forEach(key => {
 			if (setcodes[key].toLowerCase() === arg.toLowerCase()) {
 				sendMessage(user, userID, channelID, message, event, setcodes[key] + ": " + key).catch(msgErrHandler);
+				return;
+			}
+		});
+	}
+}
+
+function counter(user, userID, channelID, message, event, name) {
+	let serverID = bot.channels[channelID] && bot.channels[channelID].guild_id;
+	let arg = message.slice((config.getConfig("prefix", serverID) + name + " ").length);
+	if (arg.toLowerCase() in counters) {
+		sendMessage(user, userID, channelID, message, event, counters[arg.toLowerCase()] + ": " + arg).catch(msgErrHandler);
+	} else {
+		Object.keys(counters).forEach(key => {
+			if (counters[key].toLowerCase() === arg.toLowerCase()) {
+				sendMessage(user, userID, channelID, message, event, counters[key] + ": " + key).catch(msgErrHandler);
 				return;
 			}
 		});
@@ -3151,11 +3175,11 @@ async function dbUpdate() {
 				} else {
 					delete liveDBs[lang];
 				}	
-			});
+			})
 			loadDBs();
 			config.liveDBs = liveDBs;
 			resolve();
-		});
+		}).catch(e => console.error(e));
 	});
 }
 
@@ -3193,20 +3217,28 @@ function updateSetcodes() {
 			}).on("end", () => {
 				let buffer = Buffer.concat(data);
 				let file = buffer.toString();
-				console.log("Strings file downloaded. Extracting setcodes...");
+				console.log("Strings file downloaded. Extracting setcodes and counters...");
 				let tempCodes = {};
+				let tempCounts = {};
 				for (let line of file.split("\r\n")) {
 					if (line.startsWith("!setname")) {
 						let code = line.split(" ")[1];
 						let name = line.slice(line.indexOf(code) + code.length + 1);
 						tempCodes[code] = name;
 					}
+					if (line.startsWith("!counter")) {
+						let code = line.split(" ")[1];
+						let name = line.slice(line.indexOf(code) + code.length + 1);
+						tempCounts[code] = name;
+					}
 				}
-				console.log("Setcodes assembled, writing to file...");
+				console.log("Setcodes and counters assembled, writing to file...");
 				fs.writeFileSync("config/" + config.getConfig("setcodesDB"), JSON.stringify(tempCodes), "utf-8");
+				fs.writeFileSync("config/" + config.getConfig("countersDB"), JSON.stringify(tempCounts), "utf-8");
 				setcodes = tempCodes;
+				counters = tempCounts;
 				Card = require("./card.js")(setcodes);
-				console.log("Setcodes updated!");
+				console.log("Setcodes and counters updated!");
 				resolve();
 			});
 		});
