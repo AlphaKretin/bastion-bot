@@ -731,7 +731,8 @@ function getCardInfo(code, outLang, serverID) {
 				if (card.isType(0x1000000000)) { //is dark synchro
 					out.stats += emotesDB["NLevel"] + " ";
 				} else {
-					out.stats += emotesDB[lvName] + " ";
+					let en = config.getConfig("defaultLanguage", serverID);
+					out.stats += emotesDB[strings[en].lv] + " ";
 				}
 			}
 			out.stats += " **ATK**: " + card.atk + " ";
