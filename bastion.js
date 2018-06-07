@@ -792,6 +792,12 @@ function getCardInfo(code, outLang, serverID) {
 			out.mHeading = strings[outLang].text;
 			out.mText = card.desc[0].replace(/\n/g, "\n");
 		}
+		let re = /DoItYourself---(.+)/;
+		let match = re.exec(out.mText);
+		if (match !== null) {
+			out.mText = out.mText.replace(re,"");
+			out.mText += "\n**Creator**: " + match[1];
+		}
 		resolve(out);
 	});
 }
