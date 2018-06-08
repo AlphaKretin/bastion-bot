@@ -731,7 +731,8 @@ function getCardInfo(code, outLang, serverID) {
 				if (card.isType(0x1000000000)) { //is dark synchro
 					out.stats += emotesDB["NLevel"] + " ";
 				} else {
-					out.stats += emotesDB[lvName] + " ";
+					let en = config.getConfig("defaultLanguage", serverID);
+					out.stats += emotesDB[strings[en].lv] + " ";
 				}
 			}
 			out.stats += " **ATK**: " + card.atk + " ";
@@ -790,6 +791,12 @@ function getCardInfo(code, outLang, serverID) {
 		} else {
 			out.mHeading = strings[outLang].text;
 			out.mText = card.desc[0].replace(/\n/g, "\n");
+		}
+		let re = /DoItYourself---(.+)/;
+		let match = re.exec(out.mText);
+		if (match !== null) {
+			out.mText = out.mText.replace(re,"");
+			out.mText += "\n**Creator**: " + match[1];
 		}
 		resolve(out);
 	});
