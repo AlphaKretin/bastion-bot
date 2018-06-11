@@ -1351,13 +1351,14 @@ function textSearch(user, userID, channelID, message, event, name) {
 	let results = [];
 	Object.values(cards[outLang]).forEach(card => {
 		if (card.desc.length === 4) {
-			if (card.desc[1].toLowerCase().indexOf(arg) > -1 && results.indexOf(card.code) === -1) {
+			if (card.desc[1].toLowerCase().includes(arg) && results.indexOf(card.code) === -1) {
 				results.push(card.code);
 			}
 		}
-		if (card.desc[0].toLowerCase().indexOf(arg) > -1 && results.indexOf(card.code) === -1) {
+		if (card.desc[0].toLowerCase().includes(arg) && results.indexOf(card.code) === -1) {
 			results.push(card.code);
 		}
+		if (card.name.toLowerCase().includes(arg) && results.indexOf(card.code) === -1)
 	});
 	if (results.length < 1) {
 		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
