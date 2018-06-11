@@ -1358,7 +1358,9 @@ function textSearch(user, userID, channelID, message, event, name) {
 		if (card.desc[0].toLowerCase().includes(arg) && results.indexOf(card.code) === -1) {
 			results.push(card.code);
 		}
-		if (card.name.toLowerCase().includes(arg) && results.indexOf(card.code) === -1)
+		if (card.name.toLowerCase().includes(arg) && results.indexOf(card.code) === -1) {
+			results.push(card.code);
+		}
 	});
 	if (results.length < 1) {
 		sendMessage(user, userID, channelID, message, event, "No matches found!").catch(msgErrHandler);
