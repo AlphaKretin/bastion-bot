@@ -1480,6 +1480,13 @@ function dbFind(user, userID, channelID, message, event, name) {
 	if (code && code in cards[outLang]) {
 		let card = cards[outLang][code];
 		sendMessage(user, userID, channelID, message, event, "**" + card.name + "**'s entry can be found in the following databases: `" + card.db.join("`, `") + "`!\nThe rightmost database's entry is the one currently in use.").catch(msgErrHandler);
+	} else {
+		console.error("DB Find failed! Debug info: ");
+		console.error("code: " + code);
+		console.error("input: " + input);
+		console.error("server: " + bot.servers[serverID].name);
+		console.error("channel: " + bot.channels[channelID].name);
+		console.error("user: " + user);
 	}
 }
 
