@@ -1869,27 +1869,34 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 				value: cardData.pText
 			});
 		}
+		let text = cardData.mText;
 		let longText;
-		if (cardData.mText.length > 1024) { //even though an embed's total content can be up to 6k charas, a field is capped to 1024 :/
-			let index = cardData.mText.length - 1;
-			while (cardData.mText.slice(0,index).length > 1024) {
+		if (text.length > 1024) { //even though an embed's total content can be up to 6k charas, a field is capped to 1024 :/
+			let index = 1024;
+			while (text[index - 1] !== ".") {
 				index--;
-				while (cardData.mText[index - 1] !== ".") {
-					index--;
-				}
 			}
-			longText = cardData.mText.slice(index);
-			cardData.mText = cardData.mText.slice(0,index);
+			longText = text.slice(index);
+			text = text.slice(0,index);
 		}
 		embed.fields.push({
 			name: cardData.mHeading,
-			value: cardData.mText
+			value: text
 		});
-		if (longText) {
-			embed.fields.push({
-				name: "Continued",
-				value: longText
-			});
+		let longTexts = [];
+		while (longText.length > 1024) {
+			let index = 1024;
+			while (longText[index - 1] !== ".") {
+				index--;
+			}
+			longTexts.push(longText.slice(0,index));
+			longText = longText.slice(index);
+		}
+		if (longText.length > 0) {
+			longTexts.push(longText);
+		}
+		if (longTexts.length > 0) {
+			longTexts.forEach(t => embed.fields.push({name: "Continued", value: t }));
 		}
 		embed.fields.forEach((_,i) => { //uses key instead of value to modify original array
 			if (embed.fields[i].value.trim().length < 1) {
@@ -3192,7 +3199,7 @@ async function dbUpdate() {
 				} else {
 					delete liveDBs[lang];
 				}	
-			})
+			});
 			loadDBs();
 			config.liveDBs = liveDBs;
 			resolve();
