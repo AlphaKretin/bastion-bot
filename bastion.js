@@ -735,9 +735,9 @@ function getCardInfo(code, outLang, serverID) {
 					out.stats += emotesDB[strings[en].lv] + " ";
 				}
 			}
-			out.stats += " **ATK**: " + card.atk + " ";
+			out.stats += " **" + strings[outLang].atk + "**: " + card.atk + " ";
 			if (card.def) {
-				out.stats += "**DEF**: " + card.def;
+				out.stats += "**" + strings[outLang].def + "**: " + card.def;
 			} else {
 				out.stats += "**" + strings[outLang].arrow + "**: " + card.markers;
 			}
