@@ -1884,7 +1884,7 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 			value: text
 		});
 		let longTexts = [];
-		while (longText.length > 1024) {
+		while (longText && longText.length > 1024) {
 			let index = 1024;
 			while (longText[index - 1] !== ".") {
 				index--;
@@ -1892,7 +1892,7 @@ async function sendCardProfile(user, userID, channelID, message, event, code, ou
 			longTexts.push(longText.slice(0,index));
 			longText = longText.slice(index);
 		}
-		if (longText.length > 0) {
+		if (longText && longText.length > 0) {
 			longTexts.push(longText);
 		}
 		if (longTexts.length > 0) {
