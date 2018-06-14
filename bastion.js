@@ -640,13 +640,16 @@ function getPrice(code, outLang) {
 							avgs.push(price.price_data.data.prices.average);
 						}
 					}
-					if (avgs.length > 0) {
-						let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
-						resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+					if (low && hi) {
+						if (avgs.length > 0) {
+							let avg = (avgs.reduce((a, b) => a + b, 0)) / avgs.length;
+							resolve("$" + low.toFixed(2) + "-$" + avg.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						} else {
+							resolve("$" + low.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						}
 					} else {
-						resolve("$" + low.toFixed(2) + "-$" + hi.toFixed(2) + " USD\n");
+						reject();
 					}
-					
 				} else {
 					reject();
 				}
