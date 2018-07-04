@@ -58,3 +58,5 @@ typings/
 .env
 
 .DS_Store
+#sekrit token donut steal
+auth.json

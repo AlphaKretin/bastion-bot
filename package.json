@@ -1,0 +1,39 @@
+{
+    "name": "bastion-bot",
+    "version": "0.0.1",
+    "description": "A Discord bot for looking up Yu-Gi-Oh! cards, and other Yu-Gi-Oh!-related utilities.",
+    "main": "dist/bastion.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AlphaKretin/bastion-bot.git"
+    },
+    "keywords": [
+        "yugioh",
+        "discord"
+    ],
+    "author": "AlphaKretin (https://www.patreon.com/alphakretinbots)",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/AlphaKretin/bastion-bot/issues"
+    },
+    "homepage": "https://github.com/AlphaKretin/bastion-bot#readme",
+    "dependencies": {
+        "eris": "^0.8.6"
+    },
+    "devDependencies": {
+        "@types/node": "^10.5.1"
+    },
+    "prettier": {
+        "printWidth": 120,
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "none",
+        "bracketSpacing": true,
+        "arrowParens": "avoid"
+    }
+}
