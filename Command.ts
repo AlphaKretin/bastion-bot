@@ -8,14 +8,14 @@ interface IPermissionMap {
 }
 
 export class Command {
-    private names: string[];
-    private func: (msg: Eris.Message) => Promise<void>;
+    public names: string[];
+    private func: (msg: Eris.Message, bot: Eris.Client) => Promise<void>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
     constructor(
         names: string[],
-        func: (msg: Eris.Message) => Promise<void>,
+        func: (msg: Eris.Message, bot: Eris.Client) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
         this.names = names;
@@ -31,10 +31,10 @@ export class Command {
         }
     }
 
-    public execute(msg: Eris.Message): Promise<void> {
+    public execute(msg: Eris.Message, bot: Eris.Client): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.isCanExecute(msg)) {
-                this.func(msg)
+                this.func(msg, bot)
                     .then(() => resolve())
                     .catch(e => reject(e));
             } else {

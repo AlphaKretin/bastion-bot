@@ -22,10 +22,12 @@
     "homepage": "https://github.com/AlphaKretin/bastion-bot#readme",
     "dependencies": {
         "eris": "^0.8.6",
+        "request": "^2.87.0",
         "ygopro-data": "0.0.5"
     },
     "devDependencies": {
-        "@types/node": "^10.5.1"
+        "@types/node": "^10.5.1",
+        "@types/request": "^2.47.1"
     },
     "prettier": {
         "printWidth": 120,
