@@ -60,7 +60,6 @@ Promise.all(promises)
                 if (file.endsWith(".js")) {
                     try {
                         const mod = require("./commands/" + file);
-                        console.dir(mod);
                         if (mod.cmd && mod.cmd instanceof Command_1.Command) {
                             commands.push(mod.cmd);
                             console.log("Loaded command " + file + "!");
