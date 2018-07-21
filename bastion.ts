@@ -34,16 +34,19 @@ function downloadCmd(file: any): Promise<void> {
 const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 const promises: Array<Promise<void>> = [];
 for (const repo of botOpts.cmdRepos) {
-    GitHub.repos.get(repo).then(res => {
-        for (const key in res.data) {
-            if (res.data.hasOwnProperty(key)) {
-                const file = res.data[key];
-                if (file.name.endsWith(".js")) {
-                    promises.push(downloadCmd(file));
+    GitHub.repos
+        .getContent(repo)
+        .then(res => {
+            for (const key in res.data) {
+                if (res.data.hasOwnProperty(key)) {
+                    const file = res.data[key];
+                    if (file.name.endsWith(".js")) {
+                        promises.push(downloadCmd(file));
+                    }
                 }
             }
-        }
-    });
+        })
+        .catch(e => console.error(e));
 }
 Promise.all(promises)
     .then(() => {
@@ -54,13 +57,17 @@ Promise.all(promises)
                 process.exit();
             } else {
                 for (const file of files) {
-                    try {
-                        const cmd: any = require(file);
-                        if (cmd instanceof Command) {
-                            commands.push(cmd);
+                    if (file.endsWith(".js")) {
+                        try {
+                            const mod: any = require("./commands/" + file);
+                            console.dir(mod);
+                            if (mod.cmd && mod.cmd instanceof Command) {
+                                commands.push(mod.cmd);
+                                console.log("Loaded command " + file + "!");
+                            }
+                        } catch (e) {
+                            console.error(e);
                         }
-                    } catch (e) {
-                        console.warn(e);
                     }
                 }
             }

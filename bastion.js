@@ -33,7 +33,9 @@ function downloadCmd(file) {
 const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 const promises = [];
 for (const repo of botOpts.cmdRepos) {
-    GitHub.repos.get(repo).then(res => {
+    GitHub.repos
+        .getContent(repo)
+        .then(res => {
         for (const key in res.data) {
             if (res.data.hasOwnProperty(key)) {
                 const file = res.data[key];
@@ -42,7 +44,8 @@ for (const repo of botOpts.cmdRepos) {
                 }
             }
         }
-    });
+    })
+        .catch(e => console.error(e));
 }
 Promise.all(promises)
     .then(() => {
@@ -54,14 +57,18 @@ Promise.all(promises)
         }
         else {
             for (const file of files) {
-                try {
-                    const cmd = require(file);
-                    if (cmd instanceof Command_1.Command) {
-                        commands.push(cmd);
+                if (file.endsWith(".js")) {
+                    try {
+                        const mod = require("./commands/" + file);
+                        console.dir(mod);
+                        if (mod.cmd && mod.cmd instanceof Command_1.Command) {
+                            commands.push(mod.cmd);
+                            console.log("Loaded command " + file + "!");
+                        }
                     }
-                }
-                catch (e) {
-                    console.warn(e);
+                    catch (e) {
+                        console.error(e);
+                    }
                 }
             }
         }
@@ -105,6 +112,14 @@ Promise.all(promises)
         bot.on("messageCreate", msg => {
             // ignore bots
             if (!msg.author.bot) {
+                for (const cmd of commands) {
+                    for (const name of cmd.names) {
+                        if (msg.content.startsWith("." + name)) {
+                            cmd.execute(msg, bot).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));
+                            return;
+                        }
+                    }
+                }
                 const re = /{(.+)}/g;
                 const result = re.exec(msg.content);
                 if (result) {
