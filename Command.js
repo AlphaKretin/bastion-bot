@@ -66,9 +66,17 @@ class Command {
             // convert list of roleIDs to list of role objects
             const roles = rs.map(id => guild.roles.find(r => r.id === id));
             // find the role with position equal to the highest position (at the start of an ascending sort)
-            const role = roles.find((ro, _, o) => ro.position === o.map(r => r.position).sort()[0]);
-            const roleID = role && role.id;
-            return roleID ? roleID in this.permissions[guild.id][channelID] : false;
+            let role = roles.find((ro, _, o) => ro.position === o.map(r => r.position).sort()[0]);
+            let roleID = role && role.id;
+            // if the role doesn't have a permission listed, go down the member's roles until one does
+            while (roleID && !this.permissions[guild.id][channelID].includes(roleID) && roles.length > 0) {
+                if (role) {
+                    roles.splice(roles.indexOf(role), 1);
+                }
+                role = roles.find((ro, _, o) => ro.position === o.map(r => r.position).sort()[0]);
+                roleID = role && role.id;
+            }
+            return roleID ? this.permissions[guild.id][channelID].includes(roleID) : false;
         }
         else {
             // if the user does not have a role, they cannot be in a role with permission
