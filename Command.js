@@ -17,10 +17,10 @@ class Command {
             this.permissions = {};
         }
     }
-    execute(msg, bot) {
+    execute(msg, bot, data) {
         return new Promise((resolve, reject) => {
             if (this.isCanExecute(msg)) {
-                this.func(msg, bot)
+                this.func(msg, bot, data)
                     .then(() => resolve())
                     .catch(e => reject(e));
             }

@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import * as fs from "fs";
+import { Driver as YgoData } from "ygopro-data";
 
 interface IPermissionMap {
     [guildID: string]: {
@@ -9,13 +10,13 @@ interface IPermissionMap {
 
 export class Command {
     public names: string[];
-    private func: (msg: Eris.Message, bot: Eris.Client) => Promise<void>;
+    private func: (msg: Eris.Message, bot: Eris.Client, data: YgoData) => Promise<void>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
     constructor(
         names: string[],
-        func: (msg: Eris.Message, bot: Eris.Client) => Promise<void>,
+        func: (msg: Eris.Message, bot: Eris.Client, data: YgoData) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
         this.names = names;
@@ -31,10 +32,10 @@ export class Command {
         }
     }
 
-    public execute(msg: Eris.Message, bot: Eris.Client): Promise<void> {
+    public execute(msg: Eris.Message, bot: Eris.Client, data: YgoData): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.isCanExecute(msg)) {
-                this.func(msg, bot)
+                this.func(msg, bot, data)
                     .then(() => resolve())
                     .catch(e => reject(e));
             } else {
