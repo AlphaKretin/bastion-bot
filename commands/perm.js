@@ -18,7 +18,26 @@ function perm(msg, data) {
                 const role = guild.roles.find(r => r.id === queryID);
                 if (role) {
                     cmd.setPermission(guild.id, chan.id, role.id)
-                        .then(() => resolve())
+                        .then(res => {
+                        if (res) {
+                            // permission now registered
+                            data.bot.createMessage(chan.id, role.name +
+                                " now whitelisted for using command " +
+                                commandName +
+                                " in " +
+                                chan.mention +
+                                "!");
+                        }
+                        else {
+                            // permission removed
+                            data.bot.createMessage(chan.id, role.name +
+                                " no longer whitelisted for using command " +
+                                commandName +
+                                " in " +
+                                chan.mention +
+                                "!");
+                        }
+                    })
                         .catch(e => reject(e));
                 }
                 else {

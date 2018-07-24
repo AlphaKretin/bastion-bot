@@ -39,23 +39,29 @@ class Command {
             }
             if (this.permissions[guildID][channelID].includes(roleID)) {
                 this.permissions[guildID][channelID].splice(this.permissions[guildID][channelID].indexOf(roleID));
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), err => {
-                    if (err) {
-                        reject(err);
+                if (!fs.existsSync("./permissions")) {
+                    fs.mkdirSync("permissions");
+                }
+                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
+                    if (e) {
+                        reject(e);
                     }
                     else {
-                        resolve();
+                        resolve(false);
                     }
                 });
             }
             else {
                 this.permissions[guildID][channelID].push(roleID);
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), err => {
-                    if (err) {
-                        reject(err);
+                if (!fs.existsSync("./permissions")) {
+                    fs.mkdirSync("permissions");
+                }
+                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
+                    if (e) {
+                        reject(e);
                     }
                     else {
-                        resolve();
+                        resolve(true);
                     }
                 });
             }

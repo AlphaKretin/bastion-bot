@@ -62,3 +62,4 @@ typings/
 auth.json
 
 *.cdb
+permissions/

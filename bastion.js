@@ -5,7 +5,6 @@ const Eris = require("eris");
 const fs = require("fs");
 const request = require("request");
 const ygopro_data_1 = require("ygopro-data");
-const Command_1 = require("./Command");
 const GitHub = new octokit();
 function downloadCmd(file) {
     return new Promise((resolve, reject) => {
@@ -36,12 +35,9 @@ for (const repo of botOpts.cmdRepos) {
     GitHub.repos
         .getContent(repo)
         .then(res => {
-        for (const key in res.data) {
-            if (res.data.hasOwnProperty(key)) {
-                const file = res.data[key];
-                if (file.name.endsWith(".js")) {
-                    promises.push(downloadCmd(file));
-                }
+        for (const file of res.data) {
+            if (file.name.endsWith(".js")) {
+                promises.push(downloadCmd(file));
             }
         }
     })
@@ -60,9 +56,11 @@ Promise.all(promises)
                 if (file.endsWith(".js")) {
                     try {
                         const mod = require("./commands/" + file);
-                        if (mod.cmd && mod.cmd instanceof Command_1.Command) {
-                            commands.push(mod.cmd);
-                            console.log("Loaded command " + file + "!");
+                        for (const key in mod) {
+                            if (mod.hasOwnProperty(key)) {
+                                commands.push(mod[key]);
+                                console.log("Loaded command " + mod[key].names[0] + "!");
+                            }
                         }
                     }
                     catch (e) {

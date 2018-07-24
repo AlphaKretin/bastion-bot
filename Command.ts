@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import * as fs from "fs";
+import * as mkdirp from "mkdirp";
 import { Driver as YgoData } from "ygopro-data";
 
 interface IPermissionMap {
@@ -50,7 +51,7 @@ export class Command {
         });
     }
 
-    public setPermission(guildID: string, channelID: string, roleID: string): Promise<void> {
+    public setPermission(guildID: string, channelID: string, roleID: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (!(guildID in this.permissions)) {
                 this.permissions[guildID] = {};
@@ -60,20 +61,26 @@ export class Command {
             }
             if (this.permissions[guildID][channelID].includes(roleID)) {
                 this.permissions[guildID][channelID].splice(this.permissions[guildID][channelID].indexOf(roleID));
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), err => {
-                    if (err) {
-                        reject(err);
+                if (!fs.existsSync("./permissions")) {
+                    fs.mkdirSync("permissions");
+                }
+                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
+                    if (e) {
+                        reject(e);
                     } else {
-                        resolve();
+                        resolve(false);
                     }
                 });
             } else {
                 this.permissions[guildID][channelID].push(roleID);
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), err => {
-                    if (err) {
-                        reject(err);
+                if (!fs.existsSync("./permissions")) {
+                    fs.mkdirSync("permissions");
+                }
+                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
+                    if (e) {
+                        reject(e);
                     } else {
-                        resolve();
+                        resolve(true);
                     }
                 });
             }

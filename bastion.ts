@@ -37,12 +37,9 @@ for (const repo of botOpts.cmdRepos) {
     GitHub.repos
         .getContent(repo)
         .then(res => {
-            for (const key in res.data) {
-                if (res.data.hasOwnProperty(key)) {
-                    const file = res.data[key];
-                    if (file.name.endsWith(".js")) {
-                        promises.push(downloadCmd(file));
-                    }
+            for (const file of res.data) {
+                if (file.name.endsWith(".js")) {
+                    promises.push(downloadCmd(file));
                 }
             }
         })
@@ -60,9 +57,11 @@ Promise.all(promises)
                     if (file.endsWith(".js")) {
                         try {
                             const mod: any = require("./commands/" + file);
-                            if (mod.cmd && mod.cmd instanceof Command) {
-                                commands.push(mod.cmd);
-                                console.log("Loaded command " + file + "!");
+                            for (const key in mod) {
+                                if (mod.hasOwnProperty(key)) {
+                                    commands.push(mod[key]);
+                                    console.log("Loaded command " + mod[key].names[0] + "!");
+                                }
                             }
                         } catch (e) {
                             console.error(e);
