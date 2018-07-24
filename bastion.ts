@@ -3,7 +3,7 @@ import * as Eris from "eris";
 import * as fs from "fs";
 import * as request from "request";
 import { Driver as ygoData } from "ygopro-data";
-import { Command } from "./Command";
+import { Command, ICommandExpose } from "./Command";
 const GitHub = new octokit();
 
 function downloadCmd(file: any): Promise<void> {
@@ -114,7 +114,12 @@ Promise.all(promises)
                         for (const cmd of commands) {
                             for (const name of cmd.names) {
                                 if (msg.content.startsWith("." + name)) {
-                                    cmd.execute(msg, bot, data).catch(e =>
+                                    const expo: ICommandExpose = {
+                                        bot,
+                                        commands,
+                                        ygo: data
+                                    };
+                                    cmd.execute(msg, expo).catch(e =>
                                         bot.createMessage(msg.channel.id, "Error!\n" + e)
                                     );
                                     return;

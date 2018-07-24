@@ -1,10 +1,11 @@
 import * as Eris from "eris";
-import { Command } from "../Command";
+import { Command, ICommandExpose } from "../Command";
 
 const names = ["ping"];
-const func = (msg: Eris.Message, bot: Eris.Client): Promise<void> => {
+const func = (msg: Eris.Message, data: ICommandExpose): Promise<void> => {
     return new Promise((resolve, reject) => {
-        bot.createMessage(msg.channel.id, "Pong!")
+        data.bot
+            .createMessage(msg.channel.id, "Pong!")
             .then(() => resolve())
             .catch(e => reject(e));
     });

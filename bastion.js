@@ -114,7 +114,12 @@ Promise.all(promises)
                 for (const cmd of commands) {
                     for (const name of cmd.names) {
                         if (msg.content.startsWith("." + name)) {
-                            cmd.execute(msg, bot, data).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));
+                            const expo = {
+                                bot,
+                                commands,
+                                ygo: data
+                            };
+                            cmd.execute(msg, expo).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));
                             return;
                         }
                     }

@@ -8,15 +8,21 @@ interface IPermissionMap {
     };
 }
 
+export interface ICommandExpose {
+    bot: Eris.Client;
+    ygo: YgoData;
+    commands: Command[];
+}
+
 export class Command {
     public names: string[];
-    private func: (msg: Eris.Message, bot: Eris.Client, data: YgoData) => Promise<void>;
+    private func: (msg: Eris.Message, data: ICommandExpose) => Promise<void>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
     constructor(
         names: string[],
-        func: (msg: Eris.Message, bot: Eris.Client, data: YgoData) => Promise<void>,
+        func: (msg: Eris.Message, data: ICommandExpose) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
         this.names = names;
@@ -32,10 +38,10 @@ export class Command {
         }
     }
 
-    public execute(msg: Eris.Message, bot: Eris.Client, data: YgoData): Promise<void> {
+    public execute(msg: Eris.Message, data: ICommandExpose): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.isCanExecute(msg)) {
-                this.func(msg, bot, data)
+                this.func(msg, data)
                     .then(() => resolve())
                     .catch(e => reject(e));
             } else {
@@ -78,18 +84,12 @@ export class Command {
         if (rs && rs.length > 0) {
             // convert list of roleIDs to list of role objects
             const roles = rs.map(id => guild.roles.find(r => r.id === id));
-            // find the role with position equal to the highest position (at the start of an ascending sort)
-            let role = roles.find((ro, _, o) => ro.position === o.map(r => r.position).sort()[0]);
-            let roleID = role && role.id;
-            // if the role doesn't have a permission listed, go down the member's roles until one does
-            while (roleID && !this.permissions[guild.id][channelID].includes(roleID) && roles.length > 0) {
-                if (role) {
-                    roles.splice(roles.indexOf(role), 1);
+            for (const role of roles) {
+                if (this.permissions[guild.id][channelID].includes(role.id) || role.permissions.has("administrator")) {
+                    return true;
                 }
-                role = roles.find((ro, _, o) => ro.position === o.map(r => r.position).sort()[0]);
-                roleID = role && role.id;
             }
-            return roleID ? this.permissions[guild.id][channelID].includes(roleID) : false;
+            return false;
         } else {
             // if the user does not have a role, they cannot be in a role with permission
             return false;

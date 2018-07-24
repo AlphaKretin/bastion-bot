@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../Command");
 const names = ["ping"];
-const func = (msg, bot) => {
+const func = (msg, data) => {
     return new Promise((resolve, reject) => {
-        bot.createMessage(msg.channel.id, "Pong!")
+        data.bot
+            .createMessage(msg.channel.id, "Pong!")
             .then(() => resolve())
             .catch(e => reject(e));
     });
