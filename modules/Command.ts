@@ -1,6 +1,5 @@
 import * as Eris from "eris";
-import * as fs from "fs";
-import * as mkdirp from "mkdirp";
+import * as fs from "mz/fs";
 import { Driver as YgoData } from "ygopro-data";
 
 interface IPermissionMap {
@@ -39,52 +38,36 @@ export class Command {
         }
     }
 
-    public execute(msg: Eris.Message, data: ICommandExpose): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (this.isCanExecute(msg)) {
-                this.func(msg, data)
-                    .then(() => resolve())
-                    .catch(e => reject(e));
-            } else {
-                reject(new Error("Forbidden"));
-            }
-        });
+    public async execute(msg: Eris.Message, data: ICommandExpose): Promise<void> {
+        if (this.isCanExecute(msg)) {
+            this.func(msg, data);
+        } else {
+            throw new Error("Forbidden");
+        }
     }
 
-    public setPermission(guildID: string, channelID: string, roleID: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            if (!(guildID in this.permissions)) {
-                this.permissions[guildID] = {};
+    public async setPermission(guildID: string, channelID: string, roleID: string): Promise<boolean> {
+        if (!(guildID in this.permissions)) {
+            this.permissions[guildID] = {};
+        }
+        if (!(channelID in this.permissions[guildID])) {
+            this.permissions[guildID][channelID] = [];
+        }
+        if (this.permissions[guildID][channelID].includes(roleID)) {
+            this.permissions[guildID][channelID].splice(this.permissions[guildID][channelID].indexOf(roleID));
+            if (!fs.existsSync("./permissions")) {
+                await fs.mkdir("permissions");
             }
-            if (!(channelID in this.permissions[guildID])) {
-                this.permissions[guildID][channelID] = [];
+            await fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4));
+            return false;
+        } else {
+            this.permissions[guildID][channelID].push(roleID);
+            if (!fs.existsSync("./permissions")) {
+                await fs.mkdir("permissions");
             }
-            if (this.permissions[guildID][channelID].includes(roleID)) {
-                this.permissions[guildID][channelID].splice(this.permissions[guildID][channelID].indexOf(roleID));
-                if (!fs.existsSync("./permissions")) {
-                    fs.mkdirSync("permissions");
-                }
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
-                    if (e) {
-                        reject(e);
-                    } else {
-                        resolve(false);
-                    }
-                });
-            } else {
-                this.permissions[guildID][channelID].push(roleID);
-                if (!fs.existsSync("./permissions")) {
-                    fs.mkdirSync("permissions");
-                }
-                fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4), e => {
-                    if (e) {
-                        reject(e);
-                    } else {
-                        resolve(true);
-                    }
-                });
-            }
-        });
+            await fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4));
+            return true;
+        }
     }
 
     private checkChannelPermissions(channelID: string, guild: Eris.Guild, rs: string[] | undefined): boolean {

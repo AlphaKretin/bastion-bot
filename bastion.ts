@@ -3,7 +3,7 @@ import * as Eris from "eris";
 import * as fs from "mz/fs";
 import * as request from "request-promise-native";
 import { Driver as ygoData } from "ygopro-data";
-import { Command, ICommandExpose } from "./Command";
+import { Command, ICommandExpose } from "./modules/Command";
 const GitHub = new octokit();
 
 async function downloadCmd(file: any): Promise<void> {
