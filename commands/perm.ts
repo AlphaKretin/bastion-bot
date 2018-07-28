@@ -1,6 +1,6 @@
 import * as Eris from "eris";
-import { Command, ICommandExpose } from "../Command";
-import { trimMsg } from "../util";
+import { Command, ICommandExpose } from "../modules/Command";
+import { trimMsg } from "../modules/util";
 
 async function perm(msg: Eris.Message, data: ICommandExpose): Promise<void> {
     const m = trimMsg(msg)

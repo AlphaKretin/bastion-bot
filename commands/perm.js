@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = require("eris");
-const Command_1 = require("../Command");
-const util_1 = require("../util");
+const Command_1 = require("../modules/Command");
+const util_1 = require("../modules/util");
 async function perm(msg, data) {
     const m = util_1.trimMsg(msg)
         .toLowerCase()

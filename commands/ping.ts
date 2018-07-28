@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import { Command, ICommandExpose } from "../Command";
+import { Command, ICommandExpose } from "../modules/Command";
 
 const names = ["ping"];
 const func = async (msg: Eris.Message, data: ICommandExpose): Promise<void> => {
