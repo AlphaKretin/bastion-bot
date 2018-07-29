@@ -8,20 +8,15 @@ interface IPermissionMap {
     };
 }
 
-export interface ICommandExpose {
-    bot: Eris.Client;
-    ygo: YgoData;
-}
-
 export class Command {
     public names: string[];
-    private func: (msg: Eris.Message, data: ICommandExpose) => Promise<void>;
+    private func: (msg: Eris.Message) => Promise<void>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
     constructor(
         names: string[],
-        func: (msg: Eris.Message, data: ICommandExpose) => Promise<void>,
+        func: (msg: Eris.Message) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
         this.names = names;
@@ -37,9 +32,9 @@ export class Command {
         }
     }
 
-    public async execute(msg: Eris.Message, data: ICommandExpose): Promise<void> {
+    public async execute(msg: Eris.Message): Promise<void> {
         if (this.isCanExecute(msg)) {
-            this.func(msg, data);
+            this.func(msg);
         } else {
             throw new Error("Forbidden");
         }

@@ -1,9 +1,10 @@
 import * as Eris from "eris";
-import { Command, ICommandExpose } from "../modules/Command";
+import { bot } from "../modules/bot";
+import { Command } from "../modules/Command";
 import { commands } from "../modules/commands";
 import { trimMsg } from "../modules/util";
 
-async function perm(msg: Eris.Message, data: ICommandExpose): Promise<void> {
+async function perm(msg: Eris.Message): Promise<void> {
     const m = trimMsg(msg)
         .toLowerCase()
         .split(/ +/);
@@ -25,13 +26,13 @@ async function perm(msg: Eris.Message, data: ICommandExpose): Promise<void> {
     const res = await cmd.setPermission(guild.id, chan.id, role.id);
     if (res) {
         // permission now registered
-        await data.bot.createMessage(
+        await bot.createMessage(
             chan.id,
             role.name + " now whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
     } else {
         // permission removed
-        await data.bot.createMessage(
+        await bot.createMessage(
             chan.id,
             role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
