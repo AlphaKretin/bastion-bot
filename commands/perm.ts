@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import { Command, ICommandExpose } from "../modules/Command";
+import { commands } from "../modules/commands";
 import { trimMsg } from "../modules/util";
 
 async function perm(msg: Eris.Message, data: ICommandExpose): Promise<void> {
@@ -8,7 +9,7 @@ async function perm(msg: Eris.Message, data: ICommandExpose): Promise<void> {
         .split(/ +/);
     const queryID = m[0];
     const commandName = m[1];
-    const cmd = data.commands.find(c => c.names.includes(commandName));
+    const cmd = commands.find(c => c.names.includes(commandName));
     if (!cmd) {
         throw new Error("Could not find that command!");
     }

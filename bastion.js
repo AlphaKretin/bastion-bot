@@ -22,7 +22,6 @@ ygopro_data_1.Driver
                     if (msg.content.startsWith("." + name)) {
                         const expo = {
                             bot,
-                            commands: commands_1.commands,
                             ygo: data
                         };
                         cmd.execute(msg, expo).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));

@@ -11,7 +11,6 @@ interface IPermissionMap {
 export interface ICommandExpose {
     bot: Eris.Client;
     ygo: YgoData;
-    commands: Command[];
 }
 
 export class Command {

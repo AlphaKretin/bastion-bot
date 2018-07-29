@@ -22,7 +22,6 @@ ygoData
                         if (msg.content.startsWith("." + name)) {
                             const expo: ICommandExpose = {
                                 bot,
-                                commands,
                                 ygo: data
                             };
                             cmd.execute(msg, expo).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));
