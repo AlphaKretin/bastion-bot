@@ -1,47 +1,8 @@
-import * as octokit from "@octokit/rest";
 import * as Eris from "eris";
 import * as fs from "mz/fs";
-import * as request from "request-promise-native";
 import { Driver as ygoData } from "ygopro-data";
-import { Command, ICommandExpose } from "./modules/Command";
-const GitHub = new octokit();
-
-async function downloadCmd(file: any): Promise<void> {
-    const fullPath = "commands/" + file.name;
-    const body = await request({
-        encoding: null,
-        url: file.download_url
-    });
-    await fs.writeFile(fullPath, body);
-}
-
-const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
-botOpts.cmdRepos.forEach(async (repo: any) => {
-    const res = await GitHub.repos.getContent(repo);
-    for (const file of res.data) {
-        if (file.name.endsWith(".js")) {
-            await downloadCmd(file);
-        }
-    }
-});
-
-const commands: Command[] = [];
-const files = fs.readdirSync("./commands");
-files.forEach(async file => {
-    if (file.endsWith(".js")) {
-        try {
-            const mod = await import("./commands/" + file);
-            for (const key in mod) {
-                if (mod.hasOwnProperty(key)) {
-                    commands.push(mod[key]);
-                    console.log("Loaded command " + mod[key].names[0] + "!");
-                }
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-});
+import { ICommandExpose } from "./modules/Command";
+import { commands } from "./modules/commands";
 
 const dataOpts = JSON.parse(fs.readFileSync("config/dataOpts.json", "utf8"));
 ygoData
