@@ -26,12 +26,12 @@
         "mz": "^2.7.0",
         "request": "^2.87.0",
         "request-promise-native": "^1.0.5",
-        "ygopro-data": "0.0.5"
+        "ygopro-data": "0.0.8"
     },
     "devDependencies": {
         "@types/mkdirp": "^0.5.2",
         "@types/mz": "0.0.32",
-        "@types/node": "^10.5.1",
+        "@types/node": "^10.5.4",
         "@types/request": "^2.47.1",
         "@types/request-promise-native": "^1.0.15"
     },
