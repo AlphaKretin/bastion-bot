@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Eris = require("eris");
+const util_1 = require("./util");
 class ConfigOption {
     constructor(name, defaultValue, conv, chk) {
         this.name = name;
@@ -11,6 +13,9 @@ class ConfigOption {
     }
     setValue(v, g) {
         let conVal;
+        if (g && g instanceof Eris.Message) {
+            g = util_1.getGuildFromMsg(g);
+        }
         if (this.conv) {
             conVal = this.conv(v);
         }
@@ -30,6 +35,9 @@ class ConfigOption {
         }
     }
     getValue(g) {
+        if (g && g instanceof Eris.Message) {
+            g = util_1.getGuildFromMsg(g);
+        }
         if (g && g.id in this.val) {
             return this.val[g.id];
         }

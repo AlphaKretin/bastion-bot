@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import { getGuildFromMsg } from "./util";
 
 interface IValueTable<T> {
     [guild: string]: T;
@@ -18,8 +19,11 @@ export class ConfigOption<T> {
         this.conv = conv;
     }
 
-    public setValue(v: any, g?: Eris.Guild) {
+    public setValue(v: any, g?: Eris.Guild | Eris.Message) {
         let conVal: T;
+        if (g && g instanceof Eris.Message) {
+            g = getGuildFromMsg(g);
+        }
         if (this.conv) {
             conVal = this.conv(v);
         } else {
@@ -36,7 +40,10 @@ export class ConfigOption<T> {
         }
     }
 
-    public getValue(g?: Eris.Guild) {
+    public getValue(g?: Eris.Guild | Eris.Message) {
+        if (g && g instanceof Eris.Message) {
+            g = getGuildFromMsg(g);
+        }
         if (g && g.id in this.val) {
             return this.val[g.id];
         }
