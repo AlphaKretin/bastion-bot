@@ -12,19 +12,27 @@ class ConfigOption {
         this.conv = conv;
     }
     setValue(v, g) {
-        let conVal;
         if (g && g instanceof Eris.Message) {
             g = util_1.getGuildFromMsg(g);
         }
-        if (this.conv) {
-            conVal = this.conv(v);
+        if (v) {
+            if (this.conv) {
+                v = this.conv(v);
+            }
+            else {
+                v = v;
+            }
         }
-        else {
-            conVal = v;
-        }
-        if (!this.chk || this.chk(conVal)) {
+        if (!this.chk || !v || this.chk(v)) {
             if (g) {
-                this.val[g.id] = conVal;
+                if (v) {
+                    this.val[g.id] = v;
+                    return 1;
+                }
+                else {
+                    delete this.val[g.id];
+                    return 0;
+                }
             }
             else {
                 throw new Error("Cannot set config except for a guild!");

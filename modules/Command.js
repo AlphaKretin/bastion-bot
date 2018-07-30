@@ -4,6 +4,9 @@ const Eris = require("eris");
 const fs = require("mz/fs");
 class Command {
     constructor(names, func, condition) {
+        if (names.length === 0) {
+            throw new Error("No names defined!");
+        }
         this.names = names;
         this.func = func;
         if (condition) {

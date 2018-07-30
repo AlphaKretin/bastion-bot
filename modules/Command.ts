@@ -19,6 +19,9 @@ export class Command {
         func: (msg: Eris.Message) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
+        if (names.length === 0) {
+            throw new Error("No names defined!");
+        }
         this.names = names;
         this.func = func;
         if (condition) {
