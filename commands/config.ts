@@ -4,7 +4,7 @@ import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { trimMsg } from "../modules/util";
 
-const names: string[] = [];
+const names: string[] = ["config"];
 
 async function func(msg: Eris.Message) {
     const content = trimMsg(msg);
@@ -14,7 +14,7 @@ async function func(msg: Eris.Message) {
     try {
         const opt = config.getConfig(optName);
         const result = opt.setValue(val, msg);
-        const outMsg = opt.name + " reverted to " + opt.getValue(msg);
+        const outMsg = opt.name + " changed to " + opt.getValue(msg);
         bot.createMessage(msg.channel.id, outMsg);
     } catch (e) {
         throw e;

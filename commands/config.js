@@ -4,7 +4,7 @@ const bot_1 = require("../modules/bot");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
 const util_1 = require("../modules/util");
-const names = [];
+const names = ["config"];
 async function func(msg) {
     const content = util_1.trimMsg(msg);
     const terms = content.split(/ +/);
@@ -13,7 +13,7 @@ async function func(msg) {
     try {
         const opt = configs_1.config.getConfig(optName);
         const result = opt.setValue(val, msg);
-        const outMsg = opt.name + " reverted to " + opt.getValue(msg);
+        const outMsg = opt.name + " changed to " + opt.getValue(msg);
         bot_1.bot.createMessage(msg.channel.id, outMsg);
     }
     catch (e) {
