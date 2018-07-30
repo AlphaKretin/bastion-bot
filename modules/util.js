@@ -10,4 +10,5 @@ function trimMsg(msg) {
         .join(" ");
 }
 exports.trimMsg = trimMsg;
+exports.getGuildFromMsg = (msg) => msg.channel instanceof Eris.TextChannel ? msg.channel.guild : undefined;
 //# sourceMappingURL=util.js.map

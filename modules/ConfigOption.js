@@ -3,11 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class ConfigOption {
     constructor(name, defaultValue, conv, chk) {
         this.name = name;
-        this.val = defaultValue;
+        this.val = {
+            default: defaultValue
+        };
         this.chk = chk;
         this.conv = conv;
     }
-    set value(v) {
+    setValue(v, g) {
         let conVal;
         if (this.conv) {
             conVal = this.conv(v);
@@ -16,14 +18,22 @@ class ConfigOption {
             conVal = v;
         }
         if (!this.chk || this.chk(conVal)) {
-            this.val = conVal;
+            if (g) {
+                this.val[g.id] = conVal;
+            }
+            else {
+                throw new Error("Cannot set config except for a guild!");
+            }
         }
         else {
             throw new Error("Invalid value for config!");
         }
     }
-    get value() {
-        return this.val;
+    getValue(g) {
+        if (g && g.id in this.val) {
+            return this.val[g.id];
+        }
+        return this.val.default;
     }
 }
 exports.ConfigOption = ConfigOption;
