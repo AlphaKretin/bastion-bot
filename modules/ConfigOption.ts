@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import * as fs from "mz/fs";
 import { getGuildFromMsg } from "./util";
 
 interface IValueTable<T> {
@@ -8,13 +9,19 @@ interface IValueTable<T> {
 export class ConfigOption<T> {
     public name: string;
     private val: IValueTable<T>;
+    private filePath: string;
     private conv?: (val: any) => T;
     private chk?: (val: T) => boolean;
     constructor(name: string, defaultValue: T, conv?: (val: any) => T, chk?: (val: T) => boolean) {
         this.name = name;
-        this.val = {
-            default: defaultValue
-        };
+        this.filePath = "./confs/" + this.name + ".json";
+        if (fs.existsSync(this.filePath)) {
+            this.val = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
+        } else {
+            this.val = {
+                default: defaultValue
+            };
+        }
         this.chk = chk;
         this.conv = conv;
     }
@@ -32,11 +39,16 @@ export class ConfigOption<T> {
         }
         if (!this.chk || !v || this.chk(v)) {
             if (g) {
+                if (!fs.existsSync("./confs")) {
+                    fs.mkdirSync("./confs");
+                }
                 if (v) {
                     this.val[g.id] = v;
+                    fs.writeFileSync(this.filePath, JSON.stringify(this.val, null, 4));
                     return 1;
                 } else {
                     delete this.val[g.id];
+                    fs.writeFileSync(this.filePath, JSON.stringify(this.val, null, 4));
                     return 0;
                 }
             } else {

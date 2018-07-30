@@ -13,7 +13,7 @@ async function func(msg: Eris.Message) {
     const val = terms.slice(1).join(" ");
     try {
         const opt = config.getConfig(optName);
-        const result = opt.setValue(val, msg);
+        opt.setValue(val, msg);
         const outMsg = opt.name + " changed to " + opt.getValue(msg);
         bot.createMessage(msg.channel.id, outMsg);
     } catch (e) {

@@ -1,6 +1,5 @@
 import * as Eris from "eris";
 import * as fs from "mz/fs";
-import { Driver as YgoData } from "ygopro-data";
 
 interface IPermissionMap {
     [guildID: string]: {
