@@ -25,7 +25,9 @@ bot_1.bot.on("messageCreate", msg => {
             // ignore full match
             if (i > 0) {
                 const card = await data_1.data.getCard(res, "en");
-                bot_1.bot.createMessage(msg.channel.id, card.name);
+                if (card) {
+                    bot_1.bot.createMessage(msg.channel.id, card.name);
+                }
             }
         });
     }

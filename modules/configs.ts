@@ -1,5 +1,6 @@
 import * as fs from "mz/fs";
 import { ConfigOption } from "./ConfigOption";
+import { data } from "./data";
 
 interface IConfigHandler {
     configs: {
@@ -22,6 +23,7 @@ export const config: IConfigHandler = {
     }
 };
 
-const defaults = JSON.parse(fs.readFileSync("../config/defaultOpts.json", "utf8"));
+const defaults = JSON.parse(fs.readFileSync("./config/defaultOpts.json", "utf8"));
 // add default config options
 config.setConfig(new ConfigOption<string>("prefix", defaults.prefix, val => val.toString().trim()));
+config.setConfig(new ConfigOption<string>("defaultLang", "en", undefined, val => data.langs.includes(val)));

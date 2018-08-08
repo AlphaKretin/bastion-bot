@@ -21,12 +21,12 @@
     },
     "homepage": "https://github.com/AlphaKretin/bastion-bot#readme",
     "dependencies": {
-        "eris": "^0.8.6",
+        "eris": "^0.9.0",
         "mkdirp": "^0.5.1",
         "mz": "^2.7.0",
         "request": "^2.87.0",
         "request-promise-native": "^1.0.5",
-        "ygopro-data": "0.0.8"
+        "ygopro-data": "AlphaKretin/ygo-data"
     },
     "devDependencies": {
         "@types/mkdirp": "^0.5.2",
