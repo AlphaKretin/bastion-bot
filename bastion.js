@@ -3109,9 +3109,11 @@ function loadDBs() {
 		cards[lang] = {};
 		let contents = db.exec("select * from datas,texts where datas.id=texts.id"); //see SQL.js documentation/example for the format of this return, it's not the most intuitive
 		db.close();
-		for (let card of contents[0].values) {
-			let car = new Card(card, [ dbs[lang][0] ]);
-			cards[lang][car.code] = car;
+		if (contents.length > 0) {
+			for (let card of contents[0].values) {
+				let car = new Card(card, [ dbs[lang][0] ]);
+				cards[lang][car.code] = car;
+			}
 		}
 		if (dbs[lang].length > 1) { //a language can have multiple DBs, and if so their data needs to be loaded into the results from the first as if they were all one DB.
 			console.log("loading additional " + lang + " databases");
@@ -3121,13 +3123,15 @@ function loadDBs() {
 				let newDB = new SQL.Database(newbuffer);
 				let newContents = newDB.exec("select * from datas,texts where datas.id=texts.id");
 				newDB.close();
-				for (let newCard of newContents[0].values) {
-					let dbList = [ dbs[lang][i] ];
-					if (newCard[0] in cards[lang]) { //if already an entry by that ID
-						dbList = cards[lang][newCard[0]].db.concat(dbList);
-					} 
-					let newCar = new Card(newCard, dbList);
-					cards[lang][newCar.code] = newCar;
+				if (newContents.length > 0) {
+					for (let newCard of newContents[0].values) {
+						let dbList = [ dbs[lang][i] ];
+						if (newCard[0] in cards[lang]) { //if already an entry by that ID
+							dbList = cards[lang][newCard[0]].db.concat(dbList);
+						} 
+						let newCar = new Card(newCard, dbList);
+						cards[lang][newCar.code] = newCar;
+					}
 				}
 			}
 		}
