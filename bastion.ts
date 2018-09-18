@@ -1,6 +1,6 @@
 import { bot } from "./modules/bot";
-import { commands } from "./modules/commands";
 import { cardSearch } from "./modules/cardSearch";
+import { commands } from "./modules/commands";
 import { config } from "./modules/configs";
 
 bot.on("messageCreate", msg => {

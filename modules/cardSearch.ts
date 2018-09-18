@@ -32,7 +32,7 @@ export function cardSearch(msg: Eris.Message): void {
         });
     }*/
 
-    const mobileRegex = /[(.+)]/g;
+    const mobileRegex = /\[(.+)\]/g;
     const mobileResult = mobileRegex.exec(msg.content);
     if (mobileResult) {
         mobileResult.forEach(async (res, i) => {

@@ -29,7 +29,7 @@ function cardSearch(msg) {
             }
         });
     }*/
-    const mobileRegex = /[(.+)]/g;
+    const mobileRegex = /\[(.+)\]/g;
     const mobileResult = mobileRegex.exec(msg.content);
     if (mobileResult) {
         mobileResult.forEach(async (res, i) => {

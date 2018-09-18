@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const bot_1 = require("./modules/bot");
-const commands_1 = require("./modules/commands");
 const cardSearch_1 = require("./modules/cardSearch");
+const commands_1 = require("./modules/commands");
 const configs_1 = require("./modules/configs");
 bot_1.bot.on("messageCreate", msg => {
     // ignore bots
