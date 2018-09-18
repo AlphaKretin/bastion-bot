@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bot_1 = require("./bot");
 const data_1 = require("./data");
 function cardSearch(msg) {
-    const re = /{(.+)}/g;
-    const result = re.exec(msg.content);
-    if (result) {
-        result.forEach(async (res, i) => {
+    const baseRegex = /{(.+)}/g;
+    const baseResult = baseRegex.exec(msg.content);
+    if (baseResult) {
+        baseResult.forEach(async (res, i) => {
             // ignore full match
             if (i > 0) {
                 const card = await data_1.data.getCard(res, "en");
@@ -16,27 +16,69 @@ function cardSearch(msg) {
             }
         });
     }
+    /*const imageRegex = /<(.+)>/g;
+    const imageResult = imageRegex.exec(msg.content);
+    if (imageResult) {
+        imageResult.forEach(async (res, i) => {
+            // ignore full match
+            if (i > 0) {
+                const card = await data.getCard(res, "en");
+                if (card) {
+                    bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                }
+            }
+        });
+    }*/
+    const mobileRegex = /[(.+)]/g;
+    const mobileResult = mobileRegex.exec(msg.content);
+    if (mobileResult) {
+        mobileResult.forEach(async (res, i) => {
+            // ignore full match
+            if (i > 0) {
+                const card = await data_1.data.getCard(res, "en");
+                if (card) {
+                    bot_1.bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                }
+            }
+        });
+    }
 }
 exports.cardSearch = cardSearch;
-function generateCardProfile(card) {
-    let out = "**ID**: " + card.code + "\n";
+function generateCardProfile(card, mobile = false) {
+    let stats = "";
     if (card.setNames.length > 0) {
-        out += "**Archetype**: " + card.setNames.join(", ");
+        stats += "**Archetype**: " + card.setNames.join(", ");
     }
-    out += "\n";
+    stats += "\n";
     let type = "**Type**: " + card.typeNames.join("/");
     if (card.raceNames.length > 0) {
         type = type.replace("Monster", card.raceNames.join("|"));
     }
-    out += type;
+    stats += type;
     if (card.attributeNames.length > 0) {
-        out += " **Attribute**: " + card.attributeNames.join("|");
+        stats += " **Attribute**: " + card.attributeNames.join("|");
     }
-    out += "\n";
+    stats += "\n";
     if (card.typeNames.includes("Monster")) {
-        out += "**Level**: " + card.level + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
+        stats += "**Level**: " + card.level + " **ATK**: " + card.atk + " **DEF**: " + card.def + "\n";
     }
-    out += "**Card Text**:\n" + card.desc_m;
-    return out;
+    if (mobile) {
+        const outString = "__**" + card.name + "**__\n**ID**: " + card.code + "\n" + stats + "**Card Text**:\n" + card.desc_m;
+        return outString;
+    }
+    const outEmbed = {
+        embed: {
+            description: stats,
+            fields: [
+                {
+                    name: "Card Text",
+                    value: card.desc_m
+                }
+            ],
+            footer: { text: card.code.toString() },
+            title: card.name
+        }
+    };
+    return outEmbed;
 }
 //# sourceMappingURL=cardSearch.js.map
