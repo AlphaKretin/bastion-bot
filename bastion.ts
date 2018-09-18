@@ -1,7 +1,7 @@
 import { bot } from "./modules/bot";
 import { commands } from "./modules/commands";
+import { cardSearch } from "./modules/cardSearch";
 import { config } from "./modules/configs";
-import { data } from "./modules/data";
 
 bot.on("messageCreate", msg => {
     // ignore bots
@@ -17,18 +17,6 @@ bot.on("messageCreate", msg => {
             }
         }
     }
-    const re = /{(.+)}/g;
-    const result = re.exec(msg.content);
-    if (result) {
-        result.forEach(async (res, i) => {
-            // ignore full match
-            if (i > 0) {
-                const card = await data.getCard(res, "en");
-                if (card) {
-                    bot.createMessage(msg.channel.id, card.name);
-                }
-            }
-        });
-    }
+    cardSearch(msg);
 });
 bot.connect();
