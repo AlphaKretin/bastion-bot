@@ -3251,7 +3251,7 @@ function updateSetcodes() {
 				console.log("Strings file downloaded. Extracting setcodes and counters...");
 				let tempCodes = {};
 				let tempCounts = {};
-				for (let line of file.split("\r\n")) {
+				for (let line of file.split(/\r|\n|\r\n/)) {
 					if (line.startsWith("!setname")) {
 						let code = line.split(" ")[1];
 						let name = line.slice(line.indexOf(code) + code.length + 1);
