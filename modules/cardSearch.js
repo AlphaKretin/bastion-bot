@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Jimp = require("jimp");
 const data_1 = require("./data");
 async function cardSearch(msg) {
     const baseRegex = /{(.+)}/g;
@@ -23,9 +24,12 @@ async function cardSearch(msg) {
             if (i > 0) {
                 const card = await data_1.data.getCard(res, "en");
                 if (card) {
-                    const image = await card.image;
+                    let image = await card.image;
                     let file;
                     if (image) {
+                        const jimp = await Jimp.read(image);
+                        await jimp.resize(100, 100);
+                        image = await jimp.getBufferAsync(jimp.getMIME());
                         file = {
                             file: image,
                             name: card.code.toString() + "." + data_1.imageExt

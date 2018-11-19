@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import Jimp = require("jimp");
 import { Card } from "ygopro-data/dist/Card";
 import { data, imageExt } from "./data";
 
@@ -25,9 +26,12 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
             if (i > 0) {
                 const card = await data.getCard(res, "en");
                 if (card) {
-                    const image = await card.image;
+                    let image = await card.image;
                     let file: Eris.MessageFile | undefined;
                     if (image) {
+                        const jimp = await Jimp.read(image);
+                        await jimp.resize(100, 100);
+                        image = await jimp.getBufferAsync(jimp.getMIME());
                         file = {
                             file: image,
                             name: card.code.toString() + "." + imageExt
