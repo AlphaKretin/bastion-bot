@@ -24,15 +24,15 @@
         "eris": "^0.9.0",
         "mkdirp": "^0.5.1",
         "mz": "^2.7.0",
-        "request": "^2.87.0",
+        "request": "^2.88.0",
         "request-promise-native": "^1.0.5",
-        "ygopro-data": "AlphaKretin/ygo-data"
+        "ygopro-data": "github:AlphaKretin/ygo-data"
     },
     "devDependencies": {
         "@types/mkdirp": "^0.5.2",
         "@types/mz": "0.0.32",
-        "@types/node": "^10.5.4",
-        "@types/request": "^2.47.1",
+        "@types/node": "^10.12.9",
+        "@types/request": "^2.48.1",
         "@types/request-promise-native": "^1.0.15"
     },
     "prettier": {

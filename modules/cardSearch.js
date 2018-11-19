@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bot_1 = require("./bot");
 const data_1 = require("./data");
-function cardSearch(msg) {
+async function cardSearch(msg) {
     const baseRegex = /{(.+)}/g;
     const baseResult = baseRegex.exec(msg.content);
     if (baseResult) {
@@ -11,24 +10,33 @@ function cardSearch(msg) {
             if (i > 0) {
                 const card = await data_1.data.getCard(res, "en");
                 if (card) {
-                    bot_1.bot.createMessage(msg.channel.id, generateCardProfile(card));
+                    msg.channel.createMessage(generateCardProfile(card));
                 }
             }
         });
     }
-    /*const imageRegex = /<(.+)>/g;
+    const imageRegex = /<(.+)>/g;
     const imageResult = imageRegex.exec(msg.content);
     if (imageResult) {
         imageResult.forEach(async (res, i) => {
             // ignore full match
             if (i > 0) {
-                const card = await data.getCard(res, "en");
+                const card = await data_1.data.getCard(res, "en");
                 if (card) {
-                    bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                    const image = await card.image;
+                    let file;
+                    if (image) {
+                        file = {
+                            file: image,
+                            name: card.code.toString() + "." + data_1.imageExt
+                        };
+                    }
+                    await msg.channel.createMessage("", file);
+                    msg.channel.createMessage(generateCardProfile(card, true));
                 }
             }
         });
-    }*/
+    }
     const mobileRegex = /\[(.+)\]/g;
     const mobileResult = mobileRegex.exec(msg.content);
     if (mobileResult) {
@@ -37,7 +45,7 @@ function cardSearch(msg) {
             if (i > 0) {
                 const card = await data_1.data.getCard(res, "en");
                 if (card) {
-                    bot_1.bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                    msg.channel.createMessage(generateCardProfile(card, true));
                 }
             }
         });
@@ -76,6 +84,7 @@ function generateCardProfile(card, mobile = false) {
                 }
             ],
             footer: { text: card.code.toString() },
+            thumbnail: { url: card.imageLink },
             title: card.name
         }
     };

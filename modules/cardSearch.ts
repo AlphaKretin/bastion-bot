@@ -1,9 +1,8 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data/dist/Card";
-import { bot } from "./bot";
-import { data } from "./data";
+import { data, imageExt } from "./data";
 
-export function cardSearch(msg: Eris.Message): void {
+export async function cardSearch(msg: Eris.Message): Promise<void> {
     const baseRegex = /{(.+)}/g;
     const baseResult = baseRegex.exec(msg.content);
     if (baseResult) {
@@ -12,13 +11,13 @@ export function cardSearch(msg: Eris.Message): void {
             if (i > 0) {
                 const card = await data.getCard(res, "en");
                 if (card) {
-                    bot.createMessage(msg.channel.id, generateCardProfile(card));
+                    msg.channel.createMessage(generateCardProfile(card));
                 }
             }
         });
     }
 
-    /*const imageRegex = /<(.+)>/g;
+    const imageRegex = /<(.+)>/g;
     const imageResult = imageRegex.exec(msg.content);
     if (imageResult) {
         imageResult.forEach(async (res, i) => {
@@ -26,11 +25,20 @@ export function cardSearch(msg: Eris.Message): void {
             if (i > 0) {
                 const card = await data.getCard(res, "en");
                 if (card) {
-                    bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                    const image = await card.image;
+                    let file: Eris.MessageFile | undefined;
+                    if (image) {
+                        file = {
+                            file: image,
+                            name: card.code.toString() + "." + imageExt
+                        };
+                    }
+                    await msg.channel.createMessage("", file);
+                    msg.channel.createMessage(generateCardProfile(card, true));
                 }
             }
         });
-    }*/
+    }
 
     const mobileRegex = /\[(.+)\]/g;
     const mobileResult = mobileRegex.exec(msg.content);
@@ -40,7 +48,7 @@ export function cardSearch(msg: Eris.Message): void {
             if (i > 0) {
                 const card = await data.getCard(res, "en");
                 if (card) {
-                    bot.createMessage(msg.channel.id, generateCardProfile(card, true));
+                    msg.channel.createMessage(generateCardProfile(card, true));
                 }
             }
         });
@@ -81,6 +89,7 @@ function generateCardProfile(card: Card, mobile: boolean = false): Eris.MessageC
                 }
             ],
             footer: { text: card.code.toString() },
+            thumbnail: { url: card.imageLink },
             title: card.name
         }
     };
