@@ -3290,7 +3290,7 @@ function updateLflist() {
 				console.log("Banlist file found. Converting...");
 				let tempList = {};
 				let currentList = "";
-				for (let line of file.split("\r\n")) {
+				for (let line of file.split(/\r|\n|\r\n/)) {
 					if (line.startsWith("#")) {
 						continue;
 					}
