@@ -112,6 +112,15 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
     return outEmbed;
 }
 
+async function compose(a: Jimp, b: Jimp, vert: boolean = false): Promise<Jimp> {
+    const wid = vert ? Math.max(a.getWidth(), b.getWidth()) : a.getWidth() + b.getWidth();
+    const hi = vert ? a.getHeight() + b.getHeight() : Math.max(a.getHeight(), b.getHeight());
+    const canvas = new Jimp(wid, hi);
+    await canvas.composite(a, 0, 0);
+    await canvas.composite(b, vert ? 0 : a.getWidth(), vert ? a.getHeight() : 0);
+    return canvas;
+}
+
 async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
     const ROW_LENGTH = 4;
     const images: Buffer[] = [];
@@ -139,24 +148,28 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
         }
         const rowsAfter: Buffer[] = [];
         for (const row of rowsBefore) {
-            const canvas = await Jimp.read(row[0]);
+            let canvas = await Jimp.read(row[0]);
             for (let i = 1; i < ROW_LENGTH; i++) {
-                await canvas.resize(canvas.getWidth() + 100, canvas.getHeight());
                 if (i in row) {
                     const newImg = await Jimp.read(row[i]);
-                    await canvas.composite(newImg, canvas.getWidth() - 100, 0);
+                    canvas = await compose(
+                        canvas,
+                        newImg
+                    );
                 }
             }
             const buf = await canvas.getBufferAsync(canvas.getMIME());
             rowsAfter.push(buf);
         }
-        const final = await Jimp.read(rowsAfter[0]);
-        const rowHeight = final.getHeight();
+        let final = await Jimp.read(rowsAfter[0]);
         if (rowsAfter.length > 1) {
             for (let i = 1; i < rowsAfter.length; i++) {
-                await final.resize(final.getWidth(), final.getHeight() + rowHeight);
                 const row = await Jimp.read(rowsAfter[i]);
-                await final.composite(row, 0, final.getHeight() - rowHeight);
+                final = await compose(
+                    final,
+                    row,
+                    true
+                );
             }
         }
         const image = await final.getBufferAsync(final.getMIME());

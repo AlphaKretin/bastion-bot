@@ -110,6 +110,14 @@ async function generateCardProfile(card, lang, mobile = false) {
     };
     return outEmbed;
 }
+async function compose(a, b, vert = false) {
+    const wid = vert ? Math.max(a.getWidth(), b.getWidth()) : a.getWidth() + b.getWidth();
+    const hi = vert ? a.getHeight() + b.getHeight() : Math.max(a.getHeight(), b.getHeight());
+    const canvas = new jimp_1.default(wid, hi);
+    await canvas.composite(a, 0, 0);
+    await canvas.composite(b, vert ? 0 : a.getWidth(), vert ? a.getHeight() : 0);
+    return canvas;
+}
 async function getCompositeImage(card) {
     const ROW_LENGTH = 4;
     const images = [];
@@ -137,24 +145,21 @@ async function getCompositeImage(card) {
         }
         const rowsAfter = [];
         for (const row of rowsBefore) {
-            const canvas = await jimp_1.default.read(row[0]);
+            let canvas = await jimp_1.default.read(row[0]);
             for (let i = 1; i < ROW_LENGTH; i++) {
-                await canvas.resize(canvas.getWidth() + 100, canvas.getHeight());
                 if (i in row) {
                     const newImg = await jimp_1.default.read(row[i]);
-                    await canvas.composite(newImg, canvas.getWidth() - 100, 0);
+                    canvas = await compose(canvas, newImg);
                 }
             }
             const buf = await canvas.getBufferAsync(canvas.getMIME());
             rowsAfter.push(buf);
         }
-        const final = await jimp_1.default.read(rowsAfter[0]);
-        const rowHeight = final.getHeight();
+        let final = await jimp_1.default.read(rowsAfter[0]);
         if (rowsAfter.length > 1) {
             for (let i = 1; i < rowsAfter.length; i++) {
-                await final.resize(final.getWidth(), final.getHeight() + rowHeight);
                 const row = await jimp_1.default.read(rowsAfter[i]);
-                await final.composite(row, 0, final.getHeight() - rowHeight);
+                final = await compose(final, row, true);
             }
         }
         const image = await final.getBufferAsync(final.getMIME());
