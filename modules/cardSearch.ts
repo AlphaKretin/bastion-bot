@@ -13,7 +13,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
             // ignore full match
             if (i > 0) {
                 const query = getLang(msg, res);
-                const card = await data.getCard(res, query.lang1);
+                const card = await data.getCard(query.msg, query.lang1);
                 if (card) {
                     const profile = await generateCardProfile(card, query.lang2);
                     msg.channel.createMessage(profile);
@@ -117,12 +117,12 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
     const images: Buffer[] = [];
     const codes = await card.aliasIDs;
     for (const code of codes) {
-        const tempCard = await data.getCard(code, "en");
+        const tempCard = await data.getCard(code);
         if (tempCard) {
             const tempImg = await tempCard.image;
             if (tempImg) {
                 const tempCanvas = await Jimp.read(tempImg);
-                await tempCanvas.resize(100, tempCanvas.getHeight());
+                await tempCanvas.resize(100, Jimp.AUTO);
                 const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
                 images.push(tempImage);
             }

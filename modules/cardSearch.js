@@ -15,7 +15,7 @@ async function cardSearch(msg) {
             // ignore full match
             if (i > 0) {
                 const query = util_1.getLang(msg, res);
-                const card = await data_1.data.getCard(res, query.lang1);
+                const card = await data_1.data.getCard(query.msg, query.lang1);
                 if (card) {
                     const profile = await generateCardProfile(card, query.lang2);
                     msg.channel.createMessage(profile);
@@ -115,12 +115,12 @@ async function getCompositeImage(card) {
     const images = [];
     const codes = await card.aliasIDs;
     for (const code of codes) {
-        const tempCard = await data_1.data.getCard(code, "en");
+        const tempCard = await data_1.data.getCard(code);
         if (tempCard) {
             const tempImg = await tempCard.image;
             if (tempImg) {
                 const tempCanvas = await jimp_1.default.read(tempImg);
-                await tempCanvas.resize(100, tempCanvas.getHeight());
+                await tempCanvas.resize(100, jimp_1.default.AUTO);
                 const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
                 images.push(tempImage);
             }
