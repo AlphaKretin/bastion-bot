@@ -93,7 +93,6 @@ async function generateCardProfile(card, lang, mobile = false) {
             card.text[lang].desc;
         return outString;
     }
-    const baseCard = await data_1.data.getCard(codes[0]);
     const outEmbed = {
         embed: {
             description: stats,
@@ -104,7 +103,7 @@ async function generateCardProfile(card, lang, mobile = false) {
                 }
             ],
             footer: { text: codeString },
-            thumbnail: { url: baseCard.imageLink },
+            thumbnail: { url: card.imageLink },
             title: card.text[lang].name
         }
     };

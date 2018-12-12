@@ -94,7 +94,6 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
             card.text[lang].desc;
         return outString;
     }
-    const baseCard = await data.getCard(codes[0]);
     const outEmbed: Eris.MessageContent = {
         embed: {
             description: stats,
@@ -105,7 +104,7 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
                 }
             ],
             footer: { text: codeString },
-            thumbnail: { url: baseCard!.imageLink },
+            thumbnail: { url: card.imageLink },
             title: card.text[lang].name
         }
     };
