@@ -1,6 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("mz/fs");
+const fs = __importStar(require("mz/fs"));
 const ConfigOption_1 = require("./ConfigOption");
 const data_1 = require("./data");
 exports.config = {

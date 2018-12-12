@@ -1,6 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Eris = require("eris");
+const Eris = __importStar(require("eris"));
 const configs_1 = require("./configs");
 const data_1 = require("./data");
 function trimMsg(msg) {
@@ -13,8 +20,8 @@ function trimMsg(msg) {
 }
 exports.trimMsg = trimMsg;
 exports.getGuildFromMsg = (msg) => msg.channel instanceof Eris.TextChannel ? msg.channel.guild : undefined;
-function getLang(msg) {
-    const content = trimMsg(msg);
+function getLang(msg, query) {
+    const content = query || trimMsg(msg);
     const terms = content.split(",");
     if (data_1.data.langs.includes(terms[terms.length - 1])) {
         if (data_1.data.langs.includes(terms[terms.length - 2])) {
@@ -47,17 +54,4 @@ exports.getLang = getLang;
 function isILangPayload(arg) {
     return arg.msg !== undefined;
 }
-async function getCardInLang(query) {
-    try {
-        const card = await data_1.data.getCard(query.msg, query.lang1);
-        if (card && query.lang2 !== query.lang1) {
-            return await data_1.data.getCard(card.code, query.lang2);
-        }
-        return card;
-    }
-    catch (e) {
-        throw e;
-    }
-}
-exports.getCardInLang = getCardInLang;
 //# sourceMappingURL=util.js.map

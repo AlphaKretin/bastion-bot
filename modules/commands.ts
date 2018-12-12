@@ -1,6 +1,6 @@
-import * as octokit from "@octokit/rest";
+import octokit from "@octokit/rest";
 import * as fs from "mz/fs";
-import * as request from "request-promise-native";
+import request from "request-promise-native";
 import { Command } from "./Command";
 const GitHub = new octokit();
 
@@ -17,7 +17,7 @@ async function downloadCmd(file: any): Promise<void> {
 
 const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 botOpts.cmdRepos.forEach(async (repo: any) => {
-    const res = await GitHub.repos.getContent(repo);
+    const res = await GitHub.repos.getContents(repo);
     for (const file of res.data) {
         if (file.name.endsWith(".js")) {
             try {

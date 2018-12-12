@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import { Card } from "../node_modules/ygopro-data/dist/Card";
+import { Card } from "ygopro-data";
 import { config } from "./configs";
 import { data } from "./data";
 
@@ -21,8 +21,8 @@ interface ILangPayload {
     lang2: string;
 }
 
-export function getLang(msg: Eris.Message): ILangPayload {
-    const content = trimMsg(msg);
+export function getLang(msg: Eris.Message, query?: string): ILangPayload {
+    const content = query || trimMsg(msg);
     const terms = content.split(",");
     if (data.langs.includes(terms[terms.length - 1])) {
         if (data.langs.includes(terms[terms.length - 2])) {
@@ -52,16 +52,4 @@ export function getLang(msg: Eris.Message): ILangPayload {
 
 function isILangPayload(arg: any): arg is ILangPayload {
     return arg.msg !== undefined;
-}
-
-export async function getCardInLang(query: ILangPayload) {
-    try {
-        const card = await data.getCard(query.msg, query.lang1);
-        if (card && query.lang2 !== query.lang1) {
-            return await data.getCard(card.code, query.lang2);
-        }
-        return card;
-    } catch (e) {
-        throw e;
-    }
 }
