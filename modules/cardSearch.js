@@ -71,6 +71,13 @@ async function generateCardProfile(card, lang, mobile = false) {
         stats += "**Archetype**: " + setNames.join(", ");
     }
     stats += "\n";
+    stats += "**Status**: " + (await card.status);
+    const price = await card.price;
+    if (price) {
+        stats +=
+            "** Price**: $" + price.low.toFixed(2) + "-$" + price.avg.toFixed(2) + "-$" + price.hi.toFixed(2) + " USD";
+    }
+    stats += "\n";
     const type = "**Type**: " + card.data.names[lang].typeString;
     stats += type;
     if (card.data.names[lang].attribute.length > 0) {
