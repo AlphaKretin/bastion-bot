@@ -78,7 +78,15 @@ async function generateCardProfile(card, lang, mobile = false) {
     }
     stats += "\n";
     if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
-        stats += "**Level**: " + card.data.level + " **ATK**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+        let levelName = "Level";
+        if (card.data.isType(ygopro_data_1.enums.type.TYPE_XYZ)) {
+            levelName = "Rank";
+        }
+        else if (card.data.isType(ygopro_data_1.enums.type.TYPE_LINK)) {
+            levelName = "Link Rating";
+        }
+        stats +=
+            "**" + levelName + "**: " + card.data.level + " **ATK**: " + (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
             stats += " **Link Arrows**: " + card.data.linkMarker.join("");
         }
