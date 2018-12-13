@@ -78,14 +78,13 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
     }
     stats += "\n";
     if (card.data.isType(enums.type.TYPE_MONSTER)) {
-        stats +=
-            "**Level**: " +
-            card.data.level +
-            " **ATK**: " +
-            (card.data.atk === -2 ? "?" : card.data.atk) +
-            " **DEF**: " +
-            (card.data.def === -2 ? "?" : card.data.def) +
-            "\n";
+        stats += "**Level**: " + card.data.level + " **ATK**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+        if (card.data.linkMarker) {
+            stats += " **Link Arrows**: " + card.data.linkMarker.join("");
+        } else if (card.data.def) {
+            stats += " **DEF**: " + (card.data.def === -2 ? "?" : card.data.def);
+        }
+        stats += "\n";
     }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
