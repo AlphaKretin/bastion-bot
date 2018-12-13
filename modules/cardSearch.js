@@ -95,6 +95,13 @@ async function generateCardProfile(card, lang, mobile = false) {
         }
         stats += "\n";
     }
+    let textHeader = "Card Effect";
+    if (card.data.isType(ygopro_data_1.enums.type.TYPE_NORMAL)) {
+        textHeader = "Lore Text";
+    }
+    else if (card.data.isType(ygopro_data_1.enums.type.TYPE_EFFECT)) {
+        textHeader = "Monster Effect";
+    }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
     if (mobile) {
@@ -104,7 +111,9 @@ async function generateCardProfile(card, lang, mobile = false) {
             codeString +
             "\n" +
             stats +
-            "**Card Text**:\n" +
+            "**" +
+            textHeader +
+            "**:\n" +
             card.text[lang].desc;
         return outString;
     }
@@ -113,7 +122,7 @@ async function generateCardProfile(card, lang, mobile = false) {
             description: stats,
             fields: [
                 {
-                    name: "Card Text",
+                    name: textHeader,
                     value: card.text[lang].desc
                 }
             ],

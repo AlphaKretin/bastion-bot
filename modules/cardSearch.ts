@@ -93,6 +93,12 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
         }
         stats += "\n";
     }
+    let textHeader = "Card Effect";
+    if (card.data.isType(enums.type.TYPE_NORMAL)) {
+        textHeader = "Lore Text";
+    } else if (card.data.isType(enums.type.TYPE_EFFECT)) {
+        textHeader = "Monster Effect";
+    }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
     if (mobile) {
@@ -103,7 +109,9 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
             codeString +
             "\n" +
             stats +
-            "**Card Text**:\n" +
+            "**" +
+            textHeader +
+            "**:\n" +
             card.text[lang].desc;
         return outString;
     }
@@ -112,7 +120,7 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
             description: stats,
             fields: [
                 {
-                    name: "Card Text",
+                    name: textHeader,
                     value: card.text[lang].desc
                 }
             ],
