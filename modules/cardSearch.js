@@ -77,8 +77,15 @@ async function generateCardProfile(card, lang, mobile = false) {
         stats += " **Attribute**: " + card.data.names[lang].attribute.join("|");
     }
     stats += "\n";
-    if (card.data.names[lang].type.includes(ygopro_data_1.translations.getTrans(lang).getType(ygopro_data_1.enums.type.TYPE_MONSTER))) {
-        stats += "**Level**: " + card.data.level + " **ATK**: " + card.data.atk + " **DEF**: " + card.data.def + "\n";
+    if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
+        stats +=
+            "**Level**: " +
+                card.data.level +
+                " **ATK**: " +
+                (card.data.atk === -2 ? "?" : card.data.atk) +
+                " **DEF**: " +
+                (card.data.def === -2 ? "?" : card.data.def) +
+                "\n";
     }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");

@@ -77,8 +77,15 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
         stats += " **Attribute**: " + card.data.names[lang].attribute.join("|");
     }
     stats += "\n";
-    if (card.data.names[lang].type.includes(translations.getTrans(lang).getType(enums.type.TYPE_MONSTER))) {
-        stats += "**Level**: " + card.data.level + " **ATK**: " + card.data.atk + " **DEF**: " + card.data.def + "\n";
+    if (card.data.isType(enums.type.TYPE_MONSTER)) {
+        stats +=
+            "**Level**: " +
+            card.data.level +
+            " **ATK**: " +
+            (card.data.atk === -2 ? "?" : card.data.atk) +
+            " **DEF**: " +
+            (card.data.def === -2 ? "?" : card.data.def) +
+            "\n";
     }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
