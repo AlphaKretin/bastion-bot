@@ -1,0 +1,36 @@
+{
+    "en": {
+        "setcode": "Archetype",
+        "status": "Status",
+        "price": "Price",
+        "type": "Type",
+        "attribute": "Attribute",
+        "level": "Level",
+        "rank": "Rank",
+        "linkRating": "Link Rating",
+        "atk": "ATK",
+        "def": "DEF",
+        "linkArrows": "Link Arrows",
+        "cardEffect": "Card Effect",
+        "flavourText": "Lore Text",
+        "monsterEffect": "Monster Effect",
+        "id": "ID"
+    },
+    "ja": {
+        "setcode": "カテゴリー",
+        "status": "ルール",
+        "attribute": "属性",
+        "level": "レベル",
+        "linkRating": "リンク数",
+        "linkArrows": "リンクマーカー",
+        "cardEffect": "効果",
+        "flavourText": "カードテキスト",
+        "monsterEffect": "モンスター効果",
+        "id": "ID",
+        "price": "価格",
+        "type": "種類",
+        "rank": "ランク",
+        "atk": "攻撃力",
+        "def": "守備力"
+    }
+}

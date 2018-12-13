@@ -1,8 +1,9 @@
 import * as Eris from "eris";
 import Jimp from "jimp";
-import { enums, translations } from "ygopro-data";
+import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
 import { data, imageExt } from "./data";
+import { strings } from "./strings";
 import { getLang } from "./util";
 
 export async function cardSearch(msg: Eris.Message): Promise<void> {
@@ -15,7 +16,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
                 const query = getLang(msg, res);
                 const card = await data.getCard(query.msg, query.lang1);
                 if (card) {
-                    const profile = await generateCardProfile(card, query.lang2);
+                    const profile = await generateCardProfile(card, query.lang2, msg);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -40,7 +41,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
                         };
                     }
                     await msg.channel.createMessage("", file);
-                    const profile = await generateCardProfile(card, query.lang2, true);
+                    const profile = await generateCardProfile(card, query.lang2, msg, true);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -56,7 +57,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
                 const query = getLang(msg, res);
                 const card = await data.getCard(query.msg, query.lang1);
                 if (card) {
-                    const profile = await generateCardProfile(card, query.lang2, true);
+                    const profile = await generateCardProfile(card, query.lang2, msg, true);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -64,47 +65,72 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
     }
 }
 
-async function generateCardProfile(card: Card, lang: string, mobile: boolean = false): Promise<Eris.MessageContent> {
+async function generateCardProfile(
+    card: Card,
+    lang: string,
+    msg: Eris.Message,
+    mobile: boolean = false
+): Promise<Eris.MessageContent> {
     let stats: string = "";
     const setNames = await card.data.names[lang].setcode;
     if (setNames.length > 0) {
-        stats += "**Archetype**: " + setNames.join(", ");
+        stats += "**" + strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
     }
     stats += "\n";
-    stats += "**Status**: " + (await card.status);
+    stats += "**" + strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
     const price = await card.price;
     if (price) {
         stats +=
-            "** Price**: $" + price.low.toFixed(2) + "-$" + price.avg.toFixed(2) + "-$" + price.hi.toFixed(2) + " USD";
+            "** " +
+            strings.getTranslation("price", lang, msg) +
+            "**: $" +
+            price.low.toFixed(2) +
+            "-$" +
+            price.avg.toFixed(2) +
+            "-$" +
+            price.hi.toFixed(2) +
+            " USD";
     }
     stats += "\n";
-    const type = "**Type**: " + card.data.names[lang].typeString;
+    const type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
     stats += type;
     if (card.data.names[lang].attribute.length > 0) {
-        stats += " **Attribute**: " + card.data.names[lang].attribute.join("|");
+        stats +=
+            " **" + strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
     }
     stats += "\n";
     if (card.data.isType(enums.type.TYPE_MONSTER)) {
-        let levelName = "Level";
+        let levelName = strings.getTranslation("level", lang, msg);
         if (card.data.isType(enums.type.TYPE_XYZ)) {
-            levelName = "Rank";
+            levelName = strings.getTranslation("rank", lang, msg);
         } else if (card.data.isType(enums.type.TYPE_LINK)) {
-            levelName = "Link Rating";
+            levelName = strings.getTranslation("linkRating", lang, msg);
         }
         stats +=
-            "**" + levelName + "**: " + card.data.level + " **ATK**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+            "**" +
+            levelName +
+            "**: " +
+            card.data.level +
+            " **" +
+            strings.getTranslation("atk", lang, msg) +
+            "**: " +
+            (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
-            stats += " **Link Arrows**: " + card.data.linkMarker.join("");
+            stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
         } else if (card.data.def) {
-            stats += " **DEF**: " + (card.data.def === -2 ? "?" : card.data.def);
+            stats +=
+                " **" +
+                strings.getTranslation("def", lang, msg) +
+                "**: " +
+                (card.data.def === -2 ? "?" : card.data.def);
         }
         stats += "\n";
     }
-    let textHeader = "Card Effect";
+    let textHeader = strings.getTranslation("cardEffect", lang, msg);
     if (card.data.isType(enums.type.TYPE_NORMAL)) {
-        textHeader = "Lore Text";
+        textHeader = strings.getTranslation("flavourText", lang, msg);
     } else if (card.data.isType(enums.type.TYPE_EFFECT)) {
-        textHeader = "Monster Effect";
+        textHeader = strings.getTranslation("monsterEffect", lang, msg);
     }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
@@ -112,7 +138,9 @@ async function generateCardProfile(card: Card, lang: string, mobile: boolean = f
         const outString =
             "__**" +
             card.text[lang].name +
-            "**__\n**ID**: " +
+            "**__\n**" +
+            strings.getTranslation("id", lang, msg) +
+            "**: " +
             codeString +
             "\n" +
             stats +

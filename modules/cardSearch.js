@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jimp_1 = __importDefault(require("jimp"));
 const ygopro_data_1 = require("ygopro-data");
 const data_1 = require("./data");
+const strings_1 = require("./strings");
 const util_1 = require("./util");
 async function cardSearch(msg) {
     const baseRegex = /{(.+)}/g;
@@ -17,7 +18,7 @@ async function cardSearch(msg) {
                 const query = util_1.getLang(msg, res);
                 const card = await data_1.data.getCard(query.msg, query.lang1);
                 if (card) {
-                    const profile = await generateCardProfile(card, query.lang2);
+                    const profile = await generateCardProfile(card, query.lang2, msg);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -41,7 +42,7 @@ async function cardSearch(msg) {
                         };
                     }
                     await msg.channel.createMessage("", file);
-                    const profile = await generateCardProfile(card, query.lang2, true);
+                    const profile = await generateCardProfile(card, query.lang2, msg, true);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -56,7 +57,7 @@ async function cardSearch(msg) {
                 const query = util_1.getLang(msg, res);
                 const card = await data_1.data.getCard(query.msg, query.lang1);
                 if (card) {
-                    const profile = await generateCardProfile(card, query.lang2, true);
+                    const profile = await generateCardProfile(card, query.lang2, msg, true);
                     msg.channel.createMessage(profile);
                 }
             }
@@ -64,57 +65,79 @@ async function cardSearch(msg) {
     }
 }
 exports.cardSearch = cardSearch;
-async function generateCardProfile(card, lang, mobile = false) {
+async function generateCardProfile(card, lang, msg, mobile = false) {
     let stats = "";
     const setNames = await card.data.names[lang].setcode;
     if (setNames.length > 0) {
-        stats += "**Archetype**: " + setNames.join(", ");
+        stats += "**" + strings_1.strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
     }
     stats += "\n";
-    stats += "**Status**: " + (await card.status);
+    stats += "**" + strings_1.strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
     const price = await card.price;
     if (price) {
         stats +=
-            "** Price**: $" + price.low.toFixed(2) + "-$" + price.avg.toFixed(2) + "-$" + price.hi.toFixed(2) + " USD";
+            "** " +
+                strings_1.strings.getTranslation("price", lang, msg) +
+                "**: $" +
+                price.low.toFixed(2) +
+                "-$" +
+                price.avg.toFixed(2) +
+                "-$" +
+                price.hi.toFixed(2) +
+                " USD";
     }
     stats += "\n";
-    const type = "**Type**: " + card.data.names[lang].typeString;
+    const type = "**" + strings_1.strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
     stats += type;
     if (card.data.names[lang].attribute.length > 0) {
-        stats += " **Attribute**: " + card.data.names[lang].attribute.join("|");
+        stats +=
+            " **" + strings_1.strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
     }
     stats += "\n";
     if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
-        let levelName = "Level";
+        let levelName = strings_1.strings.getTranslation("level", lang, msg);
         if (card.data.isType(ygopro_data_1.enums.type.TYPE_XYZ)) {
-            levelName = "Rank";
+            levelName = strings_1.strings.getTranslation("rank", lang, msg);
         }
         else if (card.data.isType(ygopro_data_1.enums.type.TYPE_LINK)) {
-            levelName = "Link Rating";
+            levelName = strings_1.strings.getTranslation("linkRating", lang, msg);
         }
         stats +=
-            "**" + levelName + "**: " + card.data.level + " **ATK**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+            "**" +
+                levelName +
+                "**: " +
+                card.data.level +
+                " **" +
+                strings_1.strings.getTranslation("atk", lang, msg) +
+                "**: " +
+                (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
-            stats += " **Link Arrows**: " + card.data.linkMarker.join("");
+            stats += " **" + strings_1.strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
         }
         else if (card.data.def) {
-            stats += " **DEF**: " + (card.data.def === -2 ? "?" : card.data.def);
+            stats +=
+                " **" +
+                    strings_1.strings.getTranslation("def", lang, msg) +
+                    "**: " +
+                    (card.data.def === -2 ? "?" : card.data.def);
         }
         stats += "\n";
     }
-    let textHeader = "Card Effect";
+    let textHeader = strings_1.strings.getTranslation("cardEffect", lang, msg);
     if (card.data.isType(ygopro_data_1.enums.type.TYPE_NORMAL)) {
-        textHeader = "Lore Text";
+        textHeader = strings_1.strings.getTranslation("flavourText", lang, msg);
     }
     else if (card.data.isType(ygopro_data_1.enums.type.TYPE_EFFECT)) {
-        textHeader = "Monster Effect";
+        textHeader = strings_1.strings.getTranslation("monsterEffect", lang, msg);
     }
     const codes = await card.aliasIDs;
     const codeString = codes.join("|");
     if (mobile) {
         const outString = "__**" +
             card.text[lang].name +
-            "**__\n**ID**: " +
+            "**__\n**" +
+            strings_1.strings.getTranslation("id", lang, msg) +
+            "**: " +
             codeString +
             "\n" +
             stats +
