@@ -392,6 +392,8 @@ bot.on("message", (user, userID, channelID, message, event) => {
 	}
 	let blockRe = /`{1,3}[\s\S\r\n]*?[\s\S\r\n][\s\S\r\n]*?`{1,3}/g; //gets all text between ``, to remove them, so they're not searched
 	message = message.replace(blockRe, "");
+	let spoilerRe = /\{{2}[\s\S\r\n]*?[\s\S\r\n][\s\S\r\n]*?\}{2}/g
+	message = message.replace(spoilerRe, "");
 	let re = /{(.*?)}/g; //gets text between {}
 	let results = [];
 	let regx;
