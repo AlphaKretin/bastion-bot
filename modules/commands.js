@@ -23,8 +23,8 @@ async function downloadCmd(file) {
     });
     await fs.writeFile(fullPath, body);
 }
-const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
-botOpts.cmdRepos.forEach(async (repo) => {
+exports.botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
+exports.botOpts.cmdRepos.forEach(async (repo) => {
     const res = await GitHub.repos.getContents(repo);
     for (const file of res.data) {
         if (file.name.endsWith(".js")) {

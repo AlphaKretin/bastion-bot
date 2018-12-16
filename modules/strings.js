@@ -13,14 +13,23 @@ class Strings {
     constructor(file) {
         this.trans = JSON.parse(fs.readFileSync(file, "utf8"));
     }
-    getTranslation(prop, lang, msg) {
+    getTranslation(prop, lang, msg, val) {
+        let v;
+        if (val) {
+            v = val.toString();
+        }
+        let out;
         if (lang in this.trans && prop in this.trans[lang]) {
-            return this.trans[lang][prop];
+            out = this.trans[lang][prop];
         }
         else {
             const def = configs_1.config.getConfig("defaultLang").getValue(msg);
-            return this.trans[def][prop];
+            out = this.trans[def][prop];
         }
+        if (v) {
+            out = out.replace(/%s/g, v);
+        }
+        return out;
     }
 }
 exports.strings = new Strings("./config/strings.json");

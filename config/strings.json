@@ -14,7 +14,8 @@
         "cardEffect": "Card Effect",
         "flavourText": "Lore Text",
         "monsterEffect": "Monster Effect",
-        "id": "ID"
+        "id": "ID",
+        "searchCap": "Sorry, you can only search for %s cards at once!"
     },
     "ja": {
         "setcode": "カテゴリー",
@@ -31,6 +32,7 @@
         "type": "種類",
         "rank": "ランク",
         "atk": "攻撃力",
-        "def": "守備力"
+        "def": "守備力",
+        "searchCap": "Sorry, you can only search for %s cards at once!"
     }
 }

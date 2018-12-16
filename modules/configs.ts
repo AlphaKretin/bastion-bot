@@ -1,4 +1,3 @@
-import * as Eris from "eris";
 import * as fs from "mz/fs";
 import { ConfigOption } from "./ConfigOption";
 import { data } from "./data";

@@ -7,13 +7,22 @@ class Strings {
     constructor(file: string) {
         this.trans = JSON.parse(fs.readFileSync(file, "utf8"));
     }
-    public getTranslation(prop: string, lang: string, msg?: Eris.Message): string {
+    public getTranslation(prop: string, lang: string, msg?: Eris.Message, val?: any): string {
+        let v: string | undefined;
+        if (val) {
+            v = val.toString();
+        }
+        let out: string;
         if (lang in this.trans && prop in this.trans[lang]) {
-            return this.trans[lang][prop];
+            out = this.trans[lang][prop];
         } else {
             const def = config.getConfig("defaultLang").getValue(msg);
-            return this.trans[def][prop];
+            out = this.trans[def][prop];
         }
+        if (v) {
+            out = out.replace(/%s/g, v);
+        }
+        return out;
     }
 }
 

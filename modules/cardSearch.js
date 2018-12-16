@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jimp_1 = __importDefault(require("jimp"));
 const ygopro_data_1 = require("ygopro-data");
+const commands_1 = require("./commands");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
 const strings_1 = require("./strings");
@@ -13,69 +14,69 @@ function reEscape(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 async function cardSearch(msg) {
+    const results = [];
     const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
     let content = msg.content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
-    const fullResult = fullRegex.exec(content);
-    if (fullResult) {
-        fullResult.forEach(async (res, i) => {
-            // ignore full match
-            if (i > 0) {
-                const query = util_1.getLang(msg, res);
-                const card = await data_1.data.getCard(query.msg, query.lang1);
-                if (card) {
-                    const profile = await generateCardProfile(card, query.lang2, msg);
-                    msg.channel.createMessage(profile);
-                }
-            }
+    let fullResult = fullRegex.exec(content);
+    while (fullResult !== null) {
+        results.push({
+            image: true,
+            mobile: false,
+            res: fullResult[1]
         });
+        fullResult = fullRegex.exec(content);
     }
     const mobBrackets = configs_1.config.getConfig("mobBrackets").getValue(msg);
     const badMobRegex = new RegExp(reEscape(mobBrackets[0]) + "{2,}.+?" + reEscape(mobBrackets[1]) + "{2,}");
     content = content.replace(badMobRegex, "");
     const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
-    const mobResult = mobRegex.exec(content);
-    if (mobResult) {
-        mobResult.forEach(async (res, i) => {
-            // ignore full match
-            if (i > 0) {
-                const query = util_1.getLang(msg, res);
-                const card = await data_1.data.getCard(query.msg, query.lang1);
-                if (card) {
-                    const image = await getCompositeImage(card);
-                    let file;
-                    if (image) {
-                        file = {
-                            file: image,
-                            name: card.id.toString() + "." + data_1.imageExt
-                        };
-                    }
-                    await msg.channel.createMessage("", file);
-                    const profile = await generateCardProfile(card, query.lang2, msg, true);
-                    msg.channel.createMessage(profile);
-                }
-            }
+    let mobResult = mobRegex.exec(content);
+    while (mobResult !== null) {
+        results.push({
+            image: true,
+            mobile: true,
+            res: mobResult[1]
         });
+        mobResult = mobRegex.exec(content);
     }
     const noImgMobBrackets = configs_1.config.getConfig("noImgMobBrackets").getValue(msg);
     const badNoImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "{2,}.+?" + reEscape(noImgMobBrackets[1]) + "{2,}");
     content = content.replace(badNoImgMobRegex, "");
     const noImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "(.+?)" + reEscape(noImgMobBrackets[1]), "g");
-    const noImgMobResult = noImgMobRegex.exec(content);
-    if (noImgMobResult) {
-        noImgMobResult.forEach(async (res, i) => {
-            // ignore full match
-            if (i > 0) {
-                const query = util_1.getLang(msg, res);
-                const card = await data_1.data.getCard(query.msg, query.lang1);
-                if (card) {
-                    const profile = await generateCardProfile(card, query.lang2, msg, true);
-                    msg.channel.createMessage(profile);
+    let noImgMobResult = noImgMobRegex.exec(content);
+    while (noImgMobResult !== null) {
+        results.push({
+            image: false,
+            mobile: true,
+            res: noImgMobResult[1]
+        });
+        noImgMobResult = noImgMobRegex.exec(content);
+    }
+    if (results.length > commands_1.botOpts.maxSearch) {
+        const lang = util_1.getLang(msg, results[0].res);
+        await msg.channel.createMessage(strings_1.strings.getTranslation("searchCap", lang.lang1, msg, commands_1.botOpts.maxSearch));
+        return;
+    }
+    for (const result of results) {
+        const query = util_1.getLang(msg, result.res);
+        const card = await data_1.data.getCard(query.msg, query.lang1);
+        if (card) {
+            const profile = await generateCardProfile(card, query.lang2, msg, result.mobile);
+            if (result.mobile && result.image) {
+                const image = await getCompositeImage(card);
+                if (image) {
+                    const file = {
+                        file: image,
+                        name: card.id.toString() + "." + data_1.imageExt
+                    };
+                    await msg.channel.createMessage("", file);
                 }
             }
-        });
+            await msg.channel.createMessage(profile);
+        }
     }
 }
 exports.cardSearch = cardSearch;

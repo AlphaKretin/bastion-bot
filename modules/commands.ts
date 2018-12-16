@@ -15,7 +15,7 @@ async function downloadCmd(file: any): Promise<void> {
     await fs.writeFile(fullPath, body);
 }
 
-const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
+export const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 botOpts.cmdRepos.forEach(async (repo: any) => {
     const res = await GitHub.repos.getContents(repo);
     for (const file of res.data) {
