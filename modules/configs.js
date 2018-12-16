@@ -22,8 +22,16 @@ exports.config = {
         throw new Error("Could not find config");
     }
 };
+function explicitParseInt(n) {
+    if (n.startsWith("0x")) {
+        return parseInt(n, 16);
+    }
+    return parseInt(n, 10);
+}
 const defaults = JSON.parse(fs.readFileSync("./config/defaultOpts.json", "utf8"));
 // add default config options
 exports.config.setConfig(new ConfigOption_1.ConfigOption("prefix", defaults.prefix, val => val.toString().trim()));
-exports.config.setConfig(new ConfigOption_1.ConfigOption("defaultLang", "en", undefined, val => data_1.data.langs.includes(val)));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("defaultLang", defaults.language, undefined, val => data_1.data.langs.includes(val)));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("embedColor", defaults.embedColor, val => explicitParseInt(val), val => val.toString(16).length === 6));
+exports.colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));
 //# sourceMappingURL=configs.js.map

@@ -13,12 +13,12 @@ bot_1.bot.on("messageCreate", msg => {
     for (const cmd of commands_1.commands) {
         for (const name of cmd.names) {
             if (msg.content.startsWith(prefix + name)) {
-                cmd.execute(msg).catch(e => bot_1.bot.createMessage(msg.channel.id, "Error!\n" + e));
+                cmd.execute(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
                 return;
             }
         }
     }
-    cardSearch_1.cardSearch(msg);
+    cardSearch_1.cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
 bot_1.bot.connect();
 //# sourceMappingURL=bastion.js.map

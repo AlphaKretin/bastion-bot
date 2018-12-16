@@ -23,7 +23,26 @@ export const config: IConfigHandler = {
     }
 };
 
+function explicitParseInt(n: string): number {
+    if (n.startsWith("0x")) {
+        return parseInt(n, 16);
+    }
+    return parseInt(n, 10);
+}
+
 const defaults = JSON.parse(fs.readFileSync("./config/defaultOpts.json", "utf8"));
 // add default config options
 config.setConfig(new ConfigOption<string>("prefix", defaults.prefix, val => val.toString().trim()));
-config.setConfig(new ConfigOption<string>("defaultLang", "en", undefined, val => data.langs.includes(val)));
+config.setConfig(
+    new ConfigOption<string>("defaultLang", defaults.language, undefined, val => data.langs.includes(val))
+);
+config.setConfig(
+    new ConfigOption<number>(
+        "embedColor",
+        defaults.embedColor,
+        val => explicitParseInt(val),
+        val => val.toString(16).length === 6
+    )
+);
+
+export const colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));

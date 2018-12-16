@@ -12,11 +12,11 @@ bot.on("messageCreate", msg => {
     for (const cmd of commands) {
         for (const name of cmd.names) {
             if (msg.content.startsWith(prefix + name)) {
-                cmd.execute(msg).catch(e => bot.createMessage(msg.channel.id, "Error!\n" + e));
+                cmd.execute(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
                 return;
             }
         }
     }
-    cardSearch(msg);
+    cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
 bot.connect();

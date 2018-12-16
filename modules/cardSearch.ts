@@ -2,6 +2,7 @@ import * as Eris from "eris";
 import Jimp from "jimp";
 import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
+import { colors, config } from "./configs";
 import { data, imageExt } from "./data";
 import { strings } from "./strings";
 import { getLang } from "./util";
@@ -65,106 +66,126 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
     }
 }
 
+function getColour(card: Card, msg: Eris.Message): number {
+    for (const type in colors) {
+        if (colors.hasOwnProperty(type)) {
+            if (card.data.isType(parseInt(type, 16))) {
+                return colors[type];
+            }
+        }
+    }
+    return config.getConfig("embedColor").getValue(msg);
+}
+
 async function generateCardProfile(
     card: Card,
     lang: string,
     msg: Eris.Message,
     mobile: boolean = false
 ): Promise<Eris.MessageContent> {
-    let stats: string = "";
-    const setNames = await card.data.names[lang].setcode;
-    if (setNames.length > 0) {
-        stats += "**" + strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
-    }
-    stats += "\n";
-    stats += "**" + strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
-    const price = await card.price;
-    if (price) {
-        stats +=
-            "** " +
-            strings.getTranslation("price", lang, msg) +
-            "**: $" +
-            price.low.toFixed(2) +
-            "-$" +
-            price.avg.toFixed(2) +
-            "-$" +
-            price.hi.toFixed(2) +
-            " USD";
-    }
-    stats += "\n";
-    const type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
-    stats += type;
-    if (card.data.names[lang].attribute.length > 0) {
-        stats +=
-            " **" + strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
-    }
-    stats += "\n";
-    if (card.data.isType(enums.type.TYPE_MONSTER)) {
-        let levelName = strings.getTranslation("level", lang, msg);
-        if (card.data.isType(enums.type.TYPE_XYZ)) {
-            levelName = strings.getTranslation("rank", lang, msg);
-        } else if (card.data.isType(enums.type.TYPE_LINK)) {
-            levelName = strings.getTranslation("linkRating", lang, msg);
-        }
-        stats +=
-            "**" +
-            levelName +
-            "**: " +
-            card.data.level +
-            " **" +
-            strings.getTranslation("atk", lang, msg) +
-            "**: " +
-            (card.data.atk === -2 ? "?" : card.data.atk);
-        if (card.data.linkMarker) {
-            stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
-        } else if (card.data.def) {
-            stats +=
-                " **" +
-                strings.getTranslation("def", lang, msg) +
-                "**: " +
-                (card.data.def === -2 ? "?" : card.data.def);
+    try {
+        let stats: string = "";
+        const setNames = await card.data.names[lang].setcode;
+        if (setNames.length > 0) {
+            stats += "**" + strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
         }
         stats += "\n";
-    }
-    let textHeader = strings.getTranslation("cardEffect", lang, msg);
-    if (card.data.isType(enums.type.TYPE_NORMAL)) {
-        textHeader = strings.getTranslation("flavourText", lang, msg);
-    } else if (card.data.isType(enums.type.TYPE_EFFECT)) {
-        textHeader = strings.getTranslation("monsterEffect", lang, msg);
-    }
-    const codes = await card.aliasIDs;
-    const codeString = codes.join("|");
-    if (mobile) {
-        const outString =
-            "__**" +
-            card.text[lang].name +
-            "**__\n**" +
-            strings.getTranslation("id", lang, msg) +
-            "**: " +
-            codeString +
-            "\n" +
-            stats +
-            "**" +
-            textHeader +
-            "**:\n" +
-            card.text[lang].desc;
-        return outString;
-    }
-    const outEmbed: Eris.MessageContent = {
-        embed: {
-            description: stats,
-            fields: [
-                {
-                    name: textHeader,
-                    value: card.text[lang].desc
-                }
-            ],
-            footer: { text: codeString },
-            thumbnail: { url: card.imageLink },
-            title: card.text[lang].name
+        stats += "**" + strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
+        const price = await card.price;
+        if (price) {
+            stats +=
+                "** " +
+                strings.getTranslation("price", lang, msg) +
+                "**: $" +
+                price.low.toFixed(2) +
+                "-$" +
+                price.avg.toFixed(2) +
+                "-$" +
+                price.hi.toFixed(2) +
+                " USD";
         }
-    };
-    return outEmbed;
+        stats += "\n";
+        const type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+        stats += type;
+        if (card.data.names[lang].attribute.length > 0) {
+            stats +=
+                " **" +
+                strings.getTranslation("attribute", lang, msg) +
+                "**: " +
+                card.data.names[lang].attribute.join("|");
+        }
+        stats += "\n";
+        if (card.data.isType(enums.type.TYPE_MONSTER)) {
+            let levelName = strings.getTranslation("level", lang, msg);
+            if (card.data.isType(enums.type.TYPE_XYZ)) {
+                levelName = strings.getTranslation("rank", lang, msg);
+            } else if (card.data.isType(enums.type.TYPE_LINK)) {
+                levelName = strings.getTranslation("linkRating", lang, msg);
+            }
+            stats +=
+                "**" +
+                levelName +
+                "**: " +
+                card.data.level +
+                " **" +
+                strings.getTranslation("atk", lang, msg) +
+                "**: " +
+                (card.data.atk === -2 ? "?" : card.data.atk);
+            if (card.data.linkMarker) {
+                stats +=
+                    " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
+            } else if (card.data.def) {
+                stats +=
+                    " **" +
+                    strings.getTranslation("def", lang, msg) +
+                    "**: " +
+                    (card.data.def === -2 ? "?" : card.data.def);
+            }
+            stats += "\n";
+        }
+        let textHeader = strings.getTranslation("cardEffect", lang, msg);
+        if (card.data.isType(enums.type.TYPE_NORMAL)) {
+            textHeader = strings.getTranslation("flavourText", lang, msg);
+        } else if (card.data.isType(enums.type.TYPE_EFFECT)) {
+            textHeader = strings.getTranslation("monsterEffect", lang, msg);
+        }
+        const codes = await card.aliasIDs;
+        const codeString = codes.join("|");
+        if (mobile) {
+            const outString =
+                "__**" +
+                card.text[lang].name +
+                "**__\n**" +
+                strings.getTranslation("id", lang, msg) +
+                "**: " +
+                codeString +
+                "\n" +
+                stats +
+                "**" +
+                textHeader +
+                "**:\n" +
+                card.text[lang].desc;
+            return outString;
+        }
+        const outEmbed: Eris.MessageContent = {
+            embed: {
+                color: getColour(card, msg),
+                description: stats,
+                fields: [
+                    {
+                        name: textHeader,
+                        value: card.text[lang].desc
+                    }
+                ],
+                footer: { text: codeString },
+                thumbnail: { url: card.imageLink },
+                title: card.text[lang].name
+            }
+        };
+        return outEmbed;
+    } catch (e) {
+        throw e;
+    }
 }
 
 async function compose(a: Jimp, b: Jimp, vert: boolean = false): Promise<Jimp> {
