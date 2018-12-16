@@ -161,7 +161,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
             textHeader = strings_1.strings.getTranslation("monsterEffect", lang, msg);
         }
         const codes = await card.aliasIDs;
-        const codeString = codes.join("|");
+        const codeString = codes.join(" | ");
         if (mobile) {
             const outString = "__**" +
                 card.text[lang].name +
