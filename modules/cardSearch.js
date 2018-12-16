@@ -23,7 +23,7 @@ async function cardSearch(msg) {
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
         results.push({
-            image: true,
+            image: false,
             mobile: false,
             res: fullResult[1]
         });
@@ -150,6 +150,15 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
                         strings_1.strings.getTranslation("def", lang, msg) +
                         "**: " +
                         (card.data.def === -2 ? "?" : card.data.def);
+            }
+            if (card.data.lscale && card.data.rscale) {
+                stats +=
+                    " **" +
+                        strings_1.strings.getTranslation("scale", lang, msg) +
+                        "**: " +
+                        card.data.lscale +
+                        "/" +
+                        card.data.rscale;
             }
             stats += "\n";
         }

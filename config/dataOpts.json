@@ -258,6 +258,11 @@
             }
         }
     },
+    "shortcuts": {
+        "en": {
+            "mst": "Mystical Space Typhoon"
+        }
+    },
     "banlist": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/lflist.conf",
     "imageLink": "",
     "imageExt": "png"

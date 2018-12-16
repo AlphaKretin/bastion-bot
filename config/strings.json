@@ -15,6 +15,7 @@
         "flavourText": "Lore Text",
         "monsterEffect": "Monster Effect",
         "id": "ID",
+        "scale": "Pendulum Scale",
         "searchCap": "Sorry, you can only search for %s cards at once!"
     },
     "ja": {
@@ -33,6 +34,6 @@
         "rank": "ランク",
         "atk": "攻撃力",
         "def": "守備力",
-        "searchCap": "Sorry, you can only search for %s cards at once!"
+        "scale": "Ｐスケール"
     }
 }

@@ -29,7 +29,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
         results.push({
-            image: true,
+            image: false,
             mobile: false,
             res: fullResult[1]
         });
@@ -166,6 +166,15 @@ async function generateCardProfile(
                     strings.getTranslation("def", lang, msg) +
                     "**: " +
                     (card.data.def === -2 ? "?" : card.data.def);
+            }
+            if (card.data.lscale && card.data.rscale) {
+                stats +=
+                    " **" +
+                    strings.getTranslation("scale", lang, msg) +
+                    "**: " +
+                    card.data.lscale +
+                    "/" +
+                    card.data.rscale;
             }
             stats += "\n";
         }
