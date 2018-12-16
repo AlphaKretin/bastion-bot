@@ -9,11 +9,18 @@ const configs_1 = require("./configs");
 const data_1 = require("./data");
 const strings_1 = require("./strings");
 const util_1 = require("./util");
+function reEscape(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+}
 async function cardSearch(msg) {
-    const baseRegex = /{(.+)}/g;
-    const baseResult = baseRegex.exec(msg.content);
-    if (baseResult) {
-        baseResult.forEach(async (res, i) => {
+    const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
+    // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
+    const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
+    let content = msg.content.replace(badFullRegex, "");
+    const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
+    const fullResult = fullRegex.exec(content);
+    if (fullResult) {
+        fullResult.forEach(async (res, i) => {
             // ignore full match
             if (i > 0) {
                 const query = util_1.getLang(msg, res);
@@ -25,10 +32,13 @@ async function cardSearch(msg) {
             }
         });
     }
-    const imageRegex = /<(.+)>/g;
-    const imageResult = imageRegex.exec(msg.content);
-    if (imageResult) {
-        imageResult.forEach(async (res, i) => {
+    const mobBrackets = configs_1.config.getConfig("mobBrackets").getValue(msg);
+    const badMobRegex = new RegExp(reEscape(mobBrackets[0]) + "{2,}.+?" + reEscape(mobBrackets[1]) + "{2,}");
+    content = content.replace(badMobRegex, "");
+    const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
+    const mobResult = mobRegex.exec(content);
+    if (mobResult) {
+        mobResult.forEach(async (res, i) => {
             // ignore full match
             if (i > 0) {
                 const query = util_1.getLang(msg, res);
@@ -49,10 +59,13 @@ async function cardSearch(msg) {
             }
         });
     }
-    const mobileRegex = /\[(.+)\]/g;
-    const mobileResult = mobileRegex.exec(msg.content);
-    if (mobileResult) {
-        mobileResult.forEach(async (res, i) => {
+    const noImgMobBrackets = configs_1.config.getConfig("noImgMobBrackets").getValue(msg);
+    const badNoImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "{2,}.+?" + reEscape(noImgMobBrackets[1]) + "{2,}");
+    content = content.replace(badNoImgMobRegex, "");
+    const noImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "(.+?)" + reEscape(noImgMobBrackets[1]), "g");
+    const noImgMobResult = noImgMobRegex.exec(content);
+    if (noImgMobResult) {
+        noImgMobResult.forEach(async (res, i) => {
             // ignore full match
             if (i > 0) {
                 const query = util_1.getLang(msg, res);

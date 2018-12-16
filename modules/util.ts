@@ -12,8 +12,12 @@ export function trimMsg(msg: Eris.Message | string): string {
         .join(" ");
 }
 
-export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild | undefined =>
-    msg.channel instanceof Eris.TextChannel ? msg.channel.guild : undefined;
+export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild => {
+    if (!(msg.channel instanceof Eris.TextChannel)) {
+        throw new Error("Config set in DMs!");
+    }
+    return msg.channel.guild;
+};
 
 interface ILangPayload {
     msg: string;

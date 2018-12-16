@@ -10,15 +10,10 @@ async function func(msg) {
     const terms = content.split(/ +/);
     const optName = terms[0];
     const val = terms.slice(1).join(" ");
-    try {
-        const opt = configs_1.config.getConfig(optName);
-        opt.setValue(val, msg);
-        const outMsg = opt.name + " changed to " + opt.getValue(msg);
-        bot_1.bot.createMessage(msg.channel.id, outMsg);
-    }
-    catch (e) {
-        throw e;
-    }
+    const opt = configs_1.config.getConfig(optName);
+    opt.setValue(msg, val);
+    const outMsg = opt.name + " changed to " + opt.getValue(msg);
+    bot_1.bot.createMessage(msg.channel.id, outMsg);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=config.js.map

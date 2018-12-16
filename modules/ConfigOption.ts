@@ -11,8 +11,13 @@ export class ConfigOption<T> {
     private val: IValueTable<T>;
     private filePath: string;
     private conv?: (val: any) => T;
-    private chk?: (val: T) => boolean;
-    constructor(name: string, defaultValue: T, conv?: (val: any) => T, chk?: (val: T) => boolean) {
+    private chk?: (val: T, m: Eris.Message | Eris.Guild) => boolean;
+    constructor(
+        name: string,
+        defaultValue: T,
+        conv?: (val: any) => T,
+        chk?: (val: T, m: Eris.Message | Eris.Guild) => boolean
+    ) {
         this.name = name;
         this.filePath = "./confs/" + this.name + ".json";
         if (fs.existsSync(this.filePath)) {
@@ -26,7 +31,7 @@ export class ConfigOption<T> {
         this.conv = conv;
     }
 
-    public setValue(v?: any, g?: Eris.Guild | Eris.Message): number {
+    public setValue(g: Eris.Guild | Eris.Message, v?: any): number {
         if (g && g instanceof Eris.Message) {
             g = getGuildFromMsg(g);
         }
@@ -37,7 +42,7 @@ export class ConfigOption<T> {
                 v = v as T;
             }
         }
-        if (!this.chk || !v || this.chk(v)) {
+        if (!this.chk || !v || this.chk(v, g)) {
             if (g) {
                 if (!fs.existsSync("./confs")) {
                     fs.mkdirSync("./confs");

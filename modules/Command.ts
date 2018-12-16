@@ -36,7 +36,7 @@ export class Command {
 
     public async execute(msg: Eris.Message): Promise<void> {
         if (this.isCanExecute(msg)) {
-            this.func(msg);
+            await this.func(msg);
         } else {
             throw new Error("Forbidden");
         }

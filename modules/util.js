@@ -19,7 +19,12 @@ function trimMsg(msg) {
         .join(" ");
 }
 exports.trimMsg = trimMsg;
-exports.getGuildFromMsg = (msg) => msg.channel instanceof Eris.TextChannel ? msg.channel.guild : undefined;
+exports.getGuildFromMsg = (msg) => {
+    if (!(msg.channel instanceof Eris.TextChannel)) {
+        throw new Error("Config set in DMs!");
+    }
+    return msg.channel.guild;
+};
 function getLang(msg, query) {
     const content = query || trimMsg(msg);
     const terms = content.split(",");

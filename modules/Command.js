@@ -29,7 +29,7 @@ class Command {
     }
     async execute(msg) {
         if (this.isCanExecute(msg)) {
-            this.func(msg);
+            await this.func(msg);
         }
         else {
             throw new Error("Forbidden");

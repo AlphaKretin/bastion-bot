@@ -12,7 +12,9 @@ bot.on("messageCreate", msg => {
     for (const cmd of commands) {
         for (const name of cmd.names) {
             if (msg.content.startsWith(prefix + name)) {
-                cmd.execute(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
+                cmd.execute(msg).catch(e => {
+                    msg.channel.createMessage("Error!\n" + e);
+                });
                 return;
             }
         }

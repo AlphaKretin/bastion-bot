@@ -1,5 +1,8 @@
 {
     "prefix": ".",
     "language": "en",
-    "embedColor": 16776960
+    "embedColor": 16776960,
+    "fullBrackets": ["{", "}"],
+    "mobBrackets": ["<", ">"],
+    "noImgMobBrackets": ["[", "]"]
 }

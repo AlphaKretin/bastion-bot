@@ -25,7 +25,7 @@ class ConfigOption {
         this.chk = chk;
         this.conv = conv;
     }
-    setValue(v, g) {
+    setValue(g, v) {
         if (g && g instanceof Eris.Message) {
             g = util_1.getGuildFromMsg(g);
         }
@@ -37,7 +37,7 @@ class ConfigOption {
                 v = v;
             }
         }
-        if (!this.chk || !v || this.chk(v)) {
+        if (!this.chk || !v || this.chk(v, g)) {
             if (g) {
                 if (!fs.existsSync("./confs")) {
                     fs.mkdirSync("./confs");

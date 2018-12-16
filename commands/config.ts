@@ -11,14 +11,10 @@ async function func(msg: Eris.Message) {
     const terms = content.split(/ +/);
     const optName = terms[0];
     const val = terms.slice(1).join(" ");
-    try {
-        const opt = config.getConfig(optName);
-        opt.setValue(val, msg);
-        const outMsg = opt.name + " changed to " + opt.getValue(msg);
-        bot.createMessage(msg.channel.id, outMsg);
-    } catch (e) {
-        throw e;
-    }
+    const opt = config.getConfig(optName);
+    opt.setValue(msg, val);
+    const outMsg = opt.name + " changed to " + opt.getValue(msg);
+    bot.createMessage(msg.channel.id, outMsg);
 }
 
 export const command = new Command(names, func);
