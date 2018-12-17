@@ -87,7 +87,9 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
                     await msg.channel.createMessage("", file);
                 }
             }
-            await msg.channel.createMessage(profile);
+            for (const mes of profile) {
+                await msg.channel.createMessage(mes);
+            }
         }
     }
 }
@@ -108,7 +110,7 @@ async function generateCardProfile(
     lang: string,
     msg: Eris.Message,
     mobile: boolean = false
-): Promise<Eris.MessageContent> {
+): Promise<Eris.MessageContent[]> {
     try {
         let stats: string = "";
         const setNames = await card.data.names[lang].setcode;
@@ -187,7 +189,7 @@ async function generateCardProfile(
         const codes = await card.aliasIDs;
         const codeString = codes.join(" | ");
         if (mobile) {
-            const outString =
+            let outString =
                 "__**" +
                 card.text[lang].name +
                 "**__\n**" +
@@ -200,24 +202,64 @@ async function generateCardProfile(
                 textHeader +
                 "**:\n" +
                 card.text[lang].desc;
-            return outString;
+            const outStrings: string[] = [];
+            const MESSAGE_CAP = 2000;
+            while (outString.length > MESSAGE_CAP) {
+                let index = outString.slice(0, MESSAGE_CAP).lastIndexOf("\n");
+                if (index === -1 || index >= MESSAGE_CAP) {
+                    index = outString.slice(0, MESSAGE_CAP).lastIndexOf(".");
+                    if (index === -1 || index >= MESSAGE_CAP) {
+                        index = outString.slice(0, MESSAGE_CAP).lastIndexOf(" ");
+                        if (index === -1 || index >= MESSAGE_CAP) {
+                            index = MESSAGE_CAP - 1;
+                        }
+                    }
+                }
+                outStrings.push(outString.slice(0, index + 1));
+                outString = outString.slice(index + 1);
+            }
+            outStrings.push(outString);
+            return outStrings;
         }
         const outEmbed: Eris.MessageContent = {
             embed: {
                 color: getColour(card, msg),
                 description: stats,
-                fields: [
-                    {
-                        name: textHeader,
-                        value: card.text[lang].desc
-                    }
-                ],
+                fields: [],
                 footer: { text: codeString },
                 thumbnail: { url: card.imageLink },
                 title: card.text[lang].name
             }
         };
-        return outEmbed;
+        const FIELD_CAP = 1024;
+        const descPortions = [];
+        let descPortion = card.text[lang].desc;
+        while (descPortion.length > FIELD_CAP) {
+            let index = descPortion.slice(0, FIELD_CAP).lastIndexOf("\n");
+            if (index === -1 || index >= FIELD_CAP) {
+                index = descPortion.slice(0, FIELD_CAP).lastIndexOf(".");
+                if (index === -1 || index >= FIELD_CAP) {
+                    index = descPortion.slice(0, FIELD_CAP).lastIndexOf(" ");
+                    if (index === -1 || index >= FIELD_CAP) {
+                        index = FIELD_CAP - 1;
+                    }
+                }
+            }
+            descPortions.push(descPortion.slice(0, index + 1));
+            descPortion = descPortion.slice(index + 1);
+        }
+        descPortions.push(descPortion);
+        outEmbed.embed!.fields!.push({
+            name: textHeader,
+            value: descPortions[0]
+        });
+        for (let i = 1; i < descPortions.length; i++) {
+            outEmbed.embed!.fields!.push({
+                name: "Continued",
+                value: descPortions[i]
+            });
+        }
+        return [outEmbed];
     } catch (e) {
         throw e;
     }
