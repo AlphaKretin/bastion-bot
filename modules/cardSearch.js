@@ -173,6 +173,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         }
         const codes = await card.aliasIDs;
         const codeString = codes.join(" | ");
+        const desc = card.text[lang].desc;
         if (mobile) {
             let outString = "__**" +
                 card.text[lang].name +
@@ -181,11 +182,21 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
                 "**: " +
                 codeString +
                 "\n" +
-                stats +
-                "**" +
-                textHeader +
-                "**:\n" +
-                card.text[lang].desc;
+                stats;
+            if (desc.pendHead) {
+                outString +=
+                    "**" +
+                        desc.pendHead +
+                        "**:\n" +
+                        desc.pendBody +
+                        "\n**" +
+                        desc.monsterHead +
+                        "**:\n" +
+                        desc.monsterBody;
+            }
+            else {
+                outString += "**" + textHeader + "**:\n" + desc.monsterBody;
+            }
             const outStrings = [];
             const MESSAGE_CAP = 2000;
             while (outString.length > MESSAGE_CAP) {
@@ -217,7 +228,14 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         };
         const FIELD_CAP = 1024;
         const descPortions = [];
-        let descPortion = card.text[lang].desc;
+        if (desc.pendHead) {
+            outEmbed.embed.fields.push({
+                name: desc.pendHead,
+                value: desc.pendBody
+            });
+            textHeader = desc.monsterHead;
+        }
+        let descPortion = desc.monsterBody;
         while (descPortion.length > FIELD_CAP) {
             let index = descPortion.slice(0, FIELD_CAP).lastIndexOf("\n");
             if (index === -1 || index >= FIELD_CAP) {
