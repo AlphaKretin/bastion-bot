@@ -123,4 +123,6 @@ config.setConfig(
     )
 );
 
+config.setConfig(new ConfigOption<boolean>("mobileView", false));
+
 export const colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));

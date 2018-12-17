@@ -24,7 +24,7 @@ async function cardSearch(msg) {
     while (fullResult !== null) {
         results.push({
             image: false,
-            mobile: false,
+            mobile: configs_1.config.getConfig("mobileView").getValue(msg),
             res: fullResult[1]
         });
         fullResult = fullRegex.exec(content);

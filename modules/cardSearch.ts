@@ -30,7 +30,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
     while (fullResult !== null) {
         results.push({
             image: false,
-            mobile: false,
+            mobile: config.getConfig("mobileView").getValue(msg),
             res: fullResult[1]
         });
         fullResult = fullRegex.exec(content);

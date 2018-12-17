@@ -81,5 +81,6 @@ exports.config.setConfig(new ConfigOption_1.ConfigOption("noImgMobBrackets", def
         mobBrackets.indexOf(val[0]) === -1 &&
         mobBrackets.indexOf(val[1]) === -1);
 }));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("mobileView", false));
 exports.colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));
 //# sourceMappingURL=configs.js.map
