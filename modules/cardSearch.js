@@ -94,76 +94,7 @@ function getColour(card, msg) {
 }
 async function generateCardProfile(card, lang, msg, mobile = false) {
     try {
-        let stats = "";
-        const setNames = await card.data.names[lang].setcode;
-        if (setNames.length > 0) {
-            stats += "**" + strings_1.strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
-        }
-        stats += "\n";
-        stats += "**" + strings_1.strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
-        const price = await card.price;
-        if (price) {
-            stats +=
-                "** " +
-                    strings_1.strings.getTranslation("price", lang, msg) +
-                    "**: $" +
-                    price.low.toFixed(2) +
-                    "-$" +
-                    price.avg.toFixed(2) +
-                    "-$" +
-                    price.hi.toFixed(2) +
-                    " USD";
-        }
-        stats += "\n";
-        const type = "**" + strings_1.strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
-        stats += type;
-        if (card.data.names[lang].attribute.length > 0) {
-            stats +=
-                " **" +
-                    strings_1.strings.getTranslation("attribute", lang, msg) +
-                    "**: " +
-                    card.data.names[lang].attribute.join("|");
-        }
-        stats += "\n";
-        if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
-            let levelName = strings_1.strings.getTranslation("level", lang, msg);
-            if (card.data.isType(ygopro_data_1.enums.type.TYPE_XYZ)) {
-                levelName = strings_1.strings.getTranslation("rank", lang, msg);
-            }
-            else if (card.data.isType(ygopro_data_1.enums.type.TYPE_LINK)) {
-                levelName = strings_1.strings.getTranslation("linkRating", lang, msg);
-            }
-            stats +=
-                "**" +
-                    levelName +
-                    "**: " +
-                    card.data.level +
-                    " **" +
-                    strings_1.strings.getTranslation("atk", lang, msg) +
-                    "**: " +
-                    (card.data.atk === -2 ? "?" : card.data.atk);
-            if (card.data.linkMarker) {
-                stats +=
-                    " **" + strings_1.strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
-            }
-            else if (card.data.def) {
-                stats +=
-                    " **" +
-                        strings_1.strings.getTranslation("def", lang, msg) +
-                        "**: " +
-                        (card.data.def === -2 ? "?" : card.data.def);
-            }
-            if (card.data.lscale && card.data.rscale) {
-                stats +=
-                    " **" +
-                        strings_1.strings.getTranslation("scale", lang, msg) +
-                        "**: " +
-                        card.data.lscale +
-                        "/" +
-                        card.data.rscale;
-            }
-            stats += "\n";
-        }
+        const stats = await generateCardStatBlock(card, lang, msg);
         let textHeader = strings_1.strings.getTranslation("cardEffect", lang, msg);
         if (card.data.isType(ygopro_data_1.enums.type.TYPE_NORMAL)) {
             textHeader = strings_1.strings.getTranslation("flavourText", lang, msg);
@@ -266,6 +197,70 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
     catch (e) {
         throw e;
     }
+}
+async function generateCardStatBlock(card, lang, msg) {
+    let stats = "";
+    const setNames = await card.data.names[lang].setcode;
+    if (setNames.length > 0) {
+        stats += "**" + strings_1.strings.getTranslation("setcode", lang, msg) + "**: " + setNames.join(", ");
+    }
+    stats += "\n";
+    stats += "**" + strings_1.strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
+    const price = await card.price;
+    if (price) {
+        stats +=
+            "** " +
+                strings_1.strings.getTranslation("price", lang, msg) +
+                "**: $" +
+                price.low.toFixed(2) +
+                "-$" +
+                price.avg.toFixed(2) +
+                "-$" +
+                price.hi.toFixed(2) +
+                " USD";
+    }
+    stats += "\n";
+    const type = "**" + strings_1.strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+    stats += type;
+    if (card.data.names[lang].attribute.length > 0) {
+        stats +=
+            " **" + strings_1.strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
+    }
+    stats += "\n";
+    if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
+        let levelName = strings_1.strings.getTranslation("level", lang, msg);
+        if (card.data.isType(ygopro_data_1.enums.type.TYPE_XYZ)) {
+            levelName = strings_1.strings.getTranslation("rank", lang, msg);
+        }
+        else if (card.data.isType(ygopro_data_1.enums.type.TYPE_LINK)) {
+            levelName = strings_1.strings.getTranslation("linkRating", lang, msg);
+        }
+        stats +=
+            "**" +
+                levelName +
+                "**: " +
+                card.data.level +
+                " **" +
+                strings_1.strings.getTranslation("atk", lang, msg) +
+                "**: " +
+                (card.data.atk === -2 ? "?" : card.data.atk);
+        if (card.data.linkMarker) {
+            stats += " **" + strings_1.strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
+        }
+        else if (card.data.def) {
+            stats +=
+                " **" +
+                    strings_1.strings.getTranslation("def", lang, msg) +
+                    "**: " +
+                    (card.data.def === -2 ? "?" : card.data.def);
+        }
+        if (card.data.lscale && card.data.rscale) {
+            stats +=
+                " **" + strings_1.strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
+        }
+        stats += "\n";
+    }
+    return stats;
 }
 async function compose(a, b, vert = false) {
     const wid = vert ? Math.max(a.getWidth(), b.getWidth()) : a.getWidth() + b.getWidth();
