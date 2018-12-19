@@ -15,7 +15,7 @@ class ConfigOption {
         this.name = name;
         this.filePath = "./confs/" + this.name + ".json";
         if (fs.existsSync(this.filePath)) {
-            this.val = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
+            this.val = JSON.parse(fs.readFileSync(this.filePath, "utf8"), (_, val) => val);
         }
         else {
             this.val = {

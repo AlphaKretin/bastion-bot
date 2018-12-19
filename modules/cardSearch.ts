@@ -3,7 +3,7 @@ import Jimp from "jimp";
 import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
 import { botOpts } from "./commands";
-import { colors, config } from "./configs";
+import { colors, config, emotes } from "./configs";
 import { data, imageExt } from "./data";
 import { strings } from "./strings";
 import { getLang } from "./util";
@@ -216,6 +216,7 @@ async function generateCardProfile(
 }
 
 async function generateCardStatBlock(card: Card, lang: string, msg: Eris.Message) {
+    const displayEmotes = !config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";
     const setNames = await card.data.names[lang].setcode;
     if (setNames.length > 0) {
@@ -237,29 +238,57 @@ async function generateCardStatBlock(card: Card, lang: string, msg: Eris.Message
             " USD";
     }
     stats += "\n";
-    const type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+    let type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+    if (displayEmotes) {
+        if (!card.data.isType(enums.type.TYPE_MONSTER) && "type" in emotes) {
+            for (const t in emotes.type) {
+                if (emotes.type.hasOwnProperty(t)) {
+                    if (card.data.isType(parseInt(t, 16))) {
+                        type += " " + emotes.type[t];
+                    }
+                }
+            }
+        } else if ("race" in emotes) {
+            for (const r in emotes.race) {
+                if (emotes.race.hasOwnProperty(r)) {
+                    if (card.data.isRace(parseInt(r, 16))) {
+                        type += " " + emotes.race[r];
+                    }
+                }
+            }
+        }
+    }
     stats += type;
     if (card.data.names[lang].attribute.length > 0) {
         stats +=
             " **" + strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
     }
+    if (displayEmotes && "attribute" in emotes) {
+        for (const a in emotes.attribute) {
+            if (emotes.attribute.hasOwnProperty(a)) {
+                if (card.data.isAttribute(parseInt(a, 16))) {
+                    stats += " " + emotes.attribute[a];
+                }
+            }
+        }
+    }
     stats += "\n";
     if (card.data.isType(enums.type.TYPE_MONSTER)) {
         let levelName = strings.getTranslation("level", lang, msg);
+        let levelEmote: string | undefined = "misc" in emotes ? emotes.misc.level : undefined;
         if (card.data.isType(enums.type.TYPE_XYZ)) {
             levelName = strings.getTranslation("rank", lang, msg);
+            levelEmote = "misc" in emotes ? emotes.misc.rank : undefined;
         } else if (card.data.isType(enums.type.TYPE_LINK)) {
             levelName = strings.getTranslation("linkRating", lang, msg);
+            levelEmote = undefined;
+        }
+        stats += "**" + levelName + "**: " + card.data.level;
+        if (displayEmotes && levelEmote) {
+            stats += " " + levelEmote;
         }
         stats +=
-            "**" +
-            levelName +
-            "**: " +
-            card.data.level +
-            " **" +
-            strings.getTranslation("atk", lang, msg) +
-            "**: " +
-            (card.data.atk === -2 ? "?" : card.data.atk);
+            " **" + strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
             stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
         } else if (card.data.def) {
@@ -270,8 +299,14 @@ async function generateCardStatBlock(card: Card, lang: string, msg: Eris.Message
                 (card.data.def === -2 ? "?" : card.data.def);
         }
         if (card.data.lscale && card.data.rscale) {
+            if (displayEmotes && "misc" in emotes && "leftScale" in emotes.misc) {
+                stats += emotes.misc.leftScale;
+            }
             stats +=
                 " **" + strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
+            if (displayEmotes && "misc" in emotes && "rightScale" in emotes.misc) {
+                stats += emotes.misc.rightScale;
+            }
         }
         stats += "\n";
     }

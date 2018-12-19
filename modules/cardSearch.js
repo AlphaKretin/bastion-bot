@@ -199,6 +199,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
     }
 }
 async function generateCardStatBlock(card, lang, msg) {
+    const displayEmotes = !configs_1.config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";
     const setNames = await card.data.names[lang].setcode;
     if (setNames.length > 0) {
@@ -220,30 +221,59 @@ async function generateCardStatBlock(card, lang, msg) {
                 " USD";
     }
     stats += "\n";
-    const type = "**" + strings_1.strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+    let type = "**" + strings_1.strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+    if (displayEmotes) {
+        if (!card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER) && "type" in configs_1.emotes) {
+            for (const t in configs_1.emotes.type) {
+                if (configs_1.emotes.type.hasOwnProperty(t)) {
+                    if (card.data.isType(parseInt(t, 16))) {
+                        type += " " + configs_1.emotes.type[t];
+                    }
+                }
+            }
+        }
+        else if ("race" in configs_1.emotes) {
+            for (const r in configs_1.emotes.race) {
+                if (configs_1.emotes.race.hasOwnProperty(r)) {
+                    if (card.data.isRace(parseInt(r, 16))) {
+                        type += " " + configs_1.emotes.race[r];
+                    }
+                }
+            }
+        }
+    }
     stats += type;
     if (card.data.names[lang].attribute.length > 0) {
         stats +=
             " **" + strings_1.strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
     }
+    if (displayEmotes && "attribute" in configs_1.emotes) {
+        for (const a in configs_1.emotes.attribute) {
+            if (configs_1.emotes.attribute.hasOwnProperty(a)) {
+                if (card.data.isAttribute(parseInt(a, 16))) {
+                    stats += " " + configs_1.emotes.attribute[a];
+                }
+            }
+        }
+    }
     stats += "\n";
     if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
         let levelName = strings_1.strings.getTranslation("level", lang, msg);
+        let levelEmote = "misc" in configs_1.emotes ? configs_1.emotes.misc.level : undefined;
         if (card.data.isType(ygopro_data_1.enums.type.TYPE_XYZ)) {
             levelName = strings_1.strings.getTranslation("rank", lang, msg);
+            levelEmote = "misc" in configs_1.emotes ? configs_1.emotes.misc.rank : undefined;
         }
         else if (card.data.isType(ygopro_data_1.enums.type.TYPE_LINK)) {
             levelName = strings_1.strings.getTranslation("linkRating", lang, msg);
+            levelEmote = undefined;
+        }
+        stats += "**" + levelName + "**: " + card.data.level;
+        if (displayEmotes && levelEmote) {
+            stats += " " + levelEmote;
         }
         stats +=
-            "**" +
-                levelName +
-                "**: " +
-                card.data.level +
-                " **" +
-                strings_1.strings.getTranslation("atk", lang, msg) +
-                "**: " +
-                (card.data.atk === -2 ? "?" : card.data.atk);
+            " **" + strings_1.strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
             stats += " **" + strings_1.strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
         }
@@ -255,8 +285,14 @@ async function generateCardStatBlock(card, lang, msg) {
                     (card.data.def === -2 ? "?" : card.data.def);
         }
         if (card.data.lscale && card.data.rscale) {
+            if (displayEmotes && "misc" in configs_1.emotes && "leftScale" in configs_1.emotes.misc) {
+                stats += configs_1.emotes.misc.leftScale;
+            }
             stats +=
                 " **" + strings_1.strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
+            if (displayEmotes && "misc" in configs_1.emotes && "rightScale" in configs_1.emotes.misc) {
+                stats += configs_1.emotes.misc.rightScale;
+            }
         }
         stats += "\n";
     }

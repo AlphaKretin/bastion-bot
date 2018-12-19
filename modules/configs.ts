@@ -123,6 +123,9 @@ config.setConfig(
     )
 );
 
+// boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
 config.setConfig(new ConfigOption<boolean>("mobileView", false));
+config.setConfig(new ConfigOption("suppressEmotes", false));
 
 export const colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));
+export const emotes = JSON.parse(fs.readFileSync("./config/emotes.json", "utf8"));

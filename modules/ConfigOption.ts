@@ -21,7 +21,7 @@ export class ConfigOption<T> {
         this.name = name;
         this.filePath = "./confs/" + this.name + ".json";
         if (fs.existsSync(this.filePath)) {
-            this.val = JSON.parse(fs.readFileSync(this.filePath, "utf8"));
+            this.val = JSON.parse(fs.readFileSync(this.filePath, "utf8"), (_, val) => val as T);
         } else {
             this.val = {
                 default: defaultValue
@@ -64,13 +64,13 @@ export class ConfigOption<T> {
         }
     }
 
-    public getValue(g?: Eris.Guild | Eris.Message) {
+    public getValue(g?: Eris.Guild | Eris.Message): T {
         if (g && g instanceof Eris.Message) {
             g = getGuildFromMsg(g);
         }
         if (g && g.id in this.val) {
-            return this.val[g.id];
+            return this.val[g.id] as T;
         }
-        return this.val.default;
+        return this.val.default as T;
     }
 }
