@@ -269,11 +269,12 @@
         "ot": ["ot", "status", "region"],
         "race": ["race", "mtype", "monstertype"],
         "type": ["type", "ctype", "cardtype"],
+        "setcode": ["set", "setcode", "arch", "archetype", "series", "theme"],
         "level": ["lvl", "level", "rank", "link"],
         "atk": ["atk", "attack"],
         "def": ["def", "defense", "defence"]
     },
     "banlist": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/lflist.conf",
-    "imageLink": "",
+    "imageLink": "https://raw.githubusercontent.com/shadowfox87/YGOTCGOCGPics323x323/master/",
     "imageExt": "png"
 }

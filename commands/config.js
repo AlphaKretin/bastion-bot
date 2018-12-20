@@ -1,19 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bot_1 = require("../modules/bot");
+const ygopro_data_1 = require("ygopro-data");
+const cardSearch_1 = require("../modules/cardSearch");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
+const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
-const names = ["config"];
+const names = ["randcard", "randomcard"];
 async function func(msg) {
     const content = util_1.trimMsg(msg);
-    const terms = content.split(/ +/);
-    const optName = terms[0];
-    const val = terms.slice(1).join(" ");
-    const opt = configs_1.config.getConfig(optName);
-    opt.setValue(msg, val);
-    const outMsg = opt.name + " changed to " + opt.getValue(msg);
-    bot_1.bot.createMessage(msg.channel.id, outMsg);
+    let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
+    for (const term of content.split(/ +/)) {
+        if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
+            lang = term.toLowerCase();
+        }
+    }
+    const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(content, lang));
+    const cards = await data_1.data.getCardList();
+    const list = filter.filter(cards);
+    const ids = Object.keys(list);
+    const card = list[Number(ids[util_1.getRandomIntInclusive(0, ids.length - 1)])];
+    await cardSearch_1.sendCardProfile(msg, card, lang);
 }
 exports.command = new Command_1.Command(names, func);
-//# sourceMappingURL=config.js.map
+//# sourceMappingURL=randcard.js.map

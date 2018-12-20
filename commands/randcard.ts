@@ -16,7 +16,7 @@ async function func(msg: Eris.Message) {
             lang = term.toLowerCase();
         }
     }
-    const filter = new Filter(Filter.parse(content, lang));
+    const filter = new Filter(await Filter.parse(content, lang));
     const cards = await data.getCardList();
     const list = filter.filter(cards);
     const ids = Object.keys(list);
