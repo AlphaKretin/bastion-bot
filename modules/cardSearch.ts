@@ -2,6 +2,7 @@ import * as Eris from "eris";
 import Jimp from "jimp";
 import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
+import { addReactionButton, bot } from "./bot";
 import { botOpts } from "./commands";
 import { colors, config, emotes } from "./configs";
 import { data, imageExt } from "./data";
@@ -100,8 +101,15 @@ export async function sendCardProfile(
                 await msg.channel.createMessage("", file);
             }
         }
-        for (const mes of profile) {
-            await msg.channel.createMessage(mes);
+        const m = await msg.channel.createMessage(profile[0]);
+        for (let i = 1; i < profile.length; i++) {
+            await addReactionButton(m, "1\u20e3", async (_, userID) => {
+                const user = bot.users.get(userID);
+                if (user) {
+                    const chan = await user.getDMChannel();
+                    chan.createMessage(profile[i]);
+                }
+            });
         }
     }
 }

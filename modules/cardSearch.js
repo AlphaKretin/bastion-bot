@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jimp_1 = __importDefault(require("jimp"));
 const ygopro_data_1 = require("ygopro-data");
+const bot_1 = require("./bot");
 const commands_1 = require("./commands");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
@@ -82,8 +83,15 @@ async function sendCardProfile(msg, card, lang, mobile = false, includeImage = f
                 await msg.channel.createMessage("", file);
             }
         }
-        for (const mes of profile) {
-            await msg.channel.createMessage(mes);
+        const m = await msg.channel.createMessage(profile[0]);
+        for (let i = 1; i < profile.length; i++) {
+            await bot_1.addReactionButton(m, "1\u20e3", async (_, userID) => {
+                const user = bot_1.bot.users.get(userID);
+                if (user) {
+                    const chan = await user.getDMChannel();
+                    chan.createMessage(profile[i]);
+                }
+            });
         }
     }
 }
