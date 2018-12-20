@@ -7,7 +7,7 @@ import { sendCardList, trimMsg } from "../modules/util";
 
 const names: string[] = ["search", "textsearch"];
 
-async function func(msg: Eris.Message) {
+async function func(msg: Eris.Message, mobile: boolean) {
     const content = trimMsg(msg);
     const a = content.split("|");
     const query = a[0].trim().toLowerCase();
@@ -47,7 +47,7 @@ async function func(msg: Eris.Message) {
         const filter = new Filter(await Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    await sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:");
+    await sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:", mobile);
 }
 
 export const command = new Command(names, func);

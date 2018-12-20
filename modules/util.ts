@@ -1,6 +1,8 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data";
 import { ICardList } from "ygopro-data/dist/module/cards";
+import { addReactionButton } from "./bot";
+import { sendCardProfile } from "./cardSearch";
 import { config } from "./configs";
 import { data } from "./data";
 
@@ -61,12 +63,25 @@ export function getRandomIntInclusive(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+export function numToEmoji(n: number): string | undefined {
+    if (n > -1 && n < 10) {
+        return n.toString() + "\u20e3";
+    }
+    if (n === 10) {
+        return "🔟";
+    }
+    if (n === 100) {
+        return "💯";
+    }
+}
+
 export async function sendCardList(
     list: ICardList,
     lang: string,
     msg: Eris.Message,
     count: number = config.getConfig("listDefault").getValue(msg),
-    title?: string
+    title?: string,
+    mobile: boolean = false
 ) {
     const out: string[] = [];
     const hist: number[] = [];
@@ -92,5 +107,13 @@ export async function sendCardList(
     if (title) {
         out.unshift(title.replace(/%s/g, (i - 1).toString()));
     }
-    msg.channel.createMessage(out.join("\n"));
+    const m = await msg.channel.createMessage(out.join("\n"));
+    for (let ind = 0; ind < Math.min(hist.length, 10); ind++) {
+        await addReactionButton(m, numToEmoji(ind + 1)!, async mes => {
+            const card = await data.getCard(hist[ind]);
+            if (card) {
+                await sendCardProfile(mes, card, lang, mobile, false);
+            }
+        });
+    }
 }

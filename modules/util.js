@@ -8,6 +8,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
+const bot_1 = require("./bot");
+const cardSearch_1 = require("./cardSearch");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
 function trimMsg(msg) {
@@ -62,7 +64,19 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 exports.getRandomIntInclusive = getRandomIntInclusive;
-async function sendCardList(list, lang, msg, count = configs_1.config.getConfig("listDefault").getValue(msg), title) {
+function numToEmoji(n) {
+    if (n > -1 && n < 10) {
+        return n.toString() + "\u20e3";
+    }
+    if (n === 10) {
+        return "🔟";
+    }
+    if (n === 100) {
+        return "💯";
+    }
+}
+exports.numToEmoji = numToEmoji;
+async function sendCardList(list, lang, msg, count = configs_1.config.getConfig("listDefault").getValue(msg), title, mobile = false) {
     const out = [];
     const hist = [];
     const cards = Object.values(list);
@@ -87,7 +101,15 @@ async function sendCardList(list, lang, msg, count = configs_1.config.getConfig(
     if (title) {
         out.unshift(title.replace(/%s/g, (i - 1).toString()));
     }
-    msg.channel.createMessage(out.join("\n"));
+    const m = await msg.channel.createMessage(out.join("\n"));
+    for (let ind = 0; ind < Math.min(hist.length, 10); ind++) {
+        await bot_1.addReactionButton(m, numToEmoji(ind + 1), async (mes) => {
+            const card = await data_1.data.getCard(hist[ind]);
+            if (card) {
+                await cardSearch_1.sendCardProfile(mes, card, lang, mobile, false);
+            }
+        });
+    }
 }
 exports.sendCardList = sendCardList;
 //# sourceMappingURL=util.js.map

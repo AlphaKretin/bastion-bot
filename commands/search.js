@@ -6,7 +6,7 @@ const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 const names = ["search", "textsearch"];
-async function func(msg) {
+async function func(msg, mobile) {
     const content = util_1.trimMsg(msg);
     const a = content.split("|");
     const query = a[0].trim().toLowerCase();
@@ -44,7 +44,7 @@ async function func(msg) {
         const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    await util_1.sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:");
+    await util_1.sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=search.js.map

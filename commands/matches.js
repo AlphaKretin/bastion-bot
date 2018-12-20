@@ -6,7 +6,7 @@ const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 const names = ["match", "matches"];
-async function func(msg) {
+async function func(msg, mobile) {
     const content = util_1.trimMsg(msg);
     const a = content.split("|");
     const query = a[0];
@@ -41,7 +41,7 @@ async function func(msg) {
             }
         }
     }
-    await util_1.sendCardList(cards, lang, msg, count, "Top %s card name fuzzy searches for `" + query + "`");
+    await util_1.sendCardList(cards, lang, msg, count, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=matches.js.map

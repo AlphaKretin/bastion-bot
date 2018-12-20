@@ -7,7 +7,7 @@ import { sendCardList, trimMsg } from "../modules/util";
 
 const names: string[] = ["match", "matches"];
 
-async function func(msg: Eris.Message) {
+async function func(msg: Eris.Message, mobile: boolean) {
     const content = trimMsg(msg);
     const a = content.split("|");
     const query = a[0];
@@ -41,7 +41,7 @@ async function func(msg: Eris.Message) {
             }
         }
     }
-    await sendCardList(cards, lang, msg, count, "Top %s card name fuzzy searches for `" + query + "`");
+    await sendCardList(cards, lang, msg, count, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 
 export const command = new Command(names, func);
