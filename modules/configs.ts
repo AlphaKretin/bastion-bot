@@ -123,6 +123,23 @@ config.setConfig(
     )
 );
 
+config.setConfig(
+    new ConfigOption<number>(
+        "listDefault",
+        defaults.listDefault,
+        n => parseInt(n, 10),
+        (v, m) => v < config.getConfig("listMax").getValue(m)
+    )
+);
+config.setConfig(
+    new ConfigOption<number>(
+        "listMax",
+        defaults.listMax,
+        n => parseInt(n, 10),
+        (v, m) => v > config.getConfig("listDefault").getValue(m)
+    )
+);
+
 // boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
 config.setConfig(new ConfigOption<boolean>("mobileView", false, Boolean));
 config.setConfig(new ConfigOption("suppressEmotes", false, Boolean));

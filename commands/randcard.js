@@ -15,7 +15,7 @@ async function func(msg) {
             lang = term.toLowerCase();
         }
     }
-    const filter = new ygopro_data_1.Filter(ygopro_data_1.Filter.parse(content, lang));
+    const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(content, lang));
     const cards = await data_1.data.getCardList();
     const list = filter.filter(cards);
     const ids = Object.keys(list);

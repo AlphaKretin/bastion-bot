@@ -81,6 +81,8 @@ exports.config.setConfig(new ConfigOption_1.ConfigOption("noImgMobBrackets", def
         mobBrackets.indexOf(val[0]) === -1 &&
         mobBrackets.indexOf(val[1]) === -1);
 }));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("listDefault", defaults.listDefault, n => parseInt(n, 10), (v, m) => v < exports.config.getConfig("listMax").getValue(m)));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("listMax", defaults.listMax, n => parseInt(n, 10), (v, m) => v > exports.config.getConfig("listDefault").getValue(m)));
 // boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
 exports.config.setConfig(new ConfigOption_1.ConfigOption("mobileView", false, Boolean));
 exports.config.setConfig(new ConfigOption_1.ConfigOption("suppressEmotes", false, Boolean));

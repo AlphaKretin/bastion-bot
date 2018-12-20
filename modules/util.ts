@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data";
+import { ICardList } from "ygopro-data/dist/module/cards";
 import { config } from "./configs";
 import { data } from "./data";
 
@@ -58,4 +59,38 @@ export function getRandomIntInclusive(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export async function sendCardList(
+    list: ICardList,
+    lang: string,
+    msg: Eris.Message,
+    count: number = config.getConfig("listDefault").getValue(msg),
+    title?: string
+) {
+    const out: string[] = [];
+    const hist: number[] = [];
+    const cards: Card[] = Object.values(list);
+    let i = 1;
+    let j = 0;
+    while (i <= count && j < cards.length) {
+        let card = cards[j];
+        const ids = await card.aliasIDs;
+        if (card.id !== ids[0]) {
+            const tempCard = await data.getCard(ids[0]);
+            if (tempCard) {
+                card = tempCard;
+            }
+        }
+        if (hist.indexOf(card.id) === -1 && card.text[lang]) {
+            out.push(i + ". " + card.text[lang].name);
+            hist.push(card.id);
+            i++;
+        }
+        j++;
+    }
+    if (title) {
+        out.unshift(title.replace(/%s/g, (i - 1).toString()));
+    }
+    msg.channel.createMessage(out.join("\n"));
 }

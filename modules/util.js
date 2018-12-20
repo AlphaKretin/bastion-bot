@@ -62,4 +62,32 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 exports.getRandomIntInclusive = getRandomIntInclusive;
+async function sendCardList(list, lang, msg, count = configs_1.config.getConfig("listDefault").getValue(msg), title) {
+    const out = [];
+    const hist = [];
+    const cards = Object.values(list);
+    let i = 1;
+    let j = 0;
+    while (i <= count && j < cards.length) {
+        let card = cards[j];
+        const ids = await card.aliasIDs;
+        if (card.id !== ids[0]) {
+            const tempCard = await data_1.data.getCard(ids[0]);
+            if (tempCard) {
+                card = tempCard;
+            }
+        }
+        if (hist.indexOf(card.id) === -1 && card.text[lang]) {
+            out.push(i + ". " + card.text[lang].name);
+            hist.push(card.id);
+            i++;
+        }
+        j++;
+    }
+    if (title) {
+        out.unshift(title.replace(/%s/g, (i - 1).toString()));
+    }
+    msg.channel.createMessage(out.join("\n"));
+}
+exports.sendCardList = sendCardList;
 //# sourceMappingURL=util.js.map
