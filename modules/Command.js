@@ -27,9 +27,9 @@ class Command {
             this.permissions = {};
         }
     }
-    async execute(msg) {
+    async execute(msg, mobile = false) {
         if (this.isCanExecute(msg)) {
-            await this.func(msg);
+            await this.func(msg, mobile);
         }
         else {
             throw new Error("Forbidden");

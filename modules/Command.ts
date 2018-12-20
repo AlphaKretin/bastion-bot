@@ -9,13 +9,13 @@ interface IPermissionMap {
 
 export class Command {
     public names: string[];
-    private func: (msg: Eris.Message) => Promise<void>;
+    private func: (msg: Eris.Message, mobile: boolean) => Promise<void>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
     constructor(
         names: string[],
-        func: (msg: Eris.Message) => Promise<void>,
+        func: (msg: Eris.Message, mobile: boolean) => Promise<void>,
         condition?: (msg: Eris.Message) => boolean
     ) {
         if (names.length === 0) {
@@ -34,9 +34,9 @@ export class Command {
         }
     }
 
-    public async execute(msg: Eris.Message): Promise<void> {
+    public async execute(msg: Eris.Message, mobile: boolean = false): Promise<void> {
         if (this.isCanExecute(msg)) {
-            await this.func(msg);
+            await this.func(msg, mobile);
         } else {
             throw new Error("Forbidden");
         }

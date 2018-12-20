@@ -8,7 +8,7 @@ import { getRandomIntInclusive, trimMsg } from "../modules/util";
 
 const names: string[] = ["randcard", "randomcard"];
 
-async function func(msg: Eris.Message) {
+async function func(msg: Eris.Message, mobile: boolean) {
     const content = trimMsg(msg);
     let lang = config.getConfig("defaultLang").getValue(msg);
     for (const term of content.split(/ +/)) {
@@ -21,7 +21,7 @@ async function func(msg: Eris.Message) {
     const list = filter.filter(cards);
     const ids = Object.keys(list);
     const card = list[Number(ids[getRandomIntInclusive(0, ids.length - 1)])];
-    await sendCardProfile(msg, card, lang);
+    await sendCardProfile(msg, card, lang, mobile);
 }
 
 export const command = new Command(names, func);
