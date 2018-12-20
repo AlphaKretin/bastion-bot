@@ -10,9 +10,13 @@ const names = ["randcard", "randomcard"];
 async function func(msg, mobile) {
     const content = util_1.trimMsg(msg);
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
+    let image = false;
     for (const term of content.split(/ +/)) {
         if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
             lang = term.toLowerCase();
+        }
+        if (term === "image") {
+            image = true;
         }
     }
     const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(content, lang));
@@ -20,7 +24,7 @@ async function func(msg, mobile) {
     const list = filter.filter(cards);
     const ids = Object.keys(list);
     const card = list[Number(ids[util_1.getRandomIntInclusive(0, ids.length - 1)])];
-    await cardSearch_1.sendCardProfile(msg, card, lang, mobile);
+    await cardSearch_1.sendCardProfile(msg, card, lang, mobile, image);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=randcard.js.map
