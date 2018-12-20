@@ -64,24 +64,30 @@ async function cardSearch(msg) {
         const query = util_1.getLang(msg, result.res);
         const card = await data_1.data.getCard(query.msg, query.lang1);
         if (card) {
-            const profile = await generateCardProfile(card, query.lang2, msg, result.mobile);
-            if (result.mobile && result.image) {
-                const image = await getCompositeImage(card);
-                if (image) {
-                    const file = {
-                        file: image,
-                        name: card.id.toString() + "." + data_1.imageExt
-                    };
-                    await msg.channel.createMessage("", file);
-                }
-            }
-            for (const mes of profile) {
-                await msg.channel.createMessage(mes);
-            }
+            await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
         }
     }
 }
 exports.cardSearch = cardSearch;
+async function sendCardProfile(msg, card, lang, mobile = false, includeImage = false) {
+    if (card) {
+        const profile = await generateCardProfile(card, lang, msg, mobile);
+        if (mobile && includeImage) {
+            const image = await getCompositeImage(card);
+            if (image) {
+                const file = {
+                    file: image,
+                    name: card.id.toString() + "." + data_1.imageExt
+                };
+                await msg.channel.createMessage("", file);
+            }
+        }
+        for (const mes of profile) {
+            await msg.channel.createMessage(mes);
+        }
+    }
+}
+exports.sendCardProfile = sendCardProfile;
 function getColour(card, msg) {
     for (const type in configs_1.colors) {
         if (configs_1.colors.hasOwnProperty(type)) {

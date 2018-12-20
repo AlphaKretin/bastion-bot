@@ -76,20 +76,32 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
         const query = getLang(msg, result.res);
         const card = await data.getCard(query.msg, query.lang1);
         if (card) {
-            const profile = await generateCardProfile(card, query.lang2, msg, result.mobile);
-            if (result.mobile && result.image) {
-                const image = await getCompositeImage(card);
-                if (image) {
-                    const file = {
-                        file: image,
-                        name: card.id.toString() + "." + imageExt
-                    };
-                    await msg.channel.createMessage("", file);
-                }
+            await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+        }
+    }
+}
+
+export async function sendCardProfile(
+    msg: Eris.Message,
+    card: Card,
+    lang: string,
+    mobile: boolean = false,
+    includeImage: boolean = false
+) {
+    if (card) {
+        const profile = await generateCardProfile(card, lang, msg, mobile);
+        if (mobile && includeImage) {
+            const image = await getCompositeImage(card);
+            if (image) {
+                const file = {
+                    file: image,
+                    name: card.id.toString() + "." + imageExt
+                };
+                await msg.channel.createMessage("", file);
             }
-            for (const mes of profile) {
-                await msg.channel.createMessage(mes);
-            }
+        }
+        for (const mes of profile) {
+            await msg.channel.createMessage(mes);
         }
     }
 }

@@ -263,6 +263,16 @@
             "mst": "Mystical Space Typhoon"
         }
     },
+    "filterNames": {
+        "attribute": ["att", "attribute"],
+        "category": ["cat", "category"],
+        "ot": ["ot", "status", "region"],
+        "race": ["race", "mtype", "monstertype"],
+        "type": ["type", "ctype", "cardtype"],
+        "level": ["lvl", "level", "rank", "link"],
+        "atk": ["atk", "attack"],
+        "def": ["def", "defense", "defence"]
+    },
     "banlist": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/lflist.conf",
     "imageLink": "",
     "imageExt": "png"

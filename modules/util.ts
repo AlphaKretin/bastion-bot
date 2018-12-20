@@ -54,6 +54,8 @@ export function getLang(msg: Eris.Message, query?: string): ILangPayload {
     }
 }
 
-function isILangPayload(arg: any): arg is ILangPayload {
-    return arg.msg !== undefined;
+export function getRandomIntInclusive(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
