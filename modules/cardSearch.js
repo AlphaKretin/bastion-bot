@@ -283,7 +283,7 @@ async function generateCardStatBlock(card, lang, msg) {
         if (card.data.linkMarker) {
             stats += " **" + strings_1.strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
         }
-        else if (card.data.def) {
+        else if (card.data.def !== undefined) {
             stats +=
                 " **" +
                     strings_1.strings.getTranslation("def", lang, msg) +

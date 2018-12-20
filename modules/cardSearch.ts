@@ -303,7 +303,7 @@ async function generateCardStatBlock(card: Card, lang: string, msg: Eris.Message
             " **" + strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
         if (card.data.linkMarker) {
             stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
-        } else if (card.data.def) {
+        } else if (card.data.def !== undefined) {
             stats +=
                 " **" +
                 strings.getTranslation("def", lang, msg) +
