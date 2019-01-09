@@ -93,10 +93,14 @@ function generateCardList(serverID: string, lang: string, title?: string): strin
     return out.join("\n");
 }
 
+let reactionID = 0;
+
 async function addPageButtons(msg: Eris.Message, serverID: string, lang: string, mobile: boolean, title?: string) {
+    const initialID = reactionID;
     const page = matchPages[serverID];
-    if (page.canBack()) {
+    if (page.canBack() && reactionID === initialID) {
         await addReactionButton(msg, "⬅", async mes => {
+            reactionID++;
             page.back(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
@@ -104,8 +108,9 @@ async function addPageButtons(msg: Eris.Message, serverID: string, lang: string,
             await addPageButtons(msg, serverID, lang, mobile, title);
         });
     }
-    if (page.canForward(10)) {
+    if (page.canForward(10) && reactionID === initialID) {
         await addReactionButton(msg, "➡", async mes => {
+            reactionID++;
             page.forward(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
@@ -115,6 +120,9 @@ async function addPageButtons(msg: Eris.Message, serverID: string, lang: string,
     }
     const cards = page.getSpan();
     for (let ind = 0; ind < Math.min(cards.length, 10); ind++) {
+        if (reactionID !== initialID) {
+            break;
+        }
         await addReactionButton(msg, numToEmoji(ind + 1)!, async mes => {
             const card = cards[ind];
             if (card) {
