@@ -13,20 +13,12 @@ async function func(msg: Eris.Message, mobile: boolean) {
     const query = a[0];
     const filterText = a[1];
     let lang = config.getConfig("defaultLang").getValue(msg);
-    let count: number | undefined;
     if (filterText) {
         for (const term of filterText.toLowerCase().split(/ +/)) {
             if (data.langs.indexOf(term) > -1) {
                 lang = term.toLowerCase();
             }
-            if (term.toLowerCase().startsWith("count:")) {
-                count = parseInt(term.split(":")[1], 10);
-            }
         }
-    }
-    const max = config.getConfig("listMax").getValue(msg);
-    if (count && count > max) {
-        count = max;
     }
     const result = await data.getFuseList(query, lang);
     let cards: Card[] = [];
@@ -41,7 +33,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
             }
         }
     }
-    await sendCardList(cards, lang, msg, count, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    await sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 
 export const command = new Command(names, func);

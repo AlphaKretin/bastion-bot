@@ -16,7 +16,8 @@
         "monsterEffect": "Monster Effect",
         "id": "ID",
         "scale": "Pendulum Scale",
-        "searchCap": "Sorry, you can only search for %s cards at once!"
+        "searchCap": "Sorry, you can only search for %s cards at once!",
+        "noText": "[no card text]"
     },
     "ja": {
         "setcode": "カテゴリー",

@@ -50,7 +50,7 @@ bot.on("messageReactionAdd", async (msg: Eris.PossiblyUncachedMessage, emoji: Er
         return;
     }
     if (reactionButtons[msg.id] && reactionButtons[msg.id][emoji.name]) {
-        reactionButtons[msg.id][emoji.name].execute(userID);
+        await reactionButtons[msg.id][emoji.name].execute(userID);
     }
 });
 

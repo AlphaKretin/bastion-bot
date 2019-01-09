@@ -12,20 +12,12 @@ async function func(msg, mobile) {
     const query = a[0].trim().toLowerCase();
     const filterText = a[1];
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
-    let count;
     if (filterText) {
         for (const term of filterText.split(/ +/)) {
             if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
                 lang = term.toLowerCase();
             }
-            if (term.toLowerCase().startsWith("count:")) {
-                count = parseInt(term.split(":")[1], 10);
-            }
         }
-    }
-    const max = configs_1.config.getConfig("listMax").getValue(msg);
-    if (count && count > max) {
-        count = max;
     }
     let cards = [];
     const fullList = await data_1.data.getCardList();
@@ -44,7 +36,7 @@ async function func(msg, mobile) {
         const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    await util_1.sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:", mobile);
+    await util_1.sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=search.js.map

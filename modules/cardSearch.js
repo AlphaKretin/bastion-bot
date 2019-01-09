@@ -198,12 +198,12 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         descPortions.push(descPortion);
         outEmbed.embed.fields.push({
             name: textHeader,
-            value: descPortions[0]
+            value: descPortions[0].length > 0 ? descPortions[0] : strings_1.strings.getTranslation("noText", lang, msg)
         });
         for (let i = 1; i < descPortions.length; i++) {
             outEmbed.embed.fields.push({
                 name: "Continued",
-                value: descPortions[i]
+                value: descPortions[i].length > 0 ? descPortions[i] : strings_1.strings.getTranslation("noText", lang, msg)
             });
         }
         return [outEmbed];

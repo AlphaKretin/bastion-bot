@@ -51,7 +51,7 @@ exports.bot.on("messageReactionAdd", async (msg, emoji, userID) => {
         return;
     }
     if (reactionButtons[msg.id] && reactionButtons[msg.id][emoji.name]) {
-        reactionButtons[msg.id][emoji.name].execute(userID);
+        await reactionButtons[msg.id][emoji.name].execute(userID);
     }
 });
 exports.bot.on("messageDelete", (msg) => {

@@ -9,7 +9,7 @@ class ReactionButton {
     async execute(userID) {
         const result = await this.func(this.hostMsg, userID);
         if (result !== undefined) {
-            this.hostMsg.edit(result);
+            await this.hostMsg.edit(result);
         }
     }
     get id() {

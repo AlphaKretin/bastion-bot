@@ -5,6 +5,7 @@ import { addReactionButton } from "./bot";
 import { sendCardProfile } from "./cardSearch";
 import { config } from "./configs";
 import { data } from "./data";
+import { MatchPage, matchPages } from "./matchPages";
 
 export function trimMsg(msg: Eris.Message | string): string {
     const m = msg instanceof Eris.Message ? msg.content : msg;
@@ -75,21 +76,65 @@ export function numToEmoji(n: number): string | undefined {
     }
 }
 
+function generateCardList(serverID: string, lang: string, title?: string): string {
+    const page = matchPages[serverID];
+    const out: string[] = [];
+    const cards = page.getSpan();
+    let i = 1;
+    for (const card of cards) {
+        out.push(i + page.index + ". " + card.text[lang].name);
+        i++;
+    }
+    if (title) {
+        out.unshift(
+            title.replace(/%s/g, (page.length - 1).toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")"
+        );
+    }
+    return out.join("\n");
+}
+
+async function addPageButtons(msg: Eris.Message, serverID: string, lang: string, mobile: boolean, title?: string) {
+    const page = matchPages[serverID];
+    if (page.canBack()) {
+        await addReactionButton(msg, "⬅", async mes => {
+            page.back(10);
+            const out = generateCardList(serverID, lang, title);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addPageButtons(msg, serverID, lang, mobile, title);
+        });
+    }
+    if (page.canForward(10)) {
+        await addReactionButton(msg, "➡", async mes => {
+            page.forward(10);
+            const out = generateCardList(serverID, lang, title);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addPageButtons(msg, serverID, lang, mobile, title);
+        });
+    }
+    const cards = page.getSpan();
+    for (let ind = 0; ind < Math.min(cards.length, 10); ind++) {
+        await addReactionButton(msg, numToEmoji(ind + 1)!, async mes => {
+            const card = cards[ind];
+            if (card) {
+                await sendCardProfile(mes, card, lang, mobile, false);
+            }
+        });
+    }
+}
+
 export async function sendCardList(
     list: ICardList,
     lang: string,
     msg: Eris.Message,
-    count: number = config.getConfig("listDefault").getValue(msg),
     title?: string,
     mobile: boolean = false
 ) {
-    const out: string[] = [];
     const hist: number[] = [];
-    const cards: Card[] = Object.values(list);
-    let i = 1;
-    let j = 0;
-    while (i <= count && j < cards.length) {
-        let card = cards[j];
+    const origCards: Card[] = Object.values(list);
+    const cards: Card[] = [];
+    for (let card of origCards) {
         const ids = await card.aliasIDs;
         if (card.id !== ids[0]) {
             const tempCard = await data.getCard(ids[0]);
@@ -98,22 +143,15 @@ export async function sendCardList(
             }
         }
         if (hist.indexOf(card.id) === -1 && card.text[lang]) {
-            out.push(i + ". " + card.text[lang].name);
+            cards.push(card);
             hist.push(card.id);
-            i++;
         }
-        j++;
     }
-    if (title) {
-        out.unshift(title.replace(/%s/g, (i - 1).toString()));
-    }
-    const m = await msg.channel.createMessage(out.join("\n"));
-    for (let ind = 0; ind < Math.min(hist.length, 10); ind++) {
-        await addReactionButton(m, numToEmoji(ind + 1)!, async mes => {
-            const card = await data.getCard(hist[ind]);
-            if (card) {
-                await sendCardProfile(mes, card, lang, mobile, false);
-            }
-        });
+    const chan = msg.channel;
+    if (chan instanceof Eris.GuildChannel) {
+        const serverID = chan.guild.id;
+        matchPages[serverID] = new MatchPage(msg.author.id, cards);
+        const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
+        await addPageButtons(m, serverID, lang, mobile, title);
     }
 }

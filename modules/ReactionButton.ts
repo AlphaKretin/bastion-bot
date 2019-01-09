@@ -14,7 +14,7 @@ export class ReactionButton {
     public async execute(userID: string): Promise<void> {
         const result = await this.func(this.hostMsg, userID);
         if (result !== undefined) {
-            this.hostMsg.edit(result);
+            await this.hostMsg.edit(result);
         }
     }
 

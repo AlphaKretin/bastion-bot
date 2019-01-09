@@ -13,20 +13,12 @@ async function func(msg: Eris.Message, mobile: boolean) {
     const query = a[0].trim().toLowerCase();
     const filterText = a[1];
     let lang = config.getConfig("defaultLang").getValue(msg);
-    let count: number | undefined;
     if (filterText) {
         for (const term of filterText.split(/ +/)) {
             if (data.langs.indexOf(term.toLowerCase()) > -1) {
                 lang = term.toLowerCase();
             }
-            if (term.toLowerCase().startsWith("count:")) {
-                count = parseInt(term.split(":")[1], 10);
-            }
         }
-    }
-    const max = config.getConfig("listMax").getValue(msg);
-    if (count && count > max) {
-        count = max;
     }
     let cards: Card[] = [];
     const fullList = await data.getCardList();
@@ -47,7 +39,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
         const filter = new Filter(await Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    await sendCardList(cards, lang, msg, count, "Top %s card text matches for `" + query + "`:", mobile);
+    await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
 }
 
 export const command = new Command(names, func);
