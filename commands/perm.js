@@ -27,7 +27,7 @@ async function perm(msg) {
         throw new Error("Channel is not part of a server, does not support permissions.");
     }
     const guild = chan.guild;
-    const role = guild.roles.find(r => r.id === queryID);
+    const role = guild.roles.find(r => r.id === queryID || r.name.toLowerCase() === queryID.toLowerCase());
     if (!role) {
         throw new Error("Could not find role with that ID!");
     }
