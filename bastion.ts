@@ -1,17 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const bot_1 = require("./modules/bot");
-const cardSearch_1 = require("./modules/cardSearch");
-const commands_1 = require("./modules/commands");
-const configs_1 = require("./modules/configs");
-bot_1.bot.on("messageCreate", msg => {
+import { bot } from "./modules/bot";
+import { cardSearch } from "./modules/cardSearch";
+import { commands } from "./modules/commands";
+import { config } from "./modules/configs";
+
+bot.on("messageCreate", msg => {
     // ignore bots
     if (msg.author.bot) {
         return;
     }
     const content = msg.content.toLowerCase();
-    const prefix = configs_1.config.getConfig("prefix").getValue(msg);
-    if (content.startsWith(prefix + "help") || msg.mentions.find(u => u.id === bot_1.bot.user.id) !== undefined) {
+    const prefix = config.getConfig("prefix").getValue(msg);
+    if (content.startsWith(prefix + "help") || msg.mentions.find(u => u.id === bot.user.id) !== undefined) {
         let out = "I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.";
         out += "\n";
         out += "Currently, this version of me is undergoing a rework that's still in development. ";
@@ -29,7 +28,7 @@ bot_1.bot.on("messageCreate", msg => {
         out += "by pledging to Alpha's Patreon at https://www.patreon.com/alphakretinbots.";
         msg.channel.createMessage(out);
     }
-    for (const cmd of commands_1.commands) {
+    for (const cmd of commands) {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
                 const cmdName = content.split(/ +/)[0];
@@ -40,7 +39,6 @@ bot_1.bot.on("messageCreate", msg => {
             }
         }
     }
-    cardSearch_1.cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
+    cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
-bot_1.bot.connect();
-//# sourceMappingURL=bastion.js.map
+bot.connect();

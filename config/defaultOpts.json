@@ -1,0 +1,10 @@
+{
+    "prefix": ".",
+    "language": "en",
+    "embedColor": 16776960,
+    "listDefault": 10,
+    "listMax": 30,
+    "fullBrackets": ["{", "}"],
+    "mobBrackets": ["<", ">"],
+    "noImgMobBrackets": ["[", "]"]
+}

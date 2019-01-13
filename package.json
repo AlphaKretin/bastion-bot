@@ -1,33 +1,49 @@
 {
-  "name": "bastion",
-  "version": "2.0.0",
-  "description": "A Discord bot for Yu-Gi-Oh! card information.",
-  "main": "bastion.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "yugioh",
-    "discord"
-  ],
-  "homepage": "https://www.patreon.com/alphakretinbots",
-  "bugs": "https://github.com/AlphaKretin/bastion-bot/issues",
-  "author": "AlphaKretin",
-  "license": "GPL-3.0+",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AlphaKretin/bastion-bot.git"
-  },
-  "dependencies": {
-    "discord.io": "github:woor/discord.io#gateway_v6",
-    "file-type": "^7.3.0",
-    "fuse.js": "^3.2.0",
-    "github": "^13.1.0",
-    "google-spreadsheet-to-json": "^1.0.0",
-    "jimp": "^0.2.28",
-    "request": "^2.83.0",
-    "sql.js": "^0.4.0",
-    "url": "^0.11.0",
-    "xregexp": "^4.0.0"
-  }
+    "name": "bastion-bot",
+    "version": "0.0.1",
+    "description": "A Discord bot for looking up Yu-Gi-Oh! cards, and other Yu-Gi-Oh!-related utilities.",
+    "main": "bastion.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AlphaKretin/bastion-bot.git"
+    },
+    "keywords": [
+        "yugioh",
+        "discord"
+    ],
+    "author": "AlphaKretin (https://www.patreon.com/alphakretinbots)",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/AlphaKretin/bastion-bot/issues"
+    },
+    "homepage": "https://github.com/AlphaKretin/bastion-bot#readme",
+    "dependencies": {
+        "eris": "^0.9.0",
+        "jimp": "^0.5.6",
+        "mkdirp": "^0.5.1",
+        "mz": "^2.7.0",
+        "request": "^2.88.0",
+        "request-promise-native": "^1.0.5",
+        "ygopro-data": "github:AlphaKretin/ygo-data"
+    },
+    "devDependencies": {
+        "@types/mkdirp": "^0.5.2",
+        "@types/mz": "0.0.32",
+        "@types/node": "^10.12.18",
+        "@types/request": "^2.48.1",
+        "@types/request-promise-native": "^1.0.15"
+    },
+    "prettier": {
+        "printWidth": 120,
+        "tabWidth": 4,
+        "useTabs": false,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "none",
+        "bracketSpacing": true,
+        "arrowParens": "avoid"
+    }
 }
