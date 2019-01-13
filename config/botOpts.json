@@ -2,8 +2,8 @@
     "cmdRepos": [
         {
             "owner": "AlphaKretin",
-            "repo": "temp-commands",
-            "path": ""
+            "repo": "bastion-bot",
+            "path": "commands"
         }
     ],
     "maxSearch": 3
