@@ -10,7 +10,11 @@ Currently undergoing rework, documentation is WIP.
 
 ## Documentation
 
-Coming soon.
+Search cards by putting their name or ID between `{}` for embed style, `<>` for mobile view or `[]` for mobile view without images. For more detail, see "Commands for users".
+
+-   [Commands for users](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-users)
+-   [Commands for server Admins](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-server-admins)
+-   [Instructions for hosting your own Bastion](https://github.com/AlphaKretin/bastion-bot/wiki/Instructions-for-hosting-your-own-Bastion)
 
 ## Special Thanks
 
