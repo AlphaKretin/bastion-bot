@@ -4,7 +4,7 @@ Currently undergoing rework, documentation is WIP.
 
 ## Quick Links
 
--   Invite Bastion to your server: https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=3072
+-   Invite Bastion to your server: https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288
 -   Join my server, for technical support and status updates: https://discord.gg/GrMGspZ
 -   Support the development of this bot on Patreon: https://www.patreon.com/alphakretinbots
 
