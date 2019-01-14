@@ -7,14 +7,15 @@ const names = ["counter"];
 const func = async (msg) => {
     try {
         const lang = util_1.getLang(msg);
-        let counter = parseInt(lang.msg, 16);
-        if (isNaN(counter)) {
-            counter = await ygopro_data_1.counters.reverseCounter(lang.msg, lang.lang1);
+        let code = await ygopro_data_1.counters.reverseCounter(lang.msg, lang.lang1);
+        const tempCode = parseInt(lang.msg, 16);
+        if (!isNaN(tempCode) && !code) {
+            code = tempCode;
         }
-        if (counter) {
-            const name = await ygopro_data_1.counters.getCounter(counter, lang.lang2);
-            if (name) {
-                msg.channel.createMessage("`" + counter.toString(16) + "`:" + name);
+        if (code) {
+            const set = await ygopro_data_1.counters.getCounter(code, lang.lang2);
+            if (set) {
+                msg.channel.createMessage("`0x" + code.toString(16) + "`: " + set);
             }
         }
     }

@@ -7,14 +7,15 @@ const names = ["counter"];
 const func = async (msg: Eris.Message): Promise<void> => {
     try {
         const lang = getLang(msg);
-        let counter: number | undefined = parseInt(lang.msg, 16);
-        if (isNaN(counter)) {
-            counter = await counters.reverseCounter(lang.msg, lang.lang1);
+        let code = await counters.reverseCounter(lang.msg, lang.lang1);
+        const tempCode = parseInt(lang.msg, 16);
+        if (!isNaN(tempCode) && !code) {
+            code = tempCode;
         }
-        if (counter) {
-            const name = await counters.getCounter(counter, lang.lang2);
-            if (name) {
-                msg.channel.createMessage("`" + counter.toString(16) + "`:" + name);
+        if (code) {
+            const set = await counters.getCounter(code, lang.lang2);
+            if (set) {
+                msg.channel.createMessage("`0x" + code.toString(16) + "`: " + set);
             }
         }
     } catch (e) {

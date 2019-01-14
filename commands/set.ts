@@ -7,14 +7,15 @@ const names = ["set", "arch"];
 const func = async (msg: Eris.Message): Promise<void> => {
     try {
         const lang = getLang(msg);
-        let code: number | undefined = parseInt(lang.msg, 16);
-        if (isNaN(code)) {
-            code = await setcodes.reverseCode(lang.msg, lang.lang1);
+        let code = await setcodes.reverseCode(lang.msg, lang.lang1);
+        const tempCode = parseInt(lang.msg, 16);
+        if (!isNaN(tempCode) && !code) {
+            code = tempCode;
         }
         if (code) {
             const set = await setcodes.getCode(code, lang.lang2);
             if (set) {
-                msg.channel.createMessage("`" + code.toString(16) + "`:" + set);
+                msg.channel.createMessage("`0x" + code.toString(16) + "`: " + set);
             }
         }
     } catch (e) {
