@@ -1,0 +1,25 @@
+import * as Eris from "eris";
+import { setcodes } from "ygopro-data";
+import { Command } from "../modules/Command";
+import { getLang } from "../modules/util";
+
+const names = ["set", "arch"];
+const func = async (msg: Eris.Message): Promise<void> => {
+    try {
+        const lang = getLang(msg);
+        let code: number | undefined = parseInt(lang.msg, 16);
+        if (isNaN(code)) {
+            code = await setcodes.reverseCode(lang.msg, lang.lang1);
+        }
+        if (code) {
+            const set = await setcodes.getCode(code, lang.lang2);
+            if (set) {
+                msg.channel.createMessage("`" + code.toString(16) + "`:" + set);
+            }
+        }
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const cmd = new Command(names, func);
