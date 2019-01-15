@@ -92,12 +92,16 @@ function generateCardList(serverID, lang, title) {
     return out.join("\n");
 }
 let reactionID = 0;
+function incrementReactionID() {
+    const next = (reactionID + 1) % 100;
+    reactionID = next;
+}
 async function addPageButtons(msg, serverID, lang, mobile, title) {
     const initialID = reactionID;
     const page = matchPages_1.matchPages[serverID];
     if (page.canBack() && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "⬅", async (mes) => {
-            reactionID++;
+            incrementReactionID();
             page.back(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
@@ -107,7 +111,7 @@ async function addPageButtons(msg, serverID, lang, mobile, title) {
     }
     if (page.canForward(10) && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "➡", async (mes) => {
-            reactionID++;
+            incrementReactionID();
             page.forward(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);

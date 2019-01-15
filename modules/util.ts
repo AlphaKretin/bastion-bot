@@ -95,12 +95,17 @@ function generateCardList(serverID: string, lang: string, title?: string): strin
 
 let reactionID = 0;
 
+function incrementReactionID() {
+    const next = (reactionID + 1) % 100;
+    reactionID = next;
+}
+
 async function addPageButtons(msg: Eris.Message, serverID: string, lang: string, mobile: boolean, title?: string) {
     const initialID = reactionID;
     const page = matchPages[serverID];
     if (page.canBack() && reactionID === initialID) {
         await addReactionButton(msg, "⬅", async mes => {
-            reactionID++;
+            incrementReactionID();
             page.back(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
@@ -110,7 +115,7 @@ async function addPageButtons(msg: Eris.Message, serverID: string, lang: string,
     }
     if (page.canForward(10) && reactionID === initialID) {
         await addReactionButton(msg, "➡", async mes => {
-            reactionID++;
+            incrementReactionID();
             page.forward(10);
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
