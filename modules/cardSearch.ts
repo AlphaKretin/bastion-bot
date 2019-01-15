@@ -132,7 +132,7 @@ async function generateCardProfile(
     mobile: boolean = false
 ): Promise<Eris.MessageContent[]> {
     try {
-        const stats = await generateCardStatBlock(card, lang, msg);
+        const stats = await generateCardStats(card, lang, msg);
         let textHeader = strings.getTranslation("cardEffect", lang, msg);
         if (card.data.isType(enums.type.TYPE_NORMAL)) {
             textHeader = strings.getTranslation("flavourText", lang, msg);
@@ -235,7 +235,7 @@ async function generateCardProfile(
     }
 }
 
-async function generateCardStatBlock(card: Card, lang: string, msg: Eris.Message) {
+export async function generateCardStats(card: Card, lang: string, msg: Eris.Message) {
     const displayEmotes = !config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";
     const setNames = await card.data.names[lang].setcode;

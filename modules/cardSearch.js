@@ -108,7 +108,7 @@ function getColour(card, msg) {
 }
 async function generateCardProfile(card, lang, msg, mobile = false) {
     try {
-        const stats = await generateCardStatBlock(card, lang, msg);
+        const stats = await generateCardStats(card, lang, msg);
         let textHeader = strings_1.strings.getTranslation("cardEffect", lang, msg);
         if (card.data.isType(ygopro_data_1.enums.type.TYPE_NORMAL)) {
             textHeader = strings_1.strings.getTranslation("flavourText", lang, msg);
@@ -212,7 +212,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         throw e;
     }
 }
-async function generateCardStatBlock(card, lang, msg) {
+async function generateCardStats(card, lang, msg) {
     const displayEmotes = !configs_1.config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";
     const setNames = await card.data.names[lang].setcode;
@@ -312,6 +312,7 @@ async function generateCardStatBlock(card, lang, msg) {
     }
     return stats;
 }
+exports.generateCardStats = generateCardStats;
 async function compose(a, b, vert = false) {
     const wid = vert ? Math.max(a.getWidth(), b.getWidth()) : a.getWidth() + b.getWidth();
     const hi = vert ? a.getHeight() + b.getHeight() : Math.max(a.getHeight(), b.getHeight());
