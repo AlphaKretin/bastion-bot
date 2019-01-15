@@ -114,7 +114,7 @@ export async function sendCardProfile(
     }
 }
 
-function getColour(card: Card, msg: Eris.Message): number {
+export function getColour(card: Card, msg: Eris.Message): number {
     for (const type in colors) {
         if (colors.hasOwnProperty(type)) {
             if (card.data.isType(parseInt(type, 16))) {

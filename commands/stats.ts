@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import { generateCardStats } from "../modules/cardSearch";
+import { generateCardStats, getColour } from "../modules/cardSearch";
 import { Command } from "../modules/Command";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
@@ -15,11 +15,12 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             const codeString = codes.join(" | ");
             if (mobile) {
                 await msg.channel.createMessage(
-                    "__**" + card.text[langs.lang2].name + "**__:\n" + "**ID**: " + codeString + "\n" + stats
+                    "__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats
                 );
             } else {
                 await msg.channel.createMessage({
                     embed: {
+                        color: getColour(card, msg),
                         description: stats,
                         footer: { text: codeString },
                         thumbnail: { url: card.imageLink },

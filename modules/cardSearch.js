@@ -106,6 +106,7 @@ function getColour(card, msg) {
     }
     return configs_1.config.getConfig("embedColor").getValue(msg);
 }
+exports.getColour = getColour;
 async function generateCardProfile(card, lang, msg, mobile = false) {
     try {
         const stats = await generateCardStats(card, lang, msg);
