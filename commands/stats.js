@@ -12,7 +12,9 @@ const func = async (msg) => {
         const card = await data_1.data.getCard(langs.msg, langs.lang1);
         if (card) {
             const stats = await cardSearch_1.generateCardStats(card, langs.lang2, msg);
-            await bot_1.bot.createMessage(msg.channel.id, "**" + card.text[langs.lang2].name + "**:\n" + stats);
+            const codes = await card.aliasIDs;
+            const codeString = codes.join(" | ");
+            await bot_1.bot.createMessage(msg.channel.id, "__**" + card.text[langs.lang2].name + "**__:\n" + "**ID**: " + codeString + "\n" + stats);
         }
         else {
             await bot_1.bot.createMessage(msg.channel.id, "Sorry, I can't find a card for `" + langs.msg + "`!");
