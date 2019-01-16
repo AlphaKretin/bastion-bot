@@ -9,6 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
+const errors_1 = require("./errors");
 const util_1 = require("./util");
 class ConfigOption {
     constructor(name, defaultValue, conv, chk) {
@@ -63,7 +64,14 @@ class ConfigOption {
     }
     getValue(g) {
         if (g && g instanceof Eris.Message) {
-            g = util_1.getGuildFromMsg(g);
+            try {
+                g = util_1.getGuildFromMsg(g);
+            }
+            catch (e) {
+                if (e.message === errors_1.Errors.ERROR_CONFIG_DM) {
+                    return this.val.default;
+                }
+            }
         }
         if (g && g.id in this.val) {
             return this.val[g.id];

@@ -12,6 +12,7 @@ const bot_1 = require("./bot");
 const cardSearch_1 = require("./cardSearch");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
+const errors_1 = require("./errors");
 const matchPages_1 = require("./matchPages");
 function trimMsg(msg) {
     const m = msg instanceof Eris.Message ? msg.content : msg;
@@ -24,7 +25,7 @@ function trimMsg(msg) {
 exports.trimMsg = trimMsg;
 exports.getGuildFromMsg = (msg) => {
     if (!(msg.channel instanceof Eris.TextChannel)) {
-        throw new Error("Config set in DMs!");
+        throw new Error(errors_1.Errors.ERROR_CONFIG_DM);
     }
     return msg.channel.guild;
 };

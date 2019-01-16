@@ -5,6 +5,7 @@ import { addReactionButton } from "./bot";
 import { sendCardProfile } from "./cardSearch";
 import { config } from "./configs";
 import { data } from "./data";
+import { Errors } from "./errors";
 import { MatchPage, matchPages } from "./matchPages";
 
 export function trimMsg(msg: Eris.Message | string): string {
@@ -18,7 +19,7 @@ export function trimMsg(msg: Eris.Message | string): string {
 
 export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild => {
     if (!(msg.channel instanceof Eris.TextChannel)) {
-        throw new Error("Config set in DMs!");
+        throw new Error(Errors.ERROR_CONFIG_DM);
     }
     return msg.channel.guild;
 };

@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import * as fs from "mz/fs";
+import { Errors } from "./errors";
 import { getGuildFromMsg } from "./util";
 
 interface IValueTable<T> {
@@ -66,7 +67,13 @@ export class ConfigOption<T> {
 
     public getValue(g?: Eris.Guild | Eris.Message): T {
         if (g && g instanceof Eris.Message) {
-            g = getGuildFromMsg(g);
+            try {
+                g = getGuildFromMsg(g);
+            } catch (e) {
+                if (e.message === Errors.ERROR_CONFIG_DM) {
+                    return this.val.default as T;
+                }
+            }
         }
         if (g && g.id in this.val) {
             return this.val[g.id] as T;
