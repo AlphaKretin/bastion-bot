@@ -19,22 +19,18 @@ export async function removeButtons(msg: Eris.Message): Promise<void> {
 }
 
 export async function addReactionButton(msg: Eris.Message, emoji: string, func: ReactionFunc) {
-    try {
-        await msg.addReaction(emoji);
-        const button = new ReactionButton(msg, emoji, func);
-        if (!(msg.id in reactionButtons)) {
-            reactionButtons[msg.id] = {};
-        }
-        reactionButtons[msg.id][emoji] = button;
-        if (!(msg.id in reactionTimeouts)) {
-            const time = setTimeout(async () => {
-                await removeButtons(msg);
-                delete reactionTimeouts[msg.id];
-            }, 1000 * 60);
-            reactionTimeouts[msg.id] = time;
-        }
-    } catch (e) {
-        console.error(e);
+    await msg.addReaction(emoji);
+    const button = new ReactionButton(msg, emoji, func);
+    if (!(msg.id in reactionButtons)) {
+        reactionButtons[msg.id] = {};
+    }
+    reactionButtons[msg.id][emoji] = button;
+    if (!(msg.id in reactionTimeouts)) {
+        const time = setTimeout(async () => {
+            await removeButtons(msg);
+            delete reactionTimeouts[msg.id];
+        }, 1000 * 60);
+        reactionTimeouts[msg.id] = time;
     }
 }
 

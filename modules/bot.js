@@ -20,23 +20,18 @@ async function removeButtons(msg) {
 }
 exports.removeButtons = removeButtons;
 async function addReactionButton(msg, emoji, func) {
-    try {
-        await msg.addReaction(emoji);
-        const button = new ReactionButton_1.ReactionButton(msg, emoji, func);
-        if (!(msg.id in reactionButtons)) {
-            reactionButtons[msg.id] = {};
-        }
-        reactionButtons[msg.id][emoji] = button;
-        if (!(msg.id in reactionTimeouts)) {
-            const time = setTimeout(async () => {
-                await removeButtons(msg);
-                delete reactionTimeouts[msg.id];
-            }, 1000 * 60);
-            reactionTimeouts[msg.id] = time;
-        }
+    await msg.addReaction(emoji);
+    const button = new ReactionButton_1.ReactionButton(msg, emoji, func);
+    if (!(msg.id in reactionButtons)) {
+        reactionButtons[msg.id] = {};
     }
-    catch (e) {
-        console.error(e);
+    reactionButtons[msg.id][emoji] = button;
+    if (!(msg.id in reactionTimeouts)) {
+        const time = setTimeout(async () => {
+            await removeButtons(msg);
+            delete reactionTimeouts[msg.id];
+        }, 1000 * 60);
+        reactionTimeouts[msg.id] = time;
     }
 }
 exports.addReactionButton = addReactionButton;
