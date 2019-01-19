@@ -6,5 +6,7 @@
             "path": "commands"
         }
     ],
-    "maxSearch": 3
+    "maxSearch": 3,
+    "enLangName": "en",
+    "jaLangName": "ja"
 }

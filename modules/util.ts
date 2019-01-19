@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import request = require("request-promise-native");
 import { Card } from "ygopro-data";
 import { ICardList } from "ygopro-data/dist/module/cards";
 import { addReactionButton } from "./bot";
@@ -167,5 +168,42 @@ export async function sendCardList(
         matchPages[serverID] = new MatchPage(msg.author.id, cards);
         const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
         await addPageButtons(m, serverID, lang, mobile, title);
+    }
+}
+
+export async function getYugipediaPage(query: string): Promise<string> {
+    const YUGI_SEARCH =
+        "https://yugipedia.com/api.php?action=opensearch&redirects=resolve" +
+        "&prop=revisions&rvprop=content&format=json&formatversion=2&search=";
+    const fullQuery = YUGI_SEARCH + encodeURIComponent(query);
+    try {
+        const result = await request(fullQuery);
+        const yugiData = JSON.parse(result);
+        return yugiData[3][0];
+    } catch (e) {
+        throw new Error(Errors.ERROR_YUGI_API);
+    }
+}
+
+export async function getYugipediaContent(query: string, prop?: string): Promise<string> {
+    const YUGI_API =
+        "https://yugipedia.com/api.php?action=query&redirects=true" +
+        "&prop=revisions&rvprop=content&format=json&formatversion=2&titles=";
+    const fullQuery = YUGI_API + encodeURIComponent(query);
+    try {
+        const result = await request(fullQuery);
+        const yugiData = JSON.parse(result);
+        const page = yugiData.query.pages[0].revisions[0].content;
+        if (!prop) {
+            return page;
+        }
+        const propReg = new RegExp("\\| " + prop + "\\s+= (.+?)\\n");
+        const regRes = propReg.exec(page);
+        if (regRes) {
+            return regRes[1];
+        }
+        throw new Error(Errors.ERROR_YUGI_REGEX);
+    } catch (e) {
+        throw new Error(Errors.ERROR_YUGI_API);
     }
 }
