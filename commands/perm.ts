@@ -26,14 +26,12 @@ async function perm(msg: Eris.Message): Promise<void> {
     const res = await cmd.setPermission(guild.id, chan.id, role.id);
     if (res) {
         // permission now registered
-        await bot.createMessage(
-            chan.id,
+        await chan.createMessage(
             role.name + " now whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
     } else {
         // permission removed
-        await bot.createMessage(
-            chan.id,
+        await chan.createMessage(
             role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
     }
