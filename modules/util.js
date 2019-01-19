@@ -167,7 +167,12 @@ async function getYugipediaPage(query) {
     try {
         const result = await request(fullQuery);
         const yugiData = JSON.parse(result);
-        return yugiData[3][0];
+        if (yugiData[3][0]) {
+            return yugiData[3][0];
+        }
+        else {
+            throw new Error(errors_1.Errors.ERROR_YUGI_API);
+        }
     }
     catch (e) {
         throw new Error(errors_1.Errors.ERROR_YUGI_API);
