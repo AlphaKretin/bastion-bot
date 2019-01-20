@@ -1,5 +1,4 @@
 import * as Eris from "eris";
-import { bot } from "../modules/bot";
 import { Command } from "../modules/Command";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";

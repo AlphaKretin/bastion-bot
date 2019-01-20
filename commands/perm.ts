@@ -1,5 +1,4 @@
 import * as Eris from "eris";
-import { bot } from "../modules/bot";
 import { Command } from "../modules/Command";
 import { commands } from "../modules/commands";
 import { trimMsg } from "../modules/util";
