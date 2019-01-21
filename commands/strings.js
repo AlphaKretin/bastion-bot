@@ -8,7 +8,7 @@ const func = async (msg) => {
     const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
     if (card) {
-        let out = "Strings for `" + card.text[langs.lang2].name + "`:\n";
+        let out = "Strings for __**" + card.text[langs.lang2].name + "**__:\n";
         const outs = [];
         const strings = card.text[langs.lang2].strings;
         for (let i = 0; i < strings.length; i++) {
