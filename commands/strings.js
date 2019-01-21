@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../modules/Command");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
-const names = ["strings:"];
+const names = ["strings"];
 const func = async (msg) => {
     const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
