@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import request = require("request");
+import request from "request-promise-native";
 import { enums } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
@@ -32,8 +32,7 @@ const func = async (msg: Eris.Message): Promise<void> => {
         }
     }
     const file = msg.attachments[0];
-    const req = await request(file.url, { encoding: "utf8" });
-    const deck = req.body as string;
+    const deck = await request(file.url);
     const deckRecord: IDeckRecord = {
         extra: {},
         monster: {},

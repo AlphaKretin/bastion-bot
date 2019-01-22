@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require("request");
+const request_promise_native_1 = __importDefault(require("request-promise-native"));
 const ygopro_data_1 = require("ygopro-data");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
@@ -20,8 +23,7 @@ const func = async (msg) => {
         }
     }
     const file = msg.attachments[0];
-    const req = await request(file.url, { encoding: "utf8" });
-    const deck = req.body;
+    const deck = await request_promise_native_1.default(file.url);
     const deckRecord = {
         extra: {},
         monster: {},
