@@ -18,6 +18,8 @@ interface IDeckRecord {
     side: IDeckSection;
 }
 
+const valSum = (obj: IDeckSection): number => Object.values(obj).reduce((acc, val) => acc + val);
+
 const names = ["deck", "parse"];
 const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
     if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
@@ -88,9 +90,9 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
         }
     }
     const title = "Contents of `" + file.filename + "`:\n";
-    const monsterCount = Object.keys(deckRecord.monster).length;
-    const spellCount = Object.keys(deckRecord.spell).length;
-    const trapCount = Object.keys(deckRecord.trap).length;
+    const monsterCount = valSum(deckRecord.monster);
+    const spellCount = valSum(deckRecord.spell);
+    const trapCount = valSum(deckRecord.trap);
     const mainCount = monsterCount + spellCount + trapCount;
     let mainHeader = "Main Deck (" + mainCount + " cards - ";
     const headerParts: string[] = [];
@@ -120,7 +122,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             mainBody += deckRecord.trap[name] + " " + name + "\n";
         }
     }
-    const extraCount = Object.keys(deckRecord.extra).length;
+    const extraCount = valSum(deckRecord.extra);
     const extraHeader = "Extra Deck (" + extraCount + " cards)";
     let extraBody = "";
     for (const name in deckRecord.extra) {
@@ -128,7 +130,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             extraBody += deckRecord.extra[name] + " " + name + "\n";
         }
     }
-    const sideCount = Object.keys(deckRecord.side).length;
+    const sideCount = valSum(deckRecord.side);
     const sideHeader = "Side Deck (" + sideCount + " cards)";
     let sideBody = "";
     for (const name in deckRecord.side) {

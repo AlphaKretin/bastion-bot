@@ -9,6 +9,7 @@ const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
+const valSum = (obj) => Object.values(obj).reduce((acc, val) => acc + val);
 const names = ["deck", "parse"];
 const func = async (msg, mobile) => {
     if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
@@ -88,9 +89,9 @@ const func = async (msg, mobile) => {
         }
     }
     const title = "Contents of `" + file.filename + "`:\n";
-    const monsterCount = Object.keys(deckRecord.monster).length;
-    const spellCount = Object.keys(deckRecord.spell).length;
-    const trapCount = Object.keys(deckRecord.trap).length;
+    const monsterCount = valSum(deckRecord.monster);
+    const spellCount = valSum(deckRecord.spell);
+    const trapCount = valSum(deckRecord.trap);
     const mainCount = monsterCount + spellCount + trapCount;
     let mainHeader = "Main Deck (" + mainCount + " cards - ";
     const headerParts = [];
@@ -120,7 +121,7 @@ const func = async (msg, mobile) => {
             mainBody += deckRecord.trap[name] + " " + name + "\n";
         }
     }
-    const extraCount = Object.keys(deckRecord.extra).length;
+    const extraCount = valSum(deckRecord.extra);
     const extraHeader = "Extra Deck (" + extraCount + " cards)";
     let extraBody = "";
     for (const name in deckRecord.extra) {
@@ -128,7 +129,7 @@ const func = async (msg, mobile) => {
             extraBody += deckRecord.extra[name] + " " + name + "\n";
         }
     }
-    const sideCount = Object.keys(deckRecord.side).length;
+    const sideCount = valSum(deckRecord.side);
     const sideHeader = "Side Deck (" + sideCount + " cards)";
     let sideBody = "";
     for (const name in deckRecord.side) {
