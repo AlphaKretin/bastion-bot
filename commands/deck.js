@@ -10,7 +10,7 @@ const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 const names = ["deck", "parse"];
-const func = async (msg) => {
+const func = async (msg, mobile) => {
     if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
         await msg.channel.createMessage("Sorry, you need to upload a deck file to use this command!");
         return;
@@ -87,72 +87,102 @@ const func = async (msg) => {
             }
         }
     }
-    let out = "Contents of `" + file.filename + "`:\n";
+    const title = "Contents of `" + file.filename + "`:\n";
     const monsterCount = Object.keys(deckRecord.monster).length;
-    if (monsterCount > 0) {
-        out += "__" + monsterCount + " Monsters__:\n";
-        for (const name in deckRecord.monster) {
-            if (deckRecord.monster.hasOwnProperty(name)) {
-                out += deckRecord.monster[name] + " " + name + "\n";
-            }
-        }
-    }
     const spellCount = Object.keys(deckRecord.spell).length;
+    const trapCount = Object.keys(deckRecord.trap).length;
+    const mainCount = monsterCount + spellCount + trapCount;
+    let mainHeader = "Main Deck (" + mainCount + " cards - ";
+    const headerParts = [];
+    if (monsterCount > 0) {
+        headerParts.push(monsterCount + " Monsters");
+    }
     if (spellCount > 0) {
-        out += "__" + spellCount + " Spells__:\n";
-        for (const name in deckRecord.spell) {
-            if (deckRecord.spell.hasOwnProperty(name)) {
-                out += deckRecord.spell[name] + " " + name + "\n";
-            }
+        headerParts.push(spellCount + " Spells");
+    }
+    if (trapCount > 0) {
+        headerParts.push(trapCount + " Traps");
+    }
+    mainHeader += headerParts.join(", ") + ")";
+    let mainBody = "";
+    for (const name in deckRecord.monster) {
+        if (deckRecord.monster.hasOwnProperty(name)) {
+            mainBody += deckRecord.monster[name] + " " + name + "\n";
         }
     }
-    const trapCount = Object.keys(deckRecord.trap).length;
-    if (trapCount > 0) {
-        out += "__" + trapCount + " Traps__:\n";
-        for (const name in deckRecord.trap) {
-            if (deckRecord.trap.hasOwnProperty(name)) {
-                out += deckRecord.trap[name] + " " + name + "\n";
-            }
+    for (const name in deckRecord.spell) {
+        if (deckRecord.spell.hasOwnProperty(name)) {
+            mainBody += deckRecord.spell[name] + " " + name + "\n";
+        }
+    }
+    for (const name in deckRecord.trap) {
+        if (deckRecord.trap.hasOwnProperty(name)) {
+            mainBody += deckRecord.trap[name] + " " + name + "\n";
         }
     }
     const extraCount = Object.keys(deckRecord.extra).length;
-    if (extraCount > 0) {
-        out += "__" + extraCount + " Extra Deck__:\n";
-        for (const name in deckRecord.extra) {
-            if (deckRecord.extra.hasOwnProperty(name)) {
-                out += deckRecord.extra[name] + " " + name + "\n";
-            }
+    const extraHeader = "Extra Deck (" + extraCount + " cards)";
+    let extraBody = "";
+    for (const name in deckRecord.extra) {
+        if (deckRecord.extra.hasOwnProperty(name)) {
+            extraBody += deckRecord.extra[name] + " " + name + "\n";
         }
     }
     const sideCount = Object.keys(deckRecord.side).length;
-    if (sideCount > 0) {
-        out += "__" + sideCount + " Side Deck__:\n";
-        for (const name in deckRecord.side) {
-            if (deckRecord.side.hasOwnProperty(name)) {
-                out += deckRecord.side[name] + " " + name + "\n";
-            }
+    const sideHeader = "Side Deck (" + sideCount + " cards)";
+    let sideBody = "";
+    for (const name in deckRecord.side) {
+        if (deckRecord.side.hasOwnProperty(name)) {
+            sideBody += deckRecord.side[name] + " " + name + "\n";
         }
     }
-    const outStrings = [];
-    const MESSAGE_CAP = 2000;
-    while (out.length > MESSAGE_CAP) {
-        let index = out.slice(0, MESSAGE_CAP).lastIndexOf("\n");
-        if (index === -1 || index >= MESSAGE_CAP) {
-            index = out.slice(0, MESSAGE_CAP).lastIndexOf(".");
+    const chan = await msg.author.getDMChannel();
+    if (mobile) {
+        let out = title;
+        if (mainCount > 0) {
+            out += "__" + mainHeader + "__:\n" + mainBody;
+        }
+        if (extraCount > 0) {
+            out += "__" + extraHeader + "__:\n" + extraBody;
+        }
+        if (sideCount > 0) {
+            out += "__" + sideHeader + "__:\n" + sideBody;
+        }
+        const outStrings = [];
+        const MESSAGE_CAP = 2000;
+        while (out.length > MESSAGE_CAP) {
+            let index = out.slice(0, MESSAGE_CAP).lastIndexOf("\n");
             if (index === -1 || index >= MESSAGE_CAP) {
-                index = out.slice(0, MESSAGE_CAP).lastIndexOf(" ");
+                index = out.slice(0, MESSAGE_CAP).lastIndexOf(".");
                 if (index === -1 || index >= MESSAGE_CAP) {
-                    index = MESSAGE_CAP - 1;
+                    index = out.slice(0, MESSAGE_CAP).lastIndexOf(" ");
+                    if (index === -1 || index >= MESSAGE_CAP) {
+                        index = MESSAGE_CAP - 1;
+                    }
                 }
             }
+            outStrings.push(out.slice(0, index + 1));
+            out = out.slice(index + 1);
         }
-        outStrings.push(out.slice(0, index + 1));
-        out = out.slice(index + 1);
+        outStrings.push(out);
+        for (const outString of outStrings) {
+            await chan.createMessage(outString);
+        }
     }
-    outStrings.push(out);
-    const chan = await msg.author.getDMChannel();
-    for (const outString of outStrings) {
-        await chan.createMessage(outString);
+    else {
+        const out = {
+            embed: { title, fields: [], color: configs_1.config.getConfig("embedColor").getValue(msg) }
+        };
+        if (mainCount > 0) {
+            out.embed.fields.push({ name: mainHeader, value: mainBody });
+        }
+        if (extraCount > 0) {
+            out.embed.fields.push({ name: extraHeader, value: extraBody });
+        }
+        if (sideCount > 0) {
+            out.embed.fields.push({ name: sideHeader, value: sideBody });
+        }
+        await chan.createMessage(out);
     }
     await msg.addReaction("📬");
 };
