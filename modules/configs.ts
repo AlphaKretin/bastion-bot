@@ -1,7 +1,6 @@
 import * as fs from "mz/fs";
 import { ConfigOption } from "./ConfigOption";
 import { data } from "./data";
-import { Errors } from "./errors";
 
 interface IConfigHandler {
     configs: {
