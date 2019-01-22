@@ -9,7 +9,13 @@ const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
-const valSum = (obj) => Object.values(obj).reduce((acc, val) => acc + val);
+const valSum = (obj) => {
+    const counts = Object.values(obj);
+    if (counts.length === 0) {
+        return 0;
+    }
+    return counts.reduce((acc, val) => acc + val);
+};
 const names = ["deck", "parse"];
 const func = async (msg, mobile) => {
     if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {

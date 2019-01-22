@@ -18,7 +18,13 @@ interface IDeckRecord {
     side: IDeckSection;
 }
 
-const valSum = (obj: IDeckSection): number => Object.values(obj).reduce((acc, val) => acc + val);
+const valSum = (obj: IDeckSection): number => {
+    const counts = Object.values(obj);
+    if (counts.length === 0) {
+        return 0;
+    }
+    return counts.reduce((acc, val) => acc + val);
+};
 
 const names = ["deck", "parse"];
 const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
