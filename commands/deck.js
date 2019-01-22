@@ -8,8 +8,9 @@ const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 const names = ["deck", "parse"];
 const func = async (msg) => {
-    if (msg.attachments.length < 1) {
+    if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
         await msg.channel.createMessage("Sorry, you need to upload a deck file to use this command!");
+        return;
     }
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
     const content = util_1.trimMsg(msg);
@@ -19,7 +20,7 @@ const func = async (msg) => {
         }
     }
     const file = msg.attachments[0];
-    const req = await request(file.url);
+    const req = await request(file.url, { encoding: "utf8" });
     const deck = req.body;
     const deckRecord = {
         extra: {},
