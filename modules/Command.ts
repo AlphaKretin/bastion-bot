@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import * as fs from "mz/fs";
+import { owners } from "./bot";
 
 interface IPermissionMap {
     [guildID: string]: {
@@ -13,10 +14,12 @@ export class Command {
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
     private permissions: IPermissionMap;
+    private owner: boolean;
     constructor(
         names: string[],
         func: (msg: Eris.Message, mobile: boolean) => Promise<void>,
-        condition?: (msg: Eris.Message) => boolean
+        condition?: (msg: Eris.Message) => boolean,
+        owner: boolean = false
     ) {
         if (names.length === 0) {
             throw new Error("No names defined!");
@@ -32,6 +35,7 @@ export class Command {
         } catch {
             this.permissions = {};
         }
+        this.owner = owner;
     }
 
     public async execute(msg: Eris.Message, mobile: boolean = false): Promise<void> {
@@ -108,6 +112,11 @@ export class Command {
         }
     }
     private isCanExecute(msg: Eris.Message): boolean {
+        if (this.owner) {
+            if (!owners.includes(msg.author.id)) {
+                return false;
+            }
+        }
         return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
 }

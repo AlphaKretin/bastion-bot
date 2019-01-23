@@ -35,6 +35,7 @@ export async function addReactionButton(msg: Eris.Message, emoji: string, func: 
 }
 
 const auth = JSON.parse(fs.readFileSync("config/auth.json", "utf8"));
+export const owners: string[] = auth.owners;
 const erisOpts: Eris.ClientOptions = { maxShards: "auto" };
 export const bot = new Eris.Client(auth.token, erisOpts);
 bot.on("ready", () => {

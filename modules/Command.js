@@ -9,8 +9,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
+const bot_1 = require("./bot");
 class Command {
-    constructor(names, func, condition) {
+    constructor(names, func, condition, owner = false) {
         if (names.length === 0) {
             throw new Error("No names defined!");
         }
@@ -26,6 +27,7 @@ class Command {
         catch (_a) {
             this.permissions = {};
         }
+        this.owner = owner;
     }
     async execute(msg, mobile = false) {
         if (this.isCanExecute(msg)) {
@@ -105,6 +107,11 @@ class Command {
         }
     }
     isCanExecute(msg) {
+        if (this.owner) {
+            if (!bot_1.owners.includes(msg.author.id)) {
+                return false;
+            }
+        }
         return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
 }
