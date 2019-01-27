@@ -1,6 +1,8 @@
 # Bastion
 
-Currently undergoing rework, documentation is WIP.
+__Currently undergoing rework, documentation is WIP.__
+
+**Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the *Yu-Gi-Oh! Trading Card Game*. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
 
 ## Quick Links
 
@@ -21,6 +23,7 @@ Search cards by putting their name or ID between `{}` for embed style, `<>` for 
 Thank you to my very generous high-tier Patrons.
 
 -   Nemo "冴月麟" Ma
+-   YGOInsider
 
 Thank you to the following users for their work on Bastion:
 
