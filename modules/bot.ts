@@ -12,7 +12,7 @@ const reactionTimeouts: {
 } = {};
 
 const deleteMessages: {
-    [messageID: string]: Eris.Message;
+    [messageID: string]: Eris.Message[];
 } = {};
 const deleteTimers: {
     [messageID: string]: NodeJS.Timer;
@@ -43,7 +43,10 @@ export async function addReactionButton(msg: Eris.Message, emoji: string, func: 
 }
 
 export async function logDeleteMessage(sourceMsg: Eris.Message, responseMsg: Eris.Message) {
-    deleteMessages[sourceMsg.id] = responseMsg;
+    if (!(sourceMsg.id in deleteMessages)) {
+        deleteMessages[sourceMsg.id] = [];
+    }
+    deleteMessages[sourceMsg.id].push(responseMsg);
     if (!(sourceMsg.id in deleteTimers)) {
         const time = setTimeout(async () => {
             delete deleteMessages[sourceMsg.id];
@@ -75,7 +78,9 @@ bot.on("messageDelete", async (msg: Eris.PossiblyUncachedMessage) => {
         delete reactionButtons[msg.id];
     }
     if (msg.id in deleteMessages) {
-        await deleteMessages[msg.id].delete();
+        for (const mes of deleteMessages[msg.id]) {
+            await mes.delete();
+        }
         delete deleteMessages[msg.id];
     }
 });

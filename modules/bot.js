@@ -39,7 +39,10 @@ async function addReactionButton(msg, emoji, func) {
 }
 exports.addReactionButton = addReactionButton;
 async function logDeleteMessage(sourceMsg, responseMsg) {
-    deleteMessages[sourceMsg.id] = responseMsg;
+    if (!(sourceMsg.id in deleteMessages)) {
+        deleteMessages[sourceMsg.id] = [];
+    }
+    deleteMessages[sourceMsg.id].push(responseMsg);
     if (!(sourceMsg.id in deleteTimers)) {
         const time = setTimeout(async () => {
             delete deleteMessages[sourceMsg.id];
@@ -69,7 +72,9 @@ exports.bot.on("messageDelete", async (msg) => {
         delete reactionButtons[msg.id];
     }
     if (msg.id in deleteMessages) {
-        await deleteMessages[msg.id].delete();
+        for (const mes of deleteMessages[msg.id]) {
+            await mes.delete();
+        }
         delete deleteMessages[msg.id];
     }
 });
