@@ -39,7 +39,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
         const filter = new Filter(await Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    return await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
 }
 
 export const command = new Command(names, func);

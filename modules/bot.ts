@@ -11,6 +11,13 @@ const reactionTimeouts: {
     [messageID: string]: NodeJS.Timer;
 } = {};
 
+const deleteMessages: {
+    [messageID: string]: Eris.Message;
+} = {};
+const deleteTimers: {
+    [messageID: string]: NodeJS.Timer;
+} = {};
+
 export async function removeButtons(msg: Eris.Message): Promise<void> {
     if (msg) {
         await msg.removeReactions();
@@ -28,9 +35,21 @@ export async function addReactionButton(msg: Eris.Message, emoji: string, func: 
     if (!(msg.id in reactionTimeouts)) {
         const time = setTimeout(async () => {
             await removeButtons(msg);
+            delete reactionButtons[msg.id];
             delete reactionTimeouts[msg.id];
         }, 1000 * 60);
         reactionTimeouts[msg.id] = time;
+    }
+}
+
+export async function logDeleteMessage(sourceMsg: Eris.Message, responseMsg: Eris.Message) {
+    deleteMessages[sourceMsg.id] = responseMsg;
+    if (!(sourceMsg.id in deleteTimers)) {
+        const time = setTimeout(async () => {
+            delete deleteMessages[sourceMsg.id];
+            delete deleteTimers[sourceMsg.id];
+        }, 1000 * 60);
+        deleteTimers[sourceMsg.id] = time;
     }
 }
 
@@ -51,8 +70,12 @@ bot.on("messageReactionAdd", async (msg: Eris.PossiblyUncachedMessage, emoji: Er
     }
 });
 
-bot.on("messageDelete", (msg: Eris.PossiblyUncachedMessage) => {
-    if (reactionButtons[msg.id]) {
+bot.on("messageDelete", async (msg: Eris.PossiblyUncachedMessage) => {
+    if (msg.id in reactionButtons) {
         delete reactionButtons[msg.id];
+    }
+    if (msg.id in deleteMessages) {
+        await deleteMessages[msg.id].delete();
+        delete deleteMessages[msg.id];
     }
 });

@@ -12,6 +12,8 @@ const fs = __importStar(require("mz/fs"));
 const ReactionButton_1 = require("./ReactionButton");
 const reactionButtons = {};
 const reactionTimeouts = {};
+const deleteMessages = {};
+const deleteTimers = {};
 async function removeButtons(msg) {
     if (msg) {
         await msg.removeReactions();
@@ -29,12 +31,24 @@ async function addReactionButton(msg, emoji, func) {
     if (!(msg.id in reactionTimeouts)) {
         const time = setTimeout(async () => {
             await removeButtons(msg);
+            delete reactionButtons[msg.id];
             delete reactionTimeouts[msg.id];
         }, 1000 * 60);
         reactionTimeouts[msg.id] = time;
     }
 }
 exports.addReactionButton = addReactionButton;
+async function logDeleteMessage(sourceMsg, responseMsg) {
+    deleteMessages[sourceMsg.id] = responseMsg;
+    if (!(sourceMsg.id in deleteTimers)) {
+        const time = setTimeout(async () => {
+            delete deleteMessages[sourceMsg.id];
+            delete deleteTimers[sourceMsg.id];
+        }, 1000 * 60);
+        deleteTimers[sourceMsg.id] = time;
+    }
+}
+exports.logDeleteMessage = logDeleteMessage;
 const auth = JSON.parse(fs.readFileSync("config/auth.json", "utf8"));
 exports.owners = auth.owners;
 const erisOpts = { maxShards: "auto" };
@@ -50,9 +64,13 @@ exports.bot.on("messageReactionAdd", async (msg, emoji, userID) => {
         await reactionButtons[msg.id][emoji.name].execute(userID);
     }
 });
-exports.bot.on("messageDelete", (msg) => {
-    if (reactionButtons[msg.id]) {
+exports.bot.on("messageDelete", async (msg) => {
+    if (msg.id in reactionButtons) {
         delete reactionButtons[msg.id];
+    }
+    if (msg.id in deleteMessages) {
+        await deleteMessages[msg.id].delete();
+        delete deleteMessages[msg.id];
     }
 });
 //# sourceMappingURL=bot.js.map

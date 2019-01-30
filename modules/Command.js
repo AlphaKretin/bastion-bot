@@ -31,7 +31,7 @@ class Command {
     }
     async execute(msg, mobile = false) {
         if (this.isCanExecute(msg)) {
-            await this.func(msg, mobile);
+            return await this.func(msg, mobile);
         }
         else {
             throw new Error("Forbidden");

@@ -2,7 +2,7 @@ import * as Eris from "eris";
 import Jimp from "jimp";
 import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
-import { addReactionButton, bot } from "./bot";
+import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { botOpts } from "./commands";
 import { colors, config, emotes } from "./configs";
 import { data, imageExt } from "./data";
@@ -19,7 +19,7 @@ interface ISearchQuery {
     res: string;
 }
 
-export async function cardSearch(msg: Eris.Message): Promise<void> {
+export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
     const results: ISearchQuery[] = [];
 
     const fullBrackets = config.getConfig("fullBrackets").getValue(msg);
@@ -77,7 +77,10 @@ export async function cardSearch(msg: Eris.Message): Promise<void> {
         const query = getLang(msg, result.res);
         const card = await data.getCard(query.msg, query.lang1);
         if (card) {
-            await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+            const m = await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+            if (m) {
+                logDeleteMessage(msg, m);
+            }
         }
     }
 }
@@ -98,7 +101,7 @@ export async function sendCardProfile(
                     file: image,
                     name: card.id.toString() + "." + imageExt
                 };
-                await msg.channel.createMessage("", file);
+                return await msg.channel.createMessage("", file);
             }
         }
         const m = await msg.channel.createMessage(profile[0]);
@@ -111,6 +114,7 @@ export async function sendCardProfile(
                 }
             });
         }
+        return m;
     }
 }
 

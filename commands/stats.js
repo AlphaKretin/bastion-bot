@@ -16,7 +16,7 @@ const func = async (msg, mobile) => {
             await msg.channel.createMessage("__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats);
         }
         else {
-            await msg.channel.createMessage({
+            return await msg.channel.createMessage({
                 embed: {
                     color: cardSearch_1.getColour(card, msg),
                     description: stats,
@@ -28,7 +28,7 @@ const func = async (msg, mobile) => {
         }
     }
     else {
-        await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
+        return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
 exports.cmd = new Command_1.Command(names, func);

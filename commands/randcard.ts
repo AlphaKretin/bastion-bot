@@ -25,7 +25,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
     const list = filter.filter(cards);
     const ids = Object.keys(list);
     const card = list[Number(ids[getRandomIntInclusive(0, ids.length - 1)])];
-    await sendCardProfile(msg, card, lang, mobile, image);
+    return await sendCardProfile(msg, card, lang, mobile, image);
 }
 
 export const command = new Command(names, func);

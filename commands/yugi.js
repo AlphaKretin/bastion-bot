@@ -8,11 +8,11 @@ const func = async (msg) => {
     const query = util_1.trimMsg(msg);
     try {
         const url = await util_1.getYugipediaPage(query);
-        await msg.channel.createMessage(url);
+        return await msg.channel.createMessage(url);
     }
     catch (e) {
         if (e.message === errors_1.Errors.ERROR_YUGI_API) {
-            await msg.channel.createMessage("Sorry, I couldn't find a page for `" + query + "`.");
+            return await msg.channel.createMessage("Sorry, I couldn't find a page for `" + query + "`.");
         }
         else {
             throw e;

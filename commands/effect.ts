@@ -7,7 +7,7 @@ import { strings } from "../modules/strings";
 import { getLang } from "../modules/util";
 
 const names = ["effect", "text"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
+const func = async (msg: Eris.Message, mobile: boolean) => {
     const langs = getLang(msg);
     const card = await data.getCard(langs.msg, langs.lang1);
     if (card) {
@@ -54,9 +54,9 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             msgContent = { embed };
         }
         try {
-            await msg.channel.createMessage(msgContent);
+            return await msg.channel.createMessage(msgContent);
         } catch (e) {
-            await msg.channel.createMessage(
+            return await msg.channel.createMessage(
                 "Sorry, there was a problem sending the message. " +
                     "Maybe the card's text was too long. Try searching for the full profile of **" +
                     card.text[langs.lang2].name +
@@ -64,7 +64,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             );
         }
     } else {
-        await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
+        return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
 

@@ -157,6 +157,7 @@ async function sendCardList(list, lang, msg, title, mobile = false) {
         matchPages_1.matchPages[serverID] = new matchPages_1.MatchPage(msg.author.id, cards);
         const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
         await addPageButtons(m, serverID, lang, mobile, title);
+        return m;
     }
 }
 exports.sendCardList = sendCardList;

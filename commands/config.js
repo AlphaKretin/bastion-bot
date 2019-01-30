@@ -11,7 +11,7 @@ async function func(msg) {
     const val = terms.slice(1).join(" ");
     const opt = configs_1.config.getConfig(optName);
     opt.setValue(msg, val);
-    await msg.channel.createMessage(opt.name + " changed to " + opt.getValue(msg));
+    return await msg.channel.createMessage(opt.name + " changed to " + opt.getValue(msg));
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=config.js.map

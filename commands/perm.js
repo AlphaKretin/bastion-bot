@@ -33,11 +33,11 @@ async function perm(msg) {
     const res = await cmd.setPermission(guild.id, chan.id, role.id);
     if (res) {
         // permission now registered
-        await chan.createMessage(role.name + " now whitelisted for using command " + commandName + " in " + chan.mention + "!");
+        return await chan.createMessage(role.name + " now whitelisted for using command " + commandName + " in " + chan.mention + "!");
     }
     else {
         // permission removed
-        await chan.createMessage(role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!");
+        return await chan.createMessage(role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!");
     }
 }
 exports.command = new Command_1.Command(["perm"], perm);

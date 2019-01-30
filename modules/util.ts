@@ -168,6 +168,7 @@ export async function sendCardList(
         matchPages[serverID] = new MatchPage(msg.author.id, cards);
         const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
         await addPageButtons(m, serverID, lang, mobile, title);
+        return m;
     }
 }
 

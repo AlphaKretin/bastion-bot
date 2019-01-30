@@ -1,9 +1,9 @@
-import { bot } from "./modules/bot";
+import { bot, logDeleteMessage } from "./modules/bot";
 import { cardSearch } from "./modules/cardSearch";
 import { commands } from "./modules/commands";
 import { config } from "./modules/configs";
 
-bot.on("messageCreate", msg => {
+bot.on("messageCreate", async msg => {
     // ignore bots
     if (msg.author.bot) {
         return;
@@ -32,13 +32,18 @@ bot.on("messageCreate", msg => {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
                 const cmdName = content.split(/ +/)[0];
-                cmd.execute(msg, cmdName.endsWith(".m")).catch(e => {
+                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(e => {
                     msg.channel.createMessage("Error!\n" + e);
                 });
+                if (m) {
+                    logDeleteMessage(msg, m);
+                }
                 return;
             }
         }
     }
+    // because it can send multiple messages, deletion logging for card search
+    // is handled in the function, not here
     cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
 bot.connect();

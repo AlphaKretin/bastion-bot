@@ -14,7 +14,7 @@ const func = async (msg) => {
     if (code) {
         const set = await ygopro_data_1.setcodes.getCode(code, lang.lang2);
         if (set) {
-            msg.channel.createMessage("`0x" + code.toString(16) + "`: " + set);
+            return await msg.channel.createMessage("`0x" + code.toString(16) + "`: " + set);
         }
     }
 };

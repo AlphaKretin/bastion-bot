@@ -144,6 +144,7 @@ const func = async (msg, mobile) => {
         }
     }
     const chan = await msg.author.getDMChannel();
+    let m;
     if (mobile) {
         let out = title;
         if (mainCount > 0) {
@@ -173,7 +174,7 @@ const func = async (msg, mobile) => {
         }
         outStrings.push(out);
         for (const outString of outStrings) {
-            await chan.createMessage(outString);
+            m = await chan.createMessage(outString);
         }
     }
     else {
@@ -189,9 +190,10 @@ const func = async (msg, mobile) => {
         if (sideCount > 0) {
             out.embed.fields.push({ name: sideHeader, value: sideBody });
         }
-        await chan.createMessage(out);
+        m = await chan.createMessage(out);
     }
     await msg.addReaction("📬");
+    return m;
 };
 exports.cmd = new Command_1.Command(names, func);
 //# sourceMappingURL=deck.js.map

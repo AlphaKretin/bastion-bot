@@ -65,7 +65,10 @@ async function cardSearch(msg) {
         const query = util_1.getLang(msg, result.res);
         const card = await data_1.data.getCard(query.msg, query.lang1);
         if (card) {
-            await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+            const m = await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+            if (m) {
+                bot_1.logDeleteMessage(msg, m);
+            }
         }
     }
 }
@@ -80,7 +83,7 @@ async function sendCardProfile(msg, card, lang, mobile = false, includeImage = f
                     file: image,
                     name: card.id.toString() + "." + data_1.imageExt
                 };
-                await msg.channel.createMessage("", file);
+                return await msg.channel.createMessage("", file);
             }
         }
         const m = await msg.channel.createMessage(profile[0]);
@@ -93,6 +96,7 @@ async function sendCardProfile(msg, card, lang, mobile = false, includeImage = f
                 }
             });
         }
+        return m;
     }
 }
 exports.sendCardProfile = sendCardProfile;

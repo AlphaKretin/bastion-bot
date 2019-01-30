@@ -33,7 +33,7 @@ async function func(msg, mobile) {
             }
         }
     }
-    await util_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    return await util_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=matches.js.map

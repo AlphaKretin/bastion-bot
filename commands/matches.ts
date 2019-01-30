@@ -33,7 +33,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
             }
         }
     }
-    await sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    return await sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 
 export const command = new Command(names, func);

@@ -7,6 +7,7 @@ const func = async (msg) => {
     const mes = await msg.channel.createMessage("Pong!");
     const ping = new Date(Date.now() - time);
     await mes.edit("Pong! (" + ping.getMilliseconds() + " ms)");
+    return mes;
 };
 exports.cmd = new Command_1.Command(names, func);
 //# sourceMappingURL=ping.js.map

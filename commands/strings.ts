@@ -1,11 +1,10 @@
 import * as Eris from "eris";
-import { generateCardStats, getColour } from "../modules/cardSearch";
 import { Command } from "../modules/Command";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
 
 const names = ["strings"];
-const func = async (msg: Eris.Message): Promise<void> => {
+const func = async (msg: Eris.Message) => {
     const langs = getLang(msg);
     const card = await data.getCard(langs.msg, langs.lang1);
     if (card) {
@@ -19,9 +18,9 @@ const func = async (msg: Eris.Message): Promise<void> => {
             }
         }
         out += outs.join("\n");
-        await msg.channel.createMessage(out);
+        return await msg.channel.createMessage(out);
     } else {
-        await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
+        return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
 

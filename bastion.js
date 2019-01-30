@@ -4,7 +4,7 @@ const bot_1 = require("./modules/bot");
 const cardSearch_1 = require("./modules/cardSearch");
 const commands_1 = require("./modules/commands");
 const configs_1 = require("./modules/configs");
-bot_1.bot.on("messageCreate", msg => {
+bot_1.bot.on("messageCreate", async (msg) => {
     // ignore bots
     if (msg.author.bot) {
         return;
@@ -33,13 +33,18 @@ bot_1.bot.on("messageCreate", msg => {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
                 const cmdName = content.split(/ +/)[0];
-                cmd.execute(msg, cmdName.endsWith(".m")).catch(e => {
+                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(e => {
                     msg.channel.createMessage("Error!\n" + e);
                 });
+                if (m) {
+                    bot_1.logDeleteMessage(msg, m);
+                }
                 return;
             }
         }
     }
+    // because it can send multiple messages, deletion logging for card search
+    // is handled in the function, not here
     cardSearch_1.cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
 bot_1.bot.connect();

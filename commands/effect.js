@@ -58,17 +58,17 @@ const func = async (msg, mobile) => {
             msgContent = { embed };
         }
         try {
-            await msg.channel.createMessage(msgContent);
+            return await msg.channel.createMessage(msgContent);
         }
         catch (e) {
-            await msg.channel.createMessage("Sorry, there was a problem sending the message. " +
+            return await msg.channel.createMessage("Sorry, there was a problem sending the message. " +
                 "Maybe the card's text was too long. Try searching for the full profile of **" +
                 card.text[langs.lang2].name +
                 "**!");
         }
     }
     else {
-        await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
+        return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
 exports.cmd = new Command_1.Command(names, func);

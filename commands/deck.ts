@@ -27,7 +27,7 @@ const valSum = (obj: IDeckSection): number => {
 };
 
 const names = ["deck", "parse"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
+const func = async (msg: Eris.Message, mobile: boolean) => {
     if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
         await msg.channel.createMessage("Sorry, you need to upload a deck file to use this command!");
         return;
@@ -145,6 +145,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
         }
     }
     const chan = await msg.author.getDMChannel();
+    let m: Eris.Message | undefined;
     if (mobile) {
         let out = title;
         if (mainCount > 0) {
@@ -174,7 +175,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
         }
         outStrings.push(out);
         for (const outString of outStrings) {
-            await chan.createMessage(outString);
+            m = await chan.createMessage(outString);
         }
     } else {
         const out: Eris.MessageContent = {
@@ -189,9 +190,10 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
         if (sideCount > 0) {
             out.embed!.fields!.push({ name: sideHeader, value: sideBody });
         }
-        await chan.createMessage(out);
+        m = await chan.createMessage(out);
     }
     await msg.addReaction("📬");
+    return m;
 };
 
 export const cmd = new Command(names, func);

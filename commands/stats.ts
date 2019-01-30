@@ -5,7 +5,7 @@ import { data } from "../modules/data";
 import { getLang } from "../modules/util";
 
 const names = ["stats", "notext"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
+const func = async (msg: Eris.Message, mobile: boolean) => {
     const langs = getLang(msg);
     const card = await data.getCard(langs.msg, langs.lang1);
     if (card) {
@@ -17,7 +17,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
                 "__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats
             );
         } else {
-            await msg.channel.createMessage({
+            return await msg.channel.createMessage({
                 embed: {
                     color: getColour(card, msg),
                     description: stats,
@@ -28,7 +28,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<void> => {
             });
         }
     } else {
-        await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
+        return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
 

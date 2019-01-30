@@ -24,7 +24,7 @@ async function func(msg, mobile) {
     const list = filter.filter(cards);
     const ids = Object.keys(list);
     const card = list[Number(ids[util_1.getRandomIntInclusive(0, ids.length - 1)])];
-    await cardSearch_1.sendCardProfile(msg, card, lang, mobile, image);
+    return await cardSearch_1.sendCardProfile(msg, card, lang, mobile, image);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=randcard.js.map

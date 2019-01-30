@@ -3,7 +3,7 @@ import { Command } from "../modules/Command";
 import { commands } from "../modules/commands";
 import { trimMsg } from "../modules/util";
 
-async function perm(msg: Eris.Message): Promise<void> {
+async function perm(msg: Eris.Message) {
     const m = trimMsg(msg)
         .toLowerCase()
         .split(/ +/);
@@ -25,12 +25,12 @@ async function perm(msg: Eris.Message): Promise<void> {
     const res = await cmd.setPermission(guild.id, chan.id, role.id);
     if (res) {
         // permission now registered
-        await chan.createMessage(
+        return await chan.createMessage(
             role.name + " now whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
     } else {
         // permission removed
-        await chan.createMessage(
+        return await chan.createMessage(
             role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!"
         );
     }

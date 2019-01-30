@@ -9,8 +9,10 @@ async function func(msg: Eris.Message) {
     try {
         await data.update();
         target.edit("Update complete!");
+        return target;
     } catch (e) {
         target.edit("Error!\n" + e.message);
+        return target;
     }
 }
 

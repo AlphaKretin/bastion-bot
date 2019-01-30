@@ -12,7 +12,7 @@ async function func(msg: Eris.Message) {
     const val = terms.slice(1).join(" ");
     const opt = config.getConfig(optName);
     opt.setValue(msg, val);
-    await msg.channel.createMessage(opt.name + " changed to " + opt.getValue(msg));
+    return await msg.channel.createMessage(opt.name + " changed to " + opt.getValue(msg));
 }
 
 export const command = new Command(names, func);
