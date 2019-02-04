@@ -101,7 +101,8 @@ export async function sendCardProfile(
                     file: image,
                     name: card.id.toString() + "." + imageExt
                 };
-                return await msg.channel.createMessage("", file);
+                const imageM = await msg.channel.createMessage("", file);
+                logDeleteMessage(msg, imageM);
             }
         }
         const m = await msg.channel.createMessage(profile[0]);

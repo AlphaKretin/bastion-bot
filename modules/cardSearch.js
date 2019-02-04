@@ -83,7 +83,8 @@ async function sendCardProfile(msg, card, lang, mobile = false, includeImage = f
                     file: image,
                     name: card.id.toString() + "." + data_1.imageExt
                 };
-                return await msg.channel.createMessage("", file);
+                const imageM = await msg.channel.createMessage("", file);
+                bot_1.logDeleteMessage(msg, imageM);
             }
         }
         const m = await msg.channel.createMessage(profile[0]);
