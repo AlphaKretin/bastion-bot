@@ -6,6 +6,33 @@
             "path": "commands"
         }
     ],
+    "scriptRepos": [
+        {
+            "owner": "Ygoproco",
+            "repo": "Live2017Links",
+            "path": "script"
+        },
+        {
+            "owner": "Ygoproco",
+            "repo": "Live2017MR4",
+            "path": "script"
+        },
+        {
+            "owner": "Fluorohydride",
+            "repo": "ygopro-scripts",
+            "path": ""
+        },
+        {
+            "owner": "Ygoproco",
+            "repo": "LiveanimeLinks",
+            "path": "script"
+        },
+        {
+            "owner": "Gideon9212",
+            "repo": "Livecustom",
+            "path": "script"
+        }
+    ],
     "maxSearch": 3,
     "enLangName": "en",
     "jaLangName": "ja"

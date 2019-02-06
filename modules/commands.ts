@@ -2,7 +2,7 @@ import octokit from "@octokit/rest";
 import * as fs from "mz/fs";
 import request from "request-promise-native";
 import { Command } from "./Command";
-const GitHub = new octokit();
+export const GitHub = new octokit();
 
 const tempCmds: Command[] = [];
 

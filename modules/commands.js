@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rest_1 = __importDefault(require("@octokit/rest"));
 const fs = __importStar(require("mz/fs"));
 const request_promise_native_1 = __importDefault(require("request-promise-native"));
-const GitHub = new rest_1.default();
+exports.GitHub = new rest_1.default();
 const tempCmds = [];
 async function downloadCmd(file) {
     const fullPath = "./commands/" + file.name;
@@ -25,7 +25,7 @@ async function downloadCmd(file) {
 }
 exports.botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 exports.botOpts.cmdRepos.forEach(async (repo) => {
-    const res = await GitHub.repos.getContents(repo);
+    const res = await exports.GitHub.repos.getContents(repo);
     for (const file of res.data) {
         if (file.name.endsWith(".js")) {
             try {
