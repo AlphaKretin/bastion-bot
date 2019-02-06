@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jimp_1 = __importDefault(require("jimp"));
 const ygopro_data_1 = require("ygopro-data");
+const bastion_1 = require("../bastion");
 const bot_1 = require("./bot");
 const commands_1 = require("./commands");
 const configs_1 = require("./configs");
@@ -25,7 +26,7 @@ async function cardSearch(msg) {
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(bastion_1.ignore);
             react = true;
         }
         results.push({
@@ -42,7 +43,7 @@ async function cardSearch(msg) {
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(bastion_1.ignore);
             react = true;
         }
         results.push({
@@ -59,7 +60,7 @@ async function cardSearch(msg) {
     let noImgMobResult = noImgMobRegex.exec(content);
     while (noImgMobResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(bastion_1.ignore);
             react = true;
         }
         results.push({
@@ -85,7 +86,7 @@ async function cardSearch(msg) {
         }
     }
     if (react) {
-        await msg.removeReaction("🕙");
+        await msg.removeReaction("🕙").catch(bastion_1.ignore);
     }
 }
 exports.cardSearch = cardSearch;

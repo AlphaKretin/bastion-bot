@@ -3,6 +3,11 @@ import { cardSearch } from "./modules/cardSearch";
 import { commands } from "./modules/commands";
 import { config } from "./modules/configs";
 
+// "handler" for errors that don't matter like reactions
+export function ignore(e: any) {
+    return;
+}
+
 bot.on("messageCreate", async msg => {
     // ignore bots
     if (msg.author.bot) {
@@ -32,12 +37,12 @@ bot.on("messageCreate", async msg => {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
                 const cmdName = content.split(/ +/)[0];
-                await msg.addReaction("🕙");
+                msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
                 const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
                     msg.channel.createMessage("Error!\n" + e);
                     await msg.removeReaction("🕙");
                 });
-                await msg.removeReaction("🕙");
+                await msg.removeReaction("🕙").catch(ignore);
                 if (m) {
                     logDeleteMessage(msg, m);
                 }

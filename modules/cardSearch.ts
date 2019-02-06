@@ -2,6 +2,7 @@ import * as Eris from "eris";
 import Jimp from "jimp";
 import { enums } from "ygopro-data";
 import { Card } from "ygopro-data/dist/class/Card";
+import { ignore } from "../bastion";
 import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { botOpts } from "./commands";
 import { colors, config, emotes } from "./configs";
@@ -31,7 +32,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(ignore);
             react = true;
         }
         results.push({
@@ -49,7 +50,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(ignore);
             react = true;
         }
         results.push({
@@ -69,7 +70,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     let noImgMobResult = noImgMobRegex.exec(content);
     while (noImgMobResult !== null) {
         if (!react) {
-            await msg.addReaction("🕙");
+            await msg.addReaction("🕙").catch(ignore);
             react = true;
         }
         results.push({
@@ -97,7 +98,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
         }
     }
     if (react) {
-        await msg.removeReaction("🕙");
+        await msg.removeReaction("🕙").catch(ignore);
     }
 }
 
