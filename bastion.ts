@@ -32,9 +32,12 @@ bot.on("messageCreate", async msg => {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
                 const cmdName = content.split(/ +/)[0];
-                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(e => {
+                await msg.addReaction("🕙");
+                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
                     msg.channel.createMessage("Error!\n" + e);
+                    await msg.removeReaction("🕙");
                 });
+                await msg.removeReaction("🕙");
                 if (m) {
                     logDeleteMessage(msg, m);
                 }

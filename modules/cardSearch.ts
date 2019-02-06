@@ -20,6 +20,7 @@ interface ISearchQuery {
 }
 
 export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
+    let react: boolean = false;
     const results: ISearchQuery[] = [];
 
     const fullBrackets = config.getConfig("fullBrackets").getValue(msg);
@@ -29,6 +30,10 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: false,
             mobile: config.getConfig("mobileView").getValue(msg),
@@ -43,6 +48,10 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: true,
             mobile: true,
@@ -59,6 +68,10 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     const noImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "(.+?)" + reEscape(noImgMobBrackets[1]), "g");
     let noImgMobResult = noImgMobRegex.exec(content);
     while (noImgMobResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: false,
             mobile: true,
@@ -82,6 +95,9 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
                 logDeleteMessage(msg, m);
             }
         }
+    }
+    if (react) {
+        await msg.removeReaction("🕙");
     }
 }
 

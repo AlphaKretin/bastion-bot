@@ -15,6 +15,7 @@ function reEscape(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 async function cardSearch(msg) {
+    let react = false;
     const results = [];
     const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
@@ -23,6 +24,10 @@ async function cardSearch(msg) {
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: false,
             mobile: configs_1.config.getConfig("mobileView").getValue(msg),
@@ -36,6 +41,10 @@ async function cardSearch(msg) {
     const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: true,
             mobile: true,
@@ -49,6 +58,10 @@ async function cardSearch(msg) {
     const noImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "(.+?)" + reEscape(noImgMobBrackets[1]), "g");
     let noImgMobResult = noImgMobRegex.exec(content);
     while (noImgMobResult !== null) {
+        if (!react) {
+            await msg.addReaction("🕙");
+            react = true;
+        }
         results.push({
             image: false,
             mobile: true,
@@ -70,6 +83,9 @@ async function cardSearch(msg) {
                 bot_1.logDeleteMessage(msg, m);
             }
         }
+    }
+    if (react) {
+        await msg.removeReaction("🕙");
     }
 }
 exports.cardSearch = cardSearch;
