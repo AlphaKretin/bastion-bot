@@ -12,7 +12,7 @@ async function downloadCardScript(code, repo) {
     const params = JSON.parse(JSON.stringify(repo)); // clone value
     params.path += "/c" + code + ".lua";
     try {
-        const file = await commands_1.GitHub.repos.getContents(repo);
+        const file = await commands_1.GitHub.repos.getContents(params);
         const body = await request_promise_native_1.default(file.data.download_url);
         return [body, file.data];
     }
