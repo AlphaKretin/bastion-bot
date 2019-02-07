@@ -25,8 +25,8 @@ async function func(msg: Eris.Message) {
     } catch (e) {
         evaled = e;
     }
-    const output = util.inspect(evaled, true, 5, true);
-    return await msg.channel.createMessage(output);
+    const output = util.inspect(evaled, true, 5, false);
+    return await msg.channel.createMessage("```json\n" + output + "```");
 }
 
 export const command = new Command(names, func, undefined, true);

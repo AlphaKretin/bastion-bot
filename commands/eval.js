@@ -30,8 +30,8 @@ async function func(msg) {
     catch (e) {
         evaled = e;
     }
-    const output = util.inspect(evaled, true, 5, true);
-    return await msg.channel.createMessage(output);
+    const output = util.inspect(evaled, true, 5, false);
+    return await msg.channel.createMessage("```json\n" + output + "```");
 }
 exports.command = new Command_1.Command(names, func, undefined, true);
 //# sourceMappingURL=eval.js.map
