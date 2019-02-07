@@ -43,6 +43,7 @@ async function cardSearch(msg) {
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
         const match = mobResult[1];
+        // TODO: Apply to all in case of customised brackets
         if (!(match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#"))) {
             if (!react) {
                 await msg.addReaction("🕙").catch(bastion_1.ignore);
