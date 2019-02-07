@@ -49,15 +49,20 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
-        if (!react) {
-            await msg.addReaction("🕙").catch(ignore);
-            react = true;
+        const match = mobResult[1];
+        // TODO: Apply to all in case of customised brackets
+        if (!(match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#"))) {
+            if (!react) {
+                await msg.addReaction("🕙").catch(ignore);
+                react = true;
+            }
+
+            results.push({
+                image: true,
+                mobile: true,
+                res: match
+            });
         }
-        results.push({
-            image: true,
-            mobile: true,
-            res: mobResult[1]
-        });
         mobResult = mobRegex.exec(content);
     }
 

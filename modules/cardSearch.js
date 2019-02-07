@@ -42,15 +42,18 @@ async function cardSearch(msg) {
     const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
     let mobResult = mobRegex.exec(content);
     while (mobResult !== null) {
-        if (!react) {
-            await msg.addReaction("🕙").catch(bastion_1.ignore);
-            react = true;
+        const match = mobResult[1];
+        if (!(match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#"))) {
+            if (!react) {
+                await msg.addReaction("🕙").catch(bastion_1.ignore);
+                react = true;
+            }
+            results.push({
+                image: true,
+                mobile: true,
+                res: match
+            });
         }
-        results.push({
-            image: true,
-            mobile: true,
-            res: mobResult[1]
-        });
         mobResult = mobRegex.exec(content);
     }
     const noImgMobBrackets = configs_1.config.getConfig("noImgMobBrackets").getValue(msg);
