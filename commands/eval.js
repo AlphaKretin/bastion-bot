@@ -9,7 +9,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const util = __importStar(require("util"));
 const Command_1 = require("../modules/Command");
+const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
+// make import used so it's not optimised out
+function butts() {
+    return data_1.data;
+}
 const names = ["eval"];
 async function go(input) {
     // tslint:disable-next-line:no-eval

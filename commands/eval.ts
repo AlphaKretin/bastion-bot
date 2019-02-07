@@ -1,7 +1,13 @@
 import * as Eris from "eris";
 import * as util from "util";
 import { Command } from "../modules/Command";
+import { data } from "../modules/data";
 import { trimMsg } from "../modules/util";
+
+// make import used so it's not optimised out
+function butts() {
+    return data;
+}
 
 const names: string[] = ["eval"];
 
