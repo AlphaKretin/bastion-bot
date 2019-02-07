@@ -11,13 +11,20 @@ const func = async (msg) => {
         let out = "Strings for __**" + card.text[langs.lang2].name + "**__:\n";
         const outs = [];
         const strings = card.text[langs.lang2].strings;
+        let hasAny = false;
         for (let i = 0; i < strings.length; i++) {
             const str = strings[i];
             if (str.trim().length > 0) {
+                hasAny = true;
                 outs.push(i + ": `" + str + "`");
             }
         }
-        out += outs.join("\n");
+        if (hasAny) {
+            out += outs.join("\n");
+        }
+        else {
+            out = "There are no strings for `" + card.text[langs.lang2].name + "`!";
+        }
         return await msg.channel.createMessage(out);
     }
     else {
