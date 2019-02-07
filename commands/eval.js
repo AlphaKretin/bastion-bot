@@ -1,5 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const util = __importStar(require("util"));
 const Command_1 = require("../modules/Command");
 const util_1 = require("../modules/util");
 const names = ["eval"];
@@ -9,15 +17,16 @@ async function go(input) {
 }
 async function func(msg) {
     const val = util_1.trimMsg(msg);
-    const result = await go(val);
-    if (result) {
-        if (result instanceof Object) {
-            return await msg.channel.createMessage("```json\n" + JSON.stringify(result, null, 4) + "```");
-        }
-        else {
-            return await msg.channel.createMessage(result);
-        }
+    let evaled;
+    try {
+        // tslint:disable-next-line:no-eval
+        evaled = await eval(val);
     }
+    catch (e) {
+        evaled = e;
+    }
+    const output = util.inspect(evaled, true, 5, true);
+    return await msg.channel.createMessage(output);
 }
 exports.command = new Command_1.Command(names, func, undefined, true);
 //# sourceMappingURL=eval.js.map

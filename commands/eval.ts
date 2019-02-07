@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import * as util from "util";
 import { Command } from "../modules/Command";
 import { trimMsg } from "../modules/util";
 
@@ -11,14 +12,15 @@ async function go(input: string): Promise<any> {
 
 async function func(msg: Eris.Message) {
     const val = trimMsg(msg);
-    const result = await go(val);
-    if (result) {
-        if (result instanceof Object) {
-            return await msg.channel.createMessage("```json\n" + JSON.stringify(result, null, 4) + "```");
-        } else {
-            return await msg.channel.createMessage(result);
-        }
+    let evaled;
+    try {
+        // tslint:disable-next-line:no-eval
+        evaled = await eval(val);
+    } catch (e) {
+        evaled = e;
     }
+    const output = util.inspect(evaled, true, 5, true);
+    return await msg.channel.createMessage(output);
 }
 
 export const command = new Command(names, func, undefined, true);
