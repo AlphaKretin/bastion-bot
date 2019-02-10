@@ -33,6 +33,17 @@
             "path": "script"
         }
     ],
+    "links": {
+        "doublesummon": "https://ygorganization.com/doublesummonlist/",
+        "forget": "https://ygorganization.com/learnrulingspart13/",
+        "banlisttcg": "https://www.yugioh-card.com/en/limited/",
+        "tcgbanlist": "https://www.yugioh-card.com/en/limited/",
+        "banlistocg": "https://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?lang=en",
+        "ocgbanlist": "https://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?lang=en",
+        "damagestep": "https://www.yugioh-card.com/uk/gameplay/damage.html",
+        "rulebook": "http://www.yugioh-card.com/en/rulebook/SD_RuleBook_EN_10.pdf",
+        "linksummon": "https://www.youtube.com/watch?v=ebvGX8x-zDU"
+    },
     "maxSearch": 3,
     "enLangName": "en",
     "jaLangName": "ja"
