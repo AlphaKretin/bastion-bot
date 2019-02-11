@@ -90,7 +90,7 @@ function generateCardList(serverID, lang, title) {
         i++;
     }
     if (title) {
-        out.unshift(title.replace(/%s/g, (page.length - 1).toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")");
+        out.unshift(title.replace(/%s/g, page.length.toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")");
     }
     return out.join("\n");
 }

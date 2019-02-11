@@ -22,7 +22,7 @@ class Page {
         return this.list[index];
     }
     getSpan() {
-        return this.list.slice(this.index, Math.min(this.index + 10, this.list.length - 1));
+        return this.list.slice(this.index, Math.min(this.index + 10, this.list.length));
     }
     canBack() {
         return this.index > 0;

@@ -30,7 +30,7 @@ export class Page<T> {
     }
 
     public getSpan(): T[] {
-        return this.list.slice(this.index, Math.min(this.index + 10, this.list.length - 1));
+        return this.list.slice(this.index, Math.min(this.index + 10, this.list.length));
     }
 
     public canBack(): boolean {
