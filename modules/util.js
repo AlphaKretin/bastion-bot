@@ -100,9 +100,10 @@ function generateLibraryList(serverID) {
     const entries = page.getSpan();
     let i = 1;
     const maxLength = Math.max(...entries.map(e => e.variant.length));
+    const digitLength = (page.index + 10).toString().length;
     for (const entry of entries) {
         out.push("[" +
-            (i + page.index).toString().padStart(2, "0") +
+            (i + page.index).toString().padStart(digitLength, "0") +
             "] " +
             " ".repeat(maxLength - entry.variant.length) +
             entry.variant +
