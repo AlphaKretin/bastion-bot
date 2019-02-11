@@ -18,10 +18,12 @@ function reEscape(s) {
 async function cardSearch(msg) {
     let react = false;
     const results = [];
+    const codeBlocks = /```[\s\S]+?```|`[\s\S]+?`/g;
+    let content = msg.content.replace(codeBlocks, "");
     const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
-    let content = msg.content.replace(badFullRegex, "");
+    content = msg.content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
@@ -77,6 +79,9 @@ async function cardSearch(msg) {
     if (results.length > commands_1.botOpts.maxSearch) {
         const lang = util_1.getLang(msg, results[0].res);
         await msg.channel.createMessage(strings_1.strings.getTranslation("searchCap", lang.lang1, msg, commands_1.botOpts.maxSearch));
+        if (react) {
+            await msg.removeReaction("🕙").catch(bastion_1.ignore);
+        }
         return;
     }
     for (const result of results) {

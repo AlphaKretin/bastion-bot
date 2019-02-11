@@ -23,11 +23,12 @@ interface ISearchQuery {
 export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
     let react: boolean = false;
     const results: ISearchQuery[] = [];
-
+    const codeBlocks = /```[\s\S]+?```|`[\s\S]+?`/g;
+    let content = msg.content.replace(codeBlocks, "");
     const fullBrackets = config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
-    let content = msg.content.replace(badFullRegex, "");
+    content = msg.content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
@@ -89,6 +90,9 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     if (results.length > botOpts.maxSearch) {
         const lang = getLang(msg, results[0].res);
         await msg.channel.createMessage(strings.getTranslation("searchCap", lang.lang1, msg, botOpts.maxSearch));
+        if (react) {
+            await msg.removeReaction("🕙").catch(ignore);
+        }
         return;
     }
 
