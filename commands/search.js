@@ -4,6 +4,7 @@ const ygopro_data_1 = require("ygopro-data");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
+const matchPages_1 = require("../modules/matchPages");
 const util_1 = require("../modules/util");
 const names = ["search", "textsearch"];
 async function func(msg, mobile) {
@@ -36,7 +37,7 @@ async function func(msg, mobile) {
         const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    return await util_1.sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=search.js.map

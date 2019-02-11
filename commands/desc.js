@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
 const Command_1 = require("../modules/Command");
 const libraryPages_1 = require("../modules/libraryPages");
-const util_1 = require("../modules/util");
 const names = ["d"];
 async function func(msg) {
     const num = /\d+/.exec(msg.content);
@@ -24,7 +23,7 @@ async function func(msg) {
     }
     const guild = chan.guild;
     const page = libraryPages_1.libraryPages[guild.id];
-    await util_1.addLibraryDescription(page, index, guild.id);
+    await libraryPages_1.addLibraryDescription(page, index, guild.id);
 }
 function cond(msg) {
     const chan = msg.channel;

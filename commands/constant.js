@@ -8,7 +8,7 @@ async function func(msg) {
     const content = util_1.trimMsg(msg);
     const cons = await libraryPages_1.constants.getResults(content);
     if (cons.length > 0) {
-        return await util_1.sendLibrary(cons, msg);
+        return await libraryPages_1.sendLibrary(cons, msg);
     }
     return msg.channel.createMessage("Sorry, I couldn't find any constants matching `" + content + "`!");
 }

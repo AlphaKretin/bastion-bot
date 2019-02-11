@@ -8,7 +8,7 @@ async function func(msg) {
     const content = util_1.trimMsg(msg);
     const pars = await libraryPages_1.params.getResults(content);
     if (pars.length > 0) {
-        return await util_1.sendLibrary(pars, msg);
+        return await libraryPages_1.sendLibrary(pars, msg);
     }
     return msg.channel.createMessage("Sorry, I couldn't find any params matching `" + content + "`!");
 }

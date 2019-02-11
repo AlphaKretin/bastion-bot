@@ -4,6 +4,7 @@ const ygopro_data_1 = require("ygopro-data");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
 const data_1 = require("../modules/data");
+const matchPages_1 = require("../modules/matchPages");
 const util_1 = require("../modules/util");
 const names = ["match", "matches"];
 async function func(msg, mobile) {
@@ -33,7 +34,7 @@ async function func(msg, mobile) {
             }
         }
     }
-    return await util_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=matches.js.map

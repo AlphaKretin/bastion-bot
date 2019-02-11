@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
 const Command_1 = require("../modules/Command");
 const libraryPages_1 = require("../modules/libraryPages");
-const util_1 = require("../modules/util");
 const names = ["p"];
 async function func(msg) {
     const num = /\d+/.exec(msg.content);
@@ -35,7 +34,7 @@ async function func(msg) {
     if (page.msg) {
         let out = page.msg.content;
         if (page.currentPage !== curPage) {
-            out = util_1.generateLibraryList(guild.id);
+            out = libraryPages_1.generateLibraryList(guild.id);
         }
         await page.msg.edit(out);
     }

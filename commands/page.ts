@@ -1,7 +1,6 @@
 import * as Eris from "eris";
 import { Command } from "../modules/Command";
-import { libraryPages } from "../modules/libraryPages";
-import { generateLibraryList, trimMsg } from "../modules/util";
+import { generateLibraryList, libraryPages } from "../modules/libraryPages";
 
 const names: string[] = ["p"];
 

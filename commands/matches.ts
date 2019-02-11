@@ -3,7 +3,8 @@ import { Card, Filter } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { data } from "../modules/data";
-import { sendCardList, trimMsg } from "../modules/util";
+import { sendCardList } from "../modules/matchPages";
+import { trimMsg } from "../modules/util";
 
 const names: string[] = ["match", "matches"];
 

@@ -1,6 +1,9 @@
+import * as Eris from "eris";
 import * as fs from "mz/fs";
 import { extractSheets, SheetResults } from "spreadsheet-to-json";
-import { Page } from "./matchPages";
+import { addReactionButton } from "./bot";
+import { Page } from "./Page";
+import { numToEmoji } from "./util";
 
 const extract = (spreadsheetKey: string): Promise<SheetResults> =>
     new Promise((resolve, reject) => {
@@ -82,3 +85,86 @@ const sheetOpts = JSON.parse(fs.readFileSync("config/sheetOpts.json", "utf8"));
 export const functions = new Library(sheetOpts.functions);
 export const constants = new Library(sheetOpts.constants);
 export const params = new Library(sheetOpts.params);
+
+export async function sendLibrary(list: ILibraryData[], msg: Eris.Message) {
+    const chan = msg.channel;
+    if (chan instanceof Eris.GuildChannel) {
+        const serverID = chan.guild.id;
+        libraryPages[serverID] = new Page<ILibraryData>(msg.author.id, list);
+        const m = await msg.channel.createMessage(generateLibraryList(serverID));
+        libraryPages[serverID].msg = m;
+        await addLibraryButtons(m, serverID);
+        return m;
+    }
+}
+
+export function generateLibraryList(serverID: string): string {
+    const page = libraryPages[serverID];
+    const out: string[] = [];
+    const entries = page.getSpan();
+    let i = 1;
+    const maxLength = Math.max(...entries.map(e => e.variant.length));
+    const digitLength = (page.index + 10).toString().length;
+    for (const entry of entries) {
+        out.push(
+            "[" +
+                (i + page.index).toString().padStart(digitLength, "0") +
+                "] " +
+                " ".repeat(maxLength - entry.variant.length) +
+                entry.variant +
+                " | " +
+                entry.name
+        );
+        i++;
+    }
+    return "```cs\n" + out.join("\n") + "```\n`" + "Page " + page.currentPage + "/" + page.maxPage + "`";
+}
+
+let reactionID = 0;
+
+function incrementReactionID() {
+    const next = (reactionID + 1) % 100;
+    reactionID = next;
+}
+
+async function addLibraryButtons(msg: Eris.Message, serverID: string) {
+    const initialID = reactionID;
+    const page = libraryPages[serverID];
+    if (page.canBack() && reactionID === initialID) {
+        await addReactionButton(msg, "⬅", async mes => {
+            incrementReactionID();
+            page.back(10);
+            const out = generateLibraryList(serverID);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addLibraryButtons(msg, serverID);
+        });
+    }
+    if (page.canForward(10) && reactionID === initialID) {
+        await addReactionButton(msg, "➡", async mes => {
+            incrementReactionID();
+            page.forward(10);
+            const out = generateLibraryList(serverID);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addLibraryButtons(msg, serverID);
+        });
+    }
+    const entries = page.getSpan();
+    for (let ind = 0; ind < Math.min(entries.length, 10); ind++) {
+        if (reactionID !== initialID) {
+            break;
+        }
+        await addReactionButton(msg, numToEmoji(ind + 1)!, async () => {
+            await addLibraryDescription(page, ind, serverID);
+        });
+    }
+}
+
+export async function addLibraryDescription(page: Page<ILibraryData>, index: number, serverID: string) {
+    const entries = page.getSpan();
+    if (!(index in entries && page.msg)) {
+        return;
+    }
+    await page.msg.edit(generateLibraryList(serverID) + "\n`" + entries[index].desc + "`");
+}

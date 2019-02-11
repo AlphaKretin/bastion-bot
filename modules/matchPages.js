@@ -1,44 +1,99 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-class Page {
-    constructor(userID, list) {
-        this.userID = userID;
-        this.list = list;
-        this.index = 0;
-    }
-    get length() {
-        return this.list.length;
-    }
-    get currentPage() {
-        return Math.floor(this.index / 10) + 1;
-    }
-    get maxPage() {
-        return Math.floor((this.length - 1) / 10) + 1;
-    }
-    getCard(index) {
-        if (!(index in this.list)) {
-            throw new Error("Out of MatchPage bounds!");
+const Eris = __importStar(require("eris"));
+const bot_1 = require("./bot");
+const cardSearch_1 = require("./cardSearch");
+const data_1 = require("./data");
+const Page_1 = require("./Page");
+const util_1 = require("./util");
+exports.matchPages = {};
+async function sendCardList(list, lang, msg, title, mobile = false) {
+    const hist = [];
+    const origCards = Object.values(list);
+    const cards = [];
+    for (let card of origCards) {
+        const ids = await card.aliasIDs;
+        if (card.id !== ids[0]) {
+            const tempCard = await data_1.data.getCard(ids[0]);
+            if (tempCard) {
+                card = tempCard;
+            }
         }
-        return this.list[index];
-    }
-    getSpan() {
-        return this.list.slice(this.index, Math.min(this.index + 10, this.list.length));
-    }
-    canBack() {
-        return this.index > 0;
-    }
-    canForward(amt) {
-        return this.index + amt < this.list.length;
-    }
-    back(amt) {
-        this.index = Math.max(0, this.index - amt);
-    }
-    forward(amt) {
-        if (this.canForward(amt)) {
-            this.index += amt;
+        if (hist.indexOf(card.id) === -1 && card.text[lang]) {
+            cards.push(card);
+            hist.push(card.id);
         }
+    }
+    const chan = msg.channel;
+    if (chan instanceof Eris.GuildChannel) {
+        const serverID = chan.guild.id;
+        exports.matchPages[serverID] = new Page_1.Page(msg.author.id, cards);
+        const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
+        await addMatchButtons(m, serverID, lang, mobile, title);
+        return m;
     }
 }
-exports.Page = Page;
-exports.matchPages = {};
+exports.sendCardList = sendCardList;
+function generateCardList(serverID, lang, title) {
+    const page = exports.matchPages[serverID];
+    const out = [];
+    const cards = page.getSpan();
+    let i = 1;
+    for (const card of cards) {
+        out.push(i + page.index + ". " + card.text[lang].name);
+        i++;
+    }
+    if (title) {
+        out.unshift(title.replace(/%s/g, page.length.toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")");
+    }
+    return out.join("\n");
+}
+let reactionID = 0;
+function incrementReactionID() {
+    const next = (reactionID + 1) % 100;
+    reactionID = next;
+}
+async function addMatchButtons(msg, serverID, lang, mobile, title) {
+    const initialID = reactionID;
+    const page = exports.matchPages[serverID];
+    if (page.canBack() && reactionID === initialID) {
+        await bot_1.addReactionButton(msg, "⬅", async (mes) => {
+            incrementReactionID();
+            page.back(10);
+            const out = generateCardList(serverID, lang, title);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addMatchButtons(msg, serverID, lang, mobile, title);
+        });
+    }
+    if (page.canForward(10) && reactionID === initialID) {
+        await bot_1.addReactionButton(msg, "➡", async (mes) => {
+            incrementReactionID();
+            page.forward(10);
+            const out = generateCardList(serverID, lang, title);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addMatchButtons(msg, serverID, lang, mobile, title);
+        });
+    }
+    const cards = page.getSpan();
+    for (let ind = 0; ind < Math.min(cards.length, 10); ind++) {
+        if (reactionID !== initialID) {
+            break;
+        }
+        await bot_1.addReactionButton(msg, util_1.numToEmoji(ind + 1), async (mes) => {
+            const card = cards[ind];
+            if (card) {
+                await cardSearch_1.sendCardProfile(mes, card, lang, mobile, false);
+            }
+        });
+    }
+}
 //# sourceMappingURL=matchPages.js.map

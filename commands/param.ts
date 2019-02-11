@@ -1,7 +1,7 @@
 import * as Eris from "eris";
 import { Command } from "../modules/Command";
-import { params } from "../modules/libraryPages";
-import { sendLibrary, trimMsg } from "../modules/util";
+import { params, sendLibrary } from "../modules/libraryPages";
+import { trimMsg } from "../modules/util";
 
 const names: string[] = ["param"];
 

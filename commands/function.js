@@ -8,7 +8,7 @@ async function func(msg) {
     const content = util_1.trimMsg(msg);
     const funcs = await libraryPages_1.functions.getResults(content);
     if (funcs.length > 0) {
-        return await util_1.sendLibrary(funcs, msg);
+        return await libraryPages_1.sendLibrary(funcs, msg);
     }
     return msg.channel.createMessage("Sorry, I couldn't find any functions matching `" + content + "`!");
 }
