@@ -42,7 +42,8 @@
         "ocgbanlist": "https://www.yugioh-card.com/my/event/rules_guides/forbidden_cardlist.php?lang=en",
         "damagestep": "https://www.yugioh-card.com/uk/gameplay/damage.html",
         "rulebook": "http://www.yugioh-card.com/en/rulebook/SD_RuleBook_EN_10.pdf",
-        "linksummon": "https://www.youtube.com/watch?v=ebvGX8x-zDU"
+        "linksummon": "https://www.youtube.com/watch?v=ebvGX8x-zDU",
+        "fasteffect": "https://img.yugioh-card.com/en/gameplay/images/T-Flowchart_EN-US.jpg"
     },
     "maxSearch": 3,
     "enLangName": "en",
