@@ -10,6 +10,7 @@ interface IPermissionMap {
 
 export class Command {
     public names: string[];
+    public readonly onEdit: boolean;
     private func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
@@ -19,7 +20,8 @@ export class Command {
         names: string[],
         func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>,
         condition?: (msg: Eris.Message) => boolean,
-        owner: boolean = false
+        owner: boolean = false,
+        onEdit: boolean = false
     ) {
         if (names.length === 0) {
             throw new Error("No names defined!");
@@ -36,13 +38,12 @@ export class Command {
             this.permissions = {};
         }
         this.owner = owner;
+        this.onEdit = onEdit;
     }
 
     public async execute(msg: Eris.Message, mobile: boolean = false): Promise<void | Eris.Message> {
         if (this.isCanExecute(msg)) {
             return await this.func(msg, mobile);
-        } else {
-            throw new Error("Forbidden");
         }
     }
 

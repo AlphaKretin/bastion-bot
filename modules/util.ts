@@ -96,7 +96,7 @@ function generateCardList(serverID: string, lang: string, title?: string): strin
     return out.join("\n");
 }
 
-function generateLibraryList(serverID: string): string {
+export function generateLibraryList(serverID: string): string {
     const page = libraryPages[serverID];
     const out: string[] = [];
     const entries = page.getSpan();
@@ -190,16 +190,18 @@ async function addLibraryButtons(msg: Eris.Message, serverID: string) {
         if (reactionID !== initialID) {
             break;
         }
-        await addReactionButton(msg, numToEmoji(ind + 1)!, async mes => {
-            await addLibraryDescription(mes, page, ind);
+        await addReactionButton(msg, numToEmoji(ind + 1)!, async () => {
+            await addLibraryDescription(page, ind, serverID);
         });
     }
 }
 
-async function addLibraryDescription(msg: Eris.Message, page: Page<ILibraryData>, index: number) {
+export async function addLibraryDescription(page: Page<ILibraryData>, index: number, serverID: string) {
     const entries = page.getSpan();
-    const content = msg.content;
-    await msg.edit(content + "\n`" + entries[index].desc + "`");
+    if (!(index in entries && page.msg)) {
+        return;
+    }
+    await page.msg.edit(generateLibraryList(serverID) + "\n`" + entries[index].desc + "`");
 }
 
 export async function sendCardList(
@@ -241,6 +243,7 @@ export async function sendLibrary(list: ILibraryData[], msg: Eris.Message) {
         const serverID = chan.guild.id;
         libraryPages[serverID] = new Page<ILibraryData>(msg.author.id, list);
         const m = await msg.channel.createMessage(generateLibraryList(serverID));
+        libraryPages[serverID].msg = m;
         await addLibraryButtons(m, serverID);
         return m;
     }

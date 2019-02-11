@@ -11,7 +11,7 @@ const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
 const bot_1 = require("./bot");
 class Command {
-    constructor(names, func, condition, owner = false) {
+    constructor(names, func, condition, owner = false, onEdit = false) {
         if (names.length === 0) {
             throw new Error("No names defined!");
         }
@@ -28,13 +28,11 @@ class Command {
             this.permissions = {};
         }
         this.owner = owner;
+        this.onEdit = onEdit;
     }
     async execute(msg, mobile = false) {
         if (this.isCanExecute(msg)) {
             return await this.func(msg, mobile);
-        }
-        else {
-            throw new Error("Forbidden");
         }
     }
     async setPermission(guildID, channelID, roleID) {

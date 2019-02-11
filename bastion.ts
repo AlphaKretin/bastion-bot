@@ -68,4 +68,42 @@ bot.on("messageCreate", async msg => {
     // is handled in the function, not here
     cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
+
+// handle some functions on edit
+bot.on("messageUpdate", async msg => {
+    // ignore bots
+    if (msg.author.bot || !msg.content) {
+        return;
+    }
+    const content = msg.content.toLowerCase();
+    const prefix = config.getConfig("prefix").getValue(msg);
+    const validCmds: ICmdCheck[] = [];
+    for (const cmd of commands) {
+        if (cmd.onEdit) {
+            for (const name of cmd.names) {
+                if (content.startsWith(prefix + name)) {
+                    validCmds.push({ cmd, name });
+                }
+            }
+        }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a: ICmdCheck, b: ICmdCheck) => b.name.length - a.name.length);
+    }
+    if (validCmds.length > 0) {
+        const cmd = validCmds[0].cmd;
+        const cmdName = content.split(/ +/)[0];
+        msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
+        const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
+            msg.channel.createMessage("Error!\n" + e);
+            await msg.removeReaction("🕙");
+        });
+        await msg.removeReaction("🕙").catch(ignore);
+        if (m) {
+            logDeleteMessage(msg, m);
+        }
+        return;
+    }
+});
+
 bot.connect();

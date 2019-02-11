@@ -63,5 +63,41 @@ bot_1.bot.on("messageCreate", async (msg) => {
     // is handled in the function, not here
     cardSearch_1.cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
+// handle some functions on edit
+bot_1.bot.on("messageUpdate", async (msg) => {
+    // ignore bots
+    if (msg.author.bot || !msg.content) {
+        return;
+    }
+    const content = msg.content.toLowerCase();
+    const prefix = configs_1.config.getConfig("prefix").getValue(msg);
+    const validCmds = [];
+    for (const cmd of commands_1.commands) {
+        if (cmd.onEdit) {
+            for (const name of cmd.names) {
+                if (content.startsWith(prefix + name)) {
+                    validCmds.push({ cmd, name });
+                }
+            }
+        }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a, b) => b.name.length - a.name.length);
+    }
+    if (validCmds.length > 0) {
+        const cmd = validCmds[0].cmd;
+        const cmdName = content.split(/ +/)[0];
+        msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
+        const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async (e) => {
+            msg.channel.createMessage("Error!\n" + e);
+            await msg.removeReaction("🕙");
+        });
+        await msg.removeReaction("🕙").catch(ignore);
+        if (m) {
+            bot_1.logDeleteMessage(msg, m);
+        }
+        return;
+    }
+});
 bot_1.bot.connect();
 //# sourceMappingURL=bastion.js.map

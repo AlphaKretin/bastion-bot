@@ -113,6 +113,7 @@ function generateLibraryList(serverID) {
     }
     return "```cs\n" + out.join("\n") + "```\n`" + "Page " + page.currentPage + "/" + page.maxPage + "`";
 }
+exports.generateLibraryList = generateLibraryList;
 let reactionID = 0;
 function incrementReactionID() {
     const next = (reactionID + 1) % 100;
@@ -182,16 +183,19 @@ async function addLibraryButtons(msg, serverID) {
         if (reactionID !== initialID) {
             break;
         }
-        await bot_1.addReactionButton(msg, numToEmoji(ind + 1), async (mes) => {
-            await addLibraryDescription(mes, page, ind);
+        await bot_1.addReactionButton(msg, numToEmoji(ind + 1), async () => {
+            await addLibraryDescription(page, ind, serverID);
         });
     }
 }
-async function addLibraryDescription(msg, page, index) {
+async function addLibraryDescription(page, index, serverID) {
     const entries = page.getSpan();
-    const content = msg.content;
-    await msg.edit(content + "\n`" + entries[index].desc + "`");
+    if (!(index in entries && page.msg)) {
+        return;
+    }
+    await page.msg.edit(generateLibraryList(serverID) + "\n`" + entries[index].desc + "`");
 }
+exports.addLibraryDescription = addLibraryDescription;
 async function sendCardList(list, lang, msg, title, mobile = false) {
     const hist = [];
     const origCards = Object.values(list);
@@ -225,6 +229,7 @@ async function sendLibrary(list, msg) {
         const serverID = chan.guild.id;
         libraryPages_1.libraryPages[serverID] = new matchPages_1.Page(msg.author.id, list);
         const m = await msg.channel.createMessage(generateLibraryList(serverID));
+        libraryPages_1.libraryPages[serverID].msg = m;
         await addLibraryButtons(m, serverID);
         return m;
     }

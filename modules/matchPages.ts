@@ -1,15 +1,7 @@
+import * as Eris from "eris";
 import { Card } from "ygopro-data";
 
 export class Page<T> {
-    public userID: string;
-    public index: number;
-    private list: T[];
-    constructor(userID: string, list: T[]) {
-        this.userID = userID;
-        this.list = list;
-        this.index = 0;
-    }
-
     get length(): number {
         return this.list.length;
     }
@@ -20,6 +12,15 @@ export class Page<T> {
 
     get maxPage(): number {
         return Math.floor((this.length - 1) / 10) + 1;
+    }
+    public userID: string;
+    public index: number;
+    public msg: Eris.Message | undefined;
+    private list: T[];
+    constructor(userID: string, list: T[]) {
+        this.userID = userID;
+        this.list = list;
+        this.index = 0;
     }
 
     public getCard(index: number): T {
