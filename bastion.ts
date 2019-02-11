@@ -1,11 +1,17 @@
 import { bot, logDeleteMessage } from "./modules/bot";
 import { cardSearch } from "./modules/cardSearch";
+import { Command } from "./modules/Command";
 import { commands } from "./modules/commands";
 import { config } from "./modules/configs";
 
 // "handler" for errors that don't matter like reactions
 export function ignore(e: any) {
     return;
+}
+
+interface ICmdCheck {
+    cmd: Command;
+    name: string;
 }
 
 bot.on("messageCreate", async msg => {
@@ -33,22 +39,30 @@ bot.on("messageCreate", async msg => {
         out += "by pledging to Alpha's Patreon at https://www.patreon.com/alphakretinbots.";
         msg.channel.createMessage(out);
     }
+    const validCmds: ICmdCheck[] = [];
     for (const cmd of commands) {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
-                const cmdName = content.split(/ +/)[0];
-                msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
-                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
-                    msg.channel.createMessage("Error!\n" + e);
-                    await msg.removeReaction("🕙");
-                });
-                await msg.removeReaction("🕙").catch(ignore);
-                if (m) {
-                    logDeleteMessage(msg, m);
-                }
-                return;
+                validCmds.push({ cmd, name });
             }
         }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a: ICmdCheck, b: ICmdCheck) => b.name.length - a.name.length);
+    }
+    if (validCmds.length > 0) {
+        const cmd = validCmds[0].cmd;
+        const cmdName = content.split(/ +/)[0];
+        msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
+        const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
+            msg.channel.createMessage("Error!\n" + e);
+            await msg.removeReaction("🕙");
+        });
+        await msg.removeReaction("🕙").catch(ignore);
+        if (m) {
+            logDeleteMessage(msg, m);
+        }
+        return;
     }
     // because it can send multiple messages, deletion logging for card search
     // is handled in the function, not here

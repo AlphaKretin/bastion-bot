@@ -60,6 +60,7 @@ typings/
 .DS_Store
 #sekrit token donut steal
 auth.json
+sheetOpts.json
 
 *.cdb
 permissions/*

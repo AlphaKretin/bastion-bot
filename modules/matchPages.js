@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class MatchPage {
+class Page {
     constructor(userID, list) {
         this.userID = userID;
         this.list = list;
@@ -39,6 +39,6 @@ class MatchPage {
         }
     }
 }
-exports.MatchPage = MatchPage;
+exports.Page = Page;
 exports.matchPages = {};
 //# sourceMappingURL=matchPages.js.map

@@ -34,22 +34,30 @@ bot_1.bot.on("messageCreate", async (msg) => {
         out += "by pledging to Alpha's Patreon at https://www.patreon.com/alphakretinbots.";
         msg.channel.createMessage(out);
     }
+    const validCmds = [];
     for (const cmd of commands_1.commands) {
         for (const name of cmd.names) {
             if (content.startsWith(prefix + name)) {
-                const cmdName = content.split(/ +/)[0];
-                msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
-                const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async (e) => {
-                    msg.channel.createMessage("Error!\n" + e);
-                    await msg.removeReaction("🕙");
-                });
-                await msg.removeReaction("🕙").catch(ignore);
-                if (m) {
-                    bot_1.logDeleteMessage(msg, m);
-                }
-                return;
+                validCmds.push({ cmd, name });
             }
         }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a, b) => b.name.length - a.name.length);
+    }
+    if (validCmds.length > 0) {
+        const cmd = validCmds[0].cmd;
+        const cmdName = content.split(/ +/)[0];
+        msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
+        const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async (e) => {
+            msg.channel.createMessage("Error!\n" + e);
+            await msg.removeReaction("🕙");
+        });
+        await msg.removeReaction("🕙").catch(ignore);
+        if (m) {
+            bot_1.logDeleteMessage(msg, m);
+        }
+        return;
     }
     // because it can send multiple messages, deletion logging for card search
     // is handled in the function, not here

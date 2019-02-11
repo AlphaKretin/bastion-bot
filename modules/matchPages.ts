@@ -1,10 +1,10 @@
 import { Card } from "ygopro-data";
 
-export class MatchPage {
+export class Page<T> {
     public userID: string;
     public index: number;
-    private list: Card[];
-    constructor(userID: string, list: Card[]) {
+    private list: T[];
+    constructor(userID: string, list: T[]) {
         this.userID = userID;
         this.list = list;
         this.index = 0;
@@ -22,14 +22,14 @@ export class MatchPage {
         return Math.floor((this.length - 1) / 10) + 1;
     }
 
-    public getCard(index: number): Card {
+    public getCard(index: number): T {
         if (!(index in this.list)) {
             throw new Error("Out of MatchPage bounds!");
         }
         return this.list[index];
     }
 
-    public getSpan(): Card[] {
+    public getSpan(): T[] {
         return this.list.slice(this.index, Math.min(this.index + 10, this.list.length - 1));
     }
 
@@ -52,4 +52,4 @@ export class MatchPage {
     }
 }
 
-export const matchPages: { [serverID: string]: MatchPage } = {};
+export const matchPages: { [serverID: string]: Page<Card> } = {};

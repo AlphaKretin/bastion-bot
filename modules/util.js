@@ -14,6 +14,7 @@ const cardSearch_1 = require("./cardSearch");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
 const errors_1 = require("./errors");
+const libraryPages_1 = require("./libraryPages");
 const matchPages_1 = require("./matchPages");
 function trimMsg(msg) {
     const m = msg instanceof Eris.Message ? msg.content : msg;
@@ -93,12 +94,30 @@ function generateCardList(serverID, lang, title) {
     }
     return out.join("\n");
 }
+function generateLibraryList(serverID) {
+    const page = libraryPages_1.libraryPages[serverID];
+    const out = [];
+    const entries = page.getSpan();
+    let i = 1;
+    const maxLength = Math.max(...entries.map(e => e.variant.length));
+    for (const entry of entries) {
+        out.push("[" +
+            (i + page.index).toString().padStart(2, "0") +
+            "] " +
+            " ".repeat(maxLength - entry.variant.length) +
+            entry.variant +
+            " | " +
+            entry.name);
+        i++;
+    }
+    return "```cs\n" + out.join("\n") + "```\n`" + "Page " + page.currentPage + "/" + page.maxPage + "`";
+}
 let reactionID = 0;
 function incrementReactionID() {
     const next = (reactionID + 1) % 100;
     reactionID = next;
 }
-async function addPageButtons(msg, serverID, lang, mobile, title) {
+async function addMatchButtons(msg, serverID, lang, mobile, title) {
     const initialID = reactionID;
     const page = matchPages_1.matchPages[serverID];
     if (page.canBack() && reactionID === initialID) {
@@ -108,7 +127,7 @@ async function addPageButtons(msg, serverID, lang, mobile, title) {
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addPageButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, serverID, lang, mobile, title);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
@@ -118,7 +137,7 @@ async function addPageButtons(msg, serverID, lang, mobile, title) {
             const out = generateCardList(serverID, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addPageButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, serverID, lang, mobile, title);
         });
     }
     const cards = page.getSpan();
@@ -133,6 +152,44 @@ async function addPageButtons(msg, serverID, lang, mobile, title) {
             }
         });
     }
+}
+async function addLibraryButtons(msg, serverID) {
+    const initialID = reactionID;
+    const page = libraryPages_1.libraryPages[serverID];
+    if (page.canBack() && reactionID === initialID) {
+        await bot_1.addReactionButton(msg, "⬅", async (mes) => {
+            incrementReactionID();
+            page.back(10);
+            const out = generateLibraryList(serverID);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addLibraryButtons(msg, serverID);
+        });
+    }
+    if (page.canForward(10) && reactionID === initialID) {
+        await bot_1.addReactionButton(msg, "➡", async (mes) => {
+            incrementReactionID();
+            page.forward(10);
+            const out = generateLibraryList(serverID);
+            await mes.edit(out);
+            await mes.removeReactions();
+            await addLibraryButtons(msg, serverID);
+        });
+    }
+    const entries = page.getSpan();
+    for (let ind = 0; ind < Math.min(entries.length, 10); ind++) {
+        if (reactionID !== initialID) {
+            break;
+        }
+        await bot_1.addReactionButton(msg, numToEmoji(ind + 1), async (mes) => {
+            await addLibraryDescription(mes, page, ind);
+        });
+    }
+}
+async function addLibraryDescription(msg, page, index) {
+    const entries = page.getSpan();
+    const content = msg.content;
+    await msg.edit(content + "\n`" + entries[index].desc + "`");
 }
 async function sendCardList(list, lang, msg, title, mobile = false) {
     const hist = [];
@@ -154,13 +211,24 @@ async function sendCardList(list, lang, msg, title, mobile = false) {
     const chan = msg.channel;
     if (chan instanceof Eris.GuildChannel) {
         const serverID = chan.guild.id;
-        matchPages_1.matchPages[serverID] = new matchPages_1.MatchPage(msg.author.id, cards);
+        matchPages_1.matchPages[serverID] = new matchPages_1.Page(msg.author.id, cards);
         const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
-        await addPageButtons(m, serverID, lang, mobile, title);
+        await addMatchButtons(m, serverID, lang, mobile, title);
         return m;
     }
 }
 exports.sendCardList = sendCardList;
+async function sendLibrary(list, msg) {
+    const chan = msg.channel;
+    if (chan instanceof Eris.GuildChannel) {
+        const serverID = chan.guild.id;
+        libraryPages_1.libraryPages[serverID] = new matchPages_1.Page(msg.author.id, list);
+        const m = await msg.channel.createMessage(generateLibraryList(serverID));
+        await addLibraryButtons(m, serverID);
+        return m;
+    }
+}
+exports.sendLibrary = sendLibrary;
 async function getYugipediaPage(query) {
     const YUGI_SEARCH = "https://yugipedia.com/api.php?action=opensearch&redirects=resolve" +
         "&prop=revisions&rvprop=content&format=json&formatversion=2&search=";
