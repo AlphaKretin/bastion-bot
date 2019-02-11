@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../modules/Command");
 const errors_1 = require("../modules/errors");
 const util_1 = require("../modules/util");
+const yugipedia_1 = require("../modules/yugipedia");
 const names = ["yugi", "pedia", "wiki"];
 const func = async (msg) => {
     const query = util_1.trimMsg(msg);
     try {
-        const url = await util_1.getYugipediaPage(query);
+        const url = await yugipedia_1.getYugipediaPage(query);
         return await msg.channel.createMessage(url);
     }
     catch (e) {

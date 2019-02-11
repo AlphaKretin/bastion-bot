@@ -5,6 +5,7 @@ const commands_1 = require("../modules/commands");
 const data_1 = require("../modules/data");
 const errors_1 = require("../modules/errors");
 const util_1 = require("../modules/util");
+const yugipedia_1 = require("../modules/yugipedia");
 const names = ["ruling", "ocgdb", "qa"];
 const func = async (msg) => {
     const langs = await util_1.getLang(msg);
@@ -15,7 +16,7 @@ const func = async (msg) => {
     if (commands_1.botOpts.enLangName && commands_1.botOpts.enLangName in card.text) {
         const name = card.text[commands_1.botOpts.enLangName].name;
         try {
-            const dbId = await util_1.getYugipediaContent(name, "database_id");
+            const dbId = await yugipedia_1.getYugipediaContent(name, "database_id");
             const OCG_DB = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&request_locale=ja&cid=";
             return await msg.channel.createMessage("Rulings for `" + card.text[langs.lang2].name + "`: <" + OCG_DB + dbId + ">");
         }

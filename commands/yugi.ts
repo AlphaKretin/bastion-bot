@@ -1,7 +1,8 @@
 import * as Eris from "eris";
 import { Command } from "../modules/Command";
 import { Errors } from "../modules/errors";
-import { getYugipediaPage, trimMsg } from "../modules/util";
+import { trimMsg } from "../modules/util";
+import { getYugipediaPage } from "../modules/yugipedia";
 
 const names = ["yugi", "pedia", "wiki"];
 const func = async (msg: Eris.Message) => {

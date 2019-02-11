@@ -3,7 +3,8 @@ import { Command } from "../modules/Command";
 import { botOpts } from "../modules/commands";
 import { data } from "../modules/data";
 import { Errors } from "../modules/errors";
-import { getLang, getYugipediaContent } from "../modules/util";
+import { getLang } from "../modules/util";
+import { getYugipediaContent } from "../modules/yugipedia";
 
 const names = ["ruling", "ocgdb", "qa"];
 const func = async (msg: Eris.Message) => {
