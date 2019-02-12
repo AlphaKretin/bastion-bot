@@ -152,7 +152,8 @@ async function addLibraryDescription(page, index, serverID) {
     if (!(index in entries && page.msg)) {
         return;
     }
-    await page.msg.edit(generateLibraryList(serverID) + "\n`" + entries[index].desc + "`");
+    const desc = entries[index].desc || "Sorry, I don't have a description for this!";
+    await page.msg.edit(generateLibraryList(serverID) + "\n`" + desc + "`");
 }
 exports.addLibraryDescription = addLibraryDescription;
 //# sourceMappingURL=libraryPages.js.map

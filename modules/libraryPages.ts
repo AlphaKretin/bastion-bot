@@ -18,7 +18,7 @@ const extract = (spreadsheetKey: string): Promise<SheetResults> =>
 export interface ILibraryData {
     variant: string; // type signature for functions, value for constants, type for parameters
     name: string;
-    desc: string;
+    desc: string | null;
 }
 
 export type LibraryPage = Page<ILibraryData>;
@@ -166,5 +166,6 @@ export async function addLibraryDescription(page: Page<ILibraryData>, index: num
     if (!(index in entries && page.msg)) {
         return;
     }
-    await page.msg.edit(generateLibraryList(serverID) + "\n`" + entries[index].desc + "`");
+    const desc = entries[index].desc || "Sorry, I don't have a description for this!";
+    await page.msg.edit(generateLibraryList(serverID) + "\n`" + desc + "`");
 }
