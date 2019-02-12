@@ -43,7 +43,8 @@
         "damagestep": "https://www.yugioh-card.com/uk/gameplay/damage.html",
         "rulebook": "http://www.yugioh-card.com/en/rulebook/SD_RuleBook_EN_10.pdf",
         "linksummon": "https://www.youtube.com/watch?v=ebvGX8x-zDU",
-        "fasteffect": "https://img.yugioh-card.com/en/gameplay/images/T-Flowchart_EN-US.jpg"
+        "fasteffect": "https://img.yugioh-card.com/en/gameplay/images/T-Flowchart_EN-US.jpg",
+        "summonnegat": "https://puu.sh/CLinf/3332459d3c.png"
     },
     "maxSearch": 3,
     "enLangName": "en",
