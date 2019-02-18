@@ -78,19 +78,17 @@ exports.functions = new Library(sheetOpts.functions);
 exports.constants = new Library(sheetOpts.constants);
 exports.params = new Library(sheetOpts.params);
 async function sendLibrary(list, msg) {
-    const chan = msg.channel;
-    if (chan instanceof Eris.GuildChannel) {
-        const serverID = chan.guild.id;
-        exports.libraryPages[serverID] = new Page_1.Page(msg.author.id, list);
-        const m = await msg.channel.createMessage(generateLibraryList(serverID));
-        exports.libraryPages[serverID].msg = m;
-        await addLibraryButtons(m, serverID);
-        return m;
+    exports.libraryPages[msg.channel.id] = new Page_1.Page(msg.author.id, list);
+    const m = await msg.channel.createMessage(generateLibraryList(msg.channel.id));
+    exports.libraryPages[msg.channel.id].msg = m;
+    if (!(m.channel instanceof Eris.PrivateChannel)) {
+        await addLibraryButtons(m);
     }
+    return m;
 }
 exports.sendLibrary = sendLibrary;
-function generateLibraryList(serverID) {
-    const page = exports.libraryPages[serverID];
+function generateLibraryList(channelID) {
+    const page = exports.libraryPages[channelID];
     const out = [];
     const entries = page.getSpan();
     let i = 1;
@@ -114,27 +112,27 @@ function incrementReactionID() {
     const next = (reactionID + 1) % 100;
     reactionID = next;
 }
-async function addLibraryButtons(msg, serverID) {
+async function addLibraryButtons(msg) {
     const initialID = reactionID;
-    const page = exports.libraryPages[serverID];
+    const page = exports.libraryPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "⬅", async (mes) => {
             incrementReactionID();
             page.back(10);
-            const out = generateLibraryList(serverID);
+            const out = generateLibraryList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addLibraryButtons(msg, serverID);
+            await addLibraryButtons(msg);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "➡", async (mes) => {
             incrementReactionID();
             page.forward(10);
-            const out = generateLibraryList(serverID);
+            const out = generateLibraryList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addLibraryButtons(msg, serverID);
+            await addLibraryButtons(msg);
         });
     }
     const entries = page.getSpan();
@@ -143,17 +141,17 @@ async function addLibraryButtons(msg, serverID) {
             break;
         }
         await bot_1.addReactionButton(msg, util_1.numToEmoji(ind + 1), async () => {
-            await addLibraryDescription(page, ind, serverID);
+            await addLibraryDescription(page, ind, msg.channel.id);
         });
     }
 }
-async function addLibraryDescription(page, index, serverID) {
+async function addLibraryDescription(page, index, channelID) {
     const entries = page.getSpan();
     if (!(index in entries && page.msg)) {
         return;
     }
     const desc = entries[index].desc || "Sorry, I don't have a description for this!";
-    await page.msg.edit(generateLibraryList(serverID) + "\n`" + desc + "`");
+    await page.msg.edit(generateLibraryList(channelID) + "\n`" + desc + "`");
 }
 exports.addLibraryDescription = addLibraryDescription;
 //# sourceMappingURL=libraryPages.js.map

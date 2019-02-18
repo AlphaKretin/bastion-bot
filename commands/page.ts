@@ -10,12 +10,7 @@ async function func(msg: Eris.Message) {
         return;
     }
     const pageNumber = parseInt(num[0], 10);
-    const chan = msg.channel;
-    if (!(chan instanceof Eris.GuildChannel)) {
-        return;
-    }
-    const guild = chan.guild;
-    const page = libraryPages[guild.id];
+    const page = libraryPages[msg.channel.id];
     const curPage = page.currentPage;
     const distance = pageNumber - curPage;
     if (distance > 0) {
@@ -26,20 +21,15 @@ async function func(msg: Eris.Message) {
     if (page.msg) {
         let out = page.msg.content;
         if (page.currentPage !== curPage) {
-            out = generateLibraryList(guild.id);
+            out = generateLibraryList(msg.channel.id);
         }
         await page.msg.edit(out);
     }
 }
 
 function cond(msg: Eris.Message) {
-    const chan = msg.channel;
-    if (!(chan instanceof Eris.GuildChannel)) {
-        return false;
-    }
-    const guild = chan.guild;
-    const page = libraryPages[guild.id];
-    return guild.id in libraryPages && page !== undefined && page.userID === msg.author.id;
+    const page = libraryPages[msg.channel.id];
+    return msg.channel.id in libraryPages && page !== undefined && page.userID === msg.author.id;
 }
 
 export const command = new Command(names, func, cond, undefined, true);

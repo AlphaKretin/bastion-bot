@@ -67,7 +67,7 @@ bot.on("messageCreate", async msg => {
     }
     if (validCmds.length > 0) {
         const cmd = validCmds[0].cmd;
-        const cmdName = content.split(/ +/)[0];
+        const cmdName = validCmds[0].name;
         msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
         const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
             msg.channel.createMessage("Error!\n" + e);

@@ -31,18 +31,16 @@ async function sendCardList(list, lang, msg, title, mobile = false) {
             hist.push(card.id);
         }
     }
-    const chan = msg.channel;
-    if (chan instanceof Eris.GuildChannel) {
-        const serverID = chan.guild.id;
-        exports.matchPages[serverID] = new Page_1.Page(msg.author.id, cards);
-        const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
-        await addMatchButtons(m, serverID, lang, mobile, title);
-        return m;
+    exports.matchPages[msg.channel.id] = new Page_1.Page(msg.author.id, cards);
+    const m = await msg.channel.createMessage(generateCardList(msg.channel.id, lang, title));
+    if (!(m.channel instanceof Eris.PrivateChannel)) {
+        await addMatchButtons(m, lang, mobile, title);
     }
+    return m;
 }
 exports.sendCardList = sendCardList;
-function generateCardList(serverID, lang, title) {
-    const page = exports.matchPages[serverID];
+function generateCardList(channelID, lang, title) {
+    const page = exports.matchPages[channelID];
     const out = [];
     const cards = page.getSpan();
     let i = 1;
@@ -60,27 +58,27 @@ function incrementReactionID() {
     const next = (reactionID + 1) % 100;
     reactionID = next;
 }
-async function addMatchButtons(msg, serverID, lang, mobile, title) {
+async function addMatchButtons(msg, lang, mobile, title) {
     const initialID = reactionID;
-    const page = exports.matchPages[serverID];
+    const page = exports.matchPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "⬅", async (mes) => {
             incrementReactionID();
             page.back(10);
-            const out = generateCardList(serverID, lang, title);
+            const out = generateCardList(msg.channel.id, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, lang, mobile, title);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
         await bot_1.addReactionButton(msg, "➡", async (mes) => {
             incrementReactionID();
             page.forward(10);
-            const out = generateCardList(serverID, lang, title);
+            const out = generateCardList(msg.channel.id, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, lang, mobile, title);
         });
     }
     const cards = page.getSpan();

@@ -22,7 +22,7 @@ export interface ILibraryData {
 }
 
 export type LibraryPage = Page<ILibraryData>;
-export const libraryPages: { [serverID: string]: LibraryPage } = {};
+export const libraryPages: { [channelID: string]: LibraryPage } = {};
 
 class Library {
     private lib?: Promise<ILibraryData[]>;
@@ -87,19 +87,17 @@ export const constants = new Library(sheetOpts.constants);
 export const params = new Library(sheetOpts.params);
 
 export async function sendLibrary(list: ILibraryData[], msg: Eris.Message) {
-    const chan = msg.channel;
-    if (chan instanceof Eris.GuildChannel) {
-        const serverID = chan.guild.id;
-        libraryPages[serverID] = new Page<ILibraryData>(msg.author.id, list);
-        const m = await msg.channel.createMessage(generateLibraryList(serverID));
-        libraryPages[serverID].msg = m;
-        await addLibraryButtons(m, serverID);
-        return m;
+    libraryPages[msg.channel.id] = new Page<ILibraryData>(msg.author.id, list);
+    const m = await msg.channel.createMessage(generateLibraryList(msg.channel.id));
+    libraryPages[msg.channel.id].msg = m;
+    if (!(m.channel instanceof Eris.PrivateChannel)) {
+        await addLibraryButtons(m);
     }
+    return m;
 }
 
-export function generateLibraryList(serverID: string): string {
-    const page = libraryPages[serverID];
+export function generateLibraryList(channelID: string): string {
+    const page = libraryPages[channelID];
     const out: string[] = [];
     const entries = page.getSpan();
     let i = 1;
@@ -127,27 +125,27 @@ function incrementReactionID() {
     reactionID = next;
 }
 
-async function addLibraryButtons(msg: Eris.Message, serverID: string) {
+async function addLibraryButtons(msg: Eris.Message) {
     const initialID = reactionID;
-    const page = libraryPages[serverID];
+    const page = libraryPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {
         await addReactionButton(msg, "⬅", async mes => {
             incrementReactionID();
             page.back(10);
-            const out = generateLibraryList(serverID);
+            const out = generateLibraryList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addLibraryButtons(msg, serverID);
+            await addLibraryButtons(msg);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
         await addReactionButton(msg, "➡", async mes => {
             incrementReactionID();
             page.forward(10);
-            const out = generateLibraryList(serverID);
+            const out = generateLibraryList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addLibraryButtons(msg, serverID);
+            await addLibraryButtons(msg);
         });
     }
     const entries = page.getSpan();
@@ -156,16 +154,16 @@ async function addLibraryButtons(msg: Eris.Message, serverID: string) {
             break;
         }
         await addReactionButton(msg, numToEmoji(ind + 1)!, async () => {
-            await addLibraryDescription(page, ind, serverID);
+            await addLibraryDescription(page, ind, msg.channel.id);
         });
     }
 }
 
-export async function addLibraryDescription(page: Page<ILibraryData>, index: number, serverID: string) {
+export async function addLibraryDescription(page: Page<ILibraryData>, index: number, channelID: string) {
     const entries = page.getSpan();
     if (!(index in entries && page.msg)) {
         return;
     }
     const desc = entries[index].desc || "Sorry, I don't have a description for this!";
-    await page.msg.edit(generateLibraryList(serverID) + "\n`" + desc + "`");
+    await page.msg.edit(generateLibraryList(channelID) + "\n`" + desc + "`");
 }

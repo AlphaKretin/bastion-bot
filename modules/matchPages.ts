@@ -7,7 +7,7 @@ import { data } from "./data";
 import { Page } from "./Page";
 import { numToEmoji } from "./util";
 
-export const matchPages: { [serverID: string]: Page<Card> } = {};
+export const matchPages: { [channelID: string]: Page<Card> } = {};
 
 export async function sendCardList(
     list: ICardList,
@@ -32,18 +32,16 @@ export async function sendCardList(
             hist.push(card.id);
         }
     }
-    const chan = msg.channel;
-    if (chan instanceof Eris.GuildChannel) {
-        const serverID = chan.guild.id;
-        matchPages[serverID] = new Page<Card>(msg.author.id, cards);
-        const m = await msg.channel.createMessage(generateCardList(serverID, lang, title));
-        await addMatchButtons(m, serverID, lang, mobile, title);
-        return m;
+    matchPages[msg.channel.id] = new Page<Card>(msg.author.id, cards);
+    const m = await msg.channel.createMessage(generateCardList(msg.channel.id, lang, title));
+    if (!(m.channel instanceof Eris.PrivateChannel)) {
+        await addMatchButtons(m, lang, mobile, title);
     }
+    return m;
 }
 
-function generateCardList(serverID: string, lang: string, title?: string): string {
-    const page = matchPages[serverID];
+function generateCardList(channelID: string, lang: string, title?: string): string {
+    const page = matchPages[channelID];
     const out: string[] = [];
     const cards = page.getSpan();
     let i = 1;
@@ -66,27 +64,27 @@ function incrementReactionID() {
     reactionID = next;
 }
 
-async function addMatchButtons(msg: Eris.Message, serverID: string, lang: string, mobile: boolean, title?: string) {
+async function addMatchButtons(msg: Eris.Message, lang: string, mobile: boolean, title?: string) {
     const initialID = reactionID;
-    const page = matchPages[serverID];
+    const page = matchPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {
         await addReactionButton(msg, "⬅", async mes => {
             incrementReactionID();
             page.back(10);
-            const out = generateCardList(serverID, lang, title);
+            const out = generateCardList(msg.channel.id, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, lang, mobile, title);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
         await addReactionButton(msg, "➡", async mes => {
             incrementReactionID();
             page.forward(10);
-            const out = generateCardList(serverID, lang, title);
+            const out = generateCardList(msg.channel.id, lang, title);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, serverID, lang, mobile, title);
+            await addMatchButtons(msg, lang, mobile, title);
         });
     }
     const cards = page.getSpan();

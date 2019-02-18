@@ -1,13 +1,5 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Eris = __importStar(require("eris"));
 const Command_1 = require("../modules/Command");
 const libraryPages_1 = require("../modules/libraryPages");
 const names = ["p"];
@@ -17,12 +9,7 @@ async function func(msg) {
         return;
     }
     const pageNumber = parseInt(num[0], 10);
-    const chan = msg.channel;
-    if (!(chan instanceof Eris.GuildChannel)) {
-        return;
-    }
-    const guild = chan.guild;
-    const page = libraryPages_1.libraryPages[guild.id];
+    const page = libraryPages_1.libraryPages[msg.channel.id];
     const curPage = page.currentPage;
     const distance = pageNumber - curPage;
     if (distance > 0) {
@@ -34,19 +21,14 @@ async function func(msg) {
     if (page.msg) {
         let out = page.msg.content;
         if (page.currentPage !== curPage) {
-            out = libraryPages_1.generateLibraryList(guild.id);
+            out = libraryPages_1.generateLibraryList(msg.channel.id);
         }
         await page.msg.edit(out);
     }
 }
 function cond(msg) {
-    const chan = msg.channel;
-    if (!(chan instanceof Eris.GuildChannel)) {
-        return false;
-    }
-    const guild = chan.guild;
-    const page = libraryPages_1.libraryPages[guild.id];
-    return guild.id in libraryPages_1.libraryPages && page !== undefined && page.userID === msg.author.id;
+    const page = libraryPages_1.libraryPages[msg.channel.id];
+    return msg.channel.id in libraryPages_1.libraryPages && page !== undefined && page.userID === msg.author.id;
 }
 exports.command = new Command_1.Command(names, func, cond, undefined, true);
 //# sourceMappingURL=page.js.map
