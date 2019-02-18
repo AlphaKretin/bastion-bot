@@ -38,7 +38,14 @@ const func = async (msg: Eris.Message, mobile: boolean) => {
                 "Sorry, I can't find a script for `" + card.text[langs.lang2].name + "`."
             );
         }
-        const scriptSlug = "Direct Link: <" + scriptFile.download_url + ">\nGitHub Link: <" + scriptFile.html_url + ">";
+        const scriptSlug =
+            "__" +
+            card.text[langs.lang2].name +
+            "__\nDirect Link: <" +
+            scriptFile.download_url +
+            ">\nGitHub Link: <" +
+            scriptFile.html_url +
+            ">";
         const scriptBody = "```lua\n" + script + "```\n";
         if (mobile || (scriptBody + scriptSlug).length > 2000) {
             return await msg.channel.createMessage(scriptSlug);
