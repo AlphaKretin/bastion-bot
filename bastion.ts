@@ -3,6 +3,7 @@ import { cardSearch } from "./modules/cardSearch";
 import { Command } from "./modules/Command";
 import { commands } from "./modules/commands";
 import { config } from "./modules/configs";
+import { answerTrivia } from "./modules/trivia";
 
 // "handler" for errors that don't matter like reactions
 export function ignore(e: any) {
@@ -14,9 +15,23 @@ interface ICmdCheck {
     name: string;
 }
 
+export const gameData: {
+    [channelID: string]: {
+        game: string;
+        [key: string]: any;
+    };
+} = {};
+
 bot.on("messageCreate", async msg => {
     // ignore bots
     if (msg.author.bot) {
+        return;
+    }
+    if (msg.channel.id in gameData) {
+        switch (gameData[msg.channel.id].game) {
+            case "trivia":
+                await answerTrivia(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
+        }
         return;
     }
     const content = msg.content.toLowerCase();
