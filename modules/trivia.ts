@@ -35,13 +35,18 @@ export async function trivia(msg: Eris.Message) {
     }
 }
 
-const fixTriviaMessage = (msg: string) =>
-    msg
+const fixTriviaMessage = (msg: string, answer: boolean = true) => {
+    if (answer) {
         // convert full width letters to normal (you can type either)
-        .replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))
-        // remove various spacer characters
-        .replace(/[\s\-·∙•‧・･‐‑‒–—―﹘﹣－]/g, "")
-        .toLowerCase();
+        msg = msg.replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+    }
+    return (
+        msg
+            // remove various spacer characters
+            .replace(/[:\s\-·∙•‧・･‐‑‒–—―﹘﹣－]/g, "")
+            .toLowerCase()
+    );
+};
 
 // TODO: expose and import IFilterData
 async function startTriviaRound(round: number, hard: boolean, lang: string, filterData: any, msg: Eris.Message) {
@@ -57,28 +62,44 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
         targetCard = cards[getRandomIntInclusive(0, cards.length - 1)];
         image = await targetCard.image;
     } while (image === undefined || !(lang in targetCard.text));
-    const hintIndexes: number[] = [];
     const name = targetCard.text[lang].name;
-    const numHints = getRandomIntInclusive(Math.ceil(name.length / 4), Math.floor(name.length / 2));
-    const nameArr = name.split("");
-    for (let ct = 0; ct < numHints; ct++) {
-        let ind;
-        do {
-            ind = getRandomIntInclusive(0, name.length - 1);
-        } while (hintIndexes.includes(ind) && nameArr[ind] !== " ");
-        hintIndexes.push(ind);
-    }
-    let hint = "";
-    for (const index in nameArr) {
-        if (nameArr.hasOwnProperty(index)) {
-            let letter = nameArr[index];
-            if (!hintIndexes.includes(parseInt(index, 10)) && letter !== " ") {
-                letter = "_";
+    const fixedName = fixTriviaMessage(name, false);
+    let nameIndex = 0;
+    // generate a list of hints that aren't auto-include/ignored characters
+    const validHints: { [index: number]: string } = {};
+    for (const fixedChar of fixedName) {
+        const char = name[nameIndex];
+        if (fixedChar === char.toLowerCase()) {
+            validHints[nameIndex] = char;
+            nameIndex++;
+        } else {
+            while (name[nameIndex].toLowerCase() !== fixedChar && nameIndex < name.length) {
+                nameIndex++;
             }
-            hint += letter + " ";
-            nameArr[index] = letter;
+            validHints[nameIndex] = name[nameIndex];
+            nameIndex++;
         }
     }
+    const numHints = getRandomIntInclusive(Math.ceil(name.length / 4), Math.floor(name.length / 2));
+    // remove hints until we've hit the count
+    const numRemove = Object.keys(validHints).length - numHints;
+    const finalHints = JSON.parse(JSON.stringify(validHints));
+    for (let ct = 0; ct < numRemove; ct++) {
+        const indexes = Object.keys(finalHints);
+        const index = indexes[getRandomIntInclusive(0, indexes.length - 1)];
+        delete finalHints[parseInt(index, 10)];
+    }
+    const hints: string[] = [];
+    for (let i = 0; i < name.length; i++) {
+        if (i in finalHints) {
+            hints.push(finalHints[i]);
+        } else if (i in validHints) {
+            hints.push("_");
+        } else {
+            hints.push(name[i]);
+        }
+    }
+    const hint = hints.join(" ");
     if (channel.id in gameData) {
         gameData[channel.id].name = name;
         gameData[channel.id].hint = hint;
@@ -108,11 +129,11 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
         return;
     }
     const res = await channel.createMessage("Can you name this card? Time remaining: `" + triviaTimeLimit + "`");
-    let i = triviaTimeLimit - 1;
+    let time = triviaTimeLimit - 1;
     gameData[channel.id].interval = setInterval(() => {
-        res.edit("Can you name this card? Time remaining: `" + i + "`");
-        i--;
-        if (i < 0) {
+        res.edit("Can you name this card? Time remaining: `" + time + "`");
+        time--;
+        if (time < 0) {
             clearInterval(gameData[channel.id].interval);
         }
     }, 1000);
