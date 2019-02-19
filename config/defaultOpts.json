@@ -4,5 +4,8 @@
     "embedColor": 16776960,
     "fullBrackets": ["{", "}"],
     "mobBrackets": ["<", ">"],
-    "noImgMobBrackets": ["[", "]"]
+    "noImgMobBrackets": ["[", "]"],
+    "triviaHint": 10,
+    "triviaLimit": 30,
+    "triviaMax": 20
 }

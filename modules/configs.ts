@@ -37,12 +37,7 @@ config.setConfig(
     new ConfigOption<string>("defaultLang", defaults.language, undefined, val => data.langs.includes(val))
 );
 config.setConfig(
-    new ConfigOption<number>(
-        "embedColor",
-        defaults.embedColor,
-        val => explicitParseInt(val),
-        val => val.toString(16).length === 6
-    )
+    new ConfigOption<number>("embedColor", defaults.embedColor, explicitParseInt, val => val.toString(16).length === 6)
 );
 config.setConfig(
     new ConfigOption<[string, string]>(
@@ -123,8 +118,48 @@ config.setConfig(
     )
 );
 
+config.setConfig(
+    new ConfigOption<number>(
+        "triviaHint",
+        defaults.triviaHint,
+        val => {
+            const num = explicitParseInt(val);
+            // if probably ms, convert to s
+            if (num > 1000) {
+                return Math.floor(num / 1000);
+            }
+            return num;
+        },
+        (val, m) => {
+            const triviaLimit = config.getConfig("triviaLimit").getValue(m);
+            return val < triviaLimit && val > 0;
+        }
+    )
+);
+
+config.setConfig(
+    new ConfigOption<number>(
+        "triviaLimit",
+        defaults.triviaLimit,
+        val => {
+            const num = explicitParseInt(val);
+            // if probably ms, convert to s
+            if (num > 1000) {
+                return Math.floor(num / 1000);
+            }
+            return num;
+        },
+        (val, m) => {
+            const triviaHint = config.getConfig("triviaHint").getValue(m);
+            return val > triviaHint;
+        }
+    )
+);
+
+config.setConfig(new ConfigOption<number>("triviaMax", defaults.triviaMax, explicitParseInt));
+
 // boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
-config.setConfig(new ConfigOption<boolean>("mobileView", false, Boolean));
+config.setConfig(new ConfigOption("mobileView", false, Boolean));
 config.setConfig(new ConfigOption("suppressEmotes", false, Boolean));
 
 export const colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));

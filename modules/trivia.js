@@ -37,6 +37,8 @@ async function trivia(msg) {
                 round = parseInt(arg, 10);
             }
         }
+        const maxRound = configs_1.config.getConfig("triviaMax").getValue(msg);
+        round = Math.min(round, maxRound);
         const hard = args.includes("hard");
         let filterContent = halves[1];
         if (!filterContent || filterContent.trim().length === 0) {
@@ -60,8 +62,8 @@ const fixTriviaMessage = (msg, answer = true) => {
 // TODO: expose and import IFilterData
 async function startTriviaRound(round, hard, lang, filterData, msg) {
     const channel = msg.channel;
-    const triviaTimeLimit = 30;
-    const triviaHintTime = 10;
+    const triviaTimeLimit = configs_1.config.getConfig("triviaLimit").getValue(msg);
+    const triviaHintTime = configs_1.config.getConfig("triviaHint").getValue(msg);
     const filter = new ygopro_data_1.Filter(filterData);
     const cardList = await data_1.data.getCardList();
     const cards = filter.filter(cardList);

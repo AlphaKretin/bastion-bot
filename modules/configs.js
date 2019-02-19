@@ -32,7 +32,7 @@ const defaults = JSON.parse(fs.readFileSync("./config/defaultOpts.json", "utf8")
 // add default config options
 exports.config.setConfig(new ConfigOption_1.ConfigOption("prefix", defaults.prefix, val => val.toString().trim()));
 exports.config.setConfig(new ConfigOption_1.ConfigOption("defaultLang", defaults.language, undefined, val => data_1.data.langs.includes(val)));
-exports.config.setConfig(new ConfigOption_1.ConfigOption("embedColor", defaults.embedColor, val => explicitParseInt(val), val => val.toString(16).length === 6));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("embedColor", defaults.embedColor, explicitParseInt, val => val.toString(16).length === 6));
 exports.config.setConfig(new ConfigOption_1.ConfigOption("fullBrackets", defaults.fullBrackets, (val) => {
     const s = val.split("");
     return [s[0], s[1]];
@@ -81,6 +81,29 @@ exports.config.setConfig(new ConfigOption_1.ConfigOption("noImgMobBrackets", def
         mobBrackets.indexOf(val[0]) === -1 &&
         mobBrackets.indexOf(val[1]) === -1);
 }));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("triviaHint", defaults.triviaHint, val => {
+    const num = explicitParseInt(val);
+    // if probably ms, convert to s
+    if (num > 1000) {
+        return Math.floor(num / 1000);
+    }
+    return num;
+}, (val, m) => {
+    const triviaLimit = exports.config.getConfig("triviaLimit").getValue(m);
+    return val < triviaLimit && val > 0;
+}));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("triviaLimit", defaults.triviaLimit, val => {
+    const num = explicitParseInt(val);
+    // if probably ms, convert to s
+    if (num > 1000) {
+        return Math.floor(num / 1000);
+    }
+    return num;
+}, (val, m) => {
+    const triviaHint = exports.config.getConfig("triviaHint").getValue(m);
+    return val > triviaHint;
+}));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("triviaMax", defaults.triviaMax, explicitParseInt));
 // boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
 exports.config.setConfig(new ConfigOption_1.ConfigOption("mobileView", false, Boolean));
 exports.config.setConfig(new ConfigOption_1.ConfigOption("suppressEmotes", false, Boolean));

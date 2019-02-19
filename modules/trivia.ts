@@ -25,6 +25,8 @@ export async function trivia(msg: Eris.Message) {
                 round = parseInt(arg, 10);
             }
         }
+        const maxRound = config.getConfig("triviaMax").getValue(msg);
+        round = Math.min(round, maxRound);
         const hard = args.includes("hard");
         let filterContent: string = halves[1];
         if (!filterContent || filterContent.trim().length === 0) {
@@ -51,8 +53,8 @@ const fixTriviaMessage = (msg: string, answer: boolean = true) => {
 // TODO: expose and import IFilterData
 async function startTriviaRound(round: number, hard: boolean, lang: string, filterData: any, msg: Eris.Message) {
     const channel = msg.channel;
-    const triviaTimeLimit = 30;
-    const triviaHintTime = 10;
+    const triviaTimeLimit = config.getConfig("triviaLimit").getValue(msg);
+    const triviaHintTime = config.getConfig("triviaHint").getValue(msg);
     const filter = new Filter(filterData);
     const cardList = await data.getCardList();
     const cards = filter.filter(cardList);
