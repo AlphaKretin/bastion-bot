@@ -109,11 +109,14 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
     }
     const res = await channel.createMessage("Can you name this card? Time remaining: `" + triviaTimeLimit + "`");
     let i = triviaTimeLimit - 1;
-    gameData[channel.id].IN = setInterval(() => {
+    gameData[channel.id].interval = setInterval(() => {
         res.edit("Can you name this card? Time remaining: `" + i + "`");
         i--;
+        if (i < 0) {
+            clearInterval(gameData[channel.id].interval);
+        }
     }, 1000);
-    gameData[channel.id].TO1 = setTimeout(() => {
+    gameData[channel.id].timeoutHint = setTimeout(() => {
         channel.createMessage("Have a hint: `" + gameData[channel.id].hint + "`");
     }, triviaHintTime * 1000);
     let out = "Time's up! The card was **" + gameData[channel.id].name + "**!\n";
@@ -127,7 +130,7 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
             }
         }
     }
-    gameData[channel.id].TO2 = setTimeout(async () => {
+    gameData[channel.id].timeoutAnswer = setTimeout(async () => {
         if (gameData[channel.id].lock) {
             return;
         }
@@ -136,9 +139,7 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
         } else {
             gameData[channel.id].noAttCount++;
         }
-        if (gameData[channel.id].IN) {
-            clearInterval(gameData[channel.id].IN);
-        }
+        clearInterval(gameData[channel.id].interval);
         if (gameData[channel.id].noAttCount >= 3) {
             out += "No attempt was made for 3 rounds! The game is over.";
             await channel.createMessage(out);
@@ -223,15 +224,9 @@ export async function answerTrivia(msg: Eris.Message) {
         return;
     }
     gameData[channel.id].lock = true;
-    if (gameData[channel.id].TO1) {
-        clearTimeout(gameData[channel.id].TO1);
-    }
-    if (gameData[channel.id].TO2) {
-        clearTimeout(gameData[channel.id].TO2);
-    }
-    if (gameData[channel.id].IN) {
-        clearInterval(gameData[channel.id].IN);
-    }
+    clearTimeout(gameData[channel.id].timeoutHint);
+    clearTimeout(gameData[channel.id].timeoutAnswer);
+    clearInterval(gameData[channel.id].interval);
     if (fixMes.startsWith(prefix + "tq")) {
         out = getDisplayName(msg) + " quit the game. The answer was **" + gameData[channel.id].name + "**!\n";
         out = triviaScore(out, msg);
