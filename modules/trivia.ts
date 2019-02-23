@@ -131,14 +131,14 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
         return;
     }
     const res = await channel.createMessage("Can you name this card? Time remaining: `" + triviaTimeLimit + "`");
-    let time = triviaTimeLimit - 1;
+    let time = triviaTimeLimit - 5;
     gameData[channel.id].interval = setInterval(() => {
         res.edit("Can you name this card? Time remaining: `" + time + "`");
-        time--;
+        time -= 5;
         if (time < 0) {
             clearInterval(gameData[channel.id].interval);
         }
-    }, 1000);
+    }, 5000);
     gameData[channel.id].timeoutHint = setTimeout(() => {
         channel.createMessage("Have a hint: `" + gameData[channel.id].hint + "`");
     }, triviaHintTime * 1000);
@@ -157,6 +157,7 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
         if (gameData[channel.id].lock) {
             return;
         }
+        await res.edit("Can you name this card? Time remaining: `0`");
         if (gameData[channel.id].attempted) {
             gameData[channel.id].noAttCount = 0;
         } else {

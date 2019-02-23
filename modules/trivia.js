@@ -144,14 +144,14 @@ async function startTriviaRound(round, hard, lang, filterData, msg) {
         return;
     }
     const res = await channel.createMessage("Can you name this card? Time remaining: `" + triviaTimeLimit + "`");
-    let time = triviaTimeLimit - 1;
+    let time = triviaTimeLimit - 5;
     bastion_1.gameData[channel.id].interval = setInterval(() => {
         res.edit("Can you name this card? Time remaining: `" + time + "`");
-        time--;
+        time -= 5;
         if (time < 0) {
             clearInterval(bastion_1.gameData[channel.id].interval);
         }
-    }, 1000);
+    }, 5000);
     bastion_1.gameData[channel.id].timeoutHint = setTimeout(() => {
         channel.createMessage("Have a hint: `" + bastion_1.gameData[channel.id].hint + "`");
     }, triviaHintTime * 1000);
@@ -170,6 +170,7 @@ async function startTriviaRound(round, hard, lang, filterData, msg) {
         if (bastion_1.gameData[channel.id].lock) {
             return;
         }
+        await res.edit("Can you name this card? Time remaining: `0`");
         if (bastion_1.gameData[channel.id].attempted) {
             bastion_1.gameData[channel.id].noAttCount = 0;
         }
