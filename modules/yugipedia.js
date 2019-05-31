@@ -1,14 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require("request-promise-native");
+const node_fetch_1 = __importDefault(require("node-fetch"));
 const errors_1 = require("./errors");
 async function getYugipediaPage(query) {
     const YUGI_SEARCH = "https://yugipedia.com/api.php?action=opensearch&redirects=resolve" +
         "&prop=revisions&rvprop=content&format=json&formatversion=2&search=";
     const fullQuery = YUGI_SEARCH + encodeURIComponent(query);
     try {
-        const result = await request(fullQuery);
-        const yugiData = JSON.parse(result);
+        const yugiData = await (await node_fetch_1.default(fullQuery)).json();
         if (yugiData[3][0]) {
             return yugiData[3][0];
         }
@@ -26,8 +28,7 @@ async function getYugipediaContent(query, prop) {
         "&prop=revisions&rvprop=content&format=json&formatversion=2&titles=";
     const fullQuery = YUGI_API + encodeURIComponent(query);
     try {
-        const result = await request(fullQuery);
-        const yugiData = JSON.parse(result);
+        const yugiData = await (await node_fetch_1.default(fullQuery)).json();
         const page = yugiData.query.pages[0].revisions[0].content;
         if (!prop) {
             return page;

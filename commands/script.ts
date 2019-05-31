@@ -1,6 +1,6 @@
 import octokit from "@octokit/rest";
 import * as Eris from "eris";
-import request from "request-promise-native";
+import fetch from "node-fetch";
 import { Command } from "../modules/Command";
 import { botOpts, GitHub } from "../modules/commands";
 import { data } from "../modules/data";
@@ -13,7 +13,7 @@ async function downloadCardScript(code: number, repo: gitParams): Promise<[strin
     params.path += "/c" + code + ".lua";
     try {
         const file = await GitHub.repos.getContents(params);
-        const body: string = await request(file.data.download_url);
+        const body: string = await (await fetch(file.data.download_url)).text();
         return [body, file.data];
     } catch (e) {
         return [undefined, undefined];

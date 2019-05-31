@@ -12,15 +12,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const rest_1 = __importDefault(require("@octokit/rest"));
 const fs = __importStar(require("mz/fs"));
-const request_promise_native_1 = __importDefault(require("request-promise-native"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 exports.GitHub = new rest_1.default();
 const tempCmds = [];
 async function downloadCmd(file) {
     const fullPath = "./commands/" + file.name;
-    const body = await request_promise_native_1.default({
-        encoding: null,
-        url: file.download_url
-    });
+    const body = await (await node_fetch_1.default(file.download_url)).buffer();
     await fs.writeFile(fullPath, body);
 }
 exports.botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));

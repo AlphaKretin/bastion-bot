@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import request from "request-promise-native";
+import fetch from "node-fetch";
 import { enums } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
@@ -40,7 +40,7 @@ const func = async (msg: Eris.Message, mobile: boolean) => {
         }
     }
     const file = msg.attachments[0];
-    const deck = await request(file.url);
+    const deck = await (await fetch(file.url)).text();
     const deckRecord: IDeckRecord = {
         extra: {},
         monster: {},

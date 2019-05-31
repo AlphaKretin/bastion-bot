@@ -1,6 +1,6 @@
 import octokit from "@octokit/rest";
 import * as fs from "mz/fs";
-import request from "request-promise-native";
+import fetch from "node-fetch";
 import { Command } from "./Command";
 export const GitHub = new octokit();
 
@@ -8,10 +8,7 @@ const tempCmds: Command[] = [];
 
 async function downloadCmd(file: any): Promise<void> {
     const fullPath = "./commands/" + file.name;
-    const body = await request({
-        encoding: null,
-        url: file.download_url
-    });
+    const body = await (await fetch(file.download_url)).buffer();
     await fs.writeFile(fullPath, body);
 }
 

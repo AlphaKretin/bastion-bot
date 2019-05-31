@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request_promise_native_1 = __importDefault(require("request-promise-native"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 const Command_1 = require("../modules/Command");
 const commands_1 = require("../modules/commands");
 const data_1 = require("../modules/data");
@@ -13,7 +13,7 @@ async function downloadCardScript(code, repo) {
     params.path += "/c" + code + ".lua";
     try {
         const file = await commands_1.GitHub.repos.getContents(params);
-        const body = await request_promise_native_1.default(file.data.download_url);
+        const body = await (await node_fetch_1.default(file.data.download_url)).text();
         return [body, file.data];
     }
     catch (e) {
