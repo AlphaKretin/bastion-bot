@@ -44,7 +44,9 @@
         "rulebook": "http://www.yugioh-card.com/en/rulebook/SD_RuleBook_EN_10.pdf",
         "linksummon": "https://www.youtube.com/watch?v=ebvGX8x-zDU",
         "fasteffect": "https://img.yugioh-card.com/en/gameplay/images/T-Flowchart_EN-US.jpg",
-        "summonnegat": "https://puu.sh/CLinf/3332459d3c.png"
+        "summonnegat": "https://puu.sh/CLinf/3332459d3c.png",
+        "demise": "https://cdn.discordapp.com/attachments/184324960842416129/571590523442429973/How_Demise_works.PNG",
+        "atk": "https://ygorganization.com/atk-def-modification-and-you/"
     },
     "maxSearch": 3,
     "enLangName": "en",
