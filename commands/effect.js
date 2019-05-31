@@ -6,7 +6,7 @@ const Command_1 = require("../modules/Command");
 const data_1 = require("../modules/data");
 const strings_1 = require("../modules/strings");
 const util_1 = require("../modules/util");
-const names = ["effect", "text"];
+const names = ["eff", "text"];
 const func = async (msg, mobile) => {
     const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);

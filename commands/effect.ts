@@ -6,7 +6,7 @@ import { data } from "../modules/data";
 import { strings } from "../modules/strings";
 import { getLang } from "../modules/util";
 
-const names = ["effect", "text"];
+const names = ["eff", "text"];
 const func = async (msg: Eris.Message, mobile: boolean) => {
     const langs = getLang(msg);
     const card = await data.getCard(langs.msg, langs.lang1);
