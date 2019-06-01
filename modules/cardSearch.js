@@ -10,6 +10,7 @@ const bot_1 = require("./bot");
 const commands_1 = require("./commands");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
+const errors_1 = require("./errors");
 const strings_1 = require("./strings");
 const util_1 = require("./util");
 function reEscape(s) {
@@ -114,14 +115,19 @@ async function sendCardProfile(msg, card, lang, mobile = false, includeImage = f
             }
         }
         const m = await msg.channel.createMessage(profile[0]);
-        for (let i = 1; i < profile.length; i++) {
-            await bot_1.addReactionButton(m, "1\u20e3", async (_, userID) => {
-                const user = bot_1.bot.users.get(userID);
-                if (user) {
-                    const chan = await user.getDMChannel();
-                    chan.createMessage(profile[i]);
-                }
-            });
+        if (util_1.canReact(m)) {
+            for (let i = 1; i < profile.length; i++) {
+                await bot_1.addReactionButton(m, "1\u20e3", async (_, userID) => {
+                    const user = bot_1.bot.users.get(userID);
+                    if (user) {
+                        const chan = await user.getDMChannel();
+                        chan.createMessage(profile[i]);
+                    }
+                });
+            }
+        }
+        else {
+            await msg.channel.createMessage(errors_1.Errors.ERROR_REACT_FAILURE);
         }
         return m;
     }

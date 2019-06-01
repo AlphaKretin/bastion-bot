@@ -1,16 +1,9 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Eris = __importStar(require("eris"));
 const bot_1 = require("./bot");
 const cardSearch_1 = require("./cardSearch");
 const data_1 = require("./data");
+const errors_1 = require("./errors");
 const Page_1 = require("./Page");
 const util_1 = require("./util");
 exports.matchPages = {};
@@ -33,8 +26,11 @@ async function sendCardList(list, lang, msg, title, mobile = false) {
     }
     exports.matchPages[msg.channel.id] = new Page_1.Page(msg.author.id, cards);
     const m = await msg.channel.createMessage(generateCardList(msg.channel.id, lang, title));
-    if (!(m.channel instanceof Eris.PrivateChannel)) {
+    if (util_1.canReact(m)) {
         await addMatchButtons(m, lang, mobile, title);
+    }
+    else {
+        await msg.channel.createMessage(errors_1.Errors.ERROR_REACT_FAILURE);
     }
     return m;
 }

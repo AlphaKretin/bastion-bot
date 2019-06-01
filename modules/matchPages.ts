@@ -4,8 +4,9 @@ import { ICardList } from "ygopro-data/dist/module/cards";
 import { addReactionButton } from "./bot";
 import { sendCardProfile } from "./cardSearch";
 import { data } from "./data";
+import { Errors } from "./errors";
 import { Page } from "./Page";
-import { numToEmoji } from "./util";
+import { canReact, numToEmoji } from "./util";
 
 export const matchPages: { [channelID: string]: Page<Card> } = {};
 
@@ -34,8 +35,10 @@ export async function sendCardList(
     }
     matchPages[msg.channel.id] = new Page<Card>(msg.author.id, cards);
     const m = await msg.channel.createMessage(generateCardList(msg.channel.id, lang, title));
-    if (!(m.channel instanceof Eris.PrivateChannel)) {
+    if (canReact(m)) {
         await addMatchButtons(m, lang, mobile, title);
+    } else {
+        await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
     }
     return m;
 }
