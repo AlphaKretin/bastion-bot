@@ -71,7 +71,7 @@ bot.on("messageCreate", async msg => {
         msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
         const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
             msg.channel.createMessage("Error!\n" + e);
-            await msg.removeReaction("🕙");
+            await msg.removeReaction("🕙").catch(ignore);
         });
         await msg.removeReaction("🕙").catch(ignore);
         if (m) {
@@ -111,7 +111,7 @@ bot.on("messageUpdate", async msg => {
         msg.addReaction("🕙").catch(ignore); // TODO: fix error instead of blackholing it
         const m = await cmd.execute(msg, cmdName.endsWith(".m")).catch(async e => {
             msg.channel.createMessage("Error!\n" + e);
-            await msg.removeReaction("🕙");
+            await msg.removeReaction("🕙").catch(ignore);
         });
         await msg.removeReaction("🕙").catch(ignore);
         if (m) {
