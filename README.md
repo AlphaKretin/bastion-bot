@@ -1,6 +1,6 @@
 # Bastion
 
-__Currently undergoing rework, documentation is WIP.__
+__Currently undergoing rework, documentation is WIP.__ **For the README of the old (currently public) version, __[click here](https://github.com/AlphaKretin/bastion-bot/blob/962f4adc6a096db18794635dc5c2f81419ad90b1/README.md)__.**
 
 **Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the *Yu-Gi-Oh! Trading Card Game*. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
 
