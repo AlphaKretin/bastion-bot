@@ -1,12 +1,12 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data";
 import { addReactionButton } from "./bot";
-import { sendCardProfile } from "./cardSearch";
+import { generateCardProfile } from "./cardSearch";
 import { data } from "./data";
 import { Page } from "./Page";
 import { numToEmoji } from "./util";
 
-export const matchPages: { [channelID: string]: Page<Card> } = {};
+export const matchPages: { [channelID: string]: CardPage } = {};
 
 interface ICardList {
     [id: number]: Card;
@@ -35,23 +35,31 @@ export async function sendCardList(
             hist.push(card.id);
         }
     }
-    matchPages[msg.channel.id] = new Page<Card>(msg.author.id, cards);
-    const m = await msg.channel.createMessage(generateCardList(msg.channel.id, lang, title));
+    const extra: IMatchExtra = {
+        lang,
+        mobile,
+        title
+    };
+    matchPages[msg.channel.id] = new Page<Card, IMatchExtra>(msg.author.id, cards, extra);
+    const m = await msg.channel.createMessage(generateCardList(msg.channel.id));
+    matchPages[msg.channel.id].msg = m;
     if (!(m.channel instanceof Eris.PrivateChannel)) {
-        await addMatchButtons(m, lang, mobile, title);
+        await addMatchButtons(m);
     }
     return m;
 }
 
-function generateCardList(channelID: string, lang: string, title?: string): string {
+export function generateCardList(channelID: string): string {
     const page = matchPages[channelID];
     const out: string[] = [];
     const cards = page.getSpan();
     let i = 1;
+    const extra = page.extra!;
     for (const card of cards) {
-        out.push(i + page.index + ". " + card.text[lang].name);
+        out.push(i + page.index + ". " + card.text[extra.lang].name);
         i++;
     }
+    const title = extra.title;
     if (title) {
         out.unshift(
             title.replace(/%s/g, page.length.toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")"
@@ -67,27 +75,35 @@ function incrementReactionID() {
     reactionID = next;
 }
 
-async function addMatchButtons(msg: Eris.Message, lang: string, mobile: boolean, title?: string) {
+interface IMatchExtra {
+    lang: string;
+    mobile: boolean;
+    title?: string;
+}
+
+type CardPage = Page<Card, IMatchExtra>;
+
+export async function addMatchButtons(msg: Eris.Message) {
     const initialID = reactionID;
     const page = matchPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {
         await addReactionButton(msg, "⬅", async mes => {
             incrementReactionID();
             page.back(10);
-            const out = generateCardList(msg.channel.id, lang, title);
+            const out = generateCardList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, lang, mobile, title);
+            await addMatchButtons(msg);
         });
     }
     if (page.canForward(10) && reactionID === initialID) {
         await addReactionButton(msg, "➡", async mes => {
             incrementReactionID();
             page.forward(10);
-            const out = generateCardList(msg.channel.id, lang, title);
+            const out = generateCardList(msg.channel.id);
             await mes.edit(out);
             await mes.removeReactions();
-            await addMatchButtons(msg, lang, mobile, title);
+            await addMatchButtons(msg);
         });
     }
     const cards = page.getSpan();
@@ -98,7 +114,9 @@ async function addMatchButtons(msg: Eris.Message, lang: string, mobile: boolean,
         await addReactionButton(msg, numToEmoji(ind + 1)!, async mes => {
             const card = cards[ind];
             if (card) {
-                await sendCardProfile(mes, card, lang, mobile, false);
+                const extra = page.extra!;
+                const [profile] = await generateCardProfile(card, extra.lang, mes, extra.mobile);
+                await mes.edit(profile);
             }
         });
     }

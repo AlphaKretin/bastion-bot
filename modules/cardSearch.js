@@ -244,6 +244,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         throw e;
     }
 }
+exports.generateCardProfile = generateCardProfile;
 async function generateCardStats(card, lang, msg) {
     const displayEmotes = !configs_1.config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";

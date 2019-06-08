@@ -155,7 +155,7 @@ export function getColour(card: Card, msg: Eris.Message): number {
     return config.getConfig("embedColor").getValue(msg);
 }
 
-async function generateCardProfile(
+export async function generateCardProfile(
     card: Card,
     lang: string,
     msg: Eris.Message,

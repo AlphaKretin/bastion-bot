@@ -145,6 +145,7 @@ async function addLibraryButtons(msg) {
         });
     }
 }
+exports.addLibraryButtons = addLibraryButtons;
 async function addLibraryDescription(page, index, channelID) {
     const entries = page.getSpan();
     if (!(index in entries && page.msg)) {
