@@ -34,7 +34,10 @@ async function func(msg, mobile) {
             }
         }
     }
-    return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    if (cards.length > 0) {
+        return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    }
+    return await msg.channel.createMessage("Sorry, I couldn't find any cards with a name like `" + query + "`!");
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=matches.js.map

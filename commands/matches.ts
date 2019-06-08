@@ -34,7 +34,10 @@ async function func(msg: Eris.Message, mobile: boolean) {
             }
         }
     }
-    return await sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    if (cards.length > 0) {
+        return await sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    }
+    return await msg.channel.createMessage("Sorry, I couldn't find any cards with a name like `" + query + "`!");
 }
 
 export const command = new Command(names, func);

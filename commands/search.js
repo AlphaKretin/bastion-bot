@@ -37,7 +37,10 @@ async function func(msg, mobile) {
         const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    if (cards.length > 0) {
+        return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    }
+    return await msg.channel.createMessage("Sorry, I couldn't find any cards matching the text `" + query + "`!");
 }
 exports.command = new Command_1.Command(names, func);
 //# sourceMappingURL=search.js.map
