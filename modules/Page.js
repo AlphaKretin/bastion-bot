@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Page {
-    constructor(userID, list) {
+    constructor(userID, list, extra) {
         this.userID = userID;
         this.list = list;
         this.index = 0;
+        this.extra = extra;
     }
     get length() {
         return this.list.length;
