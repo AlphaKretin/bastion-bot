@@ -23,7 +23,7 @@ async function cardSearch(msg) {
     const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
-    content = msg.content.replace(badFullRegex, "");
+    content = content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
