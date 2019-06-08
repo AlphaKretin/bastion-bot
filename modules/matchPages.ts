@@ -1,6 +1,5 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data";
-import { ICardList } from "ygopro-data/dist/module/cards";
 import { addReactionButton } from "./bot";
 import { sendCardProfile } from "./cardSearch";
 import { data } from "./data";
@@ -8,6 +7,10 @@ import { Page } from "./Page";
 import { numToEmoji } from "./util";
 
 export const matchPages: { [channelID: string]: Page<Card> } = {};
+
+interface ICardList {
+    [id: number]: Card;
+}
 
 export async function sendCardList(
     list: ICardList,

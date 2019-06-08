@@ -1,7 +1,6 @@
 import * as Eris from "eris";
 import Jimp from "jimp";
-import { enums } from "ygopro-data";
-import { Card } from "ygopro-data/dist/class/Card";
+import { Card, enums } from "ygopro-data";
 import { ignore } from "../bastion";
 import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { botOpts } from "./commands";
