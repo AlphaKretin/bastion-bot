@@ -362,10 +362,16 @@ async function getCompositeImage(card) {
         if (tempCard) {
             const tempImg = await tempCard.image;
             if (tempImg) {
-                const tempCanvas = await jimp_1.default.read(tempImg);
-                await tempCanvas.resize(100, jimp_1.default.AUTO);
-                const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
-                images.push(tempImage);
+                try {
+                    const tempCanvas = await jimp_1.default.read(tempImg);
+                    await tempCanvas.resize(100, jimp_1.default.AUTO);
+                    const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
+                    images.push(tempImage);
+                }
+                catch (e) {
+                    // does not throw - should proceed with no image but alert host
+                    console.error("Image not found or invalid for %s (%s)", card.text.en.name, card.id);
+                }
             }
         }
     }
