@@ -1,7 +1,7 @@
 import * as Eris from "eris";
 import { Card } from "ygopro-data";
 import { addReactionButton } from "./bot";
-import { sendCardProfile } from "./cardSearch";
+import { generateCardProfile } from "./cardSearch";
 import { data } from "./data";
 import { Page } from "./Page";
 import { numToEmoji } from "./util";
@@ -98,7 +98,8 @@ async function addMatchButtons(msg: Eris.Message, lang: string, mobile: boolean,
         await addReactionButton(msg, numToEmoji(ind + 1)!, async mes => {
             const card = cards[ind];
             if (card) {
-                await sendCardProfile(mes, card, lang, mobile, false);
+                const [profile] = await generateCardProfile(card, lang, mes, mobile);
+                await mes.edit(profile);
             }
         });
     }

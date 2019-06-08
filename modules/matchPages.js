@@ -89,7 +89,8 @@ async function addMatchButtons(msg, lang, mobile, title) {
         await bot_1.addReactionButton(msg, util_1.numToEmoji(ind + 1), async (mes) => {
             const card = cards[ind];
             if (card) {
-                await cardSearch_1.sendCardProfile(mes, card, lang, mobile, false);
+                const [profile] = await cardSearch_1.generateCardProfile(card, lang, mes, mobile);
+                await mes.edit(profile);
             }
         });
     }
