@@ -195,5 +195,6 @@ const func = async (msg, mobile) => {
     await msg.addReaction("📬");
     return m;
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "<upload a `.ydk` file in the same message>");
 //# sourceMappingURL=deck.js.map

@@ -16,4 +16,6 @@ const func = async (msg: Eris.Message) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc = "Lists all the YGOPro Databases that Bastion is taking the data for a given card from.";
+
+export const cmd = new Command(names, func, undefined, desc, "card");

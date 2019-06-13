@@ -13,5 +13,8 @@ async function func(msg) {
     opt.setValue(msg, val);
     return await msg.channel.createMessage(opt.name + " changed to " + opt.getValue(msg));
 }
-exports.command = new Command_1.Command(names, func);
+const desc = "Allows moderators to set various per-server options for using Bastion, like the prefix.\n" +
+    "See Bastion's documentation for more detail on what you can configure.\n" +
+    "TODO: Finish docs and add link. Go yell at AlphaKretin!";
+exports.command = new Command_1.Command(names, func, undefined, desc, "option value");
 //# sourceMappingURL=config.js.map
