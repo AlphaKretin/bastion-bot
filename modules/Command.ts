@@ -8,10 +8,12 @@ interface IPermissionMap {
     };
 }
 
+type descFunc = (prefix: string) => string;
+
 export class Command {
     public names: string[];
     public readonly onEdit: boolean;
-    public desc?: string;
+    public desc?: string | descFunc;
     public usage?: string;
     private func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>;
     private condition?: (msg: Eris.Message) => boolean;
@@ -22,7 +24,7 @@ export class Command {
         names: string[],
         func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>,
         condition?: (msg: Eris.Message) => boolean,
-        desc?: string,
+        desc?: string | descFunc,
         usage?: string,
         owner: boolean = false,
         onEdit: boolean = false

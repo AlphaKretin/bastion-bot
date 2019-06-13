@@ -14,6 +14,7 @@ const func = async (msg: Eris.Message) => {
     if (cmds.length > 0) {
         const curCmd = cmds[0].cmd;
         if (curCmd.desc) {
+            const desc = typeof curCmd.desc === "string" ? curCmd.desc : curCmd.desc(prefix);
             out = "__**" + prefix + cmd.names[0] + "**__\n";
             if (cmd.names.length > 1) {
                 out += "(aka " + cmd.names.slice(1).join(", ") + ")\n";
