@@ -16,5 +16,5 @@ function cond(msg) {
     const page = libraryPages_1.libraryPages[msg.channel.id];
     return msg.channel.id in libraryPages_1.libraryPages && page !== undefined && page.userID === msg.author.id;
 }
-exports.command = new Command_1.Command(names, func, cond, undefined, true);
+exports.command = new Command_1.Command(names, func, cond, undefined, undefined, undefined, true);
 //# sourceMappingURL=desc.js.map

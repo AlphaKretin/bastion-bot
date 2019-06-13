@@ -22,6 +22,23 @@ async function executeCommand(cmd, name, msg) {
         bot_1.logDeleteMessage(msg, m);
     }
 }
+function getMatchingCommands(msg, query, usePref = true) {
+    const prefix = usePref ? configs_1.config.getConfig("prefix").getValue(msg) : "";
+    const content = query || msg.content.toLowerCase();
+    const validCmds = [];
+    for (const cmd of commands_1.commands) {
+        for (const name of cmd.names) {
+            if (content.startsWith(prefix + name)) {
+                validCmds.push({ cmd, name });
+            }
+        }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a, b) => b.name.length - a.name.length);
+    }
+    return validCmds;
+}
+exports.getMatchingCommands = getMatchingCommands;
 bot_1.bot.on("messageCreate", async (msg) => {
     // ignore bots
     if (msg.author.bot) {
@@ -35,7 +52,6 @@ bot_1.bot.on("messageCreate", async (msg) => {
         return;
     }
     const content = msg.content.toLowerCase();
-    const prefix = configs_1.config.getConfig("prefix").getValue(msg);
     if (msg.mentions.find(u => u.id === bot_1.bot.user.id) !== undefined) {
         const cmd = commands_1.commands.find(c => c.names.includes("help"));
         if (cmd) {
@@ -43,17 +59,7 @@ bot_1.bot.on("messageCreate", async (msg) => {
         }
         return;
     }
-    const validCmds = [];
-    for (const cmd of commands_1.commands) {
-        for (const name of cmd.names) {
-            if (content.startsWith(prefix + name)) {
-                validCmds.push({ cmd, name });
-            }
-        }
-    }
-    if (validCmds.length > 1) {
-        validCmds.sort((a, b) => b.name.length - a.name.length);
-    }
+    const validCmds = getMatchingCommands(msg);
     if (validCmds.length > 0) {
         const cmd = validCmds[0].cmd;
         const cmdName = validCmds[0].name;
@@ -70,20 +76,7 @@ bot_1.bot.on("messageUpdate", async (msg) => {
         return;
     }
     const content = msg.content.toLowerCase();
-    const prefix = configs_1.config.getConfig("prefix").getValue(msg);
-    const validCmds = [];
-    for (const cmd of commands_1.commands) {
-        if (cmd.onEdit) {
-            for (const name of cmd.names) {
-                if (content.startsWith(prefix + name)) {
-                    validCmds.push({ cmd, name });
-                }
-            }
-        }
-    }
-    if (validCmds.length > 1) {
-        validCmds.sort((a, b) => b.name.length - a.name.length);
-    }
+    const validCmds = getMatchingCommands(msg).filter(c => c.cmd.onEdit);
     if (validCmds.length > 0) {
         const cmd = validCmds[0].cmd;
         const cmdName = content.split(/ +/)[0];

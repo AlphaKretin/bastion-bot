@@ -15,5 +15,5 @@ async function func(msg) {
         return target;
     }
 }
-exports.command = new Command_1.Command(names, func, undefined, true);
+exports.command = new Command_1.Command(names, func, undefined, undefined, undefined, true);
 //# sourceMappingURL=update.js.map

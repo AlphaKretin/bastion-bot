@@ -35,4 +35,4 @@ function cond(msg: Eris.Message) {
     return msg.channel.id in libraryPages && page !== undefined && page.userID === msg.author.id;
 }
 
-export const command = new Command(names, func, cond, undefined, true);
+export const command = new Command(names, func, cond, undefined, undefined, undefined, true);

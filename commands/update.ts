@@ -16,4 +16,4 @@ async function func(msg: Eris.Message) {
     }
 }
 
-export const command = new Command(names, func, undefined, true);
+export const command = new Command(names, func, undefined, undefined, undefined, true);

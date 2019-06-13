@@ -29,4 +29,4 @@ async function func(msg: Eris.Message) {
     return await msg.channel.createMessage("```json\n" + output + "```");
 }
 
-export const command = new Command(names, func, undefined, true);
+export const command = new Command(names, func, undefined, undefined, undefined, true);

@@ -35,6 +35,23 @@ async function executeCommand(cmd: Command, name: string, msg: Eris.Message) {
     }
 }
 
+export function getMatchingCommands(msg: Eris.Message, query?: string, usePref: boolean = true): ICmdCheck[] {
+    const prefix = usePref ? config.getConfig("prefix").getValue(msg) : "";
+    const content = query || msg.content.toLowerCase();
+    const validCmds: ICmdCheck[] = [];
+    for (const cmd of commands) {
+        for (const name of cmd.names) {
+            if (content.startsWith(prefix + name)) {
+                validCmds.push({ cmd, name });
+            }
+        }
+    }
+    if (validCmds.length > 1) {
+        validCmds.sort((a: ICmdCheck, b: ICmdCheck) => b.name.length - a.name.length);
+    }
+    return validCmds;
+}
+
 bot.on("messageCreate", async msg => {
     // ignore bots
     if (msg.author.bot) {
@@ -48,7 +65,6 @@ bot.on("messageCreate", async msg => {
         return;
     }
     const content = msg.content.toLowerCase();
-    const prefix = config.getConfig("prefix").getValue(msg);
     if (msg.mentions.find(u => u.id === bot.user.id) !== undefined) {
         const cmd = commands.find(c => c.names.includes("help"));
         if (cmd) {
@@ -56,17 +72,7 @@ bot.on("messageCreate", async msg => {
         }
         return;
     }
-    const validCmds: ICmdCheck[] = [];
-    for (const cmd of commands) {
-        for (const name of cmd.names) {
-            if (content.startsWith(prefix + name)) {
-                validCmds.push({ cmd, name });
-            }
-        }
-    }
-    if (validCmds.length > 1) {
-        validCmds.sort((a: ICmdCheck, b: ICmdCheck) => b.name.length - a.name.length);
-    }
+    const validCmds = getMatchingCommands(msg);
     if (validCmds.length > 0) {
         const cmd = validCmds[0].cmd;
         const cmdName = validCmds[0].name;
@@ -84,20 +90,7 @@ bot.on("messageUpdate", async msg => {
         return;
     }
     const content = msg.content.toLowerCase();
-    const prefix = config.getConfig("prefix").getValue(msg);
-    const validCmds: ICmdCheck[] = [];
-    for (const cmd of commands) {
-        if (cmd.onEdit) {
-            for (const name of cmd.names) {
-                if (content.startsWith(prefix + name)) {
-                    validCmds.push({ cmd, name });
-                }
-            }
-        }
-    }
-    if (validCmds.length > 1) {
-        validCmds.sort((a: ICmdCheck, b: ICmdCheck) => b.name.length - a.name.length);
-    }
+    const validCmds = getMatchingCommands(msg).filter(c => c.cmd.onEdit);
     if (validCmds.length > 0) {
         const cmd = validCmds[0].cmd;
         const cmdName = content.split(/ +/)[0];
