@@ -12,14 +12,10 @@ const Command_1 = require("../modules/Command");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 // make import used so it's not optimised out
-function butts() {
+function getData() {
     return data_1.data;
 }
 const names = ["eval"];
-async function go(input) {
-    // tslint:disable-next-line:no-eval
-    eval(input);
-}
 async function func(msg) {
     const val = util_1.trimMsg(msg);
     let evaled;

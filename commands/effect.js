@@ -71,5 +71,6 @@ const func = async (msg, mobile) => {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Displays only the card text for a given card, without the stats.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=effect.js.map
