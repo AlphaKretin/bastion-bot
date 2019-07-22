@@ -33,7 +33,7 @@
         "@types/mkdirp": "^0.5.2",
         "@types/mz": "0.0.32",
         "@types/node": "^10.14.8",
-        "@types/node-fetch": "^2.3.4"
+        "@types/node-fetch": "^2.3.5"
     },
     "prettier": {
         "printWidth": 120,

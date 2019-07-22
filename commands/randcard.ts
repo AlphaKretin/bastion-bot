@@ -28,4 +28,9 @@ async function func(msg: Eris.Message, mobile: boolean) {
     return await sendCardProfile(msg, card, lang, mobile, image);
 }
 
-export const command = new Command(names, func);
+const desc = (prefix: string) =>
+    "Shows the profile for one random card that meets the given filters.\n" +
+    "For details on the filter system, yell at AlphaKretin to add a link here.\n" +
+    `For multiple results, try \`${prefix}search |filter\`.`;
+
+export const command = new Command(names, func, undefined, desc, "filter");

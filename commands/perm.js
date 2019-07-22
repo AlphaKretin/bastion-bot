@@ -40,5 +40,6 @@ async function perm(msg) {
         return await chan.createMessage(role.name + " no longer whitelisted for using command " + commandName + " in " + chan.mention + "!");
     }
 }
-exports.command = new Command_1.Command(["perm"], perm);
+const desc = "edits permissions? this command should be overhauled yell at AlphaKretin";
+exports.command = new Command_1.Command(["perm"], perm, undefined, desc);
 //# sourceMappingURL=perm.js.map

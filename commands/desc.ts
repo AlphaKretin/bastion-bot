@@ -19,4 +19,9 @@ function cond(msg: Eris.Message) {
     return msg.channel.id in libraryPages && page !== undefined && page.userID === msg.author.id;
 }
 
-export const command = new Command(names, func, cond, undefined, true);
+const desc = (prefix: string) =>
+    "Shows the description for a given function, constant or parameter from YGOPro's scripts," +
+    ` from a list being displayed by \`${prefix}f\`, \`${prefix}c\` or \`${prefix}param\`.\n` +
+    "Detects edited messages.";
+
+export const command = new Command(names, func, cond, desc, "index", undefined, true);

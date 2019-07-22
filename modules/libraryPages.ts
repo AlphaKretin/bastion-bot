@@ -128,7 +128,7 @@ function incrementReactionID() {
     reactionID = next;
 }
 
-async function addLibraryButtons(msg: Eris.Message) {
+export async function addLibraryButtons(msg: Eris.Message) {
     const initialID = reactionID;
     const page = libraryPages[msg.channel.id];
     if (page.canBack() && reactionID === initialID) {

@@ -18,5 +18,6 @@ const func = async (msg) => {
         }
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for a Counter (e.g., Bushido Counter) by name or YGOPro hexadecimal value, and displays both";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "name|value");
 //# sourceMappingURL=counter.js.map

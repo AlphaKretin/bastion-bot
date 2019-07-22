@@ -5,16 +5,11 @@ import { data } from "../modules/data";
 import { trimMsg } from "../modules/util";
 
 // make import used so it's not optimised out
-function butts() {
+function getData() {
     return data;
 }
 
 const names: string[] = ["eval"];
-
-async function go(input: string): Promise<any> {
-    // tslint:disable-next-line:no-eval
-    eval(input);
-}
 
 async function func(msg: Eris.Message) {
     const val = trimMsg(msg);
@@ -29,4 +24,4 @@ async function func(msg: Eris.Message) {
     return await msg.channel.createMessage("```json\n" + output + "```");
 }
 
-export const command = new Command(names, func, undefined, true);
+export const command = new Command(names, func, undefined, undefined, undefined, true);

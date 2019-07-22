@@ -8,9 +8,13 @@ interface IPermissionMap {
     };
 }
 
+type descFunc = (prefix: string) => string;
+
 export class Command {
     public names: string[];
     public readonly onEdit: boolean;
+    public desc?: string | descFunc;
+    public usage?: string;
     private func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>;
     private condition?: (msg: Eris.Message) => boolean;
     private permPath: string;
@@ -20,6 +24,8 @@ export class Command {
         names: string[],
         func: (msg: Eris.Message, mobile: boolean) => Promise<void | Eris.Message>,
         condition?: (msg: Eris.Message) => boolean,
+        desc?: string | descFunc,
+        usage?: string,
         owner: boolean = false,
         onEdit: boolean = false
     ) {
@@ -39,6 +45,8 @@ export class Command {
         }
         this.owner = owner;
         this.onEdit = onEdit;
+        this.desc = desc;
+        this.usage = usage;
     }
 
     public async execute(msg: Eris.Message, mobile: boolean = false): Promise<void | Eris.Message> {
@@ -69,6 +77,14 @@ export class Command {
             await fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4));
             return true;
         }
+    }
+    public isCanExecute(msg: Eris.Message): boolean {
+        if (this.owner) {
+            if (!owners.includes(msg.author.id)) {
+                return false;
+            }
+        }
+        return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
 
     private checkChannelPermissions(channelID: string, guild: Eris.Guild, rs: string[] | undefined): boolean {
@@ -111,13 +127,5 @@ export class Command {
             // if it's a DM, the user can go hog wild
             return true;
         }
-    }
-    private isCanExecute(msg: Eris.Message): boolean {
-        if (this.owner) {
-            if (!owners.includes(msg.author.id)) {
-                return false;
-            }
-        }
-        return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
 }

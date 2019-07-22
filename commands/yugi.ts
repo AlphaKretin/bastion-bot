@@ -19,4 +19,6 @@ const func = async (msg: Eris.Message) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc = "Searches for a page on the Yugipedia Yu-Gi-Oh! Wiki using their own search system, and displays the URL.";
+
+export const cmd = new Command(names, func, undefined, desc, "page");

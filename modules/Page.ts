@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-export class Page<T> {
+export class Page<T, Extra = undefined> {
     get length(): number {
         return this.list.length;
     }
@@ -14,11 +14,13 @@ export class Page<T> {
     public userID: string;
     public index: number;
     public msg: Eris.Message | undefined;
+    public extra?: Extra;
     private list: T[];
-    constructor(userID: string, list: T[]) {
+    constructor(userID: string, list: T[], extra?: Extra) {
         this.userID = userID;
         this.list = list;
         this.index = 0;
+        this.extra = extra;
     }
 
     public getCard(index: number): T {

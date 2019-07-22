@@ -32,4 +32,6 @@ const func = async (msg: Eris.Message, mobile: boolean) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc = "Displays only the stats for a given card, without the card text.";
+
+export const cmd = new Command(names, func, undefined, desc, "card");

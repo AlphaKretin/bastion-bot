@@ -12,5 +12,9 @@ async function func(msg) {
     }
     return msg.channel.createMessage("Sorry, I couldn't find any params matching `" + content + "`!");
 }
-exports.command = new Command_1.Command(names, func);
+const desc = (prefix) => "Searches by name for a function parameter from YGOPro Percy scripts, " +
+    "and returns a paginated list of all matching results.\n" +
+    `Use arrow reactions or \`${prefix}p<number>\` to navigate pages.\n` +
+    `Use number reactions or \`${prefix}d<number>\` to show the description for a parameter.`;
+exports.command = new Command_1.Command(names, func, undefined, desc, "query");
 //# sourceMappingURL=param.js.map

@@ -1,7 +1,6 @@
 import * as Eris from "eris";
 import Jimp from "jimp";
-import { enums } from "ygopro-data";
-import { Card } from "ygopro-data/dist/class/Card";
+import { Card, enums } from "ygopro-data";
 import { ignore } from "../bastion";
 import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { botOpts } from "./commands";
@@ -29,7 +28,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
     const fullBrackets = config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
-    content = msg.content.replace(badFullRegex, "");
+    content = content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
@@ -161,7 +160,7 @@ export function getColour(card: Card, msg: Eris.Message): number {
     return config.getConfig("embedColor").getValue(msg);
 }
 
-async function generateCardProfile(
+export async function generateCardProfile(
     card: Card,
     lang: string,
     msg: Eris.Message,
@@ -387,10 +386,15 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
         if (tempCard) {
             const tempImg = await tempCard.image;
             if (tempImg) {
-                const tempCanvas = await Jimp.read(tempImg);
-                await tempCanvas.resize(100, Jimp.AUTO);
-                const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
-                images.push(tempImage);
+                try {
+                    const tempCanvas = await Jimp.read(tempImg);
+                    await tempCanvas.resize(100, Jimp.AUTO);
+                    const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
+                    images.push(tempImage);
+                } catch (e) {
+                    // does not throw - should proceed with no image but alert host
+                    console.error("Image not found or invalid for %s (%s)", card.text.en.name, card.id);
+                }
             }
         }
     }

@@ -18,17 +18,23 @@ async function func(msg) {
     else if (distance < 0) {
         page.back(-distance * 10);
     }
-    if (page.msg) {
-        let out = page.msg.content;
+    const mes = page.msg;
+    if (mes) {
+        let out = mes.content;
         if (page.currentPage !== curPage) {
             out = libraryPages_1.generateLibraryList(msg.channel.id);
         }
-        await page.msg.edit(out);
+        await mes.edit(out);
+        await mes.removeReactions();
+        await libraryPages_1.addLibraryButtons(mes);
     }
 }
 function cond(msg) {
     const page = libraryPages_1.libraryPages[msg.channel.id];
     return msg.channel.id in libraryPages_1.libraryPages && page !== undefined && page.userID === msg.author.id;
 }
-exports.command = new Command_1.Command(names, func, cond, undefined, true);
+const desc = (prefix) => "Changes the page of function, constant or parameter results from YGOPro's scripts," +
+    ` for a list being displayed by \`${prefix}f\`, \`${prefix}c\` or \`${prefix}param\`.\n` +
+    "Detects edited messages.";
+exports.command = new Command_1.Command(names, func, cond, desc, "index", undefined, true);
 //# sourceMappingURL=page.js.map

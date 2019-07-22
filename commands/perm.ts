@@ -36,4 +36,6 @@ async function perm(msg: Eris.Message) {
     }
 }
 
-export const command = new Command(["perm"], perm);
+const desc = "edits permissions? this command should be overhauled yell at AlphaKretin";
+
+export const command = new Command(["perm"], perm, undefined, desc);

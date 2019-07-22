@@ -18,5 +18,6 @@ const func = async (msg) => {
         }
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for an archetype setcode (e.g., Ally of Justice) by name or YGOPro hexadecimal value, and displays both";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "set");
 //# sourceMappingURL=set.js.map

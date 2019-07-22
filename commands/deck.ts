@@ -196,4 +196,6 @@ const func = async (msg: Eris.Message, mobile: boolean) => {
     return m;
 };
 
-export const cmd = new Command(names, func);
+const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file.";
+
+export const cmd = new Command(names, func, undefined, desc, "<upload a `.ydk` file in the same message>");

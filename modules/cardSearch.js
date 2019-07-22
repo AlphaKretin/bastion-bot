@@ -24,7 +24,7 @@ async function cardSearch(msg) {
     const fullBrackets = configs_1.config.getConfig("fullBrackets").getValue(msg);
     // strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
     const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}");
-    content = msg.content.replace(badFullRegex, "");
+    content = content.replace(badFullRegex, "");
     const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
     let fullResult = fullRegex.exec(content);
     while (fullResult !== null) {
@@ -250,6 +250,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
         throw e;
     }
 }
+exports.generateCardProfile = generateCardProfile;
 async function generateCardStats(card, lang, msg) {
     const displayEmotes = !configs_1.config.getConfig("suppressEmotes").getValue(msg);
     let stats = "";
@@ -368,10 +369,16 @@ async function getCompositeImage(card) {
         if (tempCard) {
             const tempImg = await tempCard.image;
             if (tempImg) {
-                const tempCanvas = await jimp_1.default.read(tempImg);
-                await tempCanvas.resize(100, jimp_1.default.AUTO);
-                const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
-                images.push(tempImage);
+                try {
+                    const tempCanvas = await jimp_1.default.read(tempImg);
+                    await tempCanvas.resize(100, jimp_1.default.AUTO);
+                    const tempImage = await tempCanvas.getBufferAsync(tempCanvas.getMIME());
+                    images.push(tempImage);
+                }
+                catch (e) {
+                    // does not throw - should proceed with no image but alert host
+                    console.error("Image not found or invalid for %s (%s)", card.text.en.name, card.id);
+                }
             }
         }
     }

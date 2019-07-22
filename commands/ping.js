@@ -9,5 +9,6 @@ const func = async (msg) => {
     await mes.edit("Pong! (" + ping.getMilliseconds() + " ms)");
     return mes;
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Sends a basic reply to test connectivity, and notes how long it took.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc);
 //# sourceMappingURL=ping.js.map

@@ -40,7 +40,17 @@ async function func(msg: Eris.Message, mobile: boolean) {
         const filter = new Filter(await Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
-    return await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    if (cards.length > 0) {
+        return await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+    }
+    return await msg.channel.createMessage("Sorry, I couldn't find any cards matching the text `" + query + "`!");
 }
 
-export const command = new Command(names, func);
+const desc = (prefix: string) =>
+    "Searches for cards by exact match in the card name and/or text, " +
+    "and returns a paginated list of all results.\n" +
+    `Use arrow reactions or \`${prefix}\`mp<number> to navigate pages.\n` +
+    `Use number reactions or \`${prefix}\`md<number> to show the profile for a card.\n` +
+    "For details on the filter system, yell at AlphaKretin to add a link here.";
+
+export const command = new Command(names, func, undefined, desc, "query|filter");

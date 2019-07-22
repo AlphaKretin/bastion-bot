@@ -34,7 +34,15 @@ async function func(msg, mobile) {
             }
         }
     }
-    return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    if (cards.length > 0) {
+        return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+    }
+    return await msg.channel.createMessage("Sorry, I couldn't find any cards with a name like `" + query + "`!");
 }
-exports.command = new Command_1.Command(names, func);
+const desc = (prefix) => "Searches for cards by fuzzy-matching the card name, " +
+    "and returns a paginated list of all results.\n" +
+    `Use arrow reactions or \`${prefix}mp<number>\` to navigate pages.\n` +
+    `Use number reactions or \`${prefix}md<number>\` to show the profile for a card.\n` +
+    "For details on the filter system, yell at AlphaKretin to add a link here.";
+exports.command = new Command_1.Command(names, func, undefined, desc, "query|filters");
 //# sourceMappingURL=matches.js.map

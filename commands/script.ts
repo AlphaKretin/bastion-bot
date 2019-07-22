@@ -56,4 +56,8 @@ const func = async (msg: Eris.Message, mobile: boolean) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc =
+    "Searches for a card by ID or name, and displays a link to its card script on GitHub if available. " +
+    "Also displays the script in Discord if it's short enough to fit in the message";
+
+export const cmd = new Command(names, func, undefined, desc, "card");
