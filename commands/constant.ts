@@ -14,4 +14,10 @@ async function func(msg: Eris.Message) {
     return msg.channel.createMessage("Sorry, I couldn't find any constants matching `" + content + "`!");
 }
 
-export const command = new Command(names, func);
+const desc = (prefix: string) =>
+    "Searches by name for a constant from YGOPro Percy scripts, " +
+    "and returns a paginated list of all matching results.\n" +
+    `Use arrow reactions or \`${prefix}\`p<number> to navigate pages.\n` +
+    `Use number reactions or \`${prefix}\`d<number> to show the description for a constant.`;
+
+export const command = new Command(names, func, undefined, desc, "query");

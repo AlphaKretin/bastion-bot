@@ -14,5 +14,7 @@ const func = async (msg) => {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for a card by ID or name, and shows both without any extra info.\n" +
+    "Besides the obvious, useful for quick name translations, since all card searches support language options.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=id.js.map

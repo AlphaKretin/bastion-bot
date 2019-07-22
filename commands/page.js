@@ -33,5 +33,8 @@ function cond(msg) {
     const page = libraryPages_1.libraryPages[msg.channel.id];
     return msg.channel.id in libraryPages_1.libraryPages && page !== undefined && page.userID === msg.author.id;
 }
-exports.command = new Command_1.Command(names, func, cond, undefined, true);
+const desc = (prefix) => "Changes the page of function, constant or parameter results from YGOPro's scripts," +
+    ` for a list being displayed by \`${prefix}f\`, \`${prefix}c\` or \`${prefix}param\`.\n` +
+    "Detects edited messages.";
+exports.command = new Command_1.Command(names, func, cond, desc, "index", undefined, true);
 //# sourceMappingURL=page.js.map

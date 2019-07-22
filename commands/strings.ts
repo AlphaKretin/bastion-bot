@@ -28,4 +28,6 @@ const func = async (msg: Eris.Message) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc = "Searches for a card by ID or name, and displays its YGOPro database strings.";
+
+export const cmd = new Command(names, func, undefined, desc, "card");

@@ -11,7 +11,7 @@ const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
 const bot_1 = require("./bot");
 class Command {
-    constructor(names, func, condition, owner = false, onEdit = false) {
+    constructor(names, func, condition, desc, usage, owner = false, onEdit = false) {
         if (names.length === 0) {
             throw new Error("No names defined!");
         }
@@ -29,6 +29,8 @@ class Command {
         }
         this.owner = owner;
         this.onEdit = onEdit;
+        this.desc = desc;
+        this.usage = usage;
     }
     async execute(msg, mobile = false) {
         if (this.isCanExecute(msg)) {
@@ -58,6 +60,14 @@ class Command {
             await fs.writeFile(this.permPath, JSON.stringify(this.permissions, null, 4));
             return true;
         }
+    }
+    isCanExecute(msg) {
+        if (this.owner) {
+            if (!bot_1.owners.includes(msg.author.id)) {
+                return false;
+            }
+        }
+        return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
     checkChannelPermissions(channelID, guild, rs) {
         if (rs && rs.length > 0) {
@@ -103,14 +113,6 @@ class Command {
             // if it's a DM, the user can go hog wild
             return true;
         }
-    }
-    isCanExecute(msg) {
-        if (this.owner) {
-            if (!bot_1.owners.includes(msg.author.id)) {
-                return false;
-            }
-        }
-        return this.checkPermissions(msg) && this.condition ? this.condition(msg) : true;
     }
 }
 exports.Command = Command;

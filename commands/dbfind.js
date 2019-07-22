@@ -14,5 +14,6 @@ const func = async (msg) => {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Lists all the YGOPro Databases that Bastion is taking the data for a given card from.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=dbfind.js.map

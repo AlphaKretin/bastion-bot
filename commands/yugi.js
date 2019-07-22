@@ -20,5 +20,6 @@ const func = async (msg) => {
         }
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for a page on the Yugipedia Yu-Gi-Oh! Wiki using their own search system, and displays the URL.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "page");
 //# sourceMappingURL=yugi.js.map

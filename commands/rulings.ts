@@ -49,4 +49,7 @@ const func = async (msg: Eris.Message) => {
     );
 };
 
-export const cmd = new Command(names, func);
+const desc =
+    "Searches for a card by ID or name, and displays a link to the Japanese OCG rulings database for that card";
+
+export const cmd = new Command(names, func, undefined, desc, "card");

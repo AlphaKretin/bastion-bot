@@ -17,5 +17,7 @@ const func = async (msg) => {
             "`");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Recalls one of a variety of useful links, such as common ruling resources.\n" +
+    "Call without a link name to see a list of valid names.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "name");
 //# sourceMappingURL=link.js.map

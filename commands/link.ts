@@ -18,4 +18,8 @@ const func = async (msg: Eris.Message) => {
     }
 };
 
-export const cmd = new Command(names, func);
+const desc =
+    "Recalls one of a variety of useful links, such as common ruling resources.\n" +
+    "Call without a link name to see a list of valid names.";
+
+export const cmd = new Command(names, func, undefined, desc, "name");

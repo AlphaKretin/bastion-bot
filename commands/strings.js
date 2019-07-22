@@ -29,5 +29,6 @@ const func = async (msg) => {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for a card by ID or name, and displays its YGOPro database strings.";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=strings.js.map
