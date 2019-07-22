@@ -42,5 +42,5 @@ const func = async (msg) => {
         "! I need either the English name and a successful connection to Yugipedia, or the Japanese name.");
 };
 const desc = "Searches for a card by ID or name, and displays a link to the Japanese OCG rulings database for that card";
-exports.cmd = new Command_1.Command(names, func, undefined, desc);
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=rulings.js.map

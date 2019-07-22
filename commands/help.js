@@ -14,14 +14,14 @@ const func = async (msg) => {
         const curCmd = cmds[0].cmd;
         if (curCmd.desc) {
             const desc = typeof curCmd.desc === "string" ? curCmd.desc : curCmd.desc(prefix);
-            out = "__**" + prefix + exports.cmd.names[0] + "**__\n";
-            if (exports.cmd.names.length > 1) {
-                out += "(aka " + exports.cmd.names.slice(1).join(", ") + ")\n";
+            out = "__**" + prefix + curCmd.names[0] + "**__\n";
+            if (curCmd.names.length > 1) {
+                out += "(aka " + curCmd.names.slice(1).join(", ") + ")\n";
             }
-            if (exports.cmd.usage) {
-                out += "**Usage**: `" + prefix + exports.cmd.names[0] + " " + exports.cmd.usage + "`\n";
+            if (curCmd.usage) {
+                out += "**Usage**: `" + prefix + curCmd.names[0] + " " + curCmd.usage + "`\n";
             }
-            out += exports.cmd.desc;
+            out += desc;
             return await msg.channel.createMessage(out);
         }
         else {

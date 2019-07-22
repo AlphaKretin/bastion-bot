@@ -15,14 +15,14 @@ const func = async (msg: Eris.Message) => {
         const curCmd = cmds[0].cmd;
         if (curCmd.desc) {
             const desc = typeof curCmd.desc === "string" ? curCmd.desc : curCmd.desc(prefix);
-            out = "__**" + prefix + cmd.names[0] + "**__\n";
-            if (cmd.names.length > 1) {
-                out += "(aka " + cmd.names.slice(1).join(", ") + ")\n";
+            out = "__**" + prefix + curCmd.names[0] + "**__\n";
+            if (curCmd.names.length > 1) {
+                out += "(aka " + curCmd.names.slice(1).join(", ") + ")\n";
             }
-            if (cmd.usage) {
-                out += "**Usage**: `" + prefix + cmd.names[0] + " " + cmd.usage + "`\n";
+            if (curCmd.usage) {
+                out += "**Usage**: `" + prefix + curCmd.names[0] + " " + curCmd.usage + "`\n";
             }
-            out += cmd.desc;
+            out += desc;
             return await msg.channel.createMessage(out);
         } else {
             out = "Sorry, I don't have a description for this command yet! Go yell at AlphaKretin!\n";
