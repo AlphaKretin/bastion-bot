@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../modules/Command");
 const libraryPages_1 = require("../modules/libraryPages");
+const util_1 = require("../modules/util");
 const names = ["p"];
 async function func(msg) {
     const num = /\d+/.exec(msg.content);
@@ -25,8 +26,10 @@ async function func(msg) {
             out = libraryPages_1.generateLibraryList(msg.channel.id);
         }
         await mes.edit(out);
-        await mes.removeReactions();
-        await libraryPages_1.addLibraryButtons(mes);
+        if (util_1.canReact(mes)) {
+            await mes.removeReactions();
+            await libraryPages_1.addLibraryButtons(mes);
+        }
     }
 }
 function cond(msg) {

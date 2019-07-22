@@ -1,6 +1,7 @@
 import * as Eris from "eris";
 import { Command } from "../modules/Command";
 import { addMatchButtons, generateCardList, matchPages } from "../modules/matchPages";
+import { canReact } from "../modules/util";
 
 const names: string[] = ["mp", "matchpage"];
 
@@ -25,8 +26,10 @@ async function func(msg: Eris.Message) {
             out = generateCardList(msg.channel.id);
         }
         await mes.edit(out);
-        await mes.removeReactions();
-        await addMatchButtons(mes);
+        if (canReact(mes)) {
+            await mes.removeReactions();
+            await addMatchButtons(mes);
+        }
     }
 }
 
