@@ -24,5 +24,8 @@ function cond(msg) {
     const page = matchPages_1.matchPages[msg.channel.id];
     return msg.channel.id in matchPages_1.matchPages && page !== undefined && page.userID === msg.author.id;
 }
-exports.command = new Command_1.Command(names, func, cond, undefined, undefined, undefined, true);
+const desc = (prefix) => "Shows the profile for a given card," +
+    ` from a list being displayed by \`${prefix}match\` or \`${prefix}search\`.\n` +
+    "Detects edited messages.";
+exports.command = new Command_1.Command(names, func, cond, desc, "index", undefined, true);
 //# sourceMappingURL=mDesc.js.map

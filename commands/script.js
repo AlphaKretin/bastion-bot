@@ -53,5 +53,7 @@ const func = async (msg, mobile) => {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
     }
 };
-exports.cmd = new Command_1.Command(names, func);
+const desc = "Searches for a card by ID or name, and displays a link to its card script on GitHub if available. " +
+    "Also displays the script in Discord if it's short enough to fit in the message";
+exports.cmd = new Command_1.Command(names, func, undefined, desc, "card");
 //# sourceMappingURL=script.js.map

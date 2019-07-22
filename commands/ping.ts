@@ -10,4 +10,6 @@ const func = async (msg: Eris.Message) => {
     return mes;
 };
 
-export const cmd = new Command(names, func);
+const desc = "Sends a basic reply to test connectivity, and notes how long it took.";
+
+export const cmd = new Command(names, func, undefined, desc);

@@ -35,4 +35,9 @@ function cond(msg: Eris.Message) {
     return msg.channel.id in matchPages && page !== undefined && page.userID === msg.author.id;
 }
 
-export const command = new Command(names, func, cond, undefined, undefined, undefined, true);
+const desc = (prefix: string) =>
+    "Changes the page of card results," +
+    ` for a list being displayed by \`${prefix}match\` or \`${prefix}search\`.\n` +
+    "Detects edited messages.";
+
+export const command = new Command(names, func, cond, desc, undefined, undefined, true);
