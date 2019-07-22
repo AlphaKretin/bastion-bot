@@ -28,6 +28,6 @@ async function func(msg, mobile) {
 }
 const desc = (prefix) => "Shows the profile for one random card that meets the given filters.\n" +
     "For details on the filter system, yell at AlphaKretin to add a link here.\n" +
-    `For multiple results, try ${prefix}search |filter`;
+    `For multiple results, try \`${prefix}search |filter\`.`;
 exports.command = new Command_1.Command(names, func, undefined, desc, "filter");
 //# sourceMappingURL=randcard.js.map

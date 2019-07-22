@@ -14,7 +14,7 @@ async function func(msg) {
 }
 const desc = (prefix) => "Searches by name for a constant from YGOPro Percy scripts, " +
     "and returns a paginated list of all matching results.\n" +
-    `Use arrow reactions or \`${prefix}\`p<number> to navigate pages.\n` +
-    `Use number reactions or \`${prefix}\`d<number> to show the description for a constant.`;
+    `Use arrow reactions or \`${prefix}p<number>\` to navigate pages.\n` +
+    `Use number reactions or \`${prefix}d<number>\` to show the description for a constant.`;
 exports.command = new Command_1.Command(names, func, undefined, desc, "query");
 //# sourceMappingURL=constant.js.map

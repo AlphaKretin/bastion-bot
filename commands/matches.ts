@@ -43,8 +43,8 @@ async function func(msg: Eris.Message, mobile: boolean) {
 const desc = (prefix: string) =>
     "Searches for cards by fuzzy-matching the card name, " +
     "and returns a paginated list of all results.\n" +
-    `Use arrow reactions or \`${prefix}\`mp<number> to navigate pages.\n` +
-    `Use number reactions or \`${prefix}\`md<number> to show the profile for a card.\n` +
+    `Use arrow reactions or \`${prefix}mp<number>\` to navigate pages.\n` +
+    `Use number reactions or \`${prefix}md<number>\` to show the profile for a card.\n` +
     "For details on the filter system, yell at AlphaKretin to add a link here.";
 
 export const command = new Command(names, func, undefined, desc, "query|filters");
