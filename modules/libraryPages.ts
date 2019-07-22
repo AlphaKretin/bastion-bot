@@ -2,8 +2,9 @@ import * as Eris from "eris";
 import * as fs from "mz/fs";
 import { extractSheets, SheetResults } from "spreadsheet-to-json";
 import { addReactionButton } from "./bot";
+import { Errors } from "./errors";
 import { Page } from "./Page";
-import { numToEmoji } from "./util";
+import { canReact, numToEmoji } from "./util";
 
 const extract = (spreadsheetKey: string): Promise<SheetResults> =>
     new Promise((resolve, reject) => {
@@ -90,8 +91,10 @@ export async function sendLibrary(list: ILibraryData[], msg: Eris.Message) {
     libraryPages[msg.channel.id] = new Page<ILibraryData>(msg.author.id, list);
     const m = await msg.channel.createMessage(generateLibraryList(msg.channel.id));
     libraryPages[msg.channel.id].msg = m;
-    if (!(m.channel instanceof Eris.PrivateChannel)) {
+    if (canReact(m)) {
         await addLibraryButtons(m);
+    } else {
+        await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
     }
     return m;
 }

@@ -6,8 +6,9 @@ import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { botOpts } from "./commands";
 import { colors, config, emotes } from "./configs";
 import { data, imageExt } from "./data";
+import { Errors } from "./errors";
 import { strings } from "./strings";
-import { getLang } from "./util";
+import { canReact, getLang } from "./util";
 
 function reEscape(s: string): string {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -131,14 +132,18 @@ export async function sendCardProfile(
             }
         }
         const m = await msg.channel.createMessage(profile[0]);
-        for (let i = 1; i < profile.length; i++) {
-            await addReactionButton(m, "1\u20e3", async (_, userID) => {
-                const user = bot.users.get(userID);
-                if (user) {
-                    const chan = await user.getDMChannel();
-                    chan.createMessage(profile[i]);
-                }
-            });
+        if (canReact(m)) {
+            for (let i = 1; i < profile.length; i++) {
+                await addReactionButton(m, "1\u20e3", async (_, userID) => {
+                    const user = bot.users.get(userID);
+                    if (user) {
+                        const chan = await user.getDMChannel();
+                        chan.createMessage(profile[i]);
+                    }
+                });
+            }
+        } else {
+            await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
         }
         return m;
     }

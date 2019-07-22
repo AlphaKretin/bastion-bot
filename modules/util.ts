@@ -1,4 +1,5 @@
 import * as Eris from "eris";
+import { bot } from "./bot";
 import { config } from "./configs";
 import { data } from "./data";
 import { Errors } from "./errors";
@@ -70,4 +71,12 @@ export function numToEmoji(n: number): string | undefined {
     if (n === 100) {
         return "💯";
     }
+}
+
+export function canReact(msg: Eris.Message) {
+    const chan = msg.channel;
+    if (!(chan instanceof Eris.GuildChannel)) {
+        return false;
+    }
+    return chan.permissionsOf(bot.user.id).has("addReactions");
 }

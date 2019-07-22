@@ -7,10 +7,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
 const spreadsheet_to_json_1 = require("spreadsheet-to-json");
 const bot_1 = require("./bot");
+const errors_1 = require("./errors");
 const Page_1 = require("./Page");
 const util_1 = require("./util");
 const extract = (spreadsheetKey) => new Promise((resolve, reject) => {
@@ -81,8 +81,11 @@ async function sendLibrary(list, msg) {
     exports.libraryPages[msg.channel.id] = new Page_1.Page(msg.author.id, list);
     const m = await msg.channel.createMessage(generateLibraryList(msg.channel.id));
     exports.libraryPages[msg.channel.id].msg = m;
-    if (!(m.channel instanceof Eris.PrivateChannel)) {
+    if (util_1.canReact(m)) {
         await addLibraryButtons(m);
+    }
+    else {
+        await msg.channel.createMessage(errors_1.Errors.ERROR_REACT_FAILURE);
     }
     return m;
 }

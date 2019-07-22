@@ -1,7 +1,7 @@
 import * as Eris from "eris";
 import Jimp from "jimp";
 import { Card, Filter } from "ygopro-data";
-import { gameData } from "../bastion";
+import { gameData, ignore } from "../bastion";
 import { bot } from "./bot";
 import { config } from "./configs";
 import { data } from "./data";
@@ -271,7 +271,7 @@ export async function answerTrivia(msg: Eris.Message) {
         );
     } else if (fixMes.includes(fixTriviaMessage(gameData[channel.id].name))) {
         gameData[channel.id].noAttCount = 0;
-        msg.addReaction(thumbsup);
+        await msg.addReaction(thumbsup).catch(ignore);
         out = getDisplayName(msg) + " got it! The answer was **" + gameData[channel.id].name + "**!\n";
         if (gameData[channel.id].score[msg.author.id]) {
             gameData[channel.id].score[msg.author.id]++;

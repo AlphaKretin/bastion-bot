@@ -271,7 +271,7 @@ async function answerTrivia(msg) {
     }
     else if (fixMes.includes(fixTriviaMessage(bastion_1.gameData[channel.id].name))) {
         bastion_1.gameData[channel.id].noAttCount = 0;
-        msg.addReaction(thumbsup);
+        await msg.addReaction(thumbsup).catch(bastion_1.ignore);
         out = getDisplayName(msg) + " got it! The answer was **" + bastion_1.gameData[channel.id].name + "**!\n";
         if (bastion_1.gameData[channel.id].score[msg.author.id]) {
             bastion_1.gameData[channel.id].score[msg.author.id]++;

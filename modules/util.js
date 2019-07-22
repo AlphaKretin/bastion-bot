@@ -8,6 +8,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
+const bot_1 = require("./bot");
 const configs_1 = require("./configs");
 const data_1 = require("./data");
 const errors_1 = require("./errors");
@@ -75,4 +76,12 @@ function numToEmoji(n) {
     }
 }
 exports.numToEmoji = numToEmoji;
+function canReact(msg) {
+    const chan = msg.channel;
+    if (!(chan instanceof Eris.GuildChannel)) {
+        return false;
+    }
+    return chan.permissionsOf(bot_1.bot.user.id).has("addReactions");
+}
+exports.canReact = canReact;
 //# sourceMappingURL=util.js.map
