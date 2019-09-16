@@ -1,12 +1,12 @@
 # Bastion
 
-__Currently undergoing rework, documentation is WIP.__ **For the README of the old (currently public) version, __[click here](https://github.com/AlphaKretin/bastion-bot/blob/962f4adc6a096db18794635dc5c2f81419ad90b1/README.md)__.**
+**Currently undergoing rework, documentation is WIP.** **For the README of the old (currently public) version, **[click here](https://github.com/AlphaKretin/bastion-bot/blob/962f4adc6a096db18794635dc5c2f81419ad90b1/README.md)**.**
 
-**Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the *Yu-Gi-Oh! Trading Card Game*. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
+**Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the _Yu-Gi-Oh! Trading Card Game_. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
 
 ## Quick Links
 
--   Invite Bastion to your server: https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288
+-   Invite Bastion to your server: https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=378944
 -   Join my server, for technical support and status updates: https://discord.gg/GrMGspZ
 -   Support the development of this bot on Patreon: https://www.patreon.com/alphakretinbots
 
