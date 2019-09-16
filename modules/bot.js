@@ -10,14 +10,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Eris = __importStar(require("eris"));
 const fs = __importStar(require("mz/fs"));
 const ReactionButton_1 = require("./ReactionButton");
+const util_1 = require("./util");
 const reactionButtons = {};
 const reactionTimeouts = {};
 const deleteMessages = {};
 const deleteTimers = {};
 async function removeButtons(msg) {
     if (msg) {
-        await msg.removeReactions();
         delete reactionButtons[msg.id];
+        delete reactionTimeouts[msg.id];
+        if (util_1.canReact(msg)) {
+            await msg.removeReactions();
+        }
     }
 }
 exports.removeButtons = removeButtons;
@@ -31,8 +35,6 @@ async function addReactionButton(msg, emoji, func) {
     if (!(msg.id in reactionTimeouts)) {
         const time = setTimeout(async () => {
             await removeButtons(msg);
-            delete reactionButtons[msg.id];
-            delete reactionTimeouts[msg.id];
         }, 1000 * 60);
         reactionTimeouts[msg.id] = time;
     }

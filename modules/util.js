@@ -81,7 +81,8 @@ function canReact(msg) {
     if (!(chan instanceof Eris.GuildChannel)) {
         return false;
     }
-    return chan.permissionsOf(bot_1.bot.user.id).has("addReactions");
+    const perms = chan.permissionsOf(bot_1.bot.user.id);
+    return perms.has("addReactions") && perms.has("readMessageHistory");
 }
 exports.canReact = canReact;
 //# sourceMappingURL=util.js.map

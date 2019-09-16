@@ -1,6 +1,7 @@
 import * as Eris from "eris";
 import * as fs from "mz/fs";
 import { ReactionButton, ReactionFunc } from "./ReactionButton";
+import { canReact } from "./util";
 
 const reactionButtons: {
     [messageID: string]: {
@@ -20,8 +21,11 @@ const deleteTimers: {
 
 export async function removeButtons(msg: Eris.Message): Promise<void> {
     if (msg) {
-        await msg.removeReactions();
         delete reactionButtons[msg.id];
+        delete reactionTimeouts[msg.id];
+        if (canReact(msg)) {
+            await msg.removeReactions();
+        }
     }
 }
 
@@ -35,8 +39,6 @@ export async function addReactionButton(msg: Eris.Message, emoji: string, func: 
     if (!(msg.id in reactionTimeouts)) {
         const time = setTimeout(async () => {
             await removeButtons(msg);
-            delete reactionButtons[msg.id];
-            delete reactionTimeouts[msg.id];
         }, 1000 * 60);
         reactionTimeouts[msg.id] = time;
     }
