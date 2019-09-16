@@ -180,24 +180,7 @@ async function generateCardProfile(card, lang, msg, mobile = false) {
             else {
                 outString += "**" + textHeader + "**:\n" + desc.monsterBody;
             }
-            const outStrings = [];
-            const MESSAGE_CAP = 2000;
-            while (outString.length > MESSAGE_CAP) {
-                let index = outString.slice(0, MESSAGE_CAP).lastIndexOf("\n");
-                if (index === -1 || index >= MESSAGE_CAP) {
-                    index = outString.slice(0, MESSAGE_CAP).lastIndexOf(".");
-                    if (index === -1 || index >= MESSAGE_CAP) {
-                        index = outString.slice(0, MESSAGE_CAP).lastIndexOf(" ");
-                        if (index === -1 || index >= MESSAGE_CAP) {
-                            index = MESSAGE_CAP - 1;
-                        }
-                    }
-                }
-                outStrings.push(outString.slice(0, index + 1));
-                outString = outString.slice(index + 1);
-            }
-            outStrings.push(outString);
-            return outStrings;
+            return util_1.messageCapSlice(outString);
         }
         const outEmbed = {
             embed: {

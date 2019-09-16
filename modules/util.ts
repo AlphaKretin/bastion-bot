@@ -81,3 +81,24 @@ export function canReact(msg: Eris.Message) {
     const perms = chan.permissionsOf(bot.user.id);
     return perms.has("addReactions") && perms.has("readMessageHistory");
 }
+
+export function messageCapSlice(outString: string) {
+    const outStrings: string[] = [];
+    const MESSAGE_CAP = 2000;
+    while (outString.length > MESSAGE_CAP) {
+        let index = outString.slice(0, MESSAGE_CAP).lastIndexOf("\n");
+        if (index === -1 || index >= MESSAGE_CAP) {
+            index = outString.slice(0, MESSAGE_CAP).lastIndexOf(".");
+            if (index === -1 || index >= MESSAGE_CAP) {
+                index = outString.slice(0, MESSAGE_CAP).lastIndexOf(" ");
+                if (index === -1 || index >= MESSAGE_CAP) {
+                    index = MESSAGE_CAP - 1;
+                }
+            }
+        }
+        outStrings.push(outString.slice(0, index + 1));
+        outString = outString.slice(index + 1);
+    }
+    outStrings.push(outString);
+    return outStrings;
+}
