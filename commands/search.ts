@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import { Card, Filter } from "ygopro-data";
+import { Card, enums, Filter } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { data } from "../modules/data";
@@ -41,7 +41,22 @@ async function func(msg: Eris.Message, mobile: boolean) {
         cards = filter.filter(cards);
     }
     if (cards.length > 0) {
-        return await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+        if (!config.getConfig("allowAnime").getValue(msg)) {
+            cards = cards.filter(
+                c =>
+                    !(
+                        c.data.isOT(enums.ot.OT_ANIME) ||
+                        c.data.isOT(enums.ot.OT_ILLEGAL) ||
+                        c.data.isOT(enums.ot.OT_VIDEO_GAME)
+                    )
+            );
+        }
+        if (!config.getConfig("allowCustom").getValue(msg)) {
+            cards = cards.filter(c => !c.data.isOT(enums.ot.OT_CUSTOM));
+        }
+        if (cards.length > 0) {
+            return await sendCardList(cards, lang, msg, "Top %s card text matches for `" + query + "`:", mobile);
+        }
     }
     return await msg.channel.createMessage("Sorry, I couldn't find any cards matching the text `" + query + "`!");
 }

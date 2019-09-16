@@ -96,9 +96,11 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
         return;
     }
 
+    const allowAnime = config.getConfig("allowAnime").getValue(msg);
+    const allowCustom = config.getConfig("allowAnime").getValue(msg);
     for (const result of results) {
         const query = getLang(msg, result.res);
-        const card = await data.getCard(query.msg, query.lang1);
+        const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
         if (card) {
             const m = await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
             if (m) {

@@ -35,7 +35,17 @@ async function func(msg, mobile) {
         }
     }
     if (cards.length > 0) {
-        return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+        if (!configs_1.config.getConfig("allowAnime").getValue(msg)) {
+            cards = cards.filter(c => !c.data.isOT(ygopro_data_1.enums.ot.OT_ANIME) &&
+                !c.data.isOT(ygopro_data_1.enums.ot.OT_ILLEGAL) &&
+                !c.data.isOT(ygopro_data_1.enums.ot.OT_VIDEO_GAME));
+        }
+        if (!configs_1.config.getConfig("allowCustom").getValue(msg)) {
+            cards = cards.filter(c => !c.data.isOT(ygopro_data_1.enums.ot.OT_CUSTOM));
+        }
+        if (cards.length > 0) {
+            return await matchPages_1.sendCardList(cards, lang, msg, "Top %s card name fuzzy searches for `" + query + "`", mobile);
+        }
     }
     return await msg.channel.createMessage("Sorry, I couldn't find any cards with a name like `" + query + "`!");
 }

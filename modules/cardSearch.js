@@ -85,9 +85,11 @@ async function cardSearch(msg) {
         }
         return;
     }
+    const allowAnime = configs_1.config.getConfig("allowAnime").getValue(msg);
+    const allowCustom = configs_1.config.getConfig("allowAnime").getValue(msg);
     for (const result of results) {
         const query = util_1.getLang(msg, result.res);
-        const card = await data_1.data.getCard(query.msg, query.lang1);
+        const card = await data_1.data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
         if (card) {
             const m = await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
             if (m) {

@@ -107,6 +107,8 @@ exports.config.setConfig(new ConfigOption_1.ConfigOption("triviaMax", defaults.t
 // boolean configs need to be false by default or else they convert wrong. wEaK tYpInG iS fInE
 exports.config.setConfig(new ConfigOption_1.ConfigOption("mobileView", false, Boolean));
 exports.config.setConfig(new ConfigOption_1.ConfigOption("suppressEmotes", false, Boolean));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("allowAnime", false, Boolean));
+exports.config.setConfig(new ConfigOption_1.ConfigOption("allowCustom", false, Boolean));
 exports.colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));
 exports.emotes = JSON.parse(fs.readFileSync("./config/emotes.json", "utf8"));
 //# sourceMappingURL=configs.js.map
