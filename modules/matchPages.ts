@@ -25,7 +25,8 @@ export async function sendCardList(
     const cards: Card[] = [];
     for (let card of origCards) {
         const ids = await card.aliasIDs;
-        if (card.id !== ids[0]) {
+        // difference < 10: alt art, hide. difference > 10: umi/harpy, allow
+        if (Math.abs(card.id - ids[0]) < 10) {
             const tempCard = await data.getCard(ids[0]);
             if (tempCard) {
                 card = tempCard;
