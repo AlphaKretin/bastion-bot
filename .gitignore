@@ -65,3 +65,9 @@ sheetOpts.json
 *.cdb
 permissions/*
 confs/*
+
+# Compiled from TypeScript
+*.js
+!commands/*.js
+commands/*.map.js
+*.map
