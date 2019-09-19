@@ -44,51 +44,53 @@ const func = async (msg, mobile) => {
             currentSection = line.slice(1);
             continue;
         }
-        const card = await data_1.data.getCard(line, lang);
-        if (card) {
-            let name = card.id.toString();
-            if (card.text[lang]) {
-                name = card.text[lang].name;
-            }
-            if (currentSection === "side") {
-                if (name in deckRecord.side) {
-                    deckRecord.side[name]++;
+        if (line.trim().length > 0) {
+            const card = await data_1.data.getCard(line, lang);
+            if (card) {
+                let name = card.id.toString();
+                if (card.text[lang]) {
+                    name = card.text[lang].name;
                 }
-                else {
-                    deckRecord.side[name] = 1;
-                }
-            }
-            else if (currentSection === "extra") {
-                if (name in deckRecord.extra) {
-                    deckRecord.extra[name]++;
-                }
-                else {
-                    deckRecord.extra[name] = 1;
-                }
-            }
-            else if (currentSection === "main") {
-                if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
-                    if (name in deckRecord.monster) {
-                        deckRecord.monster[name]++;
+                if (currentSection === "side") {
+                    if (name in deckRecord.side) {
+                        deckRecord.side[name]++;
                     }
                     else {
-                        deckRecord.monster[name] = 1;
+                        deckRecord.side[name] = 1;
                     }
                 }
-                else if (card.data.isType(ygopro_data_1.enums.type.TYPE_SPELL)) {
-                    if (name in deckRecord.spell) {
-                        deckRecord.spell[name]++;
+                else if (currentSection === "extra") {
+                    if (name in deckRecord.extra) {
+                        deckRecord.extra[name]++;
                     }
                     else {
-                        deckRecord.spell[name] = 1;
+                        deckRecord.extra[name] = 1;
                     }
                 }
-                else if (card.data.isType(ygopro_data_1.enums.type.TYPE_TRAP)) {
-                    if (name in deckRecord.trap) {
-                        deckRecord.trap[name]++;
+                else if (currentSection === "main") {
+                    if (card.data.isType(ygopro_data_1.enums.type.TYPE_MONSTER)) {
+                        if (name in deckRecord.monster) {
+                            deckRecord.monster[name]++;
+                        }
+                        else {
+                            deckRecord.monster[name] = 1;
+                        }
                     }
-                    else {
-                        deckRecord.trap[name] = 1;
+                    else if (card.data.isType(ygopro_data_1.enums.type.TYPE_SPELL)) {
+                        if (name in deckRecord.spell) {
+                            deckRecord.spell[name]++;
+                        }
+                        else {
+                            deckRecord.spell[name] = 1;
+                        }
+                    }
+                    else if (card.data.isType(ygopro_data_1.enums.type.TYPE_TRAP)) {
+                        if (name in deckRecord.trap) {
+                            deckRecord.trap[name]++;
+                        }
+                        else {
+                            deckRecord.trap[name] = 1;
+                        }
                     }
                 }
             }
