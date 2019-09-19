@@ -40,8 +40,11 @@ async function func(msg: Eris.Message, mobile: boolean) {
         const filter = new Filter(await Filter.parse(filterText, lang));
         cards = filter.filter(cards);
     }
+    const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
+    const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
+    const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
     if (cards.length > 0) {
-        if (!config.getConfig("allowAnime").getValue(msg)) {
+        if (!allowAnime) {
             cards = cards.filter(
                 c =>
                     !(
@@ -51,7 +54,7 @@ async function func(msg: Eris.Message, mobile: boolean) {
                     )
             );
         }
-        if (!config.getConfig("allowCustom").getValue(msg)) {
+        if (!allowCustom) {
             cards = cards.filter(c => !c.data.isOT(enums.ot.OT_CUSTOM));
         }
         if (cards.length > 0) {

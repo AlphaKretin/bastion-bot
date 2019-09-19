@@ -1,5 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const Eris = __importStar(require("eris"));
 const ygopro_data_1 = require("ygopro-data");
 const Command_1 = require("../modules/Command");
 const configs_1 = require("../modules/configs");
@@ -34,13 +42,16 @@ async function func(msg, mobile) {
             }
         }
     }
+    const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
+    const allowAnime = isDM || configs_1.config.getConfig("allowAnime").getValue(msg);
+    const allowCustom = isDM || configs_1.config.getConfig("allowAnime").getValue(msg);
     if (cards.length > 0) {
-        if (!configs_1.config.getConfig("allowAnime").getValue(msg)) {
+        if (!allowAnime) {
             cards = cards.filter(c => !c.data.isOT(ygopro_data_1.enums.ot.OT_ANIME) &&
                 !c.data.isOT(ygopro_data_1.enums.ot.OT_ILLEGAL) &&
                 !c.data.isOT(ygopro_data_1.enums.ot.OT_VIDEO_GAME));
         }
-        if (!configs_1.config.getConfig("allowCustom").getValue(msg)) {
+        if (!allowCustom) {
             cards = cards.filter(c => !c.data.isOT(ygopro_data_1.enums.ot.OT_CUSTOM));
         }
         if (cards.length > 0) {

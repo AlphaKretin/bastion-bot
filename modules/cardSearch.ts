@@ -95,9 +95,9 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
         }
         return;
     }
-
-    const allowAnime = config.getConfig("allowAnime").getValue(msg);
-    const allowCustom = config.getConfig("allowAnime").getValue(msg);
+    const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
+    const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
+    const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
     for (const result of results) {
         const query = getLang(msg, result.res);
         const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
@@ -144,7 +144,7 @@ export async function sendCardProfile(
                     }
                 });
             }
-        } else {
+        } else if (profile.length > 1) {
             await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
         }
         return m;
