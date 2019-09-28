@@ -17,6 +17,11 @@
                         "owner": "EerieCode",
                         "repo": "Percy-Alpha-Testing",
                         "path": ""
+                    },
+                    {
+                        "owner": "EerieCode",
+                        "repo": "Percy-Alpha-Testing",
+                        "path": "Skill Database"
                     }
                 ]
             },
@@ -87,7 +92,8 @@
                 "0x4": "Anime",
                 "0x8": "Illegal",
                 "0x10": "Video Game",
-                "0x20": "Custom"
+                "0x20": "Custom",
+                "0x40": "Speed Duel"
             },
             "race": {
                 "0x1": "Warrior",
@@ -118,6 +124,19 @@
                 "0x80000000": "Yokai",
                 "0x100000000": "Charisma"
             },
+            "skillRace": {
+                "0x1": "Bonz",
+                "0x2": "Ishizu",
+                "0x4": "Joey",
+                "0x8": "Kaiba",
+                "0x10": "Keith",
+                "0x20": "Mai",
+                "0x40": "Mako",
+                "0x80": "Pegasus",
+                "0x100": "Rex",
+                "0x200": "Weevil",
+                "0x400": "Yami Yugi"
+            },
             "type": {
                 "0x1": "Monster",
                 "0x2": "Spell",
@@ -144,6 +163,7 @@
                 "0x1000000": "Pendulum",
                 "0x2000000": "Special Summon",
                 "0x4000000": "Link",
+                "0x8000000": "Skill",
                 "0x10000000": "Armor",
                 "0x20000000": "Plus",
                 "0x40000000": "Minus"
@@ -200,7 +220,8 @@
                 "0x4": "アニメ",
                 "0x8": "非公式",
                 "0x10": "ゲーム",
-                "0x20": "カスタム"
+                "0x20": "カスタム",
+                "0x40": "スピード"
             },
             "race": {
                 "0x1": "戦士",
@@ -231,6 +252,19 @@
                 "0x80000000": "妖怪",
                 "0x100000000": "カリスマ"
             },
+            "skillRace": {
+                "0x1": "Bonz",
+                "0x2": "Ishizu",
+                "0x4": "Joey",
+                "0x8": "Kaiba",
+                "0x10": "Keith",
+                "0x20": "Mai",
+                "0x40": "Mako",
+                "0x80": "Pegasus",
+                "0x100": "Rex",
+                "0x200": "Weevil",
+                "0x400": "Yami Yugi"
+            },
             "type": {
                 "0x1": "モンスター",
                 "0x2": "魔法",
@@ -257,6 +291,7 @@
                 "0x1000000": "ペンデュラム",
                 "0x2000000": "特殊召喚",
                 "0x4000000": "リンク",
+                "0x8000000": "スキル",
                 "0x10000000": "アーマー",
                 "0x20000000": "プラス",
                 "0x40000000": "マイナス"
