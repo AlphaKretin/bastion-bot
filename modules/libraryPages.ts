@@ -93,8 +93,6 @@ export async function sendLibrary(list: ILibraryData[], msg: Eris.Message) {
     libraryPages[msg.channel.id].msg = m;
     if (canReact(m)) {
         await addLibraryButtons(m);
-    } else {
-        await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
     }
     return m;
 }

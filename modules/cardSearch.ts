@@ -144,8 +144,6 @@ export async function sendCardProfile(
                     }
                 });
             }
-        } else if (profile.length > 1) {
-            await msg.channel.createMessage(Errors.ERROR_REACT_FAILURE);
         }
         return m;
     }
