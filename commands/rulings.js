@@ -8,7 +8,7 @@ const util_1 = require("../modules/util");
 const yugipedia_1 = require("../modules/yugipedia");
 const names = ["ruling", "ocgdb", "qa"];
 const func = async (msg) => {
-    const langs = await util_1.getLang(msg);
+    const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
     if (!card) {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
@@ -35,7 +35,7 @@ const func = async (msg) => {
             "`: <" +
             OCG_URL +
             encodeURIComponent(name) +
-            '>\nClick the appropriate search result, then the yellow button that reads "このカードのＱ＆Ａを表示"');
+            ">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\"");
     }
     return await msg.channel.createMessage("Sorry, I couldn't look up rulings for " +
         card.text[langs.lang2].name +

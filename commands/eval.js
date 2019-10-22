@@ -12,6 +12,7 @@ const Command_1 = require("../modules/Command");
 const data_1 = require("../modules/data");
 const util_1 = require("../modules/util");
 // make import used so it's not optimised out
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getData() {
     return data_1.data;
 }

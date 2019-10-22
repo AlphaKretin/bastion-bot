@@ -23,7 +23,7 @@ async function func(msg, mobile) {
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
     if (filterText) {
         for (const term of filterText.split(/ +/)) {
-            if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
+            if (data_1.data.langs.includes(term.toLowerCase())) {
                 lang = term.toLowerCase();
             }
         }
@@ -31,14 +31,12 @@ async function func(msg, mobile) {
     let cards = [];
     const fullList = await data_1.data.getCardList();
     for (const code in fullList) {
-        if (fullList.hasOwnProperty(code)) {
-            const text = fullList[code].text[lang];
-            if (text &&
-                (text.name.toLowerCase().includes(query) ||
-                    text.desc.monsterBody.toLowerCase().includes(query) ||
-                    (text.desc.pendBody && text.desc.pendBody.toLowerCase().includes(query)))) {
-                cards.push(fullList[code]);
-            }
+        const text = fullList[code].text[lang];
+        if (text &&
+            (text.name.toLowerCase().includes(query) ||
+                text.desc.monsterBody.toLowerCase().includes(query) ||
+                (text.desc.pendBody && text.desc.pendBody.toLowerCase().includes(query)))) {
+            cards.push(fullList[code]);
         }
     }
     if (filterText) {

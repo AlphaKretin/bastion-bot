@@ -1,11 +1,11 @@
 {
-    "prefix": ".",
-    "language": "en",
-    "embedColor": 16776960,
-    "fullBrackets": ["{", "}"],
-    "mobBrackets": ["<", ">"],
-    "noImgMobBrackets": ["[", "]"],
-    "triviaHint": 10,
-    "triviaLimit": 30,
-    "triviaMax": 20
+	"prefix": ".",
+	"language": "en",
+	"embedColor": 16776960,
+	"fullBrackets": ["{", "}"],
+	"mobBrackets": ["<", ">"],
+	"noImgMobBrackets": ["[", "]"],
+	"triviaHint": 10,
+	"triviaLimit": 30,
+	"triviaMax": 20
 }

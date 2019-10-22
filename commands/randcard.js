@@ -12,7 +12,7 @@ async function func(msg, mobile) {
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
     let image = false;
     for (const term of content.split(/ +/)) {
-        if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
+        if (data_1.data.langs.includes(term.toLowerCase())) {
             lang = term.toLowerCase();
         }
         if (term === "image") {

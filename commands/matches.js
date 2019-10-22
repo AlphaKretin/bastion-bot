@@ -23,7 +23,7 @@ async function func(msg, mobile) {
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
     if (filterText) {
         for (const term of filterText.toLowerCase().split(/ +/)) {
-            if (data_1.data.langs.indexOf(term) > -1) {
+            if (data_1.data.langs.includes(term)) {
                 lang = term.toLowerCase();
             }
         }

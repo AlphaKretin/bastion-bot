@@ -4,19 +4,19 @@ import { data } from "../modules/data";
 
 const names: string[] = ["update"];
 
-async function func(msg: Eris.Message) {
-    const target = await msg.channel.createMessage("Starting update!");
-    try {
-        await data.update();
-        target.edit("Update complete!");
-        return target;
-    } catch (e) {
-        target.edit("Error!\n" + e.message);
-        return target;
-    }
+async function func(msg: Eris.Message): Promise<Eris.Message> {
+	const target = await msg.channel.createMessage("Starting update!");
+	try {
+		await data.update();
+		target.edit("Update complete!");
+		return target;
+	} catch (e) {
+		target.edit("Error!\n" + e.message);
+		return target;
+	}
 }
 
 const desc =
-    "pulls down new databases and commands. this is getting overhauled too if you can see this yell at AlphaKretin";
+	"pulls down new databases and commands. this is getting overhauled too if you can see this yell at AlphaKretin";
 
 export const command = new Command(names, func, undefined, desc, undefined, true);

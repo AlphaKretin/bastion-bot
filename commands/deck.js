@@ -25,7 +25,7 @@ const func = async (msg, mobile) => {
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
     const content = util_1.trimMsg(msg);
     for (const term of content.split(/ +/)) {
-        if (data_1.data.langs.indexOf(term.toLowerCase()) > -1) {
+        if (data_1.data.langs.includes(term.toLowerCase())) {
             lang = term.toLowerCase();
         }
     }
@@ -115,35 +115,25 @@ const func = async (msg, mobile) => {
     mainHeader += headerParts.join(", ") + ")";
     let mainBody = "";
     for (const name in deckRecord.monster) {
-        if (deckRecord.monster.hasOwnProperty(name)) {
-            mainBody += deckRecord.monster[name] + " " + name + "\n";
-        }
+        mainBody += deckRecord.monster[name] + " " + name + "\n";
     }
     for (const name in deckRecord.spell) {
-        if (deckRecord.spell.hasOwnProperty(name)) {
-            mainBody += deckRecord.spell[name] + " " + name + "\n";
-        }
+        mainBody += deckRecord.spell[name] + " " + name + "\n";
     }
     for (const name in deckRecord.trap) {
-        if (deckRecord.trap.hasOwnProperty(name)) {
-            mainBody += deckRecord.trap[name] + " " + name + "\n";
-        }
+        mainBody += deckRecord.trap[name] + " " + name + "\n";
     }
     const extraCount = valSum(deckRecord.extra);
     const extraHeader = "Extra Deck (" + extraCount + " cards)";
     let extraBody = "";
     for (const name in deckRecord.extra) {
-        if (deckRecord.extra.hasOwnProperty(name)) {
-            extraBody += deckRecord.extra[name] + " " + name + "\n";
-        }
+        extraBody += deckRecord.extra[name] + " " + name + "\n";
     }
     const sideCount = valSum(deckRecord.side);
     const sideHeader = "Side Deck (" + sideCount + " cards)";
     let sideBody = "";
     for (const name in deckRecord.side) {
-        if (deckRecord.side.hasOwnProperty(name)) {
-            sideBody += deckRecord.side[name] + " " + name + "\n";
-        }
+        sideBody += deckRecord.side[name] + " " + name + "\n";
     }
     const chan = await msg.author.getDMChannel();
     let m;
@@ -183,14 +173,17 @@ const func = async (msg, mobile) => {
         const out = {
             embed: { title, fields: [], color: configs_1.config.getConfig("embedColor").getValue(msg) }
         };
-        if (mainCount > 0) {
-            out.embed.fields.push({ name: mainHeader, value: mainBody });
-        }
-        if (extraCount > 0) {
-            out.embed.fields.push({ name: extraHeader, value: extraBody });
-        }
-        if (sideCount > 0) {
-            out.embed.fields.push({ name: sideHeader, value: sideBody });
+        // come on typescript, really? it's declared right there
+        if (out.embed && out.embed.fields) {
+            if (mainCount > 0) {
+                out.embed.fields.push({ name: mainHeader, value: mainBody });
+            }
+            if (extraCount > 0) {
+                out.embed.fields.push({ name: extraHeader, value: extraBody });
+            }
+            if (sideCount > 0) {
+                out.embed.fields.push({ name: sideHeader, value: sideBody });
+            }
         }
         m = await chan.createMessage(out);
     }

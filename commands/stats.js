@@ -13,7 +13,7 @@ const func = async (msg, mobile) => {
         const codes = await card.aliasIDs;
         const codeString = codes.join(" | ");
         if (mobile) {
-            await msg.channel.createMessage("__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats);
+            return await msg.channel.createMessage("__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats);
         }
         else {
             return await msg.channel.createMessage({
