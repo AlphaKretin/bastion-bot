@@ -1,6 +1,6 @@
 import * as Eris from "eris";
 import * as fs from "mz/fs";
-import { owners } from "./bot";
+import { owners } from "../config/auth.json";
 
 interface PermissionMap {
 	[guildID: string]: {

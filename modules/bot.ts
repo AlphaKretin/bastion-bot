@@ -1,5 +1,5 @@
 import * as Eris from "eris";
-import * as fs from "mz/fs";
+import { token } from "../config/auth.json";
 import { ReactionButton, ReactionFunc } from "./ReactionButton";
 import { canReact } from "./util";
 
@@ -58,10 +58,8 @@ export function logDeleteMessage(sourceMsg: Eris.Message, responseMsg: Eris.Mess
 	}
 }
 
-const auth = JSON.parse(fs.readFileSync("config/auth.json", "utf8"));
-export const owners: string[] = auth.owners;
 const erisOpts: Eris.ClientOptions = { maxShards: "auto" };
-export const bot = new Eris.Client(auth.token, erisOpts);
+export const bot = new Eris.Client(token, erisOpts);
 bot.on("ready", () => {
 	console.log("Logged in as %s - %s", bot.user.username, bot.user.id);
 });
