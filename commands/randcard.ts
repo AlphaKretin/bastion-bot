@@ -11,13 +11,9 @@ const names: string[] = ["randcard", "randomcard"];
 async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message | undefined> {
 	const content = trimMsg(msg);
 	let lang = config.getConfig("defaultLang").getValue(msg);
-	let image = false;
 	for (const term of content.split(/ +/)) {
 		if (data.langs.includes(term.toLowerCase())) {
 			lang = term.toLowerCase();
-		}
-		if (term === "image") {
-			image = true;
 		}
 	}
 	const filter = new Filter(await Filter.parse(content, lang));
@@ -25,7 +21,7 @@ async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 	const list = filter.filter(cards);
 	const ids = Object.keys(list);
 	const card = list[Number(ids[getRandomIntInclusive(0, ids.length - 1)])];
-	return await sendCardProfile(msg, card, lang, mobile, image);
+	return await sendCardProfile(msg, card, lang, mobile);
 }
 
 const desc = (prefix: string): string =>

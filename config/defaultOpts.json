@@ -2,9 +2,8 @@
 	"prefix": ".",
 	"language": "en",
 	"embedColor": 16776960,
-	"fullBrackets": ["{", "}"],
-	"mobBrackets": ["<", ">"],
-	"noImgMobBrackets": ["[", "]"],
+	"fullBrackets": ["<", ">"],
+	"mobBrackets": ["{", "}"],
 	"triviaHint": 10,
 	"triviaLimit": 30,
 	"triviaMax": 20

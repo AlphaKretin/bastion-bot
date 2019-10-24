@@ -14,7 +14,6 @@ function reEscape(s: string): string {
 }
 
 interface SearchQuery {
-	image: boolean;
 	mobile: boolean;
 	res: string;
 }
@@ -126,7 +125,6 @@ export async function generateCardProfile(
 	msg: Eris.Message,
 	mobile = false
 ): Promise<Eris.MessageContent[]> {
-	
 	const stats = await generateCardStats(card, lang, msg);
 	let textHeader = strings.getTranslation("cardEffect", lang, msg);
 	if (card.data.isType(enums.type.TYPE_NORMAL)) {
@@ -286,12 +284,11 @@ export async function sendCardProfile(
 	msg: Eris.Message,
 	card: Card,
 	lang: string,
-	mobile = false,
-	includeImage = false
+	mobile = false
 ): Promise<Eris.Message|undefined> {
 	if (card) {
 		const profile = await generateCardProfile(card, lang, msg, mobile);
-		if (mobile && includeImage) {
+		if (mobile && (await card.aliasIDs).length > 1) {
 			const image = await getCompositeImage(card);
 			if (image) {
 				const file = {
@@ -335,7 +332,6 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 			react = true;
 		}
 		results.push({
-			image: false,
 			mobile: config.getConfig("mobileView").getValue(msg),
 			res: fullResult[1]
 		});
@@ -357,32 +353,11 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 			}
 
 			results.push({
-				image: true,
 				mobile: true,
 				res: match
 			});
 		}
 		mobResult = mobRegex.exec(content);
-	}
-
-	const noImgMobBrackets = config.getConfig("noImgMobBrackets").getValue(msg);
-	const badNoImgMobRegex = new RegExp(
-		reEscape(noImgMobBrackets[0]) + "{2,}.+?" + reEscape(noImgMobBrackets[1]) + "{2,}"
-		, "g");
-	content = content.replace(badNoImgMobRegex, "");
-	const noImgMobRegex = new RegExp(reEscape(noImgMobBrackets[0]) + "(.+?)" + reEscape(noImgMobBrackets[1]), "g");
-	let noImgMobResult = noImgMobRegex.exec(content);
-	while (noImgMobResult !== null) {
-		if (!react) {
-			await msg.addReaction("🕙").catch(ignore);
-			react = true;
-		}
-		results.push({
-			image: false,
-			mobile: true,
-			res: noImgMobResult[1]
-		});
-		noImgMobResult = noImgMobRegex.exec(content);
 	}
 
 	if (results.length > botOpts.maxSearch) {
@@ -399,8 +374,13 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 	for (const result of results) {
 		const query = getLang(msg, result.res);
 		const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
-		if (card) {
-			const m = await sendCardProfile(msg, card, query.lang2, result.mobile, result.image);
+		if (card && query.lang2 in card.text) {
+			const m = await sendCardProfile(msg, card, query.lang2, result.mobile);
+			if (m) {
+				logDeleteMessage(msg, m);
+			}
+		} else if (card && query.lang2 in card.text) {
+			const m = await sendCardProfile(msg, card, query.lang1, result.mobile);
 			if (m) {
 				logDeleteMessage(msg, m);
 			}
