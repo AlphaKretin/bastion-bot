@@ -13,7 +13,10 @@ async function downloadCardScript(code: number, repo: gitParams): Promise<[strin
 	params.path += "/c" + code + ".lua";
 	try {
 		const file = await GitHub.repos.getContents(params);
-		const data = file.data as octokit.ReposGetContentsResponseItem;
+		let data = file.data;
+		if (data instanceof Array) {
+			data = data[0];
+		}
 		if (data.download_url) {
 			const body: string = await (await fetch(data.download_url)).text();
 			return [body, data];

@@ -99,4 +99,4 @@ bot.on("messageUpdate", async msg => {
 	}
 });
 
-bot.connect();
+bot.connect().catch(e => console.error(e));

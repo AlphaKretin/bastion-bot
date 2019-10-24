@@ -17,9 +17,16 @@ async function downloadCmd(file: octokit.ReposGetContentsResponseItem): Promise<
 export const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
 botOpts.cmdRepos.forEach(async (repo: octokit.ReposGetContentsParams) => {
 	const res = await GitHub.repos.getContents(repo);
-	for (const file of res) {
-		if (file.data.name.endsWith(".js")) {
-			await downloadCmd(file);
+	const data = res.data;
+	if (data instanceof Array) {
+		for (const file of data) {
+			if (file.name.endsWith(".js")) {
+				await downloadCmd(file);
+			}
+		}
+	} else {
+		if (data.name.endsWith(".js")) {
+			await downloadCmd(data);
 		}
 	}
 });
