@@ -315,6 +315,10 @@ export async function sendCardProfile(
 	}
 }
 
+function badQuery(match: string): boolean {
+	return match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#") || match.includes("://");
+}
+
 export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
 	let react = false;
 	const results: SearchQuery[] = [];
@@ -327,14 +331,18 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 	const fullRegex = new RegExp(reEscape(fullBrackets[0]) + "(.+?)" + reEscape(fullBrackets[1]), "g");
 	let fullResult = fullRegex.exec(content);
 	while (fullResult !== null) {
-		if (!react) {
-			await msg.addReaction("🕙").catch(ignore);
-			react = true;
+		const match = fullResult[1];
+		if (!badQuery(match)) {
+			if (!react) {
+				await msg.addReaction("🕙").catch(ignore);
+				react = true;
+			}
+
+			results.push({
+				mobile: config.getConfig("mobileView").getValue(msg),
+				res: match
+			});
 		}
-		results.push({
-			mobile: config.getConfig("mobileView").getValue(msg),
-			res: fullResult[1]
-		});
 		fullResult = fullRegex.exec(content);
 	}
 
@@ -345,8 +353,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 	let mobResult = mobRegex.exec(content);
 	while (mobResult !== null) {
 		const match = mobResult[1];
-		// TODO: Apply to all in case of customised brackets
-		if (!(match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#"))) {
+		if (!badQuery(match)) {
 			if (!react) {
 				await msg.addReaction("🕙").catch(ignore);
 				react = true;
