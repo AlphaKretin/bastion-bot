@@ -13,7 +13,10 @@ async function downloadCardScript(code, repo) {
     params.path += "/c" + code + ".lua";
     try {
         const file = await commands_1.GitHub.repos.getContents(params);
-        const data = file.data;
+        let data = file.data;
+        if (data instanceof Array) {
+            data = data[0];
+        }
         if (data.download_url) {
             const body = await (await node_fetch_1.default(data.download_url)).text();
             return [body, data];

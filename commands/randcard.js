@@ -10,13 +10,9 @@ const names = ["randcard", "randomcard"];
 async function func(msg, mobile) {
     const content = util_1.trimMsg(msg);
     let lang = configs_1.config.getConfig("defaultLang").getValue(msg);
-    let image = false;
     for (const term of content.split(/ +/)) {
         if (data_1.data.langs.includes(term.toLowerCase())) {
             lang = term.toLowerCase();
-        }
-        if (term === "image") {
-            image = true;
         }
     }
     const filter = new ygopro_data_1.Filter(await ygopro_data_1.Filter.parse(content, lang));
@@ -24,7 +20,7 @@ async function func(msg, mobile) {
     const list = filter.filter(cards);
     const ids = Object.keys(list);
     const card = list[Number(ids[util_1.getRandomIntInclusive(0, ids.length - 1)])];
-    return await cardSearch_1.sendCardProfile(msg, card, lang, mobile, image);
+    return await cardSearch_1.sendCardProfile(msg, card, lang, mobile);
 }
 const desc = (prefix) => "Shows the profile for one random card that meets the given filters.\n" +
     "For details on the filter system, yell at AlphaKretin to add a link here.\n" +
