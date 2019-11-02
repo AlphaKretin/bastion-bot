@@ -21,9 +21,9 @@ export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild => {
 };
 
 interface LangPayload {
-	msg: string;
-	lang1: string;
-	lang2: string;
+    msg: string;
+    lang1: string;
+    lang2: string;
 }
 
 export function getLang(msg: Eris.Message, query?: string): LangPayload {
@@ -82,17 +82,16 @@ export function canReact(msg: Eris.Message): boolean {
 	return perms.has("addReactions") && perms.has("readMessageHistory");
 }
 
-export function messageCapSlice(outString: string): string[] {
+export function messageCapSlice(outString: string, cap = 2000): string[] {
 	const outStrings: string[] = [];
-	const MESSAGE_CAP = 2000;
-	while (outString.length > MESSAGE_CAP) {
-		let index = outString.slice(0, MESSAGE_CAP).lastIndexOf("\n");
-		if (index === -1 || index >= MESSAGE_CAP) {
-			index = outString.slice(0, MESSAGE_CAP).lastIndexOf(".");
-			if (index === -1 || index >= MESSAGE_CAP) {
-				index = outString.slice(0, MESSAGE_CAP).lastIndexOf(" ");
-				if (index === -1 || index >= MESSAGE_CAP) {
-					index = MESSAGE_CAP - 1;
+	while (outString.length > cap) {
+		let index = outString.slice(0, cap).lastIndexOf("\n");
+		if (index === -1 || index >= cap) {
+			index = outString.slice(0, cap).lastIndexOf(".");
+			if (index === -1 || index >= cap) {
+				index = outString.slice(0, cap).lastIndexOf(" ");
+				if (index === -1 || index >= cap) {
+					index = cap - 1;
 				}
 			}
 		}

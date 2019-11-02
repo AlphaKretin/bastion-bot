@@ -148,23 +148,7 @@ const func = async (msg, mobile) => {
         if (sideCount > 0) {
             out += "__" + sideHeader + "__:\n" + sideBody;
         }
-        const outStrings = [];
-        const MESSAGE_CAP = 2000;
-        while (out.length > MESSAGE_CAP) {
-            let index = out.slice(0, MESSAGE_CAP).lastIndexOf("\n");
-            if (index === -1 || index >= MESSAGE_CAP) {
-                index = out.slice(0, MESSAGE_CAP).lastIndexOf(".");
-                if (index === -1 || index >= MESSAGE_CAP) {
-                    index = out.slice(0, MESSAGE_CAP).lastIndexOf(" ");
-                    if (index === -1 || index >= MESSAGE_CAP) {
-                        index = MESSAGE_CAP - 1;
-                    }
-                }
-            }
-            outStrings.push(out.slice(0, index + 1));
-            out = out.slice(index + 1);
-        }
-        outStrings.push(out);
+        const outStrings = util_1.messageCapSlice(out);
         for (const outString of outStrings) {
             m = await chan.createMessage(outString);
         }
@@ -176,13 +160,22 @@ const func = async (msg, mobile) => {
         // come on typescript, really? it's declared right there
         if (out.embed && out.embed.fields) {
             if (mainCount > 0) {
-                out.embed.fields.push({ name: mainHeader, value: mainBody });
+                const mainOuts = util_1.messageCapSlice(mainBody, 1024);
+                for (let i = 0; i < mainOuts.length; i++) {
+                    out.embed.fields.push({ name: mainHeader + (i > 0 ? " (Continued)" : ""), value: mainOuts[i] });
+                }
             }
             if (extraCount > 0) {
-                out.embed.fields.push({ name: extraHeader, value: extraBody });
+                const extraOuts = util_1.messageCapSlice(extraBody, 1024);
+                for (let i = 0; i < extraOuts.length; i++) {
+                    out.embed.fields.push({ name: extraHeader + (i > 0 ? " (Continued)" : ""), value: extraOuts[i] });
+                }
             }
             if (sideCount > 0) {
-                out.embed.fields.push({ name: sideHeader, value: sideBody });
+                const sideOuts = util_1.messageCapSlice(sideBody, 1024);
+                for (let i = 0; i < sideOuts.length; i++) {
+                    out.embed.fields.push({ name: sideHeader + (i > 0 ? " (Continued)" : ""), value: sideOuts[i] });
+                }
             }
         }
         m = await chan.createMessage(out);
