@@ -4,7 +4,7 @@ import { enums } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { data } from "../modules/data";
-import { trimMsg, messageCapSlice } from "../modules/util";
+import { trimMsg, messageCapSlice, canReact } from "../modules/util";
 
 interface DeckSection {
     [name: string]: number;
@@ -181,7 +181,9 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 
 		m = await chan.createMessage(out);
 	}
-	await msg.addReaction("📬");
+	if (canReact(msg)) {
+		await msg.addReaction("📬");
+	}
 	return m;
 };
 

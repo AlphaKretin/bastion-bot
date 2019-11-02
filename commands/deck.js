@@ -180,7 +180,9 @@ const func = async (msg, mobile) => {
         }
         m = await chan.createMessage(out);
     }
-    await msg.addReaction("📬");
+    if (util_1.canReact(msg)) {
+        await msg.addReaction("📬");
+    }
     return m;
 };
 const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file.";
