@@ -135,7 +135,11 @@
 				"0x80": "Pegasus",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi"
+				"0x400": "Yami Yugi",
+				"0x800": "Andrew",
+				"0x1000": "Christine",
+				"0x2000": "David",
+				"0x4000": "Emma"
 			},
 			"type": {
 				"0x1": "Monster",
