@@ -34,7 +34,8 @@
 					}
 				]
 			}
-		}
+		},
+		"baseDbs": ["cards.cdb", "cards-tf.cdb"]
 	},
 	"stringOpts": {
 		"en": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",

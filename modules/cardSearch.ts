@@ -316,7 +316,7 @@ export async function sendCardProfile(
 }
 
 function badQuery(match: string): boolean {
-	return match.startsWith("!") || match.startsWith(":") || match.startsWith("@") || match.startsWith("#") || match.includes("://");
+	return match.startsWith("!") || match.startsWith(":") || match.startsWith("a:") || match.startsWith("@") || match.startsWith("#") || match.includes("://");
 }
 
 export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
