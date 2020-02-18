@@ -19,4 +19,4 @@ async function func(msg: Eris.Message): Promise<Eris.Message> {
 const desc =
 	"pulls down new databases and commands. this is getting overhauled too if you can see this yell at AlphaKretin";
 
-export const command = new Command(names, func, undefined, desc, undefined, true);
+export const command = new Command(names, func, undefined, desc, undefined, false, true);

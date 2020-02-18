@@ -16,5 +16,5 @@ async function func(msg) {
     }
 }
 const desc = "pulls down new databases and commands. this is getting overhauled too if you can see this yell at AlphaKretin";
-exports.command = new Command_1.Command(names, func, undefined, desc, undefined, true);
+exports.command = new Command_1.Command(names, func, undefined, desc, undefined, false, true);
 //# sourceMappingURL=update.js.map

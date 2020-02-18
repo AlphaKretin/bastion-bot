@@ -19,4 +19,4 @@ const desc =
 	"Allows moderators to set various per-server options for using Bastion, like the prefix.\n" +
 	"See Bastion's documentation for more detail on what you can configure.\n" +
 	"TODO: Finish docs and add link. Go yell at AlphaKretin!";
-export const command = new Command(names, func, undefined, desc, "option value");
+export const command = new Command(names, func, undefined, desc, "option value", true);
