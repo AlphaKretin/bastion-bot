@@ -1,4 +1,4 @@
-import octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import * as Eris from "eris";
 import fetch from "node-fetch";
 import { Command } from "../modules/Command";
@@ -6,9 +6,9 @@ import { botOpts, GitHub } from "../modules/commands";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
 
-type gitParams = octokit.ReposGetContentsParams;
+type gitParams = Octokit.ReposGetContentsParams;
 
-async function downloadCardScript(code: number, repo: gitParams): Promise<[string | undefined, octokit.ReposGetContentsResponseItem | undefined]> {
+async function downloadCardScript(code: number, repo: gitParams): Promise<[string | undefined, Octokit.ReposGetContentsResponseItem | undefined]> {
 	const params: gitParams = JSON.parse(JSON.stringify(repo)); // clone value
 	params.path += "/c" + code + ".lua";
 	try {
@@ -33,7 +33,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> =
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
 		let script: string | undefined;
-		let scriptFile: octokit.ReposGetContentsResponseItem | undefined; // Octokit response
+		let scriptFile: Octokit.ReposGetContentsResponseItem | undefined; // Octokit response
 		for (const repo of botOpts.scriptRepos) {
 			[script, scriptFile] = await downloadCardScript(card.id, repo);
 			if (script !== undefined && scriptFile !== undefined) {

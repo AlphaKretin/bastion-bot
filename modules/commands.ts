@@ -1,12 +1,12 @@
-import octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import * as fs from "mz/fs";
 import fetch from "node-fetch";
 import { Command } from "./Command";
-export const GitHub = new octokit();
+export const GitHub = new Octokit();
 
 const tempCmds: Command[] = [];
 
-async function downloadCmd(file: octokit.ReposGetContentsResponseItem): Promise<void> {
+async function downloadCmd(file: Octokit.ReposGetContentsResponseItem): Promise<void> {
 	const fullPath = "./commands/" + file.name;
 	if (file.download_url) {
 		const body = await (await fetch(file.download_url)).buffer();
@@ -15,7 +15,7 @@ async function downloadCmd(file: octokit.ReposGetContentsResponseItem): Promise<
 }
 
 export const botOpts = JSON.parse(fs.readFileSync("config/botOpts.json", "utf8"));
-botOpts.cmdRepos.forEach(async (repo: octokit.ReposGetContentsParams) => {
+botOpts.cmdRepos.forEach(async (repo: Octokit.ReposGetContentsParams) => {
 	const res = await GitHub.repos.getContents(repo);
 	const data = res.data;
 	if (data instanceof Array) {
