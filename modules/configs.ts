@@ -53,15 +53,12 @@ config.setConfig(
 				return false;
 			}
 			const mobBrackets = config.getConfig("mobBrackets").getValue(m);
-			const noImgMobBrackets = config.getConfig("noImgMobBrackets").getValue(m);
 
 			return (
 				val[0].length === 1 &&
 				val[1].length === 1 &&
 				mobBrackets.indexOf(val[0]) === -1 &&
-				mobBrackets.indexOf(val[1]) === -1 &&
-				noImgMobBrackets.indexOf(val[0]) === -1 &&
-				noImgMobBrackets.indexOf(val[1]) === -1
+				mobBrackets.indexOf(val[1]) === -1
 			);
 		}
 	)
@@ -88,32 +85,6 @@ config.setConfig(
 				fullBrackets.indexOf(val[1]) === -1 &&
 				noImgMobBrackets.indexOf(val[0]) === -1 &&
 				noImgMobBrackets.indexOf(val[1]) === -1
-			);
-		}
-	)
-);
-
-config.setConfig(
-	new ConfigOption<[string, string]>(
-		"noImgMobBrackets",
-		defaults.noImgMobBrackets,
-		(val: string) => {
-			const s = val.split("");
-			return [s[0], s[1]];
-		},
-		(val, m) => {
-			if (val.length < 2 || !val[1]) {
-				return false;
-			}
-			const fullBrackets = config.getConfig("fullBrackets").getValue(m);
-			const mobBrackets = config.getConfig("mobBrackets").getValue(m);
-			return (
-				val[0].length === 1 &&
-				val[1].length === 1 &&
-				fullBrackets.indexOf(val[0]) === -1 &&
-				fullBrackets.indexOf(val[1]) === -1 &&
-				mobBrackets.indexOf(val[0]) === -1 &&
-				mobBrackets.indexOf(val[1]) === -1
 			);
 		}
 	)
