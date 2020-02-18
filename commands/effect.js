@@ -46,7 +46,7 @@ const func = async (msg, mobile) => {
                 thumbnail: { url: card.imageLink },
                 title: card.text[langs.lang2].name
             };
-            if (text.pendHead) {
+            if (text.pendHead && text.pendBody && text.monsterHead) {
                 embed.fields = [
                     { name: text.pendHead, value: text.pendBody },
                     { name: text.monsterHead, value: text.monsterBody }

@@ -145,7 +145,7 @@ export async function generateCardProfile(
 				codeString +
 				"\n" +
 				stats;
-		if (desc.pendHead) {
+		if (desc.pendHead && desc.pendBody && desc.monsterHead) {
 			outString +=
 					"**" +
 					desc.pendHead +
@@ -172,7 +172,7 @@ export async function generateCardProfile(
 	};
 	const FIELD_CAP = 1024;
 	const descPortions = [];
-	if (desc.pendHead && outEmbed.embed && outEmbed.embed.fields && desc.monsterHead) {
+	if (desc.pendHead && desc.pendBody && outEmbed.embed && outEmbed.embed.fields && desc.monsterHead) {
 		outEmbed.embed.fields.push({
 			name: desc.pendHead,
 			value: desc.pendBody
