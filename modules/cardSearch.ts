@@ -378,18 +378,22 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 	const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
 	const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
 	const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
+	const usedResults: string[] = [];
 	for (const result of results) {
 		const query = getLang(msg, result.res);
-		const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
-		if (card && query.lang2 in card.text) {
-			const m = await sendCardProfile(msg, card, query.lang2, result.mobile);
-			if (m) {
-				logDeleteMessage(msg, m);
-			}
-		} else if (card && query.lang2 in card.text) {
-			const m = await sendCardProfile(msg, card, query.lang1, result.mobile);
-			if (m) {
-				logDeleteMessage(msg, m);
+		if (!usedResults.includes(query.msg)) {
+			usedResults.push(query.msg);
+			const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
+			if (card && query.lang2 in card.text) {
+				const m = await sendCardProfile(msg, card, query.lang2, result.mobile);
+				if (m) {
+					logDeleteMessage(msg, m);
+				}
+			} else if (card && query.lang2 in card.text) {
+				const m = await sendCardProfile(msg, card, query.lang1, result.mobile);
+				if (m) {
+					logDeleteMessage(msg, m);
+				}
 			}
 		}
 	}
