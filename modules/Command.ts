@@ -1,5 +1,6 @@
 import * as Eris from "eris";
 import { owners } from "../config/auth.json";
+import { stats } from "./stats.js";
 
 type descFunc = (prefix: string) => string;
 
@@ -39,7 +40,9 @@ export class Command {
 
 	public async execute(msg: Eris.Message, mobile = false): Promise<void | Eris.Message> {
 		if (this.isCanExecute(msg)) {
-			return await this.func(msg, mobile);
+			const result = await this.func(msg, mobile);
+			await stats.writeCommand(msg, this.names[0]);
+			return result;
 		}
 	}
 

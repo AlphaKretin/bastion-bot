@@ -4,7 +4,6 @@ import * as Eris from "eris";
 import { LangPayload } from "./util";
 
 const statsDbPath = __dirname + "/../stats/stats.db3";
-console.log(statsDbPath);
 class Stats {
     private db: Promise<sqlite.Database>;
     constructor() {
@@ -32,6 +31,17 @@ class Stats {
     	const lang1 = userQuery.lang1;
     	const lang2 = userQuery.lang2;
     	await statement.run(snowflake, server, user, query, result, mobile, lang1, lang2);
+    }
+	
+    public async writeCommand(msg: Eris.Message, name: string): Promise<void> {
+    	const db = await this.db;
+    	const statement = await db.prepare("INSERT INTO commands VALUES(?,?,?,?,?)");
+    	const snowflake = msg.id;
+    	const chan = msg.channel;
+    	const user = msg.author.id;
+    	const server = chan instanceof Eris.GuildChannel ? chan.guild.id : user; //user === server indicates DM
+    	const args = msg.content;
+    	await statement.run(snowflake, server, user, name, args);
     }
 }
 
