@@ -66,6 +66,7 @@ sheetOpts.json
 permissions/*
 confs/*
 !confs/tlocks.json
+stats.db3
 
 # Compiled from TypeScript
 *.js

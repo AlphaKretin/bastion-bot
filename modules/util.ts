@@ -20,7 +20,7 @@ export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild => {
 	return msg.channel.guild;
 };
 
-interface LangPayload {
+export interface LangPayload {
     msg: string;
     lang1: string;
     lang2: string;

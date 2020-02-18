@@ -8,6 +8,7 @@ import { colors, config, emotes } from "./configs";
 import { data, imageExt } from "./data";
 import { strings } from "./strings";
 import { canReact, getLang, messageCapSlice } from "./util";
+import { stats } from "./stats";
 
 function reEscape(s: string): string {
 	return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -389,11 +390,13 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 				if (m) {
 					logDeleteMessage(msg, m);
 				}
+				await stats.writeSearch(msg, query, card.id, result.mobile);
 			} else if (card && query.lang1 in card.text) {
 				const m = await sendCardProfile(msg, card, query.lang1, result.mobile);
 				if (m) {
 					logDeleteMessage(msg, m);
 				}
+				await stats.writeSearch(msg, query, card.id, result.mobile);
 			}
 		}
 	}
