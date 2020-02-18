@@ -65,6 +65,7 @@ sheetOpts.json
 *.cdb
 permissions/*
 confs/*
+!confs/tlocks.json
 
 # Compiled from TypeScript
 *.js

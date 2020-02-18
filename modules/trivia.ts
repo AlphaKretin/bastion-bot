@@ -6,6 +6,7 @@ import { bot } from "./bot";
 import { config } from "./configs";
 import { data } from "./data";
 import { getRandomIntInclusive, trimMsg } from "./util";
+import { fs } from "mz";
 
 const fixTriviaMessage = (msg: string, answer = true): string => {
 	if (answer) {
@@ -326,4 +327,34 @@ export async function trivia(msg: Eris.Message): Promise<void> {
 		const filter = await Filter.parse(filterContent, lang);
 		await startTriviaRound(round, hard, lang, filter, msg);
 	}
+}
+
+const filePath = "confs/tlocks.json";
+const triviaLocks: string[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+
+export async function setLock(c: Eris.Channel | Eris.Message): Promise<boolean> {
+	if (c instanceof Eris.Message) {
+		c = c.channel;
+	}
+	const id = c.id;
+	const index = triviaLocks.indexOf(id);
+	if (index > -1) {
+		triviaLocks.splice(index);
+		await fs.writeFile(filePath, JSON.stringify(triviaLocks, null, 4));
+		return true;
+	} else {
+		triviaLocks.push(id);
+		await fs.writeFile(filePath, JSON.stringify(triviaLocks, null, 4));
+		return false;
+	}
+		
+}
+
+export function getLock(c: Eris.Channel | Eris.Message): boolean {
+	if (c instanceof Eris.Message) {
+		c = c.channel;
+	}
+	const id = c.id;
+	return !triviaLocks.includes(id);
+
 }

@@ -1,11 +1,13 @@
 import * as Eris from "eris";
 import { Command } from "../modules/Command";
-import { trivia } from "../modules/trivia";
+import { trivia, getLock } from "../modules/trivia";
 
 const names = ["trivia"];
 const func = async (msg: Eris.Message): Promise<void> => {
 	await trivia(msg);
 };
+
+const cond = getLock;
 
 const desc =
 	"Plays a game where Bastion displays a card image, and plays have a time limit to name the displayed card.\n" +
@@ -13,4 +15,4 @@ const desc =
 	"Include the optional \"hard\" parameter, Bastion will only display one corner of the image.\n" +
 	"For details on the filter system, yell at AlphaKretin to add a link here.";
 
-export const cmd = new Command(names, func, undefined, desc, "rounds lang hard|filter");
+export const cmd = new Command(names, func, cond, desc, "rounds lang hard|filter");
