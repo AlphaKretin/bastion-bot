@@ -389,7 +389,7 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 				if (m) {
 					logDeleteMessage(msg, m);
 				}
-			} else if (card && query.lang2 in card.text) {
+			} else if (card && query.lang1 in card.text) {
 				const m = await sendCardProfile(msg, card, query.lang1, result.mobile);
 				if (m) {
 					logDeleteMessage(msg, m);
