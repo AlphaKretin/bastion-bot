@@ -64,6 +64,6 @@ const desc = (prefix) => "Searches for cards by fuzzy-matching the card name, " 
     "and returns a paginated list of all results.\n" +
     `Use arrow reactions or \`${prefix}mp<number>\` to navigate pages.\n` +
     `Use number reactions or \`${prefix}md<number>\` to show the profile for a card.\n` +
-    "For details on the filter system, yell at AlphaKretin to add a link here.";
+    "For details on the filter system, see https://github.com/AlphaKretin/ygo-data/wiki/Filter-system.";
 exports.command = new Command_1.Command(names, func, undefined, desc, "query|filters");
 //# sourceMappingURL=matches.js.map

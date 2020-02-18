@@ -26,7 +26,7 @@ async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 
 const desc = (prefix: string): string =>
 	"Shows the profile for one random card that meets the given filters.\n" +
-	"For details on the filter system, yell at AlphaKretin to add a link here.\n" +
+	"For details on the filter system, see https://github.com/AlphaKretin/ygo-data/wiki/Filter-system.\n" +
 	`For multiple results, try \`${prefix}search |filter\`.`;
 
 export const command = new Command(names, func, undefined, desc, "filter");
