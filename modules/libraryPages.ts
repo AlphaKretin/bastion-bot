@@ -81,7 +81,7 @@ class Library {
 	}
 }
 
-const sheetOpts = JSON.parse(fs.readFileSync("config/sheetOpts.json", "utf8"));
+export const sheetOpts = JSON.parse(fs.readFileSync("config/sheetOpts.json", "utf8"));
 export const functions = new Library(sheetOpts.functions);
 export const constants = new Library(sheetOpts.constants);
 export const params = new Library(sheetOpts.params);
