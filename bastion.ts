@@ -25,9 +25,9 @@ export const gameData: {
 	};
 } = {};
 
-async function executeCommand(cmd: Command, name: string, msg: Eris.Message): Promise<void> {
+async function executeCommand(cmd: Command, name: string, msg: Eris.Message, mobile = false): Promise<void> {
 	msg.addReaction("🕙").catch(ignore);
-	const m = await cmd.execute(msg, name.endsWith(".m")).catch(async e => {
+	const m = await cmd.execute(msg, mobile).catch(async e => {
 		msg.channel.createMessage("Error!\n" + e);
 		await msg.removeReaction("🕙");
 	});
@@ -77,7 +77,7 @@ bot.on("messageCreate", async msg => {
 	if (validCmds.length > 0) {
 		const cmd = validCmds[0].cmd;
 		const cmdName = validCmds[0].name;
-		return await executeCommand(cmd, cmdName, msg);
+		return await executeCommand(cmd, cmdName, msg, msg.content.split(/\s+/)[0].endsWith(".m"));
 	}
 	// because it can send multiple messages, deletion logging for card search
 	// is handled in the function, not here
