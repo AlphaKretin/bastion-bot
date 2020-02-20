@@ -1,7 +1,4 @@
 # Bastion
-
-**Currently undergoing rework, documentation is WIP.** **For the README of the old (currently public) version, **[click here](https://github.com/AlphaKretin/bastion-bot/blob/962f4adc6a096db18794635dc5c2f81419ad90b1/README.md)**.**
-
 **Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the _Yu-Gi-Oh! Trading Card Game_. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
 
 ## Quick Links
@@ -12,11 +9,11 @@
 
 ## Documentation
 
-Search cards by putting their name or ID between `{}` for embed style, `<>` for mobile view or `[]` for mobile view without images. For more detail, see "Commands for users".
+Search cards by putting their name or ID between `<>` for embed style, or `{}` for mobile view. For more detail, see "Commands for users".
 
 -   [Commands for users](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-users)
--   [Commands for server Admins](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-server-admins)
--   [Instructions for hosting your own Bastion](https://github.com/AlphaKretin/bastion-bot/wiki/Instructions-for-hosting-your-own-Bastion)
+-   [Commands for YGOPro scripters](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-YGOPro-scripters)
+-   [Commands for server mods](https://github.com/AlphaKretin/bastion-bot/wiki/Commands-for-server-mods)
 
 ## Special Thanks
 
