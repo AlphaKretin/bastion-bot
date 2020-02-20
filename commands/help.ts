@@ -37,7 +37,8 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 		`Use \`${prefix}help <commandname>\` to get detailed help on a command.\n` +
 		"Support my development on Patreon at <https://www.patreon.com/alphakretinbots>\n" +
 		"Invite me to your server! " +
-		"<https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288>";
+		"<https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288>\n" +
+		"I've recently undergone a **major update**. Please read about it here, especially if you're a server moderator: https://github.com/AlphaKretin/bastion-bot/wiki/Statement-on-update";
 	return await msg.channel.createMessage(helpMessage);
 };
 
