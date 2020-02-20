@@ -341,11 +341,11 @@ export async function setLock(c: Eris.Channel | Eris.Message): Promise<boolean> 
 	if (index > -1) {
 		triviaLocks.splice(index);
 		await fs.writeFile(filePath, JSON.stringify(triviaLocks, null, 4));
-		return true;
+		return false;
 	} else {
 		triviaLocks.push(id);
 		await fs.writeFile(filePath, JSON.stringify(triviaLocks, null, 4));
-		return false;
+		return true;
 	}
 		
 }
@@ -355,6 +355,6 @@ export function getLock(c: Eris.Channel | Eris.Message): boolean {
 		c = c.channel;
 	}
 	const id = c.id;
-	return !triviaLocks.includes(id);
+	return triviaLocks.includes(id);
 
 }
