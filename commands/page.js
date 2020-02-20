@@ -39,5 +39,5 @@ function cond(msg) {
 const desc = (prefix) => "Changes the page of function, constant or parameter results from YGOPro's scripts," +
     ` for a list being displayed by \`${prefix}f\`, \`${prefix}c\` or \`${prefix}param\`.\n` +
     "Detects edited messages.";
-exports.command = new Command_1.Command(names, func, cond, desc, "index", undefined, true);
+exports.command = new Command_1.Command(names, func, cond, desc, "index", false, false, true);
 //# sourceMappingURL=page.js.map

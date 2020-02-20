@@ -39,5 +39,5 @@ function cond(msg) {
 const desc = (prefix) => "Changes the page of card results," +
     ` for a list being displayed by \`${prefix}match\` or \`${prefix}search\`.\n` +
     "Detects edited messages.";
-exports.command = new Command_1.Command(names, func, cond, desc, undefined, undefined, true);
+exports.command = new Command_1.Command(names, func, cond, desc, undefined, false, false, true);
 //# sourceMappingURL=mPage.js.map

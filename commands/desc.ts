@@ -24,4 +24,4 @@ const desc = (prefix: string): string =>
 	` from a list being displayed by \`${prefix}f\`, \`${prefix}c\` or \`${prefix}param\`.\n` +
 	"Detects edited messages.";
 
-export const command = new Command(names, func, cond, desc, "index", undefined, true);
+export const command = new Command(names, func, cond, desc, "index", false, false, true);

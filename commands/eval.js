@@ -30,5 +30,5 @@ async function func(msg) {
     const output = util.inspect(evaled, true, 5, false);
     return await msg.channel.createMessage("```json\n" + output + "```");
 }
-exports.command = new Command_1.Command(names, func, undefined, undefined, undefined, true);
+exports.command = new Command_1.Command(names, func, undefined, undefined, undefined, false, true);
 //# sourceMappingURL=eval.js.map

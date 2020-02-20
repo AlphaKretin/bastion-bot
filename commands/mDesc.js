@@ -27,5 +27,5 @@ function cond(msg) {
 const desc = (prefix) => "Shows the profile for a given card," +
     ` from a list being displayed by \`${prefix}match\` or \`${prefix}search\`.\n` +
     "Detects edited messages.";
-exports.command = new Command_1.Command(names, func, cond, desc, "index", undefined, true);
+exports.command = new Command_1.Command(names, func, cond, desc, "index", false, false, true);
 //# sourceMappingURL=mDesc.js.map
