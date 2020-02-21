@@ -81,7 +81,6 @@ class Stats {
 			"(SELECT COUNT(user) as number FROM "+
 			"(SELECT user, COUNT(user) as times FROM commands GROUP BY user)"+
 			") y on 1=1"))[0] as number;
-		console.dir({ activeUsers, cardCount, commandCount, cardsPerUser, commandsPerUser });
 		return { activeUsers, cardCount, commandCount, cardsPerUser, commandsPerUser };
 	}
 
