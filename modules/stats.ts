@@ -4,6 +4,15 @@ import * as Eris from "eris";
 import { LangPayload } from "./util";
 
 const statsDbPath = __dirname + "/../stats/stats.db3";
+
+interface Metrics {
+	activeUsers: number;
+	cardCount: number;
+	commandCount: number;
+	cardsPerUser: number;
+	commandsPerUser: number;
+}
+
 class Stats {
 	private db: Promise<sqlite.Database>;
 	constructor() {
@@ -51,6 +60,29 @@ class Stats {
 		"FROM cards GROUP BY result ORDER BY times DESC LIMIT ?");
 		return await statement.all(count);
 
+	}
+
+	public async getMetrics(): Promise<Metrics> {
+		const db = await this.db;
+		const activeUsers = Object.values(await db.get("SELECT COUNT(user) FROM (SELECT user FROM cards UNION SELECT user FROM commands)"))[0] as number;
+		const cardCount = Object.values(await db.get("SELECT SUM(times) FROM (SELECT result, COUNT(result) AS times FROM cards GROUP BY result) s"))[0] as number;
+		const commandCount = Object.values(await db.get("SELECT SUM(times) FROM (SELECT name, COUNT(name) AS times FROM commands GROUP BY name) s"))[0] as number;
+		const cardsPerUser = Object.values(await db.get("SELECT CAST(x.number AS REAL) / CAST(y.number AS REAL) FROM "+
+			"(SELECT SUM(times) as number FROM "+
+			"(SELECT result, COUNT(result) AS times FROM cards GROUP BY result) "+
+			") x JOIN "+
+			"(SELECT COUNT(user) as number FROM "+
+			"(SELECT user, COUNT(user) as times FROM cards GROUP BY user)"+
+			") y on 1=1"))[0] as number;
+		const commandsPerUser = Object.values(await db.get("SELECT CAST(x.number AS REAL) / CAST(y.number AS REAL) FROM "+
+			"(SELECT SUM(times) as number FROM "+
+			"(SELECT name, COUNT(name) AS times FROM commands GROUP BY name) "+
+			") x JOIN "+
+			"(SELECT COUNT(user) as number FROM "+
+			"(SELECT user, COUNT(user) as times FROM commands GROUP BY user)"+
+			") y on 1=1"))[0] as number;
+		console.dir({ activeUsers, cardCount, commandCount, cardsPerUser, commandsPerUser });
+		return { activeUsers, cardCount, commandCount, cardsPerUser, commandsPerUser };
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
