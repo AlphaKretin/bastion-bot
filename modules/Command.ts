@@ -38,10 +38,12 @@ export class Command {
 		this.usage = usage;
 	}
 
-	public async execute(msg: Eris.Message, mobile = false): Promise<void | Eris.Message> {
+	public async execute(msg: Eris.Message, mobile = false, edit = false): Promise<void | Eris.Message> {
 		if (this.isCanExecute(msg)) {
 			const result = await this.func(msg, mobile);
-			await stats.writeCommand(msg, this.names[0]);
+			if (!edit) {
+				await stats.writeCommand(msg, this.names[0]);
+			}
 			return result;
 		}
 	}

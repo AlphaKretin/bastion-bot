@@ -25,9 +25,9 @@ export const gameData: {
 	};
 } = {};
 
-async function executeCommand(cmd: Command, name: string, msg: Eris.Message, mobile = false): Promise<void> {
+async function executeCommand(cmd: Command, name: string, msg: Eris.Message, mobile = false, edit = false): Promise<void> {
 	msg.addReaction("🕙").catch(ignore);
-	const m = await cmd.execute(msg, mobile).catch(async e => {
+	const m = await cmd.execute(msg, mobile, edit).catch(async e => {
 		msg.channel.createMessage("Error!\n" + e);
 		await msg.removeReaction("🕙");
 	});
@@ -95,7 +95,7 @@ bot.on("messageUpdate", async msg => {
 	if (validCmds.length > 0) {
 		const cmd = validCmds[0].cmd;
 		const cmdName = content.split(/ +/)[0];
-		return await executeCommand(cmd, cmdName, msg);
+		return await executeCommand(cmd, cmdName, msg, false, true);
 	}
 });
 
