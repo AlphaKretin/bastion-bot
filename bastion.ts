@@ -99,4 +99,8 @@ bot.on("messageUpdate", async msg => {
 	}
 });
 
-bot.connect().catch(e => console.error(e));
+bot.connect().then(() => {
+	bot.editStatus(undefined, {
+		name: "New update, .help!"
+	});
+}).catch(e => console.error(e));
