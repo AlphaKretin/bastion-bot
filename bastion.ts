@@ -2,7 +2,7 @@ import * as Eris from "eris";
 import { bot, logDeleteMessage } from "./modules/bot";
 import { cardSearch } from "./modules/cardSearch";
 import { Command } from "./modules/Command";
-import { commands } from "./modules/commands";
+import { botOpts, commands } from "./modules/commands";
 import { config } from "./modules/configs";
 import { answerTrivia } from "./modules/trivia";
 
@@ -100,7 +100,9 @@ bot.on("messageUpdate", async msg => {
 });
 
 bot.connect().then(() => {
-	bot.editStatus(undefined, {
-		name: "New update, .help!"
-	});
+	if (botOpts.status) {
+		bot.editStatus(undefined, {
+			name: botOpts.status
+		});
+	}
 }).catch(e => console.error(e));
