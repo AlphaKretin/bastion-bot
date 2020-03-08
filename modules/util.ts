@@ -28,7 +28,7 @@ export interface LangPayload {
 
 export function getLang(msg: Eris.Message, query?: string): LangPayload {
 	const content = query || trimMsg(msg);
-	const terms = content.split(",");
+	const terms = content.split(",").map(t => t.trim());
 	if (data.langs.includes(terms[terms.length - 1])) {
 		if (data.langs.includes(terms[terms.length - 2])) {
 			const outM = terms.slice(0, terms.length - 2).join(",");
