@@ -4,24 +4,9 @@
 			"en": {
 				"remoteDBs": [
 					{
-						"owner": "Ygoproco",
-						"repo": "Live2017Links",
+						"owner": "ProjectIgnis",
+						"repo": "BabelCDB",
 						"path": ""
-					},
-					{
-						"owner": "Ygoproco",
-						"repo": "LiveanimeLinks",
-						"path": ""
-					},
-					{
-						"owner": "EerieCode",
-						"repo": "Percy-Alpha-Testing",
-						"path": ""
-					},
-					{
-						"owner": "EerieCode",
-						"repo": "Percy-Alpha-Testing",
-						"path": "Skill Database"
 					}
 				]
 			},
@@ -78,28 +63,32 @@
 						"path": "it"
 					}
 				]
-			},
-			"tw": {
-				"remoteDBs": [
-					{
-						"owner": "AlphaKretin",
-						"repo": "temp-commands",
-						"path": "tw"
-					}
-				]
 			}
 		},
 		"baseDbs": ["cards.cdb", "cards-tf.cdb"]
 	},
 	"stringOpts": {
-		"en": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"ja": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"cn": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"de": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"es": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"fr": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"it": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf",
-		"tw": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/strings.conf"
+		"en": {
+			"local": "strings.conf"
+		},
+		"ja": {
+			"remote": "https://raw.githubusercontent.com/Jambalaya751955/ygopro-database-JP/master/config/Live2017Links/strings.conf"
+		},
+		"cn": {
+			"local": "strings.conf"
+		},
+		"de": {
+			"local": "strings.conf"
+		},
+		"es": {
+			"local": "strings.conf"
+		},
+		"fr": {
+			"local": "strings.conf"
+		},
+		"it": {
+			"local": "strings.conf"
+		}
 	},
 	"transOpts": {
 		"en": {
@@ -186,21 +175,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -318,17 +307,21 @@
 				"0x100000000": "カリスマ"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "モンスター",
@@ -362,7 +355,7 @@
 				"0x40000000": "マイナス"
 			}
 		},
-		"cn":  {
+		"cn": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -446,21 +439,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -494,7 +487,7 @@
 				"0x40000000": "Minus"
 			}
 		},
-		"de":  {
+		"de": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -578,21 +571,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -626,7 +619,7 @@
 				"0x40000000": "Minus"
 			}
 		},
-		"es":  {
+		"es": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -710,21 +703,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -758,7 +751,7 @@
 				"0x40000000": "Minus"
 			}
 		},
-		"fr":  {
+		"fr": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -842,21 +835,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -890,7 +883,7 @@
 				"0x40000000": "Minus"
 			}
 		},
-		"it":  {
+		"it": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -974,21 +967,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -1022,7 +1015,7 @@
 				"0x40000000": "Minus"
 			}
 		},
-		"tw":  {
+		"tw": {
 			"attribute": {
 				"0x1": "EARTH",
 				"0x2": "WATER",
@@ -1106,21 +1099,21 @@
 				"0x100000000": "Charisma"
 			},
 			"skillRace": {
-				"0x1": "Bonz",
+				"0x1": "Yami Yugi",
 				"0x2": "Ishizu",
-				"0x4": "Joey",
+				"0x4": "Pegasus",
 				"0x8": "Kaiba",
-				"0x10": "Keith",
+				"0x10": "Joey",
 				"0x20": "Mai",
-				"0x40": "Mako",
-				"0x80": "Pegasus",
+				"0x40": "Bonz",
+				"0x80": "Mako",
 				"0x100": "Rex",
 				"0x200": "Weevil",
-				"0x400": "Yami Yugi",
-				"0x800": "Andrew",
-				"0x1000": "Christine",
-				"0x2000": "David",
-				"0x4000": "Emma"
+				"0x400": "Keith",
+				"0x800": "Christine",
+				"0x1000": "Emma",
+				"0x2000": "Andrew",
+				"0x4000": "David"
 			},
 			"type": {
 				"0x1": "Monster",
@@ -1235,7 +1228,11 @@
 		"atk": ["atk", "attack"],
 		"def": ["def", "defense", "defence"]
 	},
-	"banlist": "https://raw.githubusercontent.com/Ygoproco/Live2017Links/master/lflist.conf",
+	"banlist": {
+		"owner": "ProjectIgnis",
+		"repo": "LFLists",
+		"path": ""
+	},
 	"imageLink": "https://pics.alphakretin.fail/",
 	"imageExt": "png"
 }
