@@ -8,29 +8,34 @@
 	],
 	"scriptRepos": [
 		{
-			"owner": "Ygoproco",
-			"repo": "Live2017Links",
-			"path": "script"
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "official"
 		},
 		{
-			"owner": "Ygoproco",
-			"repo": "Live2017MR4",
-			"path": "script"
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "pre-release"
 		},
 		{
-			"owner": "Fluorohydride",
-			"repo": "ygopro-scripts",
-			"path": ""
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "pre-errata"
 		},
 		{
-			"owner": "Ygoproco",
-			"repo": "LiveanimeLinks",
-			"path": "script"
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "skill"
 		},
 		{
-			"owner": "Gideon9212",
-			"repo": "Livecustom",
-			"path": "script"
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "rush"
+		},
+		{
+			"owner": "ProjectIgnis",
+			"repo": "CardScripts",
+			"path": "unofficial"
 		}
 	],
 	"links": {
