@@ -671,7 +671,9 @@
 				"0x8": "Illegal",
 				"0x10": "Video Game",
 				"0x20": "Custom",
-				"0x40": "Speed Duel"
+				"0x40": "Speed Duel",
+				"0x100": "Pre-Release",
+				"0x200": "Rush Duel"
 			},
 			"race": {
 				"0x1": "Warrior",
