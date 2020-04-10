@@ -24,7 +24,9 @@ export function generateCardList(channelID: string): string {
 	}
 	const title = extra.title;
 	if (title) {
-		out.unshift(title.replace(/%s/g, page.length.toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")");
+		out.unshift(
+			title.replace(/%s/g, page.length.toString()) + " (Page " + page.currentPage + "/" + page.maxPage + ")"
+		);
 	}
 	return out.join("\n");
 }
@@ -97,7 +99,7 @@ export async function sendCardList(
 	const origCards: Card[] = Object.values(list);
 	const cards: Card[] = [];
 	for (let card of origCards) {
-		const ids = card.data.aliasedCards;
+		const ids = await card.aliasIDs;
 		// difference < 10: alt art, hide. difference > 10: umi/harpy, allow
 		if (Math.abs(card.id - ids[0]) < 10) {
 			const tempCard = await data.getCard(ids[0]);
