@@ -85,23 +85,17 @@ export async function generateCardStats(card: Card, lang: string, msg: Eris.Mess
 		if (displayEmotes && levelEmote) {
 			stats += " " + levelEmote;
 		}
-		stats +=
-			" **" + strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+		stats += " **" + strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
 		if (card.data.linkMarker) {
 			stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
 		} else if (card.data.def !== undefined) {
-			stats +=
-				" **" +
-				strings.getTranslation("def", lang, msg) +
-				"**: " +
-				(card.data.def === -2 ? "?" : card.data.def);
+			stats += " **" + strings.getTranslation("def", lang, msg) + "**: " + (card.data.def === -2 ? "?" : card.data.def);
 		}
 		if (card.data.lscale && card.data.rscale) {
 			if (displayEmotes && "misc" in emotes && "leftScale" in emotes.misc) {
 				stats += emotes.misc.leftScale;
 			}
-			stats +=
-				" **" + strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
+			stats += " **" + strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
 			if (displayEmotes && "misc" in emotes && "rightScale" in emotes.misc) {
 				stats += emotes.misc.rightScale;
 			}
@@ -133,29 +127,22 @@ export async function generateCardProfile(
 	} else if (card.data.isType(enums.type.TYPE_EFFECT)) {
 		textHeader = strings.getTranslation("monsterEffect", lang, msg);
 	}
-	const codes = await card.aliasIDs;
+	const codes = card.data.aliasedCards;
 	const codeString = codes.join(" | ");
 	const desc = card.text[lang].desc;
 	if (mobile) {
 		let outString =
-				"__**" +
-				card.text[lang].name +
-				"**__\n**" +
-				strings.getTranslation("id", lang, msg) +
-				"**: " +
-				codeString +
-				"\n" +
-				stats;
+			"__**" +
+			card.text[lang].name +
+			"**__\n**" +
+			strings.getTranslation("id", lang, msg) +
+			"**: " +
+			codeString +
+			"\n" +
+			stats;
 		if (desc.pendHead && desc.pendBody && desc.monsterHead) {
 			outString +=
-					"**" +
-					desc.pendHead +
-					"**:\n" +
-					desc.pendBody +
-					"\n**" +
-					desc.monsterHead +
-					"**:\n" +
-					desc.monsterBody;
+				"**" + desc.pendHead + "**:\n" + desc.pendBody + "\n**" + desc.monsterHead + "**:\n" + desc.monsterBody;
 		} else {
 			outString += "**" + textHeader + "**:\n" + desc.monsterBody;
 		}
@@ -223,7 +210,7 @@ function compose(a: Jimp, b: Jimp, vert = false): Jimp {
 async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
 	const ROW_LENGTH = 4;
 	const images: Buffer[] = [];
-	const codes = await card.aliasIDs;
+	const codes = card.data.aliasedCards;
 	for (const code of codes) {
 		const tempCard = await data.getCard(code);
 		if (tempCard) {
@@ -256,10 +243,7 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
 			for (let i = 1; i < ROW_LENGTH; i++) {
 				if (i in row) {
 					const newImg = await Jimp.read(row[i]);
-					canvas = compose(
-						canvas,
-						newImg
-					);
+					canvas = compose(canvas, newImg);
 				}
 			}
 			const buf = await canvas.getBufferAsync(canvas.getMIME());
@@ -269,11 +253,7 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
 		if (rowsAfter.length > 1) {
 			for (let i = 1; i < rowsAfter.length; i++) {
 				const row = await Jimp.read(rowsAfter[i]);
-				final = compose(
-					final,
-					row,
-					true
-				);
+				final = compose(final, row, true);
 			}
 		}
 		const image = await final.getBufferAsync(final.getMIME());
@@ -286,10 +266,10 @@ export async function sendCardProfile(
 	card: Card,
 	lang: string,
 	mobile = false
-): Promise<Eris.Message|undefined> {
+): Promise<Eris.Message | undefined> {
 	if (card) {
 		const profile = await generateCardProfile(card, lang, msg, mobile);
-		if (mobile && (await card.aliasIDs).length > 1) {
+		if (mobile && card.data.aliasedCards.length > 1) {
 			const image = await getCompositeImage(card);
 			if (image) {
 				const file = {
@@ -317,7 +297,14 @@ export async function sendCardProfile(
 }
 
 function badQuery(match: string): boolean {
-	return match.startsWith("!") || match.startsWith(":") || match.startsWith("a:") || match.startsWith("@") || match.startsWith("#") || match.includes("://");
+	return (
+		match.startsWith("!") ||
+		match.startsWith(":") ||
+		match.startsWith("a:") ||
+		match.startsWith("@") ||
+		match.startsWith("#") ||
+		match.includes("://")
+	);
 }
 
 export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {

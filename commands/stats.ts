@@ -10,7 +10,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> =
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
 		const stats = await generateCardStats(card, langs.lang2, msg);
-		const codes = await card.aliasIDs;
+		const codes = card.data.aliasedCards;
 		const codeString = codes.join(" | ");
 		if (mobile) {
 			return await msg.channel.createMessage(
