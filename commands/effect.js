@@ -11,7 +11,7 @@ const func = async (msg, mobile) => {
     const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
     if (card) {
-        const codes = await card.aliasIDs;
+        const codes = card.data.aliasedCards;
         const codeString = codes.join(" | ");
         const text = card.text[langs.lang2].desc;
         let msgContent;
@@ -19,14 +19,7 @@ const func = async (msg, mobile) => {
             msgContent = "__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n";
             if (text.pendHead) {
                 msgContent +=
-                    "**" +
-                        text.pendHead +
-                        "**:\n" +
-                        text.pendBody +
-                        "\n**" +
-                        text.monsterHead +
-                        "**:\n" +
-                        text.monsterBody;
+                    "**" + text.pendHead + "**:\n" + text.pendBody + "\n**" + text.monsterHead + "**:\n" + text.monsterBody;
             }
             else {
                 let textHeader = strings_1.strings.getTranslation("cardEffect", langs.lang2, msg);

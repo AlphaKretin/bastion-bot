@@ -10,7 +10,7 @@ const func = async (msg, mobile) => {
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
     if (card) {
         const stats = await cardSearch_1.generateCardStats(card, langs.lang2, msg);
-        const codes = await card.aliasIDs;
+        const codes = card.data.aliasedCards;
         const codeString = codes.join(" | ");
         if (mobile) {
             return await msg.channel.createMessage("__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n" + stats);

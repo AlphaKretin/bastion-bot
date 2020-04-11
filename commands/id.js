@@ -8,7 +8,7 @@ const func = async (msg) => {
     const langs = util_1.getLang(msg);
     const card = await data_1.data.getCard(langs.msg, langs.lang1);
     if (card) {
-        return await msg.channel.createMessage("**" + card.text[langs.lang2].name + "**: " + card.id);
+        return await msg.channel.createMessage("**" + card.text[langs.lang2].name + "**: " + card.data.aliasedCards.join(" | "));
     }
     else {
         return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
