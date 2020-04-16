@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Filter } from "ygopro-data";
 import { sendCardProfile } from "../modules/cardSearch";
 import { Command } from "../modules/Command";
@@ -8,7 +8,7 @@ import { getRandomIntInclusive, trimMsg } from "../modules/util";
 
 const names: string[] = ["randcard", "randomcard"];
 
-async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message | undefined> {
+async function func(msg: Message, mobile: boolean): Promise<Message | undefined> {
 	const content = trimMsg(msg);
 	let lang = config.getConfig("defaultLang").getValue(msg);
 	for (const term of content.split(/ +/)) {

@@ -1,11 +1,11 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { generateCardStats, getColour } from "../modules/cardSearch";
 import { Command } from "../modules/Command";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
 
 const names = ["stats", "notext"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> => {
+const func = async (msg: Message, mobile: boolean): Promise<Message> => {
 	const langs = getLang(msg);
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
@@ -34,4 +34,4 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> =
 
 const desc = "Displays only the stats for a given card, without the card text.";
 
-export const cmd = new Command(names, func, undefined, desc, "card");
+export const command = new Command(names, func, undefined, desc, "card");

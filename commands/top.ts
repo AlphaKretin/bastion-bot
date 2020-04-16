@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { stats } from "../modules/stats";
 import { config } from "../modules/configs";
@@ -7,7 +7,7 @@ import { data } from "../modules/data";
 
 const names = ["top"];
 
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	let lang = config.getConfig("defaultLang").getValue(msg);
 	const args = trimMsg(msg).split(" ");
 	for (const arg of args) {
@@ -15,7 +15,7 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 			lang = arg;
 		}
 	}
-	
+
 	// arbitrary limit - fewer isn't interesting enough, more is too big output, finer details can just be queried for by me
 	const tops = await stats.topCards(15);
 	const lines = [];
@@ -34,4 +34,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 
 const desc = "Displays the cards most popular to search for, up to the top 15.";
 
-export const cmd = new Command(names, func, undefined, desc, "lang");
+export const command = new Command(names, func, undefined, desc, "lang");

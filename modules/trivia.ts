@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message, GuildChannel, Channel } from "eris";
 import Jimp from "jimp";
 import { Card, Filter } from "ygopro-data";
 import { gameData, ignore } from "../bastion";
@@ -15,7 +15,7 @@ const fixTriviaMessage = (msg: string, answer = true): string => {
 	}
 	return (
 		msg
-		// remove various spacer characters
+			// remove various spacer characters
 			.replace(/[:\s\-·∙•‧・･‐‑‒–—―﹘﹣－]/g, "")
 			.toLowerCase()
 	);
@@ -28,29 +28,66 @@ async function hardCrop(buffer: Buffer): Promise<Buffer> {
 	const w = image.bitmap.width / 2;
 	const h = image.bitmap.height / 2;
 	switch (getRandomIntInclusive(0, 3)) {
-	case 0:
-		x = 0;
-		y = 0;
-		break;
-	case 1:
-		x = w;
-		y = 0;
-		break;
-	case 2:
-		x = 0;
-		y = h;
-		break;
-	default:
-		x = w;
-		y = h;
+		case 0:
+			x = 0;
+			y = 0;
+			break;
+		case 1:
+			x = w;
+			y = 0;
+			break;
+		case 2:
+			x = 0;
+			y = h;
+			break;
+		default:
+			x = w;
+			y = h;
 	}
 	image.crop(x, y, w, h);
 	return await image.getBufferAsync(image.getMIME());
 }
 
+function getDisplayName(msg: Message, id?: string): string {
+	if (id) {
+		const channel = msg.channel;
+		if (channel instanceof GuildChannel) {
+			const member = channel.guild.members.get(id);
+			if (member && member.nick) {
+				return member.nick;
+			}
+		}
+		const user = bot.users.get(id);
+		if (user) {
+			return user.username;
+		}
+		return id;
+	}
+	if (msg.member && msg.member.nick) {
+		return msg.member.nick;
+	}
+	return msg.author.username;
+}
+
+function triviaScore(out: string, msg: Message): string {
+	if (Object.keys(gameData[msg.channel.id].score).length > 0) {
+		out += "\n**Scores**:\n";
+		for (const id in gameData[msg.channel.id].score) {
+			out += getDisplayName(msg, id) + ": " + gameData[msg.channel.id].score[id] + "\n";
+		}
+	}
+	return out;
+}
+
 // TODO: expose and import IFilterData. any allowed in mean-time
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function startTriviaRound(round: number, hard: boolean, lang: string, filterData: any, msg: Eris.Message): Promise<void> {
+async function startTriviaRound(
+	round: number,
+	hard: boolean,
+	lang: string,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	filterData: any,
+	msg: Message
+): Promise<void> {
 	const channel = msg.channel;
 	const triviaTimeLimit = config.getConfig("triviaLimit").getValue(msg);
 	const triviaHintTime = config.getConfig("triviaHint").getValue(msg);
@@ -143,12 +180,7 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
 	}, triviaHintTime * 1000);
 	let out = "Time's up! The card was **" + gameData[channel.id].name + "**!\n";
 	if (Object.keys(gameData[channel.id].score).length > 0) {
-		out += "**Scores**:\n";
-		for (const id in gameData[channel.id].score) {
-			const user = bot.users.get(id);
-			const refName = user ? user.username : id;
-			out += refName + ": " + gameData[channel.id].score[id] + "\n";
-		}
+		triviaScore(out, msg);
 	}
 	gameData[channel.id].timeoutAnswer = setTimeout(async () => {
 		if (gameData[channel.id].lock) {
@@ -179,45 +211,11 @@ async function startTriviaRound(round: number, hard: boolean, lang: string, filt
 	}, triviaTimeLimit * 1000);
 }
 
-function getDisplayName(msg: Eris.Message, id?: string): string {
-	if (id) {
-		const channel = msg.channel;
-		if (channel instanceof Eris.GuildChannel) {
-			const member = channel.guild.members.get(id);
-			if (member && member.nick) {
-				return member.nick;
-			}
-		}
-		const user = bot.users.get(id);
-		if (user) {
-			return user.username;
-		}
-		return id;
-	}
-	if (msg.member && msg.member.nick) {
-		return msg.member.nick;
-	}
-	return msg.author.username;
-}
-
-function triviaScore(out: string, msg: Eris.Message): string {
-	if (Object.keys(gameData[msg.channel.id].score).length > 0) {
-		out += "\n**Scores**:\n";
-		for (const id in gameData[msg.channel.id].score) {
-			out += getDisplayName(msg, id) + ": " + gameData[msg.channel.id].score[id] + "\n";
-		}
-	}
-	return out;
-}
-
-function triviaWinners(out: string, msg: Eris.Message): string {
+function triviaWinners(out: string, msg: Message): string {
 	if (Object.keys(gameData[msg.channel.id].score).length > 0) {
 		let winners: string[] = [];
 		for (const id in gameData[msg.channel.id].score) {
-			if (
-				winners.length === 0 ||
-					gameData[msg.channel.id].score[id] > gameData[msg.channel.id].score[winners[0]]
-			) {
+			if (winners.length === 0 || gameData[msg.channel.id].score[id] > gameData[msg.channel.id].score[winners[0]]) {
 				winners = [id];
 			} else if (gameData[msg.channel.id].score[id] === gameData[msg.channel.id].score[winners[0]]) {
 				winners.push(id);
@@ -232,7 +230,7 @@ function triviaWinners(out: string, msg: Eris.Message): string {
 	return out;
 }
 
-export async function answerTrivia(msg: Eris.Message): Promise<void> {
+export async function answerTrivia(msg: Message): Promise<void> {
 	const channel = msg.channel;
 	if (!(channel.id in gameData) || gameData[channel.id].game !== "trivia" || gameData[channel.id].lock) {
 		return;
@@ -299,7 +297,7 @@ export async function answerTrivia(msg: Eris.Message): Promise<void> {
 	}
 }
 
-export async function trivia(msg: Eris.Message): Promise<void> {
+export async function trivia(msg: Message): Promise<void> {
 	const channel = msg.channel;
 	if (channel.id in gameData) {
 		return;
@@ -332,8 +330,8 @@ export async function trivia(msg: Eris.Message): Promise<void> {
 const filePath = "confs/tlocks.json";
 const triviaLocks: string[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
-export async function setLock(c: Eris.Channel | Eris.Message): Promise<boolean> {
-	if (c instanceof Eris.Message) {
+export async function setLock(c: Channel | Message): Promise<boolean> {
+	if (c instanceof Message) {
 		c = c.channel;
 	}
 	const id = c.id;
@@ -347,14 +345,12 @@ export async function setLock(c: Eris.Channel | Eris.Message): Promise<boolean> 
 		await fs.writeFile(filePath, JSON.stringify(triviaLocks, null, 4));
 		return true;
 	}
-		
 }
 
-export function getLock(c: Eris.Channel | Eris.Message): boolean {
-	if (c instanceof Eris.Message) {
+export function getLock(c: Channel | Message): boolean {
+	if (c instanceof Message) {
 		c = c.channel;
 	}
 	const id = c.id;
 	return triviaLocks.includes(id);
-
 }

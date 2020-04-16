@@ -1,14 +1,26 @@
 import { Octokit } from "@octokit/rest";
-import * as Eris from "eris";
+import { Message } from "eris";
 import fetch from "node-fetch";
 import { Command } from "../modules/Command";
-import { botOpts, GitHub } from "../modules/commands";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
+import { scriptRepos } from "../config/botOpts.json";
 
+const auth = process.env.GITHUB_TOKEN;
+let GitHub: Octokit;
+if (auth) {
+	GitHub = new Octokit({
+		auth
+	});
+} else {
+	GitHub = new Octokit();
+}
 type gitParams = Octokit.ReposGetContentsParams;
 
-async function downloadCardScript(code: number, repo: gitParams): Promise<[string | undefined, Octokit.ReposGetContentsResponseItem | undefined]> {
+async function downloadCardScript(
+	code: number,
+	repo: gitParams
+): Promise<[string | undefined, Octokit.ReposGetContentsResponseItem | undefined]> {
 	const params: gitParams = JSON.parse(JSON.stringify(repo)); // clone value
 	params.path += "/c" + code + ".lua";
 	try {
@@ -28,22 +40,20 @@ async function downloadCardScript(code: number, repo: gitParams): Promise<[strin
 }
 
 const names = ["script", "lua"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> => {
+const func = async (msg: Message, mobile: boolean): Promise<Message> => {
 	const langs = getLang(msg);
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
 		let script: string | undefined;
 		let scriptFile: Octokit.ReposGetContentsResponseItem | undefined; // Octokit response
-		for (const repo of botOpts.scriptRepos) {
+		for (const repo of scriptRepos) {
 			[script, scriptFile] = await downloadCardScript(card.id, repo);
 			if (script !== undefined && scriptFile !== undefined) {
 				break;
 			}
 		}
 		if (script === undefined || scriptFile === undefined) {
-			return await msg.channel.createMessage(
-				"Sorry, I can't find a script for `" + card.text[langs.lang2].name + "`."
-			);
+			return await msg.channel.createMessage("Sorry, I can't find a script for `" + card.text[langs.lang2].name + "`.");
 		}
 		const scriptSlug =
 			"__" +
@@ -67,4 +77,4 @@ const desc =
 	"Searches for a card by ID or name, and displays a link to its card script on GitHub if available. " +
 	"Also displays the script in Discord if it's short enough to fit in the message";
 
-export const cmd = new Command(names, func, undefined, desc, "card");
+export const command = new Command(names, func, undefined, desc, "card");

@@ -1,12 +1,12 @@
-import * as Eris from "eris";
+import { Message, MessageContent } from "eris";
 
-export type ReactionFunc = (msg: Eris.Message, userID: string) => Promise<void | Eris.MessageContent>;
+export type ReactionFunc = (msg: Message, userID: string) => Promise<void | MessageContent>;
 
 export class ReactionButton {
 	public name: string;
 	private func: ReactionFunc;
-	private hostMsg: Eris.Message;
-	constructor(msg: Eris.Message, emoji: string, fun: ReactionFunc) {
+	private hostMsg: Message;
+	constructor(msg: Message, emoji: string, fun: ReactionFunc) {
 		this.hostMsg = msg;
 		this.func = fun;
 		this.name = emoji;

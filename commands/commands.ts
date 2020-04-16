@@ -1,12 +1,12 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
-import { commands } from "../modules/commands";
+import { cmds as commands } from "./index";
 import { config } from "../modules/configs";
 import { canReact, messageCapSlice } from "../modules/util";
 
 const names: string[] = ["commands"];
 
-async function func(msg: Eris.Message): Promise<void> {
+async function func(msg: Message): Promise<void> {
 	const prefix = config.getConfig("prefix").getValue(msg);
 	const validCommands = commands.filter(c => c.isCanExecute(msg));
 	const commandProfiles = validCommands

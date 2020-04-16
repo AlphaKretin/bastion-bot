@@ -1,19 +1,18 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
-import { botOpts } from "../modules/commands";
+import { links } from "../config/botOpts.json";
 import { trimMsg } from "../modules/util";
 const names = ["link"];
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	const content = trimMsg(msg);
 	const query = content.toLowerCase().replace(/\s+/g, "");
-	const key = Object.keys(botOpts.links).find(k => query.startsWith(k));
+	const key = Object.keys(links).find(k => query.startsWith(k));
 	if (key) {
-		return msg.channel.createMessage(botOpts.links[key]);
+		// cast links config to dictionary
+		return msg.channel.createMessage((links as { [key: string]: string })[key]);
 	} else {
 		return msg.channel.createMessage(
-			"Sorry, I don't have a link with that name. Try one of the following:\n`" +
-				Object.keys(botOpts.links).join("`, `") +
-				"`"
+			"Sorry, I don't have a link with that name. Try one of the following:\n`" + Object.keys(links).join("`, `") + "`"
 		);
 	}
 };
@@ -22,4 +21,4 @@ const desc =
 	"Recalls one of a variety of useful links, such as common ruling resources.\n" +
 	"Call without a link name to see a list of valid names.";
 
-export const cmd = new Command(names, func, undefined, desc, "name");
+export const command = new Command(names, func, undefined, desc, "name");

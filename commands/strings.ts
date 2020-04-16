@@ -1,10 +1,10 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { data } from "../modules/data";
 import { getLang } from "../modules/util";
 
 const names = ["strings"];
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	const langs = getLang(msg);
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
@@ -30,4 +30,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 
 const desc = "Searches for a card by ID or name, and displays its YGOPro database strings.";
 
-export const cmd = new Command(names, func, undefined, desc, "card");
+export const command = new Command(names, func, undefined, desc, "card");

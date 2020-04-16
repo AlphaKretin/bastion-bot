@@ -1,14 +1,16 @@
-import * as Eris from "eris";
+import { Message, MessageContent, PrivateChannel } from "eris";
 import Jimp from "jimp";
 import { Card, enums } from "ygopro-data";
 import { ignore } from "../bastion";
 import { addReactionButton, bot, logDeleteMessage } from "./bot";
-import { botOpts } from "./commands";
-import { colors, config, emotes } from "./configs";
+import { config } from "./configs";
 import { data, imageExt } from "./data";
 import { strings } from "./strings";
 import { canReact, getLang, messageCapSlice } from "./util";
 import { stats } from "./stats";
+import { maxSearch } from "../config/botOpts.json";
+import { type, race, attribute, misc } from "../config/emotes.json";
+import * as colors from "../config/colors.json";
 
 function reEscape(s: string): string {
 	return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -19,7 +21,7 @@ interface SearchQuery {
 	res: string;
 }
 
-export async function generateCardStats(card: Card, lang: string, msg: Eris.Message): Promise<string> {
+export async function generateCardStats(card: Card, lang: string, msg: Message): Promise<string> {
 	const displayEmotes = !config.getConfig("suppressEmotes").getValue(msg);
 	let stats = "";
 	const setNames = await card.data.names[lang].setcode;
@@ -42,41 +44,41 @@ export async function generateCardStats(card: Card, lang: string, msg: Eris.Mess
 			" USD";
 	}
 	stats += "\n";
-	let type = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
+	let typeString = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
 	if (displayEmotes) {
-		if (!card.data.isType(enums.type.TYPE_MONSTER) && "type" in emotes) {
-			for (const t in emotes.type) {
+		if (!card.data.isType(enums.type.TYPE_MONSTER) && type) {
+			for (const t in type) {
 				if (card.data.isType(parseInt(t, 16))) {
-					type += " " + emotes.type[t];
+					typeString += " " + (type as { [key: string]: string })[t];
 				}
 			}
-		} else if ("race" in emotes) {
-			for (const r in emotes.race) {
+		} else if (race) {
+			for (const r in race) {
 				if (card.data.isRace(parseInt(r, 16))) {
-					type += " " + emotes.race[r];
+					typeString += " " + (race as { [key: string]: string })[r];
 				}
 			}
 		}
 	}
-	stats += type;
+	stats += typeString;
 	if (card.data.names[lang].attribute.length > 0) {
 		stats +=
 			" **" + strings.getTranslation("attribute", lang, msg) + "**: " + card.data.names[lang].attribute.join("|");
 	}
-	if (displayEmotes && "attribute" in emotes) {
-		for (const a in emotes.attribute) {
+	if (displayEmotes && attribute) {
+		for (const a in attribute) {
 			if (card.data.isAttribute(parseInt(a, 16))) {
-				stats += " " + emotes.attribute[a];
+				stats += " " + (attribute as { [key: string]: string })[a];
 			}
 		}
 	}
 	stats += "\n";
 	if (card.data.isType(enums.type.TYPE_MONSTER)) {
 		let levelName = strings.getTranslation("level", lang, msg);
-		let levelEmote: string | undefined = "misc" in emotes ? emotes.misc.level : undefined;
+		let levelEmote: string | undefined = misc ? misc.level : undefined;
 		if (card.data.isType(enums.type.TYPE_XYZ)) {
 			levelName = strings.getTranslation("rank", lang, msg);
-			levelEmote = "misc" in emotes ? emotes.misc.rank : undefined;
+			levelEmote = misc ? misc.rank : undefined;
 		} else if (card.data.isType(enums.type.TYPE_LINK)) {
 			levelName = strings.getTranslation("linkRating", lang, msg);
 			levelEmote = undefined;
@@ -92,12 +94,13 @@ export async function generateCardStats(card: Card, lang: string, msg: Eris.Mess
 			stats += " **" + strings.getTranslation("def", lang, msg) + "**: " + (card.data.def === -2 ? "?" : card.data.def);
 		}
 		if (card.data.lscale && card.data.rscale) {
-			if (displayEmotes && "misc" in emotes && "leftScale" in emotes.misc) {
-				stats += emotes.misc.leftScale;
+			stats += " **" + strings.getTranslation("scale", lang, msg) + "**: ";
+			if (displayEmotes && misc && misc.scaleLeft) {
+				stats += misc.scaleLeft;
 			}
-			stats += " **" + strings.getTranslation("scale", lang, msg) + "**: " + card.data.lscale + "/" + card.data.rscale;
-			if (displayEmotes && "misc" in emotes && "rightScale" in emotes.misc) {
-				stats += emotes.misc.rightScale;
+			stats += card.data.lscale + "/" + card.data.rscale;
+			if (displayEmotes && misc && misc.scaleRight) {
+				stats += misc.scaleRight;
 			}
 		}
 		stats += "\n";
@@ -105,10 +108,10 @@ export async function generateCardStats(card: Card, lang: string, msg: Eris.Mess
 	return stats;
 }
 
-export function getColour(card: Card, msg: Eris.Message): number {
+export function getColour(card: Card, msg: Message): number {
 	for (const type in colors) {
 		if (card.data.isType(parseInt(type, 16))) {
-			return colors[type];
+			return (colors as { [key: string]: number })[type];
 		}
 	}
 	return config.getConfig("embedColor").getValue(msg);
@@ -117,9 +120,9 @@ export function getColour(card: Card, msg: Eris.Message): number {
 export async function generateCardProfile(
 	card: Card,
 	lang: string,
-	msg: Eris.Message,
+	msg: Message,
 	mobile = false
-): Promise<Eris.MessageContent[]> {
+): Promise<MessageContent[]> {
 	const stats = await generateCardStats(card, lang, msg);
 	let textHeader = strings.getTranslation("cardEffect", lang, msg);
 	if (card.data.isType(enums.type.TYPE_NORMAL)) {
@@ -148,7 +151,7 @@ export async function generateCardProfile(
 		}
 		return messageCapSlice(outString);
 	}
-	const outEmbed: Eris.MessageContent = {
+	const outEmbed: MessageContent = {
 		embed: {
 			color: getColour(card, msg),
 			description: stats,
@@ -262,11 +265,11 @@ async function getCompositeImage(card: Card): Promise<Buffer | undefined> {
 }
 
 export async function sendCardProfile(
-	msg: Eris.Message,
+	msg: Message,
 	card: Card,
 	lang: string,
 	mobile = false
-): Promise<Eris.Message | undefined> {
+): Promise<Message | undefined> {
 	if (card) {
 		const profile = await generateCardProfile(card, lang, msg, mobile);
 		if (mobile && card.data.aliasedCards.length > 1) {
@@ -307,7 +310,7 @@ function badQuery(match: string): boolean {
 	);
 }
 
-export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message> {
+export async function cardSearch(msg: Message): Promise<void | Message> {
 	let react = false;
 	const results: SearchQuery[] = [];
 	const codeBlocks = /```[\s\S]+?```|`[\s\S]+?`/g;
@@ -355,15 +358,15 @@ export async function cardSearch(msg: Eris.Message): Promise<void | Eris.Message
 		mobResult = mobRegex.exec(content);
 	}
 
-	if (results.length > botOpts.maxSearch) {
+	if (results.length > maxSearch) {
 		const lang = getLang(msg, results[0].res);
-		await msg.channel.createMessage(strings.getTranslation("searchCap", lang.lang1, msg, botOpts.maxSearch));
+		await msg.channel.createMessage(strings.getTranslation("searchCap", lang.lang1, msg, maxSearch.toString()));
 		if (react) {
 			await msg.removeReaction("🕙").catch(ignore);
 		}
 		return;
 	}
-	const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
+	const isDM = msg.channel instanceof PrivateChannel; // allow anime in DMs because no way to turn it on
 	const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
 	const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
 	const usedResults: string[] = [];

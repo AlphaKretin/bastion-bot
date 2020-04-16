@@ -1,20 +1,20 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
-import { botOpts } from "../modules/commands";
 import { data } from "../modules/data";
 import { Errors } from "../modules/errors";
 import { getLang } from "../modules/util";
+import { enLangName, jaLangName } from "../config/botOpts.json";
 import { getYugipediaContent } from "../modules/yugipedia";
 
 const names = ["ruling", "ocgdb", "qa"];
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	const langs = getLang(msg);
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (!card) {
 		return await msg.channel.createMessage("Sorry, I can't find a card for `" + langs.msg + "`!");
 	}
-	if (botOpts.enLangName && botOpts.enLangName in card.text) {
-		const name = card.text[botOpts.enLangName].name;
+	if (enLangName && enLangName in card.text) {
+		const name = card.text[enLangName].name;
 		try {
 			const dbId = await getYugipediaContent(name, "database_id");
 			const OCG_DB = "https://www.db.yugioh-card.com/yugiohdb/faq_search.action?ope=4&request_locale=ja&cid=";
@@ -27,8 +27,8 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 			}
 		}
 	}
-	if (botOpts.jaLangName && botOpts.jaLangName in card.text) {
-		const name = card.text[botOpts.jaLangName].name;
+	if (jaLangName && jaLangName in card.text) {
+		const name = card.text[jaLangName].name;
 		const OCG_URL =
 			"https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&stype=1" +
 			"&othercon=2&request_locale=ja&keyword=";
@@ -39,7 +39,7 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 				"`: <" +
 				OCG_URL +
 				encodeURIComponent(name) +
-				">\nClick the appropriate search result, then the yellow button that reads \"このカードのＱ＆Ａを表示\""
+				'>\nClick the appropriate search result, then the yellow button that reads "このカードのＱ＆Ａを表示"'
 		);
 	}
 	return await msg.channel.createMessage(
@@ -52,4 +52,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 const desc =
 	"Searches for a card by ID or name, and displays a link to the Japanese OCG rulings database for that card";
 
-export const cmd = new Command(names, func, undefined, desc, "card");
+export const command = new Command(names, func, undefined, desc, "card");

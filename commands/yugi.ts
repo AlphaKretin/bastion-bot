@@ -1,11 +1,11 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { Errors } from "../modules/errors";
 import { trimMsg } from "../modules/util";
 import { getYugipediaPage } from "../modules/yugipedia";
 
 const names = ["yugi", "pedia", "wiki"];
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	const query = trimMsg(msg);
 	try {
 		const url = await getYugipediaPage(query);
@@ -21,4 +21,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 
 const desc = "Searches for a page on the Yugipedia Yu-Gi-Oh! Wiki using their own search system, and displays the URL.";
 
-export const cmd = new Command(names, func, undefined, desc, "page");
+export const command = new Command(names, func, undefined, desc, "page");

@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message, MessageContent } from "eris";
 import fetch from "node-fetch";
 import { enums } from "ygopro-data";
 import { Command } from "../modules/Command";
@@ -7,15 +7,15 @@ import { data } from "../modules/data";
 import { trimMsg, messageCapSlice, canReact } from "../modules/util";
 
 interface DeckSection {
-    [name: string]: number;
+	[name: string]: number;
 }
 
 interface DeckRecord {
-    monster: DeckSection;
-    spell: DeckSection;
-    trap: DeckSection;
-    extra: DeckSection;
-    side: DeckSection;
+	monster: DeckSection;
+	spell: DeckSection;
+	trap: DeckSection;
+	extra: DeckSection;
+	side: DeckSection;
 }
 
 const valSum = (obj: DeckSection): number => {
@@ -27,7 +27,7 @@ const valSum = (obj: DeckSection): number => {
 };
 
 const names = ["deck", "parse"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message | undefined> => {
+const func = async (msg: Message, mobile: boolean): Promise<Message | undefined> => {
 	if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
 		await msg.channel.createMessage("Sorry, you need to upload a deck file to use this command!");
 		return;
@@ -137,7 +137,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 		sideBody += deckRecord.side[name] + " " + name + "\n";
 	}
 	const chan = await msg.author.getDMChannel();
-	let m: Eris.Message | undefined;
+	let m: Message | undefined;
 	if (mobile) {
 		let out = title;
 		if (mainCount > 0) {
@@ -154,7 +154,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 			m = await chan.createMessage(outString);
 		}
 	} else {
-		const out: Eris.MessageContent = {
+		const out: MessageContent = {
 			embed: { title, fields: [], color: config.getConfig("embedColor").getValue(msg) }
 		};
 		// come on typescript, really? it's declared right there
@@ -189,4 +189,4 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message | 
 
 const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file.";
 
-export const cmd = new Command(names, func, undefined, desc, "<upload a `.ydk` file in the same message>");
+export const command = new Command(names, func, undefined, desc, "<upload a `.ydk` file in the same message>");

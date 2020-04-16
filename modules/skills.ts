@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import { extractSheets, SheetResults } from "spreadsheet-to-json";
-import { sheetOpts } from "./libraryPages";
+import { skills as skillSheet } from "../config/sheetOpts.json";
 
 interface Skill {
 	name: string;
@@ -36,7 +36,7 @@ class Skills {
 	}
 
 	private async getFuse(): Promise<Fuse<Skill, Fuse.FuseOptions<Skill>>> {
-		const data = await this.extract(sheetOpts.skills);
+		const data = await this.extract(skillSheet);
 		const sheet = Object.values(data).find(s => s.length > 0);
 		const input: Skill[] = [];
 		if (!sheet) {

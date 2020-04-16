@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Card } from "ygopro-data";
 import { addReactionButton } from "./bot";
 import { generateCardProfile } from "./cardSearch";
@@ -44,7 +44,7 @@ interface MatchExtra {
 
 type CardPage = PageExtra<Card, MatchExtra>;
 
-export async function addMatchButtons(msg: Eris.Message): Promise<void> {
+export async function addMatchButtons(msg: Message): Promise<void> {
 	const initialID = reactionID;
 	const page = matchPages[msg.channel.id];
 	if (page.canBack() && reactionID === initialID) {
@@ -89,10 +89,10 @@ export async function addMatchButtons(msg: Eris.Message): Promise<void> {
 export async function sendCardList(
 	list: CardList,
 	lang: string,
-	msg: Eris.Message,
+	msg: Message,
 	title?: string,
 	mobile = false
-): Promise<Eris.Message> {
+): Promise<Message> {
 	const hist: number[] = [];
 	const origCards: Card[] = Object.values(list);
 	const cards: Card[] = [];

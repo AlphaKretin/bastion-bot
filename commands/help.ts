@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { getMatchingCommands } from "../bastion";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
@@ -6,7 +6,7 @@ import { getLang } from "../modules/util";
 
 const names = ["help"];
 
-const func = async (msg: Eris.Message): Promise<Eris.Message> => {
+const func = async (msg: Message): Promise<Message> => {
 	const query = getLang(msg).msg;
 	const cmds = getMatchingCommands(msg, query, false).filter(c => c.cmd.isCanExecute(msg));
 	const prefix = config.getConfig("prefix").getValue(msg);
@@ -42,7 +42,7 @@ const func = async (msg: Eris.Message): Promise<Eris.Message> => {
 	return await msg.channel.createMessage(helpMessage);
 };
 
-export const cmd = new Command(
+export const command = new Command(
 	names,
 	func,
 	undefined,

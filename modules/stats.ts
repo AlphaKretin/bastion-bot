@@ -1,6 +1,6 @@
 import sqlite from "better-sqlite3";
 import * as fs from "mz/fs";
-import * as Eris from "eris";
+import { Message, GuildChannel } from "eris";
 import { LangPayload } from "./util";
 
 const statsDbPath = __dirname + "/../stats/stats.db3";
@@ -29,26 +29,26 @@ class Stats {
 		return db;
 	}
 
-	public async writeSearch(msg: Eris.Message, userQuery: LangPayload, result: number, mobile: boolean): Promise<void> {
+	public async writeSearch(msg: Message, userQuery: LangPayload, result: number, mobile: boolean): Promise<void> {
 		const db = await this.db;
 		const statement = db.prepare("INSERT INTO cards VALUES(?,?,?,?,?,?,?,?)");
 		const snowflake = msg.id;
 		const user = msg.author.id;
 		const chan = msg.channel;
-		const server = chan instanceof Eris.GuildChannel ? chan.guild.id : user; //user === server indicates DM
+		const server = chan instanceof GuildChannel ? chan.guild.id : user; //user === server indicates DM
 		const query = userQuery.msg;
 		const lang1 = userQuery.lang1;
 		const lang2 = userQuery.lang2;
 		statement.run(snowflake, server, user, query, result, mobile ? 1 : 0, lang1, lang2);
 	}
 
-	public async writeCommand(msg: Eris.Message, name: string): Promise<void> {
+	public async writeCommand(msg: Message, name: string): Promise<void> {
 		const db = await this.db;
 		const statement = db.prepare("INSERT INTO commands VALUES(?,?,?,?,?)");
 		const snowflake = msg.id;
 		const user = msg.author.id;
 		const chan = msg.channel;
-		const server = chan instanceof Eris.GuildChannel ? chan.guild.id : user; //user === server indicates DM
+		const server = chan instanceof GuildChannel ? chan.guild.id : user; //user === server indicates DM
 		const args = msg.content;
 		statement.run(snowflake, server, user, name, args);
 	}

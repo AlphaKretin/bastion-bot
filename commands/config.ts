@@ -1,11 +1,11 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { trimMsg } from "../modules/util";
 
 const names: string[] = ["config"];
 
-async function func(msg: Eris.Message): Promise<Eris.Message> {
+async function func(msg: Message): Promise<Message> {
 	const content = trimMsg(msg);
 	const terms = content.split(/ +/);
 	const optName = terms[0];

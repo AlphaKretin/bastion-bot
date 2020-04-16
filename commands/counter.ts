@@ -1,10 +1,10 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { strings } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { getLang } from "../modules/util";
 
 const names = ["counter"];
-const func = async (msg: Eris.Message): Promise<Eris.Message | undefined> => {
+const func = async (msg: Message): Promise<Message | undefined> => {
 	const lang = getLang(msg);
 	let code = await strings.reverseCounter(lang.msg, lang.lang1);
 	const tempCode = parseInt(lang.msg, 16);
@@ -21,4 +21,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message | undefined> => {
 
 const desc = "Searches for a Counter (e.g., Bushido Counter) by name or YGOPro hexadecimal value, and displays both";
 
-export const cmd = new Command(names, func, undefined, desc, "name|value");
+export const command = new Command(names, func, undefined, desc, "name|value");

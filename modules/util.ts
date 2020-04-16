@@ -1,32 +1,28 @@
-import * as Eris from "eris";
+import { Message, Guild, TextChannel, GuildChannel } from "eris";
 import { bot } from "./bot";
 import { config } from "./configs";
 import { data } from "./data";
 import { Errors } from "./errors";
 
-export function trimMsg(msg: Eris.Message | string): string {
-	const m = msg instanceof Eris.Message ? msg.content : msg;
-	return m
-		.trim()
-		.split(/ +/)
-		.slice(1)
-		.join(" ");
+export function trimMsg(msg: Message | string): string {
+	const m = msg instanceof Message ? msg.content : msg;
+	return m.trim().split(/ +/).slice(1).join(" ");
 }
 
-export const getGuildFromMsg = (msg: Eris.Message): Eris.Guild => {
-	if (!(msg.channel instanceof Eris.TextChannel)) {
+export const getGuildFromMsg = (msg: Message): Guild => {
+	if (!(msg.channel instanceof TextChannel)) {
 		throw new Error(Errors.ERROR_CONFIG_DM);
 	}
 	return msg.channel.guild;
 };
 
 export interface LangPayload {
-    msg: string;
-    lang1: string;
-    lang2: string;
+	msg: string;
+	lang1: string;
+	lang2: string;
 }
 
-export function getLang(msg: Eris.Message, query?: string): LangPayload {
+export function getLang(msg: Message, query?: string): LangPayload {
 	const content = query || trimMsg(msg);
 	const terms = content.split(",").map(t => t.trim());
 	if (data.langs.includes(terms[terms.length - 1])) {
@@ -73,9 +69,9 @@ export function numToEmoji(n: number): string | undefined {
 	}
 }
 
-export function canReact(msg: Eris.Message): boolean {
+export function canReact(msg: Message): boolean {
 	const chan = msg.channel;
-	if (!(chan instanceof Eris.GuildChannel)) {
+	if (!(chan instanceof GuildChannel)) {
 		return false;
 	}
 	const perms = chan.permissionsOf(bot.user.id);

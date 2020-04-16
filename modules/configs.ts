@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as fs from "mz/fs";
 import { ConfigOption } from "./ConfigOption";
 import { data } from "./data";
+import * as defaults from "../config/defaultOpts.json";
 
 interface ConfigHandler {
 	configs: {
@@ -31,9 +31,10 @@ function explicitParseInt(n: string): number {
 	return parseInt(n, 10);
 }
 
-const defaults = JSON.parse(fs.readFileSync("./config/defaultOpts.json", "utf8"));
 // add default config options
-config.setConfig(new ConfigOption<string>("prefix", defaults.prefix, val => val.toString().trim()));
+config.setConfig(
+	new ConfigOption<string>("prefix", defaults.prefix, val => val.toString().trim())
+);
 config.setConfig(
 	new ConfigOption<string>("defaultLang", defaults.language, undefined, val => data.langs.includes(val))
 );
@@ -43,7 +44,7 @@ config.setConfig(
 config.setConfig(
 	new ConfigOption<[string, string]>(
 		"fullBrackets",
-		defaults.fullBrackets,
+		defaults.fullBrackets as [string, string],
 		(val: string) => {
 			const s = val.split("");
 			return [s[0], s[1]];
@@ -67,7 +68,7 @@ config.setConfig(
 config.setConfig(
 	new ConfigOption<[string, string]>(
 		"mobBrackets",
-		defaults.mobBrackets,
+		defaults.mobBrackets as [string, string],
 		(val: string) => {
 			const s = val.split("");
 			return [s[0], s[1]];
@@ -135,6 +136,3 @@ config.setConfig(new ConfigOption("mobileView", false, Boolean));
 config.setConfig(new ConfigOption("suppressEmotes", false, Boolean));
 config.setConfig(new ConfigOption("allowAnime", false, Boolean));
 config.setConfig(new ConfigOption("allowCustom", false, Boolean));
-
-export const colors = JSON.parse(fs.readFileSync("./config/colors.json", "utf8"));
-export const emotes = JSON.parse(fs.readFileSync("./config/emotes.json", "utf8"));

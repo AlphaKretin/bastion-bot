@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 export class PageSimple<T> {
 	get length(): number {
 		return this.list.length;
@@ -13,8 +13,8 @@ export class PageSimple<T> {
 	}
 	public userID: string;
 	public index: number;
-	public msg: Eris.Message | undefined;
-	
+	public msg: Message | undefined;
+
 	private list: T[];
 	constructor(userID: string, list: T[]) {
 		this.userID = userID;
@@ -51,7 +51,7 @@ export class PageSimple<T> {
 		}
 	}
 }
-export class PageExtra<T, Extra> extends PageSimple<T>{
+export class PageExtra<T, Extra> extends PageSimple<T> {
 	public extra: Extra;
 	constructor(userID: string, list: T[], extra: Extra) {
 		super(userID, list);

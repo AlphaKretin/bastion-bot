@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message, PrivateChannel } from "eris";
 import { Card, enums, Filter } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
@@ -8,7 +8,7 @@ import { trimMsg } from "../modules/util";
 
 const names: string[] = ["match", "matches"];
 
-async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message> {
+async function func(msg: Message, mobile: boolean): Promise<Message> {
 	const content = trimMsg(msg);
 	const a = content.split("|");
 	const query = a[0];
@@ -34,16 +34,14 @@ async function func(msg: Eris.Message, mobile: boolean): Promise<Eris.Message> {
 			}
 		}
 	}
-	const isDM = msg.channel instanceof Eris.PrivateChannel; // allow anime in DMs because no way to turn it on
+	const isDM = msg.channel instanceof PrivateChannel; // allow anime in DMs because no way to turn it on
 	const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
 	const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
 	if (cards.length > 0) {
 		if (!allowAnime) {
 			cards = cards.filter(
 				c =>
-					!c.data.isOT(enums.ot.OT_ANIME) &&
-					!c.data.isOT(enums.ot.OT_ILLEGAL) &&
-					!c.data.isOT(enums.ot.OT_VIDEO_GAME)
+					!c.data.isOT(enums.ot.OT_ANIME) && !c.data.isOT(enums.ot.OT_ILLEGAL) && !c.data.isOT(enums.ot.OT_VIDEO_GAME)
 			);
 		}
 		if (!allowCustom) {

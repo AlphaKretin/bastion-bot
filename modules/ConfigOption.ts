@@ -1,6 +1,6 @@
 // any allowed because it's a function to convert from any type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as Eris from "eris";
+import { Message, Guild } from "eris";
 import * as fs from "mz/fs";
 import { Errors } from "./errors";
 import { getGuildFromMsg } from "./util";
@@ -14,13 +14,8 @@ export class ConfigOption<T> {
 	private val: ValueTable<T>;
 	private filePath: string;
 	private conv?: (val: any) => T;
-	private chk?: (val: T, m: Eris.Message | Eris.Guild) => boolean;
-	constructor(
-		name: string,
-		defaultValue: T,
-		conv?: (val: any) => T,
-		chk?: (val: T, m: Eris.Message | Eris.Guild) => boolean
-	) {
+	private chk?: (val: T, m: Message | Guild) => boolean;
+	constructor(name: string, defaultValue: T, conv?: (val: any) => T, chk?: (val: T, m: Message | Guild) => boolean) {
 		this.name = name;
 		this.filePath = "./confs/" + this.name + ".json";
 		if (fs.existsSync(this.filePath)) {
@@ -34,8 +29,8 @@ export class ConfigOption<T> {
 		this.conv = conv;
 	}
 
-	public setValue(g: Eris.Guild | Eris.Message, v?: any): number {
-		if (g && g instanceof Eris.Message) {
+	public setValue(g: Guild | Message, v?: any): number {
+		if (g && g instanceof Message) {
 			g = getGuildFromMsg(g);
 		}
 		if (v) {
@@ -67,8 +62,8 @@ export class ConfigOption<T> {
 		}
 	}
 
-	public getValue(g?: Eris.Guild | Eris.Message): T {
-		if (g && g instanceof Eris.Message) {
+	public getValue(g?: Guild | Message): T {
+		if (g && g instanceof Message) {
 			try {
 				g = getGuildFromMsg(g);
 			} catch (e) {

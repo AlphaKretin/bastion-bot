@@ -1,11 +1,11 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { addLibraryButtons, generateLibraryList, libraryPages } from "../modules/libraryPages";
 import { canReact } from "../modules/util";
 
 const names: string[] = ["p"];
 
-async function func(msg: Eris.Message): Promise<void> {
+async function func(msg: Message): Promise<void> {
 	const num = /\d+/.exec(msg.content);
 	if (num === null) {
 		return;
@@ -33,7 +33,7 @@ async function func(msg: Eris.Message): Promise<void> {
 	}
 }
 
-function cond(msg: Eris.Message): boolean {
+function cond(msg: Message): boolean {
 	const page = libraryPages[msg.channel.id];
 	return msg.channel.id in libraryPages && page !== undefined && page.userID === msg.author.id;
 }

@@ -1,10 +1,10 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { strings } from "ygopro-data";
 import { Command } from "../modules/Command";
 import { getLang } from "../modules/util";
 
 const names = ["set", "arch"];
-const func = async (msg: Eris.Message): Promise<Eris.Message | undefined> => {
+const func = async (msg: Message): Promise<Message | undefined> => {
 	const lang = getLang(msg);
 	let code = await strings.reverseCode(lang.msg, lang.lang1);
 	const tempCode = parseInt(lang.msg, 16);
@@ -22,4 +22,4 @@ const func = async (msg: Eris.Message): Promise<Eris.Message | undefined> => {
 const desc =
 	"Searches for an archetype setcode (e.g., Ally of Justice) by name or YGOPro hexadecimal value, and displays both";
 
-export const cmd = new Command(names, func, undefined, desc, "set");
+export const command = new Command(names, func, undefined, desc, "set");

@@ -1,13 +1,13 @@
-import * as Eris from "eris";
-import * as fs from "mz/fs";
+import { Message } from "eris";
 import { config } from "./configs";
+import * as strs from "../config/strings.json";
 
 class Strings {
 	private trans: { [lang: string]: { [prop: string]: string } };
-	constructor(file: string) {
-		this.trans = JSON.parse(fs.readFileSync(file, "utf8"));
+	constructor() {
+		this.trans = strs;
 	}
-	public getTranslation(prop: string, lang: string, msg?: Eris.Message, val?: string): string {
+	public getTranslation(prop: string, lang: string, msg?: Message, val?: string): string {
 		let out: string;
 		if (lang in this.trans && prop in this.trans[lang]) {
 			out = this.trans[lang][prop];
@@ -22,4 +22,4 @@ class Strings {
 	}
 }
 
-export const strings = new Strings("./config/strings.json");
+export const strings = new Strings();

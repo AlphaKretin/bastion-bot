@@ -1,9 +1,9 @@
-import * as Eris from "eris";
-import * as fs from "mz/fs";
+import { Message } from "eris";
 import { extractSheets, SheetResults } from "spreadsheet-to-json";
 import { addReactionButton } from "./bot";
 import { PageSimple } from "./Page";
 import { canReact, numToEmoji } from "./util";
+import { functions, constants, params } from "../config/sheetOpts.json";
 
 const extract = (spreadsheetKey: string): Promise<SheetResults> =>
 	new Promise((resolve, reject) => {
@@ -41,12 +41,7 @@ class Library {
 		const library = await this.lib;
 		const term = query.toLowerCase();
 		for (const libEntry of library) {
-			if (
-				libEntry.name
-					.toLowerCase()
-					.split("(")[0]
-					.includes(term)
-			) {
+			if (libEntry.name.toLowerCase().split("(")[0].includes(term)) {
 				out.push(libEntry);
 			}
 		}
@@ -81,10 +76,9 @@ class Library {
 	}
 }
 
-export const sheetOpts = JSON.parse(fs.readFileSync("config/sheetOpts.json", "utf8"));
-export const functions = new Library(sheetOpts.functions);
-export const constants = new Library(sheetOpts.constants);
-export const params = new Library(sheetOpts.params);
+export const funcLib = new Library(functions);
+export const constLib = new Library(constants);
+export const paramLib = new Library(params);
 
 export function generateLibraryList(channelID: string): string {
 	const page = libraryPages[channelID];
@@ -115,7 +109,11 @@ function incrementReactionID(): void {
 	reactionID = next;
 }
 
-export async function addLibraryDescription(page: PageSimple<LibraryData>, index: number, channelID: string): Promise<void> {
+export async function addLibraryDescription(
+	page: PageSimple<LibraryData>,
+	index: number,
+	channelID: string
+): Promise<void> {
 	const entries = page.getSpan();
 	if (!(index in entries && page.msg)) {
 		return;
@@ -124,7 +122,7 @@ export async function addLibraryDescription(page: PageSimple<LibraryData>, index
 	await page.msg.edit(generateLibraryList(channelID) + "\n`" + desc + "`");
 }
 
-export async function addLibraryButtons(msg: Eris.Message): Promise<void> {
+export async function addLibraryButtons(msg: Message): Promise<void> {
 	const initialID = reactionID;
 	const page = libraryPages[msg.channel.id];
 	if (page.canBack() && reactionID === initialID) {
@@ -161,7 +159,7 @@ export async function addLibraryButtons(msg: Eris.Message): Promise<void> {
 	}
 }
 
-export async function sendLibrary(list: LibraryData[], msg: Eris.Message): Promise<Eris.Message> {
+export async function sendLibrary(list: LibraryData[], msg: Message): Promise<Message> {
 	libraryPages[msg.channel.id] = new PageSimple<LibraryData>(msg.author.id, list);
 	const m = await msg.channel.createMessage(generateLibraryList(msg.channel.id));
 	libraryPages[msg.channel.id].msg = m;

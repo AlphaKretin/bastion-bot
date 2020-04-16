@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message, ClientOptions, Client, PossiblyUncachedMessage, Emoji } from "eris";
 import { token } from "../config/auth.json";
 import { ReactionButton, ReactionFunc } from "./ReactionButton";
 import { canReact } from "./util";
@@ -13,13 +13,13 @@ const reactionTimeouts: {
 } = {};
 
 const deleteMessages: {
-	[messageID: string]: Eris.Message[];
+	[messageID: string]: Message[];
 } = {};
 const deleteTimers: {
 	[messageID: string]: NodeJS.Timer;
 } = {};
 
-export async function removeButtons(msg: Eris.Message): Promise<void> {
+export async function removeButtons(msg: Message): Promise<void> {
 	if (msg) {
 		delete reactionButtons[msg.id];
 		delete reactionTimeouts[msg.id];
@@ -29,7 +29,7 @@ export async function removeButtons(msg: Eris.Message): Promise<void> {
 	}
 }
 
-export async function addReactionButton(msg: Eris.Message, emoji: string, func: ReactionFunc): Promise<void> {
+export async function addReactionButton(msg: Message, emoji: string, func: ReactionFunc): Promise<void> {
 	await msg.addReaction(emoji);
 	const button = new ReactionButton(msg, emoji, func);
 	if (!(msg.id in reactionButtons)) {
@@ -44,7 +44,7 @@ export async function addReactionButton(msg: Eris.Message, emoji: string, func: 
 	}
 }
 
-export function logDeleteMessage(sourceMsg: Eris.Message, responseMsg: Eris.Message): void {
+export function logDeleteMessage(sourceMsg: Message, responseMsg: Message): void {
 	if (!(sourceMsg.id in deleteMessages)) {
 		deleteMessages[sourceMsg.id] = [];
 	}
@@ -58,13 +58,13 @@ export function logDeleteMessage(sourceMsg: Eris.Message, responseMsg: Eris.Mess
 	}
 }
 
-const erisOpts: Eris.ClientOptions = { maxShards: "auto" };
-export const bot = new Eris.Client(token, erisOpts);
+const erisOpts: ClientOptions = { maxShards: "auto" };
+export const bot = new Client(token, erisOpts);
 bot.on("ready", () => {
 	console.log("Logged in as %s - %s", bot.user.username, bot.user.id);
 });
 
-bot.on("messageReactionAdd", async (msg: Eris.PossiblyUncachedMessage, emoji: Eris.Emoji, userID: string) => {
+bot.on("messageReactionAdd", async (msg: PossiblyUncachedMessage, emoji: Emoji, userID: string) => {
 	if (userID === bot.user.id) {
 		return;
 	}
@@ -73,7 +73,7 @@ bot.on("messageReactionAdd", async (msg: Eris.PossiblyUncachedMessage, emoji: Er
 	}
 });
 
-bot.on("messageDelete", async (msg: Eris.PossiblyUncachedMessage) => {
+bot.on("messageDelete", async (msg: PossiblyUncachedMessage) => {
 	if (msg.id in reactionButtons) {
 		delete reactionButtons[msg.id];
 	}

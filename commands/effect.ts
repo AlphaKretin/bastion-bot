@@ -1,4 +1,4 @@
-import * as Eris from "eris";
+import { Message, MessageContent, EmbedOptions } from "eris";
 import { enums } from "ygopro-data";
 import { getColour } from "../modules/cardSearch";
 import { Command } from "../modules/Command";
@@ -7,14 +7,14 @@ import { strings } from "../modules/strings";
 import { getLang } from "../modules/util";
 
 const names = ["eff", "text"];
-const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> => {
+const func = async (msg: Message, mobile: boolean): Promise<Message> => {
 	const langs = getLang(msg);
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
 		const codes = card.data.aliasedCards;
 		const codeString = codes.join(" | ");
 		const text = card.text[langs.lang2].desc;
-		let msgContent: Eris.MessageContent;
+		let msgContent: MessageContent;
 		if (mobile) {
 			msgContent = "__**" + card.text[langs.lang2].name + "**__\n" + "**ID**: " + codeString + "\n";
 			if (text.pendHead) {
@@ -30,7 +30,7 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> =
 				msgContent += "**" + textHeader + "**:\n" + text.monsterBody;
 			}
 		} else {
-			const embed: Eris.EmbedOptions = {
+			const embed: EmbedOptions = {
 				color: getColour(card, msg),
 				footer: { text: codeString },
 				thumbnail: { url: card.imageLink },
@@ -63,4 +63,4 @@ const func = async (msg: Eris.Message, mobile: boolean): Promise<Eris.Message> =
 
 const desc = "Displays only the card text for a given card, without the stats.";
 
-export const cmd = new Command(names, func, undefined, desc, "card");
+export const command = new Command(names, func, undefined, desc, "card");

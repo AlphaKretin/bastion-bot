@@ -1,10 +1,10 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
 import { addLibraryDescription, libraryPages } from "../modules/libraryPages";
 
 const names: string[] = ["d"];
 
-async function func(msg: Eris.Message): Promise<void> {
+async function func(msg: Message): Promise<void> {
 	const num = /\d+/.exec(msg.content);
 	if (num === null) {
 		return;
@@ -14,7 +14,7 @@ async function func(msg: Eris.Message): Promise<void> {
 	await addLibraryDescription(page, index, msg.channel.id);
 }
 
-function cond(msg: Eris.Message): boolean {
+function cond(msg: Message): boolean {
 	const page = libraryPages[msg.channel.id];
 	return msg.channel.id in libraryPages && page !== undefined && page.userID === msg.author.id;
 }

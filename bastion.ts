@@ -1,10 +1,11 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { bot, logDeleteMessage } from "./modules/bot";
 import { cardSearch } from "./modules/cardSearch";
 import { Command } from "./modules/Command";
-import { botOpts, commands } from "./modules/commands";
 import { config } from "./modules/configs";
 import { answerTrivia } from "./modules/trivia";
+import { cmds as commands } from "./commands/index";
+import { status } from "./config/botOpts.json";
 
 // "handler" for errors that don't matter like reactions
 export function ignore(): void {
@@ -25,7 +26,7 @@ export const gameData: {
 	};
 } = {};
 
-async function executeCommand(cmd: Command, name: string, msg: Eris.Message, mobile = false, edit = false): Promise<void> {
+async function executeCommand(cmd: Command, name: string, msg: Message, mobile = false, edit = false): Promise<void> {
 	msg.addReaction("🕙").catch(ignore);
 	const m = await cmd.execute(msg, mobile, edit).catch(async e => {
 		msg.channel.createMessage("Error!\n" + e);
@@ -37,7 +38,7 @@ async function executeCommand(cmd: Command, name: string, msg: Eris.Message, mob
 	}
 }
 
-export function getMatchingCommands(msg: Eris.Message, query?: string, usePref = true): CmdCheck[] {
+export function getMatchingCommands(msg: Message, query?: string, usePref = true): CmdCheck[] {
 	const prefix = usePref ? config.getConfig("prefix").getValue(msg) : "";
 	const content = query || msg.content.toLowerCase();
 	const validCmds: CmdCheck[] = [];
@@ -54,15 +55,15 @@ export function getMatchingCommands(msg: Eris.Message, query?: string, usePref =
 	return validCmds;
 }
 
-bot.on("messageCreate", async msg => {
+bot.on("messageCreate", async (msg: Message) => {
 	// ignore bots
 	if (msg.author.bot) {
 		return;
 	}
 	if (msg.channel.id in gameData) {
 		switch (gameData[msg.channel.id].game) {
-		case "trivia":
-			await answerTrivia(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
+			case "trivia":
+				await answerTrivia(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 		}
 		return;
 	}
@@ -85,7 +86,7 @@ bot.on("messageCreate", async msg => {
 });
 
 // handle some functions on edit
-bot.on("messageUpdate", async msg => {
+bot.on("messageUpdate", async (msg: Message) => {
 	// ignore bots
 	if (msg.author.bot || !msg.content) {
 		return;
@@ -99,10 +100,13 @@ bot.on("messageUpdate", async msg => {
 	}
 });
 
-bot.connect().then(() => {
-	if (botOpts.status) {
-		bot.editStatus(undefined, {
-			name: botOpts.status
-		});
-	}
-}).catch(e => console.error(e));
+bot
+	.connect()
+	.then(() => {
+		if (status) {
+			bot.editStatus(undefined, {
+				name: status
+			});
+		}
+	})
+	.catch((e: unknown) => console.error(e));

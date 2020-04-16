@@ -1,13 +1,13 @@
-import * as Eris from "eris";
+import { Message } from "eris";
 import { Command } from "../modules/Command";
-import { params, sendLibrary } from "../modules/libraryPages";
+import { paramLib, sendLibrary } from "../modules/libraryPages";
 import { trimMsg } from "../modules/util";
 
 const names: string[] = ["param"];
 
-async function func(msg: Eris.Message): Promise<Eris.Message> {
+async function func(msg: Message): Promise<Message> {
 	const content = trimMsg(msg);
-	const pars = await params.getResults(content);
+	const pars = await paramLib.getResults(content);
 	if (pars.length > 0) {
 		return await sendLibrary(pars, msg);
 	}
