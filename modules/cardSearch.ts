@@ -4,12 +4,13 @@ import { Card, enums } from "ygopro-data";
 import { ignore } from "../bastion";
 import { addReactionButton, bot, logDeleteMessage } from "./bot";
 import { config } from "./configs";
-import { data, imageExt } from "./data";
+import { data } from "./data";
 import { strings } from "./strings";
 import { canReact, getLang, messageCapSlice } from "./util";
 import { stats } from "./stats";
 import { maxSearch } from "../config/botOpts.json";
 import { type, race, attribute, misc } from "../config/emotes.json";
+import { imageExt } from "../config/dataOpts.json";
 import * as colors from "../config/colors.json";
 
 function reEscape(s: string): string {

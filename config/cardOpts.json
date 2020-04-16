@@ -1,0 +1,69 @@
+{
+	"langs": {
+		"en": {
+			"remoteDBs": [
+				{
+					"owner": "ProjectIgnis",
+					"repo": "BabelCDB",
+					"path": ""
+				}
+			]
+		},
+		"ja": {
+			"remoteDBs": [
+				{
+					"owner": "Jambalaya751955",
+					"repo": "ygopro-database-JP",
+					"path": "cdb/Live2017Links"
+				}
+			]
+		},
+		"cn": {
+			"remoteDBs": [
+				{
+					"owner": "moecube",
+					"repo": "ygopro-database",
+					"path": "locales/zh-CN"
+				}
+			]
+		},
+		"de": {
+			"remoteDBs": [
+				{
+					"owner": "AlphaKretin",
+					"repo": "temp-commands",
+					"path": "de"
+				}
+			]
+		},
+		"es": {
+			"remoteDBs": [
+				{
+					"owner": "AlphaKretin",
+					"repo": "temp-commands",
+					"path": "es"
+				}
+			]
+		},
+		"fr": {
+			"remoteDBs": [
+				{
+					"owner": "AlphaKretin",
+					"repo": "temp-commands",
+					"path": "fr"
+				}
+			]
+		},
+		"it": {
+			"remoteDBs": [
+				{
+					"owner": "AlphaKretin",
+					"repo": "temp-commands",
+					"path": "it"
+				}
+			]
+		}
+	},
+	"baseDbs": ["cards.cdb", "cards-tf.cdb"],
+	"aliasSpecialCases": [27847700, 36996508]
+}
