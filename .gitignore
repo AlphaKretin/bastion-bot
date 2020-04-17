@@ -60,12 +60,11 @@ typings/
 .DS_Store
 #sekrit token donut steal
 auth.json
-sheetOpts.json
 
+#various static files
 *.cdb
 permissions/*
 confs/*
-!confs/tlocks.json
 stats.db3
 
 # Compiled from TypeScript

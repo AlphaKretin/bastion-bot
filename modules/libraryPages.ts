@@ -1,25 +1,18 @@
 import { Message } from "eris";
-import { extractSheets, SheetResults } from "spreadsheet-to-json";
 import { addReactionButton } from "./bot";
 import { PageSimple } from "./Page";
 import { canReact, numToEmoji } from "./util";
 import { functions, constants, params } from "../config/sheetOpts.json";
-
-const extract = (spreadsheetKey: string): Promise<SheetResults> =>
-	new Promise((resolve, reject) => {
-		extractSheets({ spreadsheetKey, sheetsToExtract: ["Functions", "Constants", "Parameters"] }, (err, data) => {
-			if (err) {
-				return reject(err);
-			}
-			resolve(data);
-		});
-	});
+import { default as parse } from "csv-parse";
+import fetch from "node-fetch";
 
 export interface LibraryData {
 	variant: string; // type signature for functions, value for constants, type for parameters
 	name: string;
-	desc: string | null;
+	desc: string | undefined;
 }
+
+export type CSVResult = string[][];
 
 export type LibraryPage = PageSimple<LibraryData>;
 export const libraryPages: { [channelID: string]: LibraryPage } = {};
@@ -52,26 +45,28 @@ class Library {
 		return (this.lib = this.load());
 	}
 
+	private async extract(url: string): Promise<CSVResult> {
+		const file = await fetch(url);
+		const csv = await file.text();
+		const data = await new Promise<CSVResult>((resolve, reject) => {
+			parse(csv, (err, data: CSVResult) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(data);
+				}
+			});
+		});
+		return data;
+	}
+
 	private async load(): Promise<LibraryData[]> {
-		const data = await extract(this.source);
-		const sheet = Object.values(data).find(s => s.length > 0);
-		const out: LibraryData[] = [];
-		if (!sheet) {
+		const data = await this.extract(this.source);
+		const sheet = Object.values(data).filter((s, i) => i > 0 && s.length > 0); // skip header row
+		if (sheet.length === 0) {
 			throw new Error("Sheet does not conform to Functions, Constants or Params!");
 		}
-		for (const row of sheet) {
-			let variant: string;
-			if ("sig" in row) {
-				variant = row.sig;
-			} else if ("val" in row) {
-				variant = row.val;
-			} else if ("type" in row) {
-				variant = row.type;
-			} else {
-				throw new Error("Sheet does not conform to Functions, Constants or Params!");
-			}
-			out.push({ variant, name: row.name, desc: row.desc });
-		}
+		const out: LibraryData[] = sheet.map(row => ({ variant: row[0], name: row[1], desc: row[2] }));
 		return out;
 	}
 }

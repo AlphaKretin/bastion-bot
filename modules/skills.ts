@@ -1,6 +1,8 @@
 import Fuse from "fuse.js";
-import { extractSheets, SheetResults } from "spreadsheet-to-json";
 import { skills as skillSheet } from "../config/sheetOpts.json";
+import { CSVResult } from "./libraryPages";
+import fetch from "node-fetch";
+import parse from "csv-parse";
 
 interface Skill {
 	name: string;
@@ -24,27 +26,32 @@ class Skills {
 		this.fuse = this.getFuse();
 	}
 
-	private extract(spreadsheetKey: string): Promise<SheetResults> {
-		return new Promise((resolve, reject) => {
-			extractSheets({ spreadsheetKey, sheetsToExtract: ["skills"] }, (err, data) => {
+	public async update(): Promise<void> {
+		await (this.fuse = this.getFuse());
+	}
+
+	private async extract(url: string): Promise<CSVResult> {
+		const file = await fetch(url);
+		const csv = await file.text();
+		const data = await new Promise<CSVResult>((resolve, reject) => {
+			parse(csv, (err, data: CSVResult) => {
 				if (err) {
-					return reject(err);
+					reject(err);
+				} else {
+					resolve(data);
 				}
-				resolve(data);
 			});
 		});
+		return data;
 	}
 
 	private async getFuse(): Promise<Fuse<Skill, Fuse.FuseOptions<Skill>>> {
 		const data = await this.extract(skillSheet);
-		const sheet = Object.values(data).find(s => s.length > 0);
-		const input: Skill[] = [];
+		const sheet = Object.values(data).filter(s => s.length > 0);
 		if (!sheet) {
 			throw new Error("Could not load skill sheet!");
 		}
-		for (const row of sheet) {
-			input.push({ name: row.name, desc: row.desc, chars: row.chars });
-		}
+		const input: Skill[] = sheet.map(row => ({ name: row[0], desc: row[1], chars: row[2] }));
 		return new Fuse(input, this.fuseOpts);
 	}
 
