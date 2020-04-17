@@ -1,7 +1,8 @@
 {
 	"stringOpts": {
 		"en": {
-			"local": "strings.conf"
+			"local": "strings.conf",
+			"remote": "https://raw.githubusercontent.com/ProjectIgnis/DeltaHopeHarbinger/master/strings.conf"
 		},
 		"ja": {
 			"remote": "https://raw.githubusercontent.com/Jambalaya751955/ygopro-database-JP/master/config/Live2017Links/strings.conf"
