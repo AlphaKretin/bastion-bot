@@ -6,6 +6,11 @@
 					"owner": "ProjectIgnis",
 					"repo": "BabelCDB",
 					"path": ""
+				},
+				{
+					"owner": "ProjectIgnis",
+					"repo": "IGNIS-Greenlight",
+					"path": "Unscriptable"
 				}
 			]
 		},
