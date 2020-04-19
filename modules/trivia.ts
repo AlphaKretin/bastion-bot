@@ -179,9 +179,7 @@ async function startTriviaRound(
 		channel.createMessage("Have a hint: `" + gameData[channel.id].hint + "`");
 	}, triviaHintTime * 1000);
 	let out = "Time's up! The card was **" + gameData[channel.id].name + "**!\n";
-	if (Object.keys(gameData[channel.id].score).length > 0) {
-		triviaScore(out, msg);
-	}
+	out = triviaScore(out, msg);
 	gameData[channel.id].timeoutAnswer = setTimeout(async () => {
 		if (gameData[channel.id].lock) {
 			return;
