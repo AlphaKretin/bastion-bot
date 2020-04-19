@@ -375,7 +375,13 @@ export async function cardSearch(msg: Message): Promise<void | Message> {
 		const query = getLang(msg, result.res);
 		if (!usedResults.includes(query.msg)) {
 			usedResults.push(query.msg);
-			const card = await data.getCard(query.msg, query.lang1, allowAnime, allowCustom);
+			const scriptNameReg = /c(\d+)(\.lua)?/;
+			let searchQuery = query.msg;
+			const regResult = scriptNameReg.exec(query.msg);
+			if (regResult !== null && 1 in regResult) {
+				searchQuery = regResult[1];
+			}
+			const card = await data.getCard(searchQuery, query.lang1, allowAnime, allowCustom);
 			if (card && query.lang2 in card.text) {
 				const m = await sendCardProfile(msg, card, query.lang2, result.mobile);
 				if (m) {
