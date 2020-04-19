@@ -7,11 +7,15 @@ import { config } from "./configs";
 import { data } from "./data";
 import { getRandomIntInclusive, trimMsg } from "./util";
 import { fs } from "mz";
+import { enLangName } from "../config/botOpts.json";
 
-const fixTriviaMessage = (msg: string, answer = true): string => {
+const fixTriviaMessage = (msg: string, lang: string, answer = true): string => {
 	if (answer) {
 		// convert full width letters to normal (you can type either)
 		msg = msg.replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+	}
+	if (lang === enLangName) {
+		return msg.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 	}
 	return (
 		msg
@@ -101,7 +105,7 @@ async function startTriviaRound(
 		image = await targetCard.image;
 	} while (image === undefined || !(lang in targetCard.text));
 	const name = targetCard.text[lang].name;
-	const fixedName = fixTriviaMessage(name, false);
+	const fixedName = fixTriviaMessage(name, lang, false);
 	let nameIndex = 0;
 	// generate a list of hints that aren't auto-include/ignored characters
 	const validHints: { [index: number]: string } = {};
@@ -236,11 +240,11 @@ export async function answerTrivia(msg: Message): Promise<void> {
 	const prefix = config.getConfig("prefix").getValue(msg);
 	let out;
 	const thumbsup = "👍";
-	const fixMes = fixTriviaMessage(msg.content);
+	const fixMes = fixTriviaMessage(msg.content, gameData[channel.id].lang);
 	if (
 		!fixMes.startsWith(prefix + "tq") &&
 		!fixMes.startsWith(prefix + "tskip") &&
-		!fixMes.includes(fixTriviaMessage(gameData[channel.id].name))
+		!fixMes.includes(fixTriviaMessage(gameData[channel.id].name, gameData[channel.id].lang))
 	) {
 		gameData[channel.id].attempted = true;
 		return;
@@ -267,7 +271,7 @@ export async function answerTrivia(msg: Message): Promise<void> {
 			gameData[channel.id].filter,
 			msg
 		);
-	} else if (fixMes.includes(fixTriviaMessage(gameData[channel.id].name))) {
+	} else if (fixMes.includes(fixTriviaMessage(gameData[channel.id].name, gameData[channel.id].lang))) {
 		gameData[channel.id].noAttCount = 0;
 		await msg.addReaction(thumbsup).catch(ignore);
 		out = getDisplayName(msg) + " got it! The answer was **" + gameData[channel.id].name + "**!\n";
