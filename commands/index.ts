@@ -25,6 +25,8 @@ import { command as set } from "./set";
 import { command as skill } from "./skill";
 import { command as stats } from "./stats";
 import { command as strings } from "./strings";
+import { command as strfind } from "./strfind";
+import { command as spage } from "./sPage";
 import { command as tlock } from "./tlock";
 import { command as top } from "./top";
 import { command as trivia } from "./trivia";
@@ -60,6 +62,8 @@ export const cmds: Command[] = [
 	skill,
 	stats,
 	strings,
+	strfind,
+	spage,
 	tlock,
 	top,
 	trivia,
