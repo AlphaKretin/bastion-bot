@@ -5,6 +5,7 @@ import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { data } from "../modules/data";
 import { trimMsg, messageCapSlice, canReact } from "../modules/util";
+import atob from "atob";
 
 interface DeckSection {
 	[name: string]: number;
@@ -16,6 +17,7 @@ interface DeckRecord {
 	trap: DeckSection;
 	extra: DeckSection;
 	side: DeckSection;
+	filename: string;
 }
 
 const valSum = (obj: DeckSection): number => {
@@ -26,28 +28,27 @@ const valSum = (obj: DeckSection): number => {
 	return counts.reduce((acc, val) => acc + val);
 };
 
-const names = ["deck", "parse"];
-const func = async (msg: Message, mobile: boolean): Promise<Message | undefined> => {
-	if (msg.attachments.length < 1 || !msg.attachments[0].filename.endsWith(".ydk")) {
-		await msg.channel.createMessage("Sorry, you need to upload a deck file to use this command!");
-		return;
-	}
-	let lang: string = config.getConfig("defaultLang").getValue(msg);
-	const content = trimMsg(msg);
-	for (const term of content.split(/ +/)) {
-		if (data.langs.includes(term.toLowerCase())) {
-			lang = term.toLowerCase();
-		}
-	}
-	const file = msg.attachments[0];
-	const deck = await (await fetch(file.url)).text();
+function byte(c: string): number {
+	return c.charCodeAt(0);
+}
+
+function toPasscodes(base64: string): Uint32Array {
+	return new Uint32Array(Uint8Array.from(atob(base64), byte).buffer);
+}
+
+async function getDeckFromFile(msg: Message, lang: string): Promise<DeckRecord> {
+	const attach = msg.attachments[0];
+	const file = await fetch(attach.url);
+	const deck = await file.text();
 	const deckRecord: DeckRecord = {
 		extra: {},
 		monster: {},
 		side: {},
 		spell: {},
-		trap: {}
+		trap: {},
+		filename: attach.filename
 	};
+
 	let currentSection = "";
 	for (const line of deck.split(/\r|\n|\r\n/)) {
 		if (line.startsWith("#") || line.startsWith("!")) {
@@ -97,7 +98,111 @@ const func = async (msg: Message, mobile: boolean): Promise<Message | undefined>
 			}
 		}
 	}
-	const title = "Contents of `" + file.filename + "`:\n";
+
+	return deckRecord;
+}
+
+async function getDeckFromURL(ydke: string, lang: string): Promise<DeckRecord> {
+	const deckRecord: DeckRecord = {
+		extra: {},
+		monster: {},
+		side: {},
+		spell: {},
+		trap: {},
+		filename: "YDKE"
+	};
+	const components = ydke.slice("ydke://".length).split("!");
+	const main = toPasscodes(components[0]);
+	const extra = toPasscodes(components[1]);
+	const side = toPasscodes(components[2]);
+	for (const code of main) {
+		const card = await data.getCard(code, lang);
+		if (card) {
+			let name = card.id.toString();
+			if (card.text[lang]) {
+				name = card.text[lang].name;
+			}
+			if (card.data.isType(enums.type.TYPE_MONSTER)) {
+				if (name in deckRecord.monster) {
+					deckRecord.monster[name]++;
+				} else {
+					deckRecord.monster[name] = 1;
+				}
+			} else if (card.data.isType(enums.type.TYPE_SPELL)) {
+				if (name in deckRecord.spell) {
+					deckRecord.spell[name]++;
+				} else {
+					deckRecord.spell[name] = 1;
+				}
+			} else if (card.data.isType(enums.type.TYPE_TRAP)) {
+				if (name in deckRecord.trap) {
+					deckRecord.trap[name]++;
+				} else {
+					deckRecord.trap[name] = 1;
+				}
+			}
+		}
+	}
+
+	for (const code of extra) {
+		const card = await data.getCard(code, lang);
+		if (card) {
+			let name = card.id.toString();
+			if (card.text[lang]) {
+				name = card.text[lang].name;
+			}
+			if (name in deckRecord.extra) {
+				deckRecord.extra[name]++;
+			} else {
+				deckRecord.extra[name] = 1;
+			}
+		}
+	}
+
+	for (const code of side) {
+		const card = await data.getCard(code, lang);
+		if (card) {
+			let name = card.id.toString();
+			if (card.text[lang]) {
+				name = card.text[lang].name;
+			}
+			if (name in deckRecord.side) {
+				deckRecord.side[name]++;
+			} else {
+				deckRecord.side[name] = 1;
+			}
+		}
+	}
+
+	return deckRecord;
+}
+
+const names = ["deck", "parse"];
+const func = async (msg: Message, mobile: boolean): Promise<Message | undefined> => {
+	let lang: string = config.getConfig("defaultLang").getValue(msg);
+	const content = trimMsg(msg);
+	for (const term of content.split(/ +/)) {
+		if (data.langs.includes(term.toLowerCase())) {
+			lang = term.toLowerCase();
+		}
+	}
+
+	let deckRecord: DeckRecord;
+	if (msg.attachments.length > 0 && msg.attachments[0].filename.endsWith(".ydk")) {
+		deckRecord = await getDeckFromFile(msg, lang);
+	} else {
+		const ydke = msg.content.split(/ +/)[1];
+		if (ydke.startsWith("ydke://")) {
+			deckRecord = await getDeckFromURL(ydke, lang);
+		} else {
+			await msg.channel.createMessage(
+				"Sorry, you need to upload a deck file or provide a valid YDKE URL to use this command!"
+			);
+			return;
+		}
+	}
+
+	const title = "Contents of " + deckRecord.filename + ":\n";
 	const monsterCount = valSum(deckRecord.monster);
 	const spellCount = valSum(deckRecord.spell);
 	const trapCount = valSum(deckRecord.trap);
@@ -187,6 +292,6 @@ const func = async (msg: Message, mobile: boolean): Promise<Message | undefined>
 	return m;
 };
 
-const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file.";
+const desc = "Parses and lists the contents of a YGOPro `.ydk` deck file or EDOPRO `ydke://` URL.";
 
-export const command = new Command(names, func, undefined, desc, "<upload a `.ydk` file in the same message>");
+export const command = new Command(names, func, undefined, desc, "[YDKE|<upload a `.ydk` file in the same message>]");
