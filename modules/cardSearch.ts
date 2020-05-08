@@ -186,7 +186,10 @@ export async function generateCardProfile(
 		descPortions.push(descPortion.slice(0, index + 1));
 		descPortion = descPortion.slice(index + 1);
 	}
-	descPortions.push(descPortion);
+	// guard against portions consisting only of trailing spaces
+	if (descPortion.trim().length > 0) {
+		descPortions.push(descPortion);
+	}
 	if (outEmbed.embed && outEmbed.embed.fields) {
 		outEmbed.embed.fields.push({
 			name: textHeader,
