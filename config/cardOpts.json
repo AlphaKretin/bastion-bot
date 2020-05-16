@@ -67,6 +67,15 @@
 					"path": "it"
 				}
 			]
+		},
+		"ko": {
+			"remoteDBs": [
+				{
+					"owner": "JSY1728",
+					"repo": "EDOPRO-Korean-CDB-TEST",
+					"path": ""
+				}
+			]
 		}
 	},
 	"baseDbs": ["cards.cdb", "cards-tf.cdb"],

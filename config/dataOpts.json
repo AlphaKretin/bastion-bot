@@ -21,6 +21,9 @@
 		},
 		"it": {
 			"local": "strings.conf"
+		},
+		"ko": {
+			"remote": "https://raw.githubusercontent.com/JSY1728/EDOPRO-Korean-CDB-TEST/master/strings.conf"
 		}
 	},
 	"shortcuts": {
