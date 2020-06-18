@@ -5,7 +5,7 @@ import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { data } from "../modules/data";
 import { trimMsg, messageCapSlice, canReact } from "../modules/util";
-import atob from "atob";
+import { parseURL } from "ydke";
 
 interface DeckSection {
 	[name: string]: number;
@@ -27,14 +27,6 @@ const valSum = (obj: DeckSection): number => {
 	}
 	return counts.reduce((acc, val) => acc + val);
 };
-
-function byte(c: string): number {
-	return c.charCodeAt(0);
-}
-
-function toPasscodes(base64: string): Uint32Array {
-	return new Uint32Array(Uint8Array.from(atob(base64), byte).buffer);
-}
 
 async function getDeckFromFile(msg: Message, lang: string): Promise<DeckRecord> {
 	const attach = msg.attachments[0];
@@ -111,11 +103,8 @@ async function getDeckFromURL(ydke: string, lang: string): Promise<DeckRecord> {
 		trap: {},
 		filename: "YDKE"
 	};
-	const components = ydke.slice("ydke://".length).split("!");
-	const main = toPasscodes(components[0]);
-	const extra = toPasscodes(components[1]);
-	const side = toPasscodes(components[2]);
-	for (const code of main) {
+	const typedDeck = parseURL(ydke);
+	for (const code of typedDeck.main) {
 		const card = await data.getCard(code, lang);
 		if (card) {
 			let name = card.id.toString();
@@ -144,7 +133,7 @@ async function getDeckFromURL(ydke: string, lang: string): Promise<DeckRecord> {
 		}
 	}
 
-	for (const code of extra) {
+	for (const code of typedDeck.extra) {
 		const card = await data.getCard(code, lang);
 		if (card) {
 			let name = card.id.toString();
@@ -159,7 +148,7 @@ async function getDeckFromURL(ydke: string, lang: string): Promise<DeckRecord> {
 		}
 	}
 
-	for (const code of side) {
+	for (const code of typedDeck.side) {
 		const card = await data.getCard(code, lang);
 		if (card) {
 			let name = card.id.toString();
