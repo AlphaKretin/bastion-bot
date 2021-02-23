@@ -15,20 +15,25 @@ if (auth) {
 } else {
 	GitHub = new Octokit();
 }
-type gitParams = Octokit.ReposGetContentsParams;
+type gitParams = {
+	owner: string;
+	repo: string;
+	path: string;
+}; // hardcode instead of extracted with Parameters<> because of undefined confusion
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+type Unpacked<T> = T extends (infer U)[] ? U : T;
+type gitResponse = Unpacked<ThenArg<ReturnType<typeof GitHub.repos.getContent>>["data"]>;
 
 async function downloadCardScript(
 	code: number,
 	repo: gitParams
-): Promise<[string | undefined, Octokit.ReposGetContentsResponseItem | undefined]> {
+): Promise<[string | undefined, gitResponse | undefined]> {
 	const params: gitParams = JSON.parse(JSON.stringify(repo)); // clone value
 	params.path += "/c" + code + ".lua";
 	try {
-		const file = await GitHub.repos.getContents(params);
-		let data = file.data;
-		if (data instanceof Array) {
-			data = data[0];
-		}
+		const file = await GitHub.repos.getContent(params);
+		const baseData = file.data;
+		const data = baseData instanceof Array ? baseData[0] : baseData;
 		if (data.download_url) {
 			const body: string = await (await fetch(data.download_url)).text();
 			return [body, data];
@@ -45,7 +50,7 @@ const func = async (msg: Message, mobile: boolean): Promise<Message> => {
 	const card = await data.getCard(langs.msg, langs.lang1);
 	if (card) {
 		let script: string | undefined;
-		let scriptFile: Octokit.ReposGetContentsResponseItem | undefined; // Octokit response
+		let scriptFile: gitResponse | undefined; // Octokit response
 		for (const repo of scriptRepos) {
 			[script, scriptFile] = await downloadCardScript(card.id, repo);
 			if (script !== undefined && scriptFile !== undefined) {

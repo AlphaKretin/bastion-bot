@@ -105,7 +105,8 @@ bot
 	.then(() => {
 		if (status) {
 			bot.editStatus(undefined, {
-				name: status
+				name: status,
+				type: 0
 			});
 		}
 	})

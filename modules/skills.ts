@@ -11,17 +11,15 @@ interface Skill {
 }
 
 class Skills {
-	private fuseOpts: Fuse.FuseOptions<Skill> = {
+	private fuseOpts: Fuse.IFuseOptions<Skill> = {
 		distance: 100,
 		keys: ["name"],
 		location: 0,
-		maxPatternLength: 52,
 		minMatchCharLength: 1,
 		shouldSort: true,
-		threshold: 0.25,
-		tokenize: true
+		threshold: 0.25
 	};
-	private fuse: Promise<Fuse<Skill, Fuse.FuseOptions<Skill>>>;
+	private fuse: Promise<Fuse<Skill>>;
 	constructor() {
 		this.fuse = this.getFuse();
 	}
@@ -45,7 +43,7 @@ class Skills {
 		return data;
 	}
 
-	private async getFuse(): Promise<Fuse<Skill, Fuse.FuseOptions<Skill>>> {
+	private async getFuse(): Promise<Fuse<Skill>> {
 		const data = await this.extract(skillSheet);
 		const sheet = Object.values(data).filter(s => s.length > 0);
 		if (!sheet) {
