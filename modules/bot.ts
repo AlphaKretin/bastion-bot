@@ -1,4 +1,4 @@
-import { Message, ClientOptions, Client, PossiblyUncachedMessage, Emoji } from "eris";
+import { Message, ClientOptions, Client, PossiblyUncachedMessage, Emoji, Member } from "eris";
 import { token } from "../config/auth.json";
 import { ReactionButton, ReactionFunc } from "./ReactionButton";
 import { canReact } from "./util";
@@ -63,13 +63,13 @@ export const bot = new Client(token, erisOpts);
 bot.on("ready", () => {
 	console.log("Logged in as %s - %s", bot.user.username, bot.user.id);
 });
-
-bot.on("messageReactionAdd", async (msg: PossiblyUncachedMessage, emoji: Emoji, userID: string) => {
-	if (userID === bot.user.id) {
+bot.on("messageReactionAdd", async (msg: PossiblyUncachedMessage, emoji: Emoji, member: Member) => {
+	// ignore bots, including self
+	if (member.bot) {
 		return;
 	}
 	if (reactionButtons[msg.id] && reactionButtons[msg.id][emoji.name]) {
-		await reactionButtons[msg.id][emoji.name].execute(userID);
+		await reactionButtons[msg.id][emoji.name].execute(member.id);
 	}
 });
 
