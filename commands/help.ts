@@ -29,7 +29,6 @@ const func = async (msg: Message): Promise<Message> => {
 			out = "Sorry, I don't have a description for this command yet! Go yell at AlphaKretin!\n";
 		}
 	}
-	const url = surveyUrl as string;
 	let helpMessage =
 		out +
 		"I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\n" +
@@ -41,13 +40,11 @@ const func = async (msg: Message): Promise<Message> => {
 		"Invite me to your server! " +
 		"<https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288>\n";
 
-	if (msg.guildID) {
-		helpMessage +=
-			"My developers are running a survey to gather data for a future update! Please fill it out here!\n<" +
-			url +
-			msg.guildID +
-			">";
-	}
+	helpMessage +=
+		"My developers are running a survey to gather data for a future update! Please fill it out here!\n<" +
+		surveyUrl +
+		(msg.guildID || "0") +
+		">";
 
 	return await msg.channel.createMessage(helpMessage);
 };

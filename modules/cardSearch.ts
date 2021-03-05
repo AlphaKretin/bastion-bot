@@ -203,16 +203,14 @@ export async function generateCardProfile(
 		}
 	}
 	// insert survey link
-	if (msg.guildID) {
-		const url = surveyUrl as string;
-		outEmbed.embed?.fields?.push({
-			name: "User Survey",
-			value:
-				"My developers are running a survey to gather data for a future update! Please fill it out here!\n" +
-				url +
-				msg.guildID
-		});
-	}
+	outEmbed.embed?.fields?.push({
+		name: "User Survey",
+		value:
+			"My developers are running a survey to gather data for a future update! [Please fill it out here!](" +
+			surveyUrl +
+			(msg.guildID || "0") +
+			")"
+	});
 
 	return [outEmbed];
 }
