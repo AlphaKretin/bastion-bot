@@ -66,5 +66,6 @@
 	"maxSearch": 3,
 	"enLangName": "en",
 	"jaLangName": "ja",
-	"status": "<card name> to search!"
+	"status": "User survey, @me!",
+	"surveyUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdpJnd9rCYDRQNcBQEc4Rpvafndu61WR77m4eKrMh2eIWEY5A/viewform?usp=pp_url&entry.1859297685="
 }

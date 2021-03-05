@@ -8,7 +8,7 @@ import { data } from "./data";
 import { strings } from "./strings";
 import { canReact, getLang, messageCapSlice } from "./util";
 import { stats } from "./stats";
-import { maxSearch } from "../config/botOpts.json";
+import { maxSearch, surveyUrl } from "../config/botOpts.json";
 import { type, race, attribute, misc } from "../config/emotes.json";
 import { imageExt } from "../config/dataOpts.json";
 import * as colors from "../config/colors.json";
@@ -84,22 +84,22 @@ export async function generateCardStats(card: Card, lang: string, msg: Message):
 			levelName = strings.getTranslation("linkRating", lang, msg);
 			levelEmote = undefined;
 		}
-		stats += "**" + levelName + "**: " + card.data.level;
+		stats += `**${levelName}**: ${card.data.level}`;
 		if (displayEmotes && levelEmote) {
 			stats += " " + levelEmote;
 		}
-		stats += " **" + strings.getTranslation("atk", lang, msg) + "**: " + (card.data.atk === -2 ? "?" : card.data.atk);
+		stats += ` **${strings.getTranslation("atk", lang, msg)}**: ${card.data.atk === -2 ? "?" : card.data.atk}`;
 		if (card.data.linkMarker) {
 			stats += " **" + strings.getTranslation("linkArrows", lang, msg) + "**: " + card.data.linkMarker.join("");
 		} else if (card.data.def !== undefined) {
-			stats += " **" + strings.getTranslation("def", lang, msg) + "**: " + (card.data.def === -2 ? "?" : card.data.def);
+			stats += ` **${strings.getTranslation("def", lang, msg)}**: ${card.data.def === -2 ? "?" : card.data.def}`;
 		}
 		if (card.data.lscale && card.data.rscale) {
 			stats += " **" + strings.getTranslation("scale", lang, msg) + "**: ";
 			if (displayEmotes && misc && misc.scaleLeft) {
 				stats += misc.scaleLeft;
 			}
-			stats += card.data.lscale + "/" + card.data.rscale;
+			stats += `${card.data.lscale}/${card.data.rscale}`;
 			if (displayEmotes && misc && misc.scaleRight) {
 				stats += misc.scaleRight;
 			}
@@ -115,7 +115,7 @@ export function getColour(card: Card, msg: Message): number {
 			return (colors as { [key: string]: number })[type];
 		}
 	}
-	return config.getConfig("embedColor").getValue(msg);
+	return config.getConfig("embedColor").getValue(msg) as number;
 }
 
 export async function generateCardProfile(
@@ -202,6 +202,18 @@ export async function generateCardProfile(
 			});
 		}
 	}
+	// insert survey link
+	if (msg.guildID) {
+		const url = surveyUrl as string;
+		outEmbed.embed?.fields?.push({
+			name: "User Survey",
+			value:
+				"My developers are running a survey to gather data for a future update! Please fill it out here!\n" +
+				url +
+				msg.guildID
+		});
+	}
+
 	return [outEmbed];
 }
 
@@ -294,7 +306,7 @@ export async function sendCardProfile(
 					const user = bot.users.get(userID);
 					if (user) {
 						const chan = await user.getDMChannel();
-						chan.createMessage(profile[i]);
+						await chan.createMessage(profile[i]);
 					}
 				});
 			}
@@ -319,7 +331,7 @@ export async function cardSearch(msg: Message): Promise<void | Message> {
 	const results: SearchQuery[] = [];
 	const codeBlocks = /```[\s\S]+?```|`[\s\S]+?`/g;
 	let content = msg.content.replace(codeBlocks, "");
-	const fullBrackets = config.getConfig("fullBrackets").getValue(msg);
+	const fullBrackets = config.getConfig("fullBrackets").getValue(msg) as string[];
 	// strip cases of more than one bracket to minimise conflicts with other bots and spoiler feature
 	const badFullRegex = new RegExp(reEscape(fullBrackets[0]) + "{2,}.+?" + reEscape(fullBrackets[1]) + "{2,}", "g");
 	content = content.replace(badFullRegex, "");
@@ -334,14 +346,14 @@ export async function cardSearch(msg: Message): Promise<void | Message> {
 			}
 
 			results.push({
-				mobile: config.getConfig("mobileView").getValue(msg),
+				mobile: config.getConfig("mobileView").getValue(msg) as boolean,
 				res: match
 			});
 		}
 		fullResult = fullRegex.exec(content);
 	}
 
-	const mobBrackets = config.getConfig("mobBrackets").getValue(msg);
+	const mobBrackets = config.getConfig("mobBrackets").getValue(msg) as string[];
 	const badMobRegex = new RegExp(reEscape(mobBrackets[0]) + "{2,}.+?" + reEscape(mobBrackets[1]) + "{2,}", "g");
 	content = content.replace(badMobRegex, "");
 	const mobRegex = new RegExp(reEscape(mobBrackets[0]) + "(.+?)" + reEscape(mobBrackets[1]), "g");
@@ -371,8 +383,8 @@ export async function cardSearch(msg: Message): Promise<void | Message> {
 		return;
 	}
 	const isDM = msg.channel instanceof PrivateChannel; // allow anime in DMs because no way to turn it on
-	const allowAnime = isDM || config.getConfig("allowAnime").getValue(msg);
-	const allowCustom = isDM || config.getConfig("allowAnime").getValue(msg);
+	const allowAnime = isDM || (config.getConfig("allowAnime").getValue(msg) as boolean);
+	const allowCustom = isDM || (config.getConfig("allowAnime").getValue(msg) as boolean);
 	const usedResults: string[] = [];
 	for (const result of results) {
 		const query = getLang(msg, result.res);
