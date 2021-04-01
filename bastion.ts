@@ -85,6 +85,7 @@ bot.on("messageCreate", async (msg: Message) => {
 	cardSearch(msg).catch(e => msg.channel.createMessage("Error!\n" + e));
 });
 
+bot.on("error", (error, shard) => console.error(new Date(), shard, error));
 // handle some functions on edit
 bot.on("messageUpdate", async (msg: Message) => {
 	// ignore bots
@@ -99,6 +100,7 @@ bot.on("messageUpdate", async (msg: Message) => {
 		return await executeCommand(cmd, cmdName, msg, false, true);
 	}
 });
+
 
 bot
 	.connect()
