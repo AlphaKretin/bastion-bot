@@ -8,7 +8,7 @@ import { data } from "./data";
 import { strings } from "./strings";
 import { canReact, getLang, messageCapSlice } from "./util";
 import { stats } from "./stats";
-import { maxSearch, surveyUrl } from "../config/botOpts.json";
+import { maxSearch } from "../config/botOpts.json";
 import { type, race, attribute, misc } from "../config/emotes.json";
 import { imageExt } from "../config/dataOpts.json";
 import * as colors from "../config/colors.json";
@@ -202,16 +202,6 @@ export async function generateCardProfile(
 			});
 		}
 	}
-	// insert survey link
-	outEmbed.embed?.fields?.push({
-		name: "User Survey",
-		value:
-			"My developers are running a survey to gather data for a future update! [Please fill it out here!](" +
-			surveyUrl +
-			(msg.guildID || "0") +
-			")"
-	});
-
 	return [outEmbed];
 }
 

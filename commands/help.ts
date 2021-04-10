@@ -3,7 +3,6 @@ import { getMatchingCommands } from "../bastion";
 import { Command } from "../modules/Command";
 import { config } from "../modules/configs";
 import { getLang } from "../modules/util";
-import { surveyUrl } from "../config/botOpts.json";
 
 const names = ["help"];
 
@@ -29,7 +28,7 @@ const func = async (msg: Message): Promise<Message> => {
 			out = "Sorry, I don't have a description for this command yet! Go yell at AlphaKretin!\n";
 		}
 	}
-	let helpMessage =
+	const helpMessage =
 		out +
 		"I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\n" +
 		"Price data is from the <https://yugiohprices.com/> API.\n" +
@@ -39,13 +38,6 @@ const func = async (msg: Message): Promise<Message> => {
 		"Support my development on Patreon at <https://www.patreon.com/alphakretinbots>\n" +
 		"Invite me to your server! " +
 		"<https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288>\n";
-
-	helpMessage +=
-		"My developers are running a survey to gather data for a future update! Please fill it out here!\n<" +
-		surveyUrl +
-		(msg.guildID || "0") +
-		">";
-
 	return await msg.channel.createMessage(helpMessage);
 };
 
