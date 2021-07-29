@@ -12,9 +12,9 @@
 		"ja": {
 			"remoteDBs": [
 				{
-					"owner": "Jambalaya751955",
-					"repo": "ygopro-database-JP",
-					"path": "cdb/Live2017Links"
+					"owner": "mycard",
+					"repo": "ygopro-database",
+					"path": "locales/ja-JP"
 				}
 			]
 		},
