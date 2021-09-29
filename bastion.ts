@@ -67,13 +67,6 @@ bot.on("messageCreate", async (msg: Message) => {
 		}
 		return;
 	}
-	if (msg.mentions.find(u => u.id === bot.user.id) !== undefined) {
-		const cmd = commands.find(c => c.names.includes("help"));
-		if (cmd) {
-			await executeCommand(cmd, "", msg);
-		}
-		return;
-	}
 	const validCmds = getMatchingCommands(msg);
 	if (validCmds.length > 0) {
 		const cmd = validCmds[0].cmd;
