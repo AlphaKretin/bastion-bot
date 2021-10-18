@@ -1,24 +1,11 @@
 import { Message } from "eris";
 import { Command } from "../modules/Command";
-import { Errors } from "../modules/errors";
-import { trimMsg } from "../modules/util";
-import { getYugipediaPage } from "../modules/yugipedia";
 
 const names = ["yugi", "pedia", "wiki"];
 const func = async (msg: Message): Promise<Message> => {
-	const query = trimMsg(msg);
-	try {
-		const url = await getYugipediaPage(query);
-		return await msg.channel.createMessage(url);
-	} catch (e) {
-		if (e.message === Errors.ERROR_YUGI_API) {
-			return await msg.channel.createMessage("Sorry, I couldn't find a page for `" + query + "`.");
-		} else {
-			throw e;
-		}
-	}
+	return msg.channel.createMessage("This has been replaced by `/yugipedia`, a Slash Command that is part of a new Bastion update.");
 };
 
-const desc = "Searches for a page on the Yugipedia Yu-Gi-Oh! Wiki using their own search system, and displays the URL.";
+const desc = "Superseded by `/yugipedia`";
 
 export const command = new Command(names, func, undefined, desc, "page");
