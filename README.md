@@ -1,10 +1,11 @@
-# Bastion
+# Bastion Classic
+
+_A major update is being worked on in a [new repository](https://github.com/DawnbrandBots/bastion-bot) replacing this one._ You can find the invite link there. Features will progressively roll out to the live bot.
 
 **Bastion** is a [Discord](http://discordapp.com/) bot for displaying information about the _Yu-Gi-Oh! Trading Card Game_. It's written in Node.js using the [Eris](https://abal.moe/Eris/) Discord API library, and relies on my [ygo-data](https://github.com/AlphaKretin/ygo-data) module for parsing YGOPro databases.
 
 ## Quick Links
 
-- Invite Bastion to your server: https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=378944
 - Join my server, for technical support and status updates: https://discord.gg/GrMGspZ
 - Support the development of this bot on Patreon: https://www.patreon.com/alphakretinbots
 

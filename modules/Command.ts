@@ -61,3 +61,5 @@ export class Command {
 		return this.condition ? this.condition(msg) : true;
 	}
 }
+
+export const REPLACED = "Make sure you have permission to use Slash Commands them in this channel if you can't see the command. If Bastion was added to this server after March 22, 2021, server administrators will need to reinvite me with a new link.";

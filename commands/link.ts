@@ -1,8 +1,8 @@
 import { Message } from "eris";
-import { Command } from "../modules/Command";
+import { Command, REPLACED } from "../modules/Command";
 const names = ["link"];
 const func = async (msg: Message): Promise<Message> => {
-	return msg.channel.createMessage("This has been replaced by `/link`, a Slash Command that is part of a new Bastion update.");
+	return msg.channel.createMessage("This has been replaced by `/link`.\n" + REPLACED);
 };
 
 const desc = "Superseded by `/link`";

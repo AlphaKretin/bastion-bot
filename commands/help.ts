@@ -30,14 +30,8 @@ const func = async (msg: Message): Promise<Message> => {
 	}
 	const helpMessage =
 		out +
-		"I am a Yu-Gi-Oh! card bot made by AlphaKretin#7990.\n" +
-		"Price data is from the <https://yugiohprices.com/> API.\n" +
-		"My help file is at <https://github.com/AlphaKretin/bastion-bot/>," +
-		` or use \`${prefix}commands\` to get a list of commands.\n` +
-		`Use \`${prefix}help <commandname>\` to get detailed help on a command.\n` +
-		"Support my development on Patreon at <https://www.patreon.com/alphakretinbots>\n" +
-		"Invite me to your server! " +
-		"<https://discordapp.com/oauth2/authorize?client_id=383854640694820865&scope=bot&permissions=52288>\n";
+		`Use \`${prefix}help <commandname>\` to get detailed help on a specific command.\n` +
+		"Ping me for more general information.";
 	return await msg.channel.createMessage(helpMessage);
 };
 
