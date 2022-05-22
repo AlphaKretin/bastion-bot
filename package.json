@@ -5,8 +5,8 @@
 	"main": "bastion.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "./node_modules/.bin/tsc",
-		"lint": "./node_modules/.bin/eslint --ext .ts bastion.ts ./modules/*.ts ./commands/*.ts --fix"
+		"build": "tsc",
+		"lint": "eslint --ext .ts bastion.ts ./modules/*.ts ./commands/*.ts --fix"
 	},
 	"repository": {
 		"type": "git",
@@ -33,7 +33,7 @@
 		"mz": "^2.7.0",
 		"node-fetch": "^2.6.1",
 		"ydke": "^1.1.0",
-		"ygopro-data": "^1.3.6"
+		"ygopro-data": "^1.4.0"
 	},
 	"devDependencies": {
 		"@types/better-sqlite3": "^5.4.1",

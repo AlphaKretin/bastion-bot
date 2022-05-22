@@ -10,7 +10,10 @@
 			"name": "Launch Program",
 			"program": "${workspaceFolder}/bastion.js",
 			"outFiles": ["${workspaceFolder}/**/*.js"],
-			"runtimeArgs": ["--trace-warnings"]
+			"runtimeArgs": ["--trace-warnings", "--enable-source-maps"],
+			"preLaunchTask": "npm: build",
+			"outputCapture": "std",
+			"internalConsoleOptions":"openOnSessionStart"
 		}
 	]
 }
