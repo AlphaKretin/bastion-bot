@@ -31,19 +31,19 @@ export async function generateCardStats(card: Card, lang: string, msg: Message):
 	}
 	stats += "\n";
 	stats += "**" + strings.getTranslation("status", lang, msg) + "**: " + (await card.status);
-	const price = await card.price;
-	if (price) {
-		stats +=
-			"** " +
-			strings.getTranslation("price", lang, msg) +
-			"**: $" +
-			price.low.toFixed(2) +
-			"-$" +
-			price.avg.toFixed(2) +
-			"-$" +
-			price.hi.toFixed(2) +
-			" USD";
-	}
+	// const price = await card.price;
+	// if (price) {
+	// 	stats +=
+	// 		"** " +
+	// 		strings.getTranslation("price", lang, msg) +
+	// 		"**: $" +
+	// 		price.low.toFixed(2) +
+	// 		"-$" +
+	// 		price.avg.toFixed(2) +
+	// 		"-$" +
+	// 		price.hi.toFixed(2) +
+	// 		" USD";
+	// }
 	stats += "\n";
 	let typeString = "**" + strings.getTranslation("type", lang, msg) + "**: " + card.data.names[lang].typeString;
 	if (displayEmotes) {
