@@ -12,6 +12,7 @@ import { maxSearch } from "../config/botOpts.json";
 import { type, race, attribute, misc } from "../config/emotes.json";
 import { imageExt } from "../config/dataOpts.json";
 import * as colors from "../config/colors.json";
+import abdeploy from "./abdeploy";
 
 function reEscape(s: string): string {
 	return s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -314,6 +315,20 @@ function badQuery(match: string): boolean {
 	);
 }
 
+// See https://github.com/DawnbrandBots/bastion-bot/blob/master/src/events/message-search.ts
+// SearchMessageListener#run
+function shouldProcessQuery(match: string, guildID?: string): boolean {
+	// This is the inverse of the condition when new Bastion would trigger
+	// https://github.com/DawnbrandBots/bastion-bot/issues/152
+	// Continue to process if no ABDeploy (overall config or for this server) or in direct messages
+	// Otherwise, ABDeploy is set for this server, so only handle unofficial cards.
+	return abdeploy === null ||
+		!guildID ||
+		!abdeploy.has(guildID) ||
+		match.includes("(") ||
+		match.toLowerCase().includes("anime");
+}
+
 export async function cardSearch(msg: Message): Promise<void | Message> {
 	let react = false;
 	const results: SearchQuery[] = [];
@@ -327,7 +342,7 @@ export async function cardSearch(msg: Message): Promise<void | Message> {
 	let fullResult = fullRegex.exec(content);
 	while (fullResult !== null) {
 		const match = fullResult[1];
-		if (!badQuery(match)) {
+		if (!badQuery(match) && shouldProcessQuery(match, msg.guildID)) {
 			if (!react) {
 				await msg.addReaction("🕙").catch(ignore);
 				react = true;
