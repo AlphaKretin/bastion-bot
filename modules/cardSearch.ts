@@ -322,9 +322,10 @@ function shouldProcessQuery(match: string, guildID?: string): boolean {
 	// https://github.com/DawnbrandBots/bastion-bot/issues/152
 	// Continue to process if no ABDeploy (overall config or for this server) or in direct messages
 	// Otherwise, ABDeploy is set for this server, so only handle unofficial cards.
-	return abdeploy === null ||
+	const deploy = abdeploy();
+	return deploy === null ||
 		!guildID ||
-		!abdeploy.has(guildID) ||
+		!deploy.has(guildID) ||
 		match.includes("(") ||
 		match.toLowerCase().includes("anime");
 }

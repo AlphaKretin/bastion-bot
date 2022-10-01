@@ -23,4 +23,7 @@ async function update(initial = false): Promise<void> {
 void update(true);
 setInterval(update, 60000);
 
-export default abdeploy;
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export default function get() {
+	return abdeploy;
+}
