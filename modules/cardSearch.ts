@@ -320,12 +320,11 @@ function badQuery(match: string): boolean {
 function shouldProcessQuery(match: string, guildID?: string): boolean {
 	// This is the inverse of the condition when new Bastion would trigger
 	// https://github.com/DawnbrandBots/bastion-bot/issues/152
-	// Continue to process if no ABDeploy (overall config or for this server) or in direct messages
-	// Otherwise, ABDeploy is set for this server, so only handle unofficial cards.
+	// Continue to process if no ABDeploy (overall config or for this server)
+	// Otherwise, ABDeploy is set for this server (or this is a DM), so only handle unofficial cards.
 	const deploy = abdeploy();
 	return deploy === null ||
-		!guildID ||
-		!deploy.has(guildID) ||
+		(guildID && !deploy.has(guildID)) ||
 		match.includes("(") ||
 		match.toLowerCase().includes("anime");
 }
