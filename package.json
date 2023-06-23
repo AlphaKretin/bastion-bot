@@ -23,7 +23,7 @@
 	},
 	"homepage": "https://github.com/AlphaKretin/bastion-bot#readme",
 	"dependencies": {
-		"better-sqlite3": "^7.1.2",
+		"better-sqlite3": "^7.6.2",
 		"csv-parse": "^4.15.3",
 		"dotenv": "^8.2.0",
 		"eris": "^0.14.0",
