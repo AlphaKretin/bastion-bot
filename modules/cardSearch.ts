@@ -119,6 +119,21 @@ export function getColour(card: Card, msg: Message): number {
 	return config.getConfig("embedColor").getValue(msg) as number;
 }
 
+function suggestSearchTrigger(card: Card, lang: string): string {
+	const [name] = card.text[lang].name.split(" (");
+	switch (card.id % 4) {
+		case 0:
+			return `r<${name}>`;
+		case 1:
+			return `<${name}>r`;
+		case 2:
+			return `R<${name}>`;
+		case 3:
+		default:
+			return `<${name}>R`;
+	}
+}
+
 export async function generateCardProfile(
 	card: Card,
 	lang: string,
@@ -150,6 +165,11 @@ export async function generateCardProfile(
 				"**" + desc.pendHead + "**:\n" + desc.pendBody + "\n**" + desc.monsterHead + "**:\n" + desc.monsterBody;
 		} else {
 			outString += "**" + textHeader + "**:\n" + desc.monsterBody;
+		}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		if (card.data.isOT(512 as any) && !abdeploy()?.has(`${msg.guildID}`)) {
+			outString += "\n\n_You can use new card search for Rush Duel cards_: `";
+			outString += suggestSearchTrigger(card, lang) + "`";
 		}
 		return messageCapSlice(outString);
 	}
